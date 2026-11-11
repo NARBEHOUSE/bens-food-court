@@ -1,0 +1,47 @@
+# Publish Ben's Food Court to https://narbehouse.github.io/bens-food-court/ on every push to main.
+# Only the files the game loads are published (index.html, css, js, packs); the reference art, docs, tests and
+# tools stay in the repo but are not part of the website. The game is unlisted: no catalog links to it.
+name: Publish to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: bens-food-court-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            index.html
+            css
+            js
+            packs
+            LICENSE
+          sparse-checkout-cone-mode: false
+      - name: Collect the files the game loads
+        run: |
+          mkdir _site
+          cp -r index.html css js packs LICENSE _site/
+          touch _site/.nojekyll
+          du -sh _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
