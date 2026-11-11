@@ -1,0 +1,11 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Scene: the ice cream scooping station, as seen by the cook standing at it. The camera looks slightly downward.
+Composition (percent of the image):
+- Top 62%: the wall behind the station: pink tiles, dispensers of cones, waffle cones and cups, a scoop rinse well, a row of framed photos of famous sundaes, a cold mist drifting from below.
+- Bottom 38%: the top edge of a long glass freezer case with open tubs of vanilla, chocolate, strawberry, mint chip, cookie dough, rocky road and bubblegum ice cream, plain and simple (the game draws the food and the work surface on top of this part).
+Hidden funny details, small but findable: a penguin figurine wearing earmuffs; a scoop sticking out of the wall like a coat hook; a framed ice cube; a tiny igloo on the shelf.
+Everything sharp. No text anywhere except what the details ask for. No border.
+Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; no real logos.
+Save as art-source/backdrops/icecream-scoop.png (1536 x 1024) and the prompt as art-source/backdrops/icecream-scoop-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

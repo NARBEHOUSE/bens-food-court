@@ -1,0 +1,312 @@
+# Ben's Pizza Parlor, the pack in words (content-pizza: pizza-pack, 2026-11-08)
+
+`packs/pizza/pack.js` (pack version 1), the pilot restaurant on the ladder and **the worked example of slots** for
+phase 2b (the diner, `docs/api/packs/diner.md`, uses the Burger Bar's own `from`/`of` picks). Format:
+`docs/api/pack-format.md`; the line `docs/api/line.md`; the script `docs/api/script.md`; sounds `docs/api/audio.md`;
+the food `docs/api/world.md`. **food-pizza works from section 10** (every look, set, flourish and cook to draw).
+**pizza-script works from section 12** (every moment and who must say it).
+
+**Check it** (from the game folder):
+
+```
+BB_PACKS=pizza node --test "tests/*.test.cjs"
+node -e "console.table(require('./tests/bot.cjs').pressReport('pizza'))"
+node -e "const b=require('./tests/bot.cjs'); console.log(b.schema.validate(b.merge(require('./packs/pizza/pack.js'))))"
+```
+
+## 1. At a glance
+
+| | |
+|---|---|
+| id, name | `pizza`, "Ben's Pizza Parlor" (court: "Pizza Parlor", bottom arm, slot 1, open at the start) |
+| version | 1 |
+| format | not set: pizza-script sets `format: 3` when `packs/pizza/script.js` covers every moment |
+| manager | `{ id: 'mitch', art: 'mitch-pizza' }`: flour-dusted apron, pizza-box hat |
+| backdrops | `counter`, and by station `prep` (prep, cut, knotBasket) and `oven` (oven). All three exist (`BBArt.pizza`) |
+| courses | `['main', 'side']`: pizzas are mains, garlic knots the side |
+| levels | `{}`: the engine's ladder unchanged |
+| no paging | every pick has 3 values, so no screen ever shows More… (a gross-out could sit on any of them) |
+
+## 2. The line: stations and steps
+
+| Station | backdrop | Steps, in order | redo | tool | sounds |
+|---|---|---|---|---|---|
+| `prep` "Prep Table" | `prep` | builds on `pizza` (no base: the crust is a pick). Pick `crust` → auto `toss` (show `doughToss`) → Pick `sauce` → Add, one each: cheese, pepperoni, sausage, mushrooms, peppers, onions, olives, pineapple | "Redo the Pizza" | | (add: `plop`) |
+| `oven` "Oven" | `oven` | Cook, stage set `bake` (cooks the item: the pizza, or the knots) | "Bake Again" | `peel` | `{ cook: 'oven', done: 'peel' }` |
+| `cut` "Cutting Board" | `prep` | Pick `slices` | "Cut Again" | | `{ done: 'cut' }` |
+| `knotBasket` "Knot Basket" | `prep` | Add garlic butter → Add parmesan → Pick `dip` | "Redo the Knots" | | (add: `plop`) |
+
+A pizza runs prep → oven → cut; garlic knots run oven → knotBasket (baked first, then dressed). No `when` steps: every
+pizza is asked every step, so every pizza takes the same presses whatever is on it.
+
+What the player hears (words.js; Timed changes only the oven):
+
+- "Prep Table. Crust: Thin, Regular or Deep Dish?" → the dough toss plays → "Sauce: Red, White or None?" → "Cheese."
+  Add / Skip ("Add cheese"), then "Pepperoni.", "Sausage." … "Pineapple.". A bad one: "Pepperoni with a fly on it."
+  Add / Skip / Swap It ("Swap pepperoni with a fly on it for a fresh one").
+- "Oven. How baked?" Light / Golden / Crispy. Timed: "Oven. Pull it out when it is right.", one button **Pull It Out**
+  (said "Pull it out. Golden"); left in, it stops at Burnt.
+- "Cutting Board. Slices: 4, 6 or 8?" 4 / 6 / 8.
+- "Knot Basket. Garlic butter." Add / Skip, "Parmesan." Add / Skip, "Dip: Marinara, Ranch or Pesto?".
+- Review: "Here it is." Ring It Up, the redo words, or Redo… (a row) when there are more than three.
+
+**Toppings are Add steps, not a repeat pick.** The task text said "a repeat pick with Done"; spec 5.3 says "toppings
+one at a time", the proposal "toppings one at a time, Add or Skip", and DESIGN.md "the ingredients come to him". I
+followed the spec and the proposal, because a repeat pick cannot do what the same task asks: a repeat can't carry a
+gross-out (the fly on the pepperoni and the mouldy mushrooms sit on toppings), `dislikes` are ingredient ids (Oakes's
+onions and Tony's pineapple are held only as recipe parts), a repeat needs at least one pick (no plain cheese pizza),
+and 7 values page with More…, so a topping would be hunted for instead of coming down the line. The press budget holds
+without it (section 16): every pizza is 13, the worst order 26.
+
+## 3. Cooking: one stage set
+
+| set | stages (first .. last) | Simple `choose` | ask | stop | speed |
+|---|---|---|---|---|---|
+| `bake` | raw, light, golden, crispy, burnt | Light, Golden, Crispy | "How baked?" | "Pull It Out" | pack `cookSpeeds` 12 / 8 / 5 s a stage, `wantedScale` 2 (the Burger Bar's grill) |
+
+Stage names: Raw, Light, Golden, Crispy, Burnt. **Burnt crust is Timed's last stage** (one mistake, `complain.done`),
+never a gross-out. Pizzas and knots both cook to the recipe's `done: { pick: 'bake' }` (normal Golden).
+
+## 4. Recipes
+
+`level` is the only gate. Prices are the tip's base. "As written" is the ticket with the normal picks (change 0).
+
+| id | Name | level | course | stations | price | As written (the ticket) | Can change |
+|---|---|---|---|---|---|---|---|
+| `cheesePizza` | Cheese Pizza | 1 | main | prep, oven, cut | 8 | regular crust, red sauce, with cheese, golden, 8 slices | crust, sauce, bake, slices; adds mushrooms, olives |
+| `pepperoniPizza` | Pepperoni Pizza | 1 | main | prep, oven, cut | 9 | …with cheese and pepperoni… | picks; adds mushrooms, peppers, onions |
+| `veggiePizza` | Veggie Pizza | 2 | main | prep, oven, cut | 10 | …with cheese, mushrooms, peppers, onions and olives… | picks; holds onions, olives |
+| `meatLovers` | Meat Lover's Pizza | 2 | main | prep, oven, cut | 11 | …with cheese, pepperoni and sausage… | picks; adds onions |
+| `hawaiian` | Hawaiian Pizza | 2 | main | prep, oven, cut | 10 | …with cheese, pepperoni and pineapple… | picks; holds pepperoni |
+| `garlicKnots` | Garlic Knots (plural "Baskets of Garlic Knots") | 2 | side | oven, knotBasket | 4 | golden, with garlic butter and parmesan, marinara dip | bake, dip; holds butter, parmesan |
+| `everythingPizza` | Everything Pizza | 3 | main | prep, oven, cut | 13 | …with cheese, pepperoni, sausage, mushrooms, peppers, onions, olives and pineapple… | picks; holds mushrooms, peppers, onions, olives, pineapple |
+| `heartPizza` | Heart-Shaped Pizza | `'event'` | main | prep, oven, cut | 24 | regular crust, red sauce, with cheese and pepperoni, golden, 8 slices; `look: { shape: 'heartPizza', giant: true }` | the finale only |
+
+Slots and picks (level 5 uses the fancy lists):
+
+| slot (question) | values (label; ticket words) | pick: values, normal, fancy |
+|---|---|---|
+| `crust` "Crust" | thin "Thin", regular "Regular", deepDish "Deep Dish"; "thin crust" | thin/regular/deepDish, regular |
+| `sauce` "Sauce" | red "Red", white "White", noSauce "None"; "red sauce", "sauce: none" (never "no sauce") | red/white, red, fancy + noSauce |
+| `slices` "Slices" | four "4", six "6", eight "8"; "8 slices" | four/six/eight, eight |
+| `dip` "Dip" | marinara, ranch, pesto; "marinara dip" | marinara/ranch, marinara, fancy + pesto |
+
+**Combos** (level 3 up): one item, or two at the level's `more` odds: a pizza and garlic knots, in that order. Never
+two pizzas except Gus's two of one thing. Order Size "One Item" makes every order one item.
+
+## 5. The ladder (`levels: {}`)
+
+| Level | On offer | Items | Gross-outs | Extras |
+|---|---|---|---|---|
+| 1 | cheese, pepperoni | 1; at most 2 optional toppings; change 0.2 | none | |
+| 2 | + veggie, meat lover's, hawaiian, garlic knots | 1; change 0.3 | none | |
+| 3 | + everything | 1 or 2 (35% two): pizza + knots | 0.3 an order, at most 2 a shift, never the first | |
+| 4 | the same | as 3, change 0.4 | as 3 | one odd order at 50% a shift; one visitor (Reginald, Kai or Breeze), never first |
+| 5 | the same | as 4, change 0.5, fancy (None sauce, pesto) | 0.35, at most 2 | odd orders at 60%, `allTheWay` too |
+
+Measured over 300 five-order shifts a level: levels 3-5 serve about 35% two-item orders; the gross-outs land on the
+cheese (hair) about twice as often as the pepperoni (fly), and the mushrooms (mouldy) least, as the menu has them.
+
+## 6. Ridiculous orders (level 4 and 5)
+
+The customer says `order.odd.<id>` instead of the order; the ticket is plain and complete. At most one a shift, never
+the first order or the visitor's.
+
+| id | level | recipe | the change | The ticket | Who | Presses |
+|---|---|---|---|---|---|---|
+| `justCrust` | 4 | cheesePizza | holds cheese; sauce None | Cheese Pizza: regular crust, sauce: none, nothing else on it, golden, 8 slices | anyone | 13 |
+| `halfAndHalf` | 4 | pepperoniPizza | adds pineapple ("half pepperoni, half pineapple and anchovies" is said: no halves, no anchovies) | Pepperoni Pizza: …with cheese, pepperoni and pineapple… | not Tony | 13 |
+| `heartShaped` | 4 | pepperoniPizza | none: "heart-shaped, I'm proposing" is said; only the event's giant is a heart | Pepperoni Pizza: …golden, 8 slices | anyone | 13 |
+| `allTheWay` | 5 | everythingPizza | deep dish, crispy, 4 slices ("everything, all the way") | Everything Pizza: deep dish crust, red sauce, with cheese, pepperoni, sausage, mushrooms, peppers, onions, olives and pineapple, crispy, 4 slices | anyone (dislikes still held) | 13 |
+
+## 7. The five-star event: The Pizza Party
+
+```js
+events: { five: { name: 'The Pizza Party',
+  customers: ['marge', 'gus', 'bev', 'vernon', 'sal', 'oakes', 'tony', 'reginald', 'kai'],
+  finale: { customer: 'pam', items: [{ recipe: 'heartPizza', set: { bake: 'golden' } },
+    { recipe: 'garlicKnots', set: { bake: 'golden', dip: 'marinara' } }] } } }
+```
+
+- A wedding party, **spoken of, never shown**: the guests are the drawn cast; Pam orders for the wedding party (her
+  `order.gag`). Shift Length orders at level-4 complexity, no visitors, no odd orders.
+- The finale, always last: "Heart-Shaped Pizza: regular crust, red sauce, with cheese and pepperoni, golden, 8
+  slices. Garlic Knots: golden, with garlic butter and parmesan, marinara dip." 17 presses. The heart is drawn giant
+  and adds no choices. If Pam isn't drawn, the first drawn regular (Marge) orders it.
+- Mitch: `event.intro`, `event.celebrate`, `event.again`.
+
+## 8. Who comes in, and what they order
+
+| id | role here | likes (others 0.5) | also | Brief (proposal / spec 2.3) |
+|---|---|---|---|---|
+| `marge` | regular | cheese 3 | `usual`: cheese pizza, regular, red, golden, 8 slices (`order.usual`) | "The usual, hon": plain cheese |
+| `gus` | regular | pepperoni 2, meat lover's 2 | cast `twin`: two of one thing from level 3 (`order.twin`: "two larges", said) | "Two larges, one for the road" |
+| `bev` | regular | meat lover's 3 | `favourite`: meat lover's, +2 tip (`react.favourite`) | Meat lover's |
+| `vernon` | regular | cheese 2 | `set`: thin crust, light, 8 slices; cast `exact` | "Thin crust, light, cut in eight. I will know." |
+| `sal` | regular | pepperoni 3 | `favourite`: pepperoni, +2; no lettuce here, no dislike | "Pepperoni, his favourite after bacon" |
+| `oakes` | regular | veggie 2, everything 1 | `dislikes: ['onions']`: held on veggie and everything, never added (`order.dislike`) | a new reason to hate onions |
+| `tony` | local | cheese 3, pepperoni 2 | `dislikes: ['pineapple']`: never a Hawaiian; held on everything (`order.dislike`); `order.gag` | pizza purist, offended by pineapple |
+| `pam` | local | cheese 2, pepperoni 2, knots 2 | `order.gag`: "for twelve" is said, never made; the event's finale | birthday-party mom |
+| `reginald` | visitor, level 4 | everything 2 | cast `newest`: the newest recipe on offer (everything) | the critic |
+| `kai` | visitor, level 4 | pepperoni 2, cheese 1 | cast `short`: one item | the young reviewer |
+| `breeze` | visitor, level 4 (cameo, spec 2.2) | hawaiian 3 | the Smoothie Shack's surfer, here for the pineapple | cross-court running joke with Tony |
+
+Breeze's voice passes `tests/cast.test.cjs`'s strict "who can meet" check at the pizza parlor (38/38 cast and voice
+tests pass with him listed).
+
+## 9. Gross-outs (from level 3; all on prep's Add steps)
+
+| id | on | label (`say`) | fx (all the kit's) | What it does |
+|---|---|---|---|---|
+| `hair` | cheese | "{name} with a hair in it" → "Cheese with a hair in it." | `hair` | Mitch `gross.hair`; served: `react.gross`, `complain.gross.hair` |
+| `mouldy` | mushrooms | "the mouldy {name}" → "The mouldy mushrooms." | `spots` (#6d8c3a, 9), `tint` #9c9670, `stink` | as above, `.mouldy` |
+| `fly` | pepperoni | "{name} with a fly on it" | `fly` (game.js plays `buzz` for the id `fly`) | as above, `.fly` |
+
+Swap It replaces it and asks again; Skip sends it back (a missing-topping mistake if the ticket wanted it). Burnt crust
+is Timed's last stage instead (spec 4.6). The receipt says e.g. "Mushrooms: mouldy mushrooms".
+
+## 10. For food-pizza: every look, set, flourish and cook
+
+`made()` of a pizza: `{ recipe, ing: 'pizza', done: 'golden', parts: [{ ing: 'cheese' }, { ing: 'pepperoni', gross? }],
+gross, picks: { crust, sauce, slices }, counts: {}, auto: ['toss'] }`. `k.sequence` gives vessel `pizza` (the pan) and
+the parts in line order: the crust value, the sauce value, cheese, the toppings, then (after the cut) the slices value.
+Garlic knots: `{ recipe: 'garlicKnots', ing: 'knots', done, parts: [garlicButter, parmesan], picks: { dip } }`: body
+`knots` at `made.done`, then the butter, parmesan and the dip value. **Recipe looks name the layout**: read
+`pack.recipes[made.recipe].look.shape` in `layoutOf` (`pizza`, `heartPizza`, `knotBasket`); the kit's `stack` would
+pile toppings up, a pizza spreads them out.
+
+| look.shape | used by | set(s) | how it looks | with cooking (`made.done`, or `o.stage` in the oven) |
+|---|---|---|---|---|
+| `pizzaPan` | ingredient `pizza` (the vessel) | prep, oven, counter | a round steel pan a little wider than the crust; a deep straight-sided pan when `made.picks.crust` is `deepDish` | none; the look's `ramp` is the oven dial's swatches |
+| `thinCrust` | crust `thin` | prep, oven, counter | a thin flat dough disc, a narrow low rim | pale dough (raw) → light → golden → crispy brown → burnt dark: the pack's `pizza` ramp |
+| `regularCrust` | crust `regular` | " | a medium disc with a puffy rounded rim | the same ramp |
+| `deepDishCrust` | crust `deepDish` | " | a tall-sided crust filling the deep pan | the same ramp, the rim darkest |
+| `pizzaSauce` | sauce `red` (#c8321f), `white` (#f7efdc) | " | a sauce layer inside the rim, `look.colour` | a little darker at crispy, darker at burnt |
+| `bareDough` | sauce `noSauce` | " | no sauce: a few white flour specks on the bare dough face, so "sauce: none" looks bare | none (the crust browns under it) |
+| `mozzarella` | cheese | " | shredded white cheese spread inside the rim | shreds (raw) → melted smooth (light) → golden-brown spots (golden) → browned blisters (crispy) → charred patches (burnt) |
+| `pepperoni` | pepperoni | " | about 12 red discs with dark flecks, scattered | the edges cup up and darken |
+| `sausage` | sausage | " | about 14 brown crumbles | darker brown |
+| `mushrooms` | mushrooms | " | about 10 sliced mushroom profiles (cap and stem), tan | shrink a little, darker edges |
+| `greenPeppers` | peppers | " | about 10 green strips and crescents | char flecks at crispy and burnt |
+| `redOnions` | onions | " | thin purple-red slivers | softer, browned tips |
+| `blackOlives` | olives | " | about 12 black rings | none |
+| `pineapple` | pineapple | " | about 10 yellow chunks | caramelised edges at crispy |
+| `pizzaCut` | slices `four`/`six`/`eight` (`look.slices`) | prep (the cut), counter | that many radial cut grooves across the whole pizza, the wedges a hair apart, on top of everything | none (cut after the oven) |
+| `garlicKnots` | ingredient `knots` (the body) | oven, prep, counter | six knotted dough rolls in a heap | raw pale → light → golden → crispy → burnt: the pack's `knots` ramp |
+| `garlicButter` | garlic butter | prep (knot basket), counter | a glossy yellow glaze on the knots with green parsley and garlic flecks; waits in a little pot with a brush | none (added after the oven) |
+| `parmesan` | parmesan | " | a fine pale dusting over the knots; waits in a shaker (the kit's `shake` fits) | none |
+| `dipCup` | dip `marinara` (#b8301f), `ranch` (#f4f1e6), `pesto` (#5f8f2e) | " | a small fluted paper cup of dip, `look.colour`, set beside the knots | none |
+| `pizza` | recipe look: every pizza but the heart | layout | the round pizza: pan, crust, sauce, cheese, then each topping scattered evenly inside the rim (its own seeded scatter, so toppings don't pile in one spot), cut lines on top | by `made.done` |
+| `heartPizza` | recipe look of `heartPizza`, `giant: true` | layout | the pizza layout with a heart-shaped crust, sauce and cheese, the pepperoni as little hearts, the cut lines following the heart; the kit draws it 1.6 times bigger (cap it on prep with `giantMax`) | as `pizza` |
+| `knotBasket` | recipe look of `garlicKnots` | layout | a red-and-white checkered paper basket holding the knots, the dip cup beside it | by `made.done` |
+
+Toppings waiting on the line (`incoming`) are a small heap of that topping in a steel topping tin; on the pizza they
+scatter over the cheese (read `o.below()` for the radius; keep `h` small so every topping lands on the same surface).
+
+**Sets** (measure your own lines: the 5.2 table asked for prep 62 and oven 65; the counter keeps the diner's fixed camera,
+`line: null`):
+
+- `counter`: the diner's counter camera and top height, red-and-white colours; `counter.arrange` puts a pizza and the
+  knots basket side by side (two pizzas side by side, shrunk to fit).
+- `prep`: the pan low and left of centre (`stack`), the next topping on the right (`incoming`), `giantMax` for the heart.
+  Its `pick` hook: a `slices` pick rolls a pizza wheel across, then the cut lines show; a `dip` pick sets the cup down.
+  Its `auto` (or the module's `autos`): **`doughToss`**, after the crust pick: the dough spins up off the table,
+  stretches in the air and lands as the chosen crust (Reduced: it lands at once).
+- `oven`: the brick oven's mouth (`cook: 'oven'`): the item (`s.made`: a pizza, or the knots) slides in on the peel;
+  `show(c, s)` draws it at `s.stage`; Simple's `run` bakes to the chosen stage and slides it out; Timed: the cheese
+  bubbles (`k.spin` bubble), the crust darkens a stage at a time, smoke puffs at burnt. **Doneness shows as a colour
+  and a mark** (e.g. blister or char marks counted by stage). The Timed control prop is the page's `peel`.
+
+Gross-out fx are the kit's (`hair`, `fly`, `spots`, `tint`, `stink`): no custom fx.
+
+## 11. Sounds
+
+`oven` station: `cook: 'oven'` (the pizza slides in), `done: 'peel'` (it comes out); `cut`: `done: 'cut'` (the wheel
+rolls). Every Add plays the default `plop`, each Timed stage `tick`. The page plays `swoosh` (Skip), `toss` (Swap It),
+`buzz` (the gross-out id `fly`), `ding`, `kaching`, `stars`, `ew` as for the diner. All exist (`packs/pizza/sound`,
+`packs/shared/sound`); `tests/voices.test.cjs` checks them. The dough toss has no sound (no shared sound fits; Skip's
+`swoosh` would muddle that cue).
+
+## 12. For pizza-script: every moment and who must say it
+
+`SC.moments(pack)` on the merged pack, 265 coverage items with an empty script. F = the pack's 'customer' fallback
+lines count for anyone with fewer than two of their own.
+
+- **Customers, everyone** (marge gus bev vernon sal oakes tony pam reginald kai breeze): `greet` ×3, `smalltalk` ×3,
+  `goodbye` ×3 (the cast script may supply these three); F: `react.3`/`.2`/`.1` ×3, `react.gross`,
+  `complain.extra`/`.unasked`/`.missing` ({ing}{ings}), `complain.done` ({want}{got}: stage words), `complain.pick`
+  ({slot}{want}{got}{value}), `complain.more`, `complain.gross.hair`/`.mouldy`/`.fly` ({ing}{ings}).
+- **Some**: `visitor.arrive` reginald kai breeze; `order.usual` marge; `order.twin` gus; `order.dislike` oakes, tony
+  ({ing}{ings}); `order.gag` tony, pam (locals at home; ≤ 8 s); `react.favourite` bev, sal; F `order.odd.justCrust`,
+  `.heartShaped`, `.allTheWay` (marge gus bev vernon sal oakes tony pam) and `.halfAndHalf` (not tony).
+- **Mitch** (2 each unless 1): `shift.start`, `shift.end`, `uniform` (1); `tutorial.intro`, `.ticket`, `.review`,
+  `.serve`, `.gross`; `tutorial.prep`, `.oven`, `.cut`, `.knotBasket`, `tutorial.cook.oven`;
+  `tutorial.warn.extra`/`.unasked`/`.missing`/`.done`/`.pick`/`.gross`/`.grossSkip`; `gross.hair`, `.mouldy`, `.fly`;
+  `nearly` ({want}{name}), `after.3`, `after.1`, `after.gross`, `event.intro`/`.celebrate`/`.again` ({name}) (1).
+- **Not needed**: `complain.tooMany`/`.tooFew` and their warnings (no Add with a max above 1, no repeat).
+- **Blank words**: {slot} crust, sauce, slices, dip; {want}/{got} thin, regular, deep dish, red, white, **none**, 4, 6,
+  8, marinara, ranch, pesto; stages light, golden, crispy, raw, burnt; {ing} pizza or garlic knots for `done`.
+  "I said {want} {slot}" reads "I said none sauce" for a None sauce: write pick lines that work for every slot, e.g.
+  "The ticket said {slot}: {want}." ("sauce: none", "slices: 8").
+- **The brief**: Tony's gag is pineapple and purism; Pam's "for twelve" (and the wedding party at the event); Gus's
+  "two larges" (`order.twin`); Vernon "I will know"; Oakes's onion reason; Breeze (a visitor here) loves the Hawaiian;
+  the odd orders as in section 6.
+
+## 13. Help
+
+"Ben's Pizza Parlor. Every pizza starts at the prep table: pick the crust, then the sauce, then Add or Skip the cheese
+and each topping as it comes down the line. Then the oven: in Simple, pick how baked it is, Light, Golden or Crispy; in
+Timed, watch it bake and Pull It Out when it reaches the stage on the ticket. Last, the cutting board: pick how many
+slices. Garlic knots bake in the same oven, then get their garlic butter, parmesan and dip at the knot basket. The
+ticket lists everything: add what's on it, skip what isn't. If something looks wrong, Swap It brings a fresh one."
+
+## 14. Theme: pizza red and white
+
+| token | value | token | value | token | value |
+|---|---|---|---|---|---|
+| pageBg | #4a0d10 | ticketAccent | #a3121a | cardValue | #ffe7a3 |
+| panelTop | #a3171c | ticketNow | #ffe2d6 | logoTop | #fff1d6 |
+| panelBottom | #6e0d12 | perforation | #d9b0a8 | logoMain | #fffaf0 |
+| panelLip | #3a0609 | hudBg | rgba(74,10,14,.86) | wheelInk | #1b120e |
+| plateTop | #fffaf0 | gaugeBg | rgba(48,6,8,.92) | wheelSteel | #dfe4e8 |
+| plateBottom | #efdfc6 | star | #c97c00 | wheelDark | #a3171c |
+| mark | #6b3a22 | boardGlow | #741518 | board | #5c1014 |
+| labelBg | rgba(58,8,10,.9) | woodInset | #3a0609 | wood | #f4ecdc (a white frame) |
+
+A red control panel and red menu boards in a white frame; white plates and paper. **Contrast, computed** (WCAG;
+translucent tokens composited over white, the worst backdrop), assuming each token keeps its diner job (diner.md 14):
+
+- The highlight #ffd400 on: panelTop 5.44, panelBottom 8.48, board 9.53, boardGlow 7.87, gaugeBg 10.59, pageBg 10.82
+  (need 3).
+- Text: ink on plateTop 17.71, plateBottom 14.08, ticketNow 15.01; ticketAccent on paper 7.59 and on ticketNow 6.43;
+  white on labelBg 13.47, hudBg 10.82, gaugeBg 15.16; chalk on board 12.30 and boardGlow 10.17; cardValue 11.18 / 9.24;
+  logoTop 12.22 / 10.09; logoMain 13.11 / 10.83; white on a lit card item 8.23 / 7.11 (need 4.5).
+- Graphics: star on the receipt's paper 3.17, board 4.14, boardGlow 3.42; mark on the plates 8.96 / 7.12 (need 3).
+
+## 15. The tutorial
+
+Tony (the parlor's own); one guided order through every station: "Pepperoni Pizza: regular crust, red sauce, with
+cheese and pepperoni, golden, 8 slices. Garlic Knots: golden, with garlic butter and parmesan, marinara dip." The
+pepperoni comes down with a fly on it (`gross: { item: 0, ing: 'pepperoni', event: 'fly' }`), so Swap It is taught
+once. Always Simple; Mitch warns before each mistake. 17 presses done right, plus the Swap It: 18.
+
+## 16. Press counts (`pressReport('pizza')`, Serve included; Simple and Timed alike, the same at every level)
+
+| recipe | levels | presses |
+|---|---|---|
+| cheesePizza, pepperoniPizza | 1-5 | 13 (crust, sauce, cheese, 7 toppings, oven, slices, Serve) |
+| veggiePizza, meatLovers, hawaiian | 2-5 | 13 |
+| garlicKnots | 2-5 | 5 (oven, butter, parmesan, dip, Serve) |
+| everythingPizza | 3-5 | 13 |
+| heartPizza (event) | event | 13 alone; the finale with knots 17 |
+
+Whole orders (bots, both modes): level 1 and 2 at most 13; levels 3-5 and the event at most 26 (Gus's two pizzas,
+25, plus a Swap It); a pizza with knots 17; two knots 9; every odd order 13; the tutorial 18. Budget (spec 4.3): level
+1 ≤ 14, any order ≤ 28. No order can hold three pizzas (combos are one a course; the finale is two items).
+
+## 17. Requests (for the owners named)
+
+- **integrate / page**: load `packs/pizza/pack.js` (and `packs/pizza/script.js` once written) and `js/food/pizza.js`.
+- **page**: draw the `peel` as the oven's Timed control (a button labelled "Pull It Out" until then); play the `auto`
+  event `doughToss` after the crust pick; theme tokens as diner.md 14 lists them (the contrast above assumes it).
+- **food-pizza**: section 10. **pizza-script**: section 12, then `format: 3` in the pack.

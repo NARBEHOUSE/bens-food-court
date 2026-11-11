@@ -1,0 +1,6 @@
+Use case: game prop for a 2D game
+Asset type: one object on plain white, 1024 x 1024
+Object: An ornate shiny gold sign plaque with a big gold star on top, an empty flat panel in the middle (no writing), little sparkles round it, seen from the front.
+Style: original 2D cartoon prop for a comedy diner game, matching a TV-cartoon look: thick, clean, even black outlines; flat bright colours with one hard-edged cel-shadow tone; chunky, slightly exaggerated shapes. ONE object, centred, filling about 80% of the image, nothing cropped. Plain pure white background, no floor, no cast shadow, no border, no other objects. Original: no real brand or logo.
+Save as art-source/props/goldSign.png (1024 x 1024) and the prompt as art-source/props/goldSign-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

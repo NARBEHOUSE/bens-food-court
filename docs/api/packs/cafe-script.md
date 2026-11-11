@@ -1,0 +1,134 @@
+# Ben's Cafe, the script in words (content-cafe, phase 2b, 2026-11-09)
+
+## Strength (food-cafe, 2026-11-11)
+
+The playtest found the ticket said "smooth" or "bold" when nothing let the player choose it. Simple now asks "How
+strong?" (packs/cafe/pack.js, `stageSets.pour` lost `simple: 'auto'`). Lines changed: `tutorial.coffeeBar.1` and `.2`
+(size, drink, then strength), `tutorial.cook.coffeeBar.1` and `.2` (pick Bold; Timed is Stop the Pour), and
+`tutorial.gross.2` and `tutorial.gross.1`'s delivery say "pitcher" (the milk now pours from one open pitcher). A wrong
+strength is read by Mitch's `mistake.done` ("The ticket said bold."). Backup: docs/backup/packs/cafe/script.js.before-2b.
+
+## Voicecut (phase 3, 2026-11-10): what changed in this script
+
+The user approved cutting the voice script: no recordings exist, and every line is text to speech until a future
+voice pass. **The tables and notes below describe the script before this cut where they mention `complain.extra`,
+`.unasked`, `.missing`, `.tooMany`, `.tooFew`, `.done`, `.pick` or `.more`: those moments are gone.** Now:
+
+- **Every customer's per-food complaint lines were deleted** (they were recorded once per value, per customer). A
+  customer now says one of their own `complain` lines, which name no food and live in `packs/cast/script.js` (8 to 10
+  each, locals too; their best old jokes kept, food-free). This pack keeps two 'customer' fallbacks for `complain`.
+- **Mitch reads the mistake** (`mistake.extra`, `mistake.unasked`, `mistake.missing`, `mistake.tooMany`, `mistake.tooFew`, `mistake.done`, `mistake.pick`, `mistake.more`), one line each, from the ticket and so with
+  no pronoun: "The ticket said no {ings}." / "Nobody ordered {ings}." / "The ticket said {ing}. That got left off." /
+  "The ticket said {want}." / "The ticket said {wanted}." / "The ticket said {wanted}. We went over." (or "We came up short.").
+  After two readouts (one after a gross-out) he says `mistake.more`; the receipt still lists every mistake in text.
+- **`complain.gross.*` lines have no blanks**: "this donut" (stale), "this milk" (spoiled), "the sprinkles" (fly).
+- **Tutorial warnings are listed only for what the tutorial order runs through** (`SC.varsFor`), and `nearly.1` no longer names the customer. `tutorial.warn.unasked.1` says "the ticket has no {ings}"; `tutorial.warn.pick` uses {wanted} ("He said no glaze.", was "he said none").
+- The file is 304 lines now. `node tools/voice-clips.cjs cafe` lists its clips; the whole game's report is
+  `docs/api/reports/3-voicecut.md`.
+
+`packs/cafe/script.js` (`BBScripts.cafe`, 358 lines, every one with a `delivery` note). Format: `docs/api/script.md`.
+Who must say what: `docs/api/packs/cafe.md` section 12. The pack says `format: 3`, so `tests/script.test.cjs` checks
+it. Conventions are the pizza's (`docs/api/packs/pizza-script.md` 2); this page says what is new or different here.
+
+**Check it** (from the game folder; each prints [] when right):
+
+```
+node -e "const B=require('./tests/bot.cjs'),SC=require('./js/core/script.js'),R=B.restaurants().find(r=>r.id==='cafe');console.log(B.schema.validate(R.pack),SC.check(R.pack,R.script),SC.coverage(R.pack,R.script))"
+BB_PACKS=cafe node --test "tests/script.test.cjs"
+```
+
+## 1. What lives where
+
+| Lines | File | Why |
+|---|---|---|
+| Mitch's, in the barista apron and beanie: the shift, the uniform (the MICH cup), every tutorial station and cook step, every warning, every gross-out, `nearly`, the one-liners, the Morning Rush | `packs/cafe/script.js` | they name the machine, the fryer, Jitters |
+| The `'customer'` fallbacks for every F moment, two each (three for each reaction) | `packs/cafe/script.js` | the pack must write them |
+| The local's full set (Jitters): greet, smalltalk, goodbye, five gags, his dislike, his odd orders, reactions, every complaint | `packs/cafe/script.js` | a local has no cast lines |
+| The cameo's full set (Grandpa Walt, the Ice Cream Emporium's, a level-4 visitor): visitor.arrive, greet, smalltalk, goodbye, reactions, complaints | `packs/cafe/script.js` | a cameo's lines live in the pack that brings him |
+| The regulars' and visitors' lines about the coffee and the donuts: reactions, usuals, favourites, twins, dislikes, odd orders, complaints, one cafe-flavoured greet each (Priya two, plus two smalltalk) | `packs/cafe/script.js` | they name the food |
+| Their greet, smalltalk, goodbye (and their mentions of the Cafe, said elsewhere) | `packs/cast/script.js` | merged in; they count as the speaker's own |
+
+## 2. Conventions settled here (on top of the pizza's)
+
+- **Ids `<moment>.<n>`**, clip ids `<speaker>/cafe:<id>[.<value>]` (`jitters/cafe:order.gag.1`,
+  `marge/cafe:complain.pick.1.glaze.noGlaze`, `mitch/cafe:gross.spoiled.2.milk.oat`).
+- **Gross-outs on picks use `{value}`** (`each: 'value'`): `gross.stale`, `gross.spoiled` and their `complain.gross.*`
+  lines say "That {value} dough is stale", "This {value} milk is spoiled" ({value}: classic, chocolate, jelly-filled;
+  whole, oat, skim); `SC.varsFor` lists one clip per value the gross-out sits on. The fly (on the sprinkles' Add) uses
+  `{ings}`. Never `{ing}` on a pick gross-out, never `{value}` on an Add one.
+- **`tutorial.warn.gross` and `.grossSkip` have no blanks.** A grossSkip warning on an Add fills `{want}` with a number
+  ("He wants 1"), so the lines say "that one" / "a fresh one"; the tutorial's own gross-out is the spoiled whole milk,
+  which `tutorial.gross` names outright.
+- **The sugar is the only counted Add** (max 2, on a drip): `complain.tooMany`/`.tooFew` and their warnings name sugar
+  and use no blanks; every line reads true whether the ticket wanted none, one or two (Bev's "I said NO sugar" can only
+  come on a black coffee or a red eye).
+- **`complain.done` reads true both ways** (too far or not far enough) and for both cook steps: "{want}" is mild,
+  smooth, bold, golden or dark golden ("I asked for {want}, buddy. This one took a different exit.").
+- **Pick complaints say "for the {slot}, I said {want}"**: "for the glaze, I said none", "for the size, I said large".
+- **Dislikes are named**: Jitters's three `order.dislike` lines say "whipped cream" (his one dislike); Kai's one line
+  says "coffee" and is never heard (coffee is the item, never held), but coverage asks for it.
+- **Reactions name no food that might not be there**: an order can be a drink, a donut or both, so "Now that's a
+  morning", "This is some other fella's breakfast", never "this coffee" in a reaction or `react.gross` (the lines that
+  name the coffee are favourites, usuals and dislikes, which only come with it).
+- **`order.gag` (Jitters) is 11 to 16 words** at his rate 1.45: about 4 s. Gag 1 ("This is for the office, by the way.
+  Forty-two people. One order. We have a system.") is the one that fits the Morning Rush finale, where the giant donut
+  is for his whole office; the other four are about his caffeine and read true anywhere.
+- **Greets at most 15 words** (the order sentence follows straight away); visitor arrivals at most 20.
+- **The tutorial customer is Jitters**, so the tutorial lines say "he" and name what his ticket wants (classic dough,
+  golden, strawberry, the whole milk). `tutorial.cook.coffeeBar` is heard in the tutorial: since 2026-11-11 Simple
+  asks "How strong?" (Mild, Smooth, Bold), so its two lines tell him to pick Bold and say Timed is Stop the Pour, and
+  `tutorial.coffeeBar` names the strength among the steps (it used to say the machine pours by itself).
+- **Tone checks applied to every line**: the joke is on the customer, the food or Mitch; Jitters's speed is his own
+  ("I said it fast, but I said it"), never anyone else's; nobody hurries anyone; PG (Walt's "Good gravy"); Priya's
+  humour is nights, tiredness and nursing, never her background; Walt's is 1955, affectionately; Sal's and Gus's
+  spellings are the diner's established ones.
+
+## 3. Who they are here
+
+- **Jitters** (local, the Cafe's own; 51 lines): the office worker from the building next door, a cup in each hand,
+  vibrating. Delighted about everything, proud of his systems, losing track of the days ("I've been up since Tuesday.
+  What's today? Don't tell me."). Decaf is a horror story ("I sat in a chair for six minutes"). Whipped cream is a
+  speed bump. His smartwatch asked for the afternoon off. At the Morning Rush he orders the giant donut for his whole
+  office.
+- **Priya** (the most loyal regular; 27 lines here plus 14 in the cast): the night-shift nurse, dry and clinical. The
+  usual is a large, bold Red Eye and it is her dinner ("It's seven in the morning. We've talked about this."). The
+  machine sighs at her. She clocked Jitters's pulse from the door.
+- **Grandpa Walt** (the cameo; 30 lines): 1955. Coffee came in one size and it was called coffee; "we didn't have oat
+  milk, we had oats, they were for the horse"; a giant donut on a roof "was a hat". Cheerful and slow, the running joke
+  against Jitters's modern caffeine.
+- **The regulars**: Marge's usual is cream and two sugars "since 1979"; Gus orders two and says the dozen donuts are for
+  Delores; Bev's black coffee is "discipline in a cup"; Vernon wants it extra hot and will know, and gives the crowned
+  bean on the wall the fifth star; Sal's black coffee and his favourite, the glazed donut, "the only thing in this mall
+  that ain't tryin' too hard". Reginald wrote to the crowned coffee bean and it never wrote back (his cast mention);
+  Kai is not allowed coffee and reviews the donuts.
+
+## 4. Counts per speaker and moment
+
+| Speaker | Lines | Here |
+|---|---|---|
+| mitch | 77 | shift.start 5, shift.end 4, uniform 3; gross.stale/spoiled/fly 3 each; nearly 2; after.3 3, after.1 3, after.gross 2; tutorial.intro/ticket/coffeeBar/cook.coffeeBar/dough/fryer/cook.fryer/glaze/gross/review/serve 2 each; tutorial.warn.extra/unasked/missing/tooMany/tooFew/done/pick/gross/grossSkip 2 each; event.intro/celebrate/again 2 each |
+| customer (fallback) | 41 | react.3/2/1 3 each; react.gross 2; complain.extra/unasked/missing/tooMany/tooFew/done/pick/more/gross.stale/gross.spoiled/gross.fly 2 each; order.odd.halfDecaf/coffeeDonut/sevenShots/everythingCup 2 each |
+| jitters (local) | 51 | greet 5, smalltalk 6, goodbye 4, order.gag 5, order.dislike 3, odd orders 5, react.3 4 / .2 3 / .1 3, react.gross 2, every complaint 1 |
+| walt (cameo visitor) | 30 | visitor.arrive 3, greet 4, smalltalk 5, goodbye 3, react 3/3/3, react.gross 1, complain.extra/missing/done/pick/more 1 each |
+| priya | 27 (+ 14 cast) | greet 2, smalltalk 2, order.usual 2, react.favourite 2, odd orders 3, react 3/3/3, react.gross 1, complain.done/pick/missing/extra/tooMany/gross.spoiled 1 each |
+| marge | 21 (+ cast) | greet 1, order.usual 2, odd orders 2, react 3/3/3, react.gross 1, complain.extra/missing/tooFew/tooMany/done/pick 1 each |
+| gus | 18 (+ cast) | greet 1, order.twin 2, odd orders 2, react 3/3/3, react.gross 1, complain.extra/missing/done 1 each |
+| bev | 19 (+ cast) | greet 1, react.favourite 2, odd orders 2, react 3/3/3, react.gross 1, complain.extra/missing/done/tooMany 1 each |
+| vernon | 19 (+ cast) | greet 1, odd orders 3, react 3/3/3, react.gross 1, complain.pick 2, complain.done/extra/more 1 each |
+| sal | 19 (+ cast) | greet 1, react.favourite 2, odd orders 2, react 3/3/3, react.gross 1, complain.extra/unasked/missing/tooMany 1 each |
+| reginald (visitor) | 18 (+ cast) | visitor.arrive 3, greet 1, react 3/3/3, react.gross 1, complain.pick/done/missing/extra 1 each |
+| kai (visitor) | 18 (+ cast) | visitor.arrive 3, order.dislike 1, react 3/3/3, react.gross 1, complain.extra/missing/pick/done 1 each |
+
+`SC.everyClip` lists 2062 clips for the cafe (1874 from this file, with every value of each changing blank; 188 from
+the cast's lines for its people); every blank fills except the cast's `{about}`, which `pickMention` fills at play
+time.
+
+## 5. What the page should know
+
+- `order.gag` is a local-at-home moment: Jitters only (Walt is a visitor here and has none, on purpose). At the
+  Morning Rush finale the page can prefer `order.gag.1` (the office one) if it ever picks a gag on purpose.
+- Kai's `order.dislike` never plays; Jitters's plays whenever his order left off the whipped cream (a Hot Chocolate or
+  a Wake-Up Call, which come with it).
+- `react.gross`, `complain.*` and `order.odd.*` have 'customer' fallbacks, so anyone with fewer than two own lines says
+  their own line plus those (`SC.candidates`).
+- Lines carry `[sigh]`, `[long pause]` tags for the voice pass; `SC.clean` drops them for captions and text to speech.

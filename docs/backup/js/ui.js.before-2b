@@ -1,0 +1,542 @@
+/** Ben's Food Court - switch input, the scan, and the menu boards (docs/api/page.md).
+ *
+ *  Input contexts (ACCESSIBILITY.md §4):
+ *    card   CHOICE. A menu board: the main menu, the tutorial picker, the court (the stand-in), Settings, Pause,
+ *           the first-visit offer, the event card, results, confirmations. Every card opens at -1, returns from
+ *           Back and Cancel included (spec 0.8); only rows restore by id.
+ *    line   CHOICE. One step of the line: its answers on real objects, then Ticket, then Pause. Timed cooking is
+ *           a choice scan over a slowly changing world.
+ *    court  CHOICE. The real court's storefronts (page-2: a root of kind 'court' with onChoice and onPause).
+ *    (playout: not scanned. A short animation or a character speaking; the scan resumes.)
+ *  Everything runs on the hub's shared choice scanner (NarbeChoiceScanAdapter): the blank -1, Auto Scan, parking,
+ *  the Space brake and Wait for Speech come from the player's Hub Settings. Every row (a More… row, a Redo… row,
+ *  a part of the court on a card) is entered with enterGroup({wrap:true, backStop:true}).
+ *
+ *  One phase keeps one scan context, so as each new ingredient comes down the line the highlight stays on the
+ *  same answer and only its label changes and is spoken. A new phase opens fresh on the blank. Choices act on
+ *  RELEASE; this file owns the keys, hold-Space-to-scan-backwards and the 5-second Enter hold that also opens
+ *  Pause (inside a restaurant, playouts included; on the court once its scan is live). The Timed clock reads
+ *  heldKeys() and stands still while either switch is down (spec 0.7).
+ */
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const vm = () => window.NarbeVoiceManager || null;
+  const sm = () => window.NarbeScanManager || null;
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const G = () => BB.game;
+  const F = () => BB.savefmt;
+
+  /* Tuning. Never quoted to the player. */
+  const SCAN_BACK_HOLD = 3000, PAUSE_HOLD_SHOW = 2000, PAUSE_HOLD_MS = 5000, GHOST_MS = 380;
+
+  let ctx = 'none';                          // none | card | line | court
+  let choice = null, openedAt = 0, lastLit = null, litEl = null, lastCtxKey = null;
+  let card = null, cardName = '', cardOpts = {};
+  let lineRoot = null;                       // the line's (or the court's) root context, for coming back from a row
+  const down = { Space: false, Enter: false }, downAt = { Space: 0, Enter: 0 };
+  const ignore = { Space: false, Enter: false };
+  let backHold = null, backRepeat = null, didBack = false, braking = false, pauseWatch = null;
+
+  const isAuto = () => !!(sm() && sm().getSettings().autoScan);
+  const interval = () => (sm() ? sm().getScanInterval() : 2000);
+  const speak = text => (vm() ? vm().speak(text) : null);
+  const sfx = (n, v) => BB.audio && BB.audio.sfx(n, v);
+
+  /* ══ the hub's choice scanner ═══════════════════════════════════════════ */
+  function initChoice() {
+    if (!window.NarbeChoiceScanAdapter || !sm()) return;
+    choice = NarbeChoiceScanAdapter.create({
+      holdThreshold: SCAN_BACK_HOLD, stateHost: document.body, speak, statusHost: $('choiceStatus'),
+      onContext(current) {
+        // Called on every paint: act only when the context changes. Back from a row (its Back
+        // stop, or a choice in it): the line's own answers come back on screen, and each root
+        // item takes its new element before the highlight is painted.
+        const key = current ? current.key : null;
+        if (key === lastCtxKey) return;
+        const wasRow = !!(lastCtxKey && lineRoot && lastCtxKey.startsWith(lineRoot.key + '>'));
+        lastCtxKey = key;
+        if (wasRow && lineRoot && key === lineRoot.key && lineRoot.redraw) lineRoot.redraw();
+      },
+      onHighlight(item, state, context) {
+        if (!context || state.suspended) return;
+        light(item ? item.element : null, !!state.braked);
+        const id = item ? item.id : null;
+        if (id !== null && id !== lastLit) sfx('tick', 0.12);
+        lastLit = id;
+      },
+      onSelect(item, state, context) {
+        if (!item || !item.ref) return;
+        if (context.kind === 'card') {
+          if (item.ref.items) { enterCardGroup(item.ref); return; }
+          if (item.ref.action) item.ref.action();
+          return;
+        }
+        if (item.ref.row) { enterRow(item.ref); return; }
+        const fn = (lineRoot && lineRoot.onChoice) || G().onChoice;
+        fn(item.ref);
+      },
+    });
+  }
+  /** The highlight: the element's own .lit outline, and the bracket frame around it. */
+  function light(el, braked) {
+    document.querySelectorAll('.lit').forEach(e => { if (e !== el) e.classList.remove('lit', 'braked'); });
+    litEl = el || null;
+    if (el) { el.classList.add('lit'); el.classList.toggle('braked', braked); }
+    frame();
+  }
+  function frame() {
+    const f = $('scanFrame');
+    if (!litEl || !litEl.isConnected || ctx === 'none') { f.classList.remove('on'); return; }
+    // The order on the ticket wheel, mid-turn: the brackets come back when it stops at the front.
+    if (document.body.classList.contains('wheelTurning') && litEl.closest && litEl.closest('#wheel')) { f.classList.remove('on'); return; }
+    const r = litEl.getBoundingClientRect();
+    if (!r.width && !r.height) { f.classList.remove('on'); return; }
+    const pad = 10, w = Math.max(64, r.width + pad * 2), h = Math.max(64, r.height + pad * 2);
+    Object.assign(f.style, { left: (r.left + r.width / 2 - w / 2) + 'px', top: (r.top + r.height / 2 - h / 2) + 'px', width: w + 'px', height: h + 'px' });
+    f.classList.add('on');
+  }
+  setInterval(frame, 200);
+
+  /** Say a screen's title (or a step's prompt): the scanner owns this speech, so Auto Scan's
+   *  first move waits for it under Wait for Speech; with parking on, "park" follows the blank. */
+  function announce(text) {
+    if (!choice || !choice.active) { if (text) speak(text); return; }
+    const st = choice.getState(), it = st.index >= 0 ? choice.context.items[st.index] : null;
+    const parking = !it && isAuto() && sm().isParkingEnabled && sm().isParkingEnabled();
+    const tail = it ? (typeof it.label === 'function' ? it.label() : it.label) : parking ? 'Park.' : '';
+    const say = [text, tail].filter(Boolean).join('. ');
+    if (say) choice.announce(say, { parkingLabel: parking });
+  }
+
+  /* ══ the line (and the court's root) ═══════════════════════════════════ */
+  /** Show a step's choices. root = { key, kind?, items: [{ id, label(), element, ref }], redraw, onChoice?, onPause? }.
+   *  fresh: a new phase (opens on the blank, the prompt is spoken). Otherwise the highlight stays on the same
+   *  answer and its new label is spoken. Never closes a card: a line that arrives while a card is open belongs
+   *  to a playout that Pause interrupted, and is ignored (spec 6.3). */
+  function line(root, fresh, prompt) {
+    if (ctx === 'card') return;
+    ctx = root.kind === 'court' ? 'court' : 'line';
+    lineRoot = root;
+    root.kind = root.kind || 'line';
+    root.statusHost = root.statusHost || $('choiceStatus');
+    openedAt = performance.now();
+    if (!choice) { if (prompt) speak(prompt); return; }
+    if (fresh) { swallowHeld(); choice.sync(root, { fresh: true }); announce(prompt); return; }
+    choice.sync(root);
+    const st = choice.getState();
+    if (st.index >= 0) announce('');          // the highlighted answer, with its new label
+    else announce(prompt);
+  }
+  /** Enter a row (Redo…, More…, a part of the court): its items are drawn in place of the root's. */
+  function enterRow(ref) {
+    if (!choice || !lineRoot) return;
+    const items = ref.rowItems ? ref.rowItems() : [];
+    const lvl = { key: lineRoot.key + '>' + ref.id, kind: lineRoot.kind, items, statusHost: $('choiceStatus'), rowDrawn: true };
+    if (!choice.enterGroup(lvl, { wrap: true, backStop: true })) { if (lineRoot.redraw) lineRoot.redraw(); }
+  }
+  /** A playout: the scan pauses (nothing is highlighted) while something happens on its own. */
+  function suspend() {
+    if (choice) choice.sync(null);
+    light(null);
+  }
+  /** Either switch is down (the Timed clock stands still). */
+  const heldKeys = () => !!(down.Space || down.Enter);
+
+  /* ══ menu boards ════════════════════════════════════════════════════════ */
+  /** Open a card at -1. opts are the screen's own (a pack, a result...). */
+  function openCard(name, opts) {
+    opts = opts || {};
+    ctx = 'card'; cardName = name; cardOpts = opts;
+    lineRoot = null;
+    card = SCREENS[name](opts);
+    renderCard();
+    openedAt = performance.now();
+    swallowHeld();
+    if (choice) choice.sync(cardContext(), { fresh: true, restoreId: null });
+    announce(card.speech === undefined ? card.title : card.speech);
+  }
+  function refreshCard() {
+    if (ctx !== 'card') return;
+    card = SCREENS[cardName](cardOpts);
+    renderCard();
+    if (choice) choice.sync(cardContext());
+  }
+  function cardContext() {
+    return { key: 'card:' + cardName, kind: 'card', statusHost: $('cardStatus') || $('choiceStatus'),
+      items: card.items.filter(it => !it.off).map(it => ({ id: it.id, label: () => it.say || it.label, element: it.el, ref: it })) };
+  }
+  /** A part of the court on a card: entered as a row that loops through its restaurants and a spoken Back stop. */
+  function enterCardGroup(ref) {
+    if (!choice) return;
+    const items = (ref.items || []).filter(it => !it.off).map(it => ({ id: it.id, label: () => it.say || it.label, element: it.el, ref: it }));
+    choice.enterGroup({ key: 'card:' + cardName + '>' + ref.id, kind: 'card', items, statusHost: $('cardStatus') || $('choiceStatus') }, { wrap: true, backStop: true });
+  }
+  function itemHTML(it) {
+    return (it.icon ? '<span class="ic">' + it.icon + '</span>' : '') + '<span class="lb">' + esc(it.label) + '</span>' +
+      (it.value !== undefined ? '<span class="val">' + esc(it.value) + '</span>' : '');
+  }
+  function renderCard() {
+    const ov = $('overlay');
+    ov.classList.add('on');
+    ov.innerHTML = '<div class="card" role="dialog"><div id="cardStatus"></div>' + (card.top || '') +
+      (card.title ? '<h1>' + esc(card.title) + '</h1>' : '') + (card.sub ? '<p class="sub">' + card.sub + '</p>' : '') +
+      (card.html || '') + '<div class="menu' + (card.cols2 ? ' cols2' : '') + '"></div><p class="hint">' + hint() + '</p></div>';
+    const menu = ov.querySelector('.menu');
+    card.items.forEach(it => {
+      const el = document.createElement('div');
+      if (it.items) {
+        el.className = 'group' + (it.off ? ' off' : '');
+        el.innerHTML = '<div class="head">' + esc(it.label) + '</div>';
+        it.items.forEach(sub => {
+          const se = document.createElement('div');
+          se.className = 'item sub' + (sub.off ? ' off' : '');
+          se.innerHTML = itemHTML(sub);
+          se.addEventListener('click', () => pointAndPick(sub.id));
+          sub.el = se;
+          el.appendChild(se);
+        });
+      } else {
+        el.className = 'item' + (it.off ? ' off' : '');
+        el.innerHTML = itemHTML(it);
+      }
+      el.addEventListener('click', () => pointAndPick(it.id));
+      it.el = el;
+      menu.appendChild(el);
+    });
+  }
+  function closeCard() {
+    const ov = $('overlay');
+    ov.classList.remove('on'); ov.innerHTML = '';
+    card = null; cardName = ''; cardOpts = {};
+    if (ctx === 'card') ctx = 'none';
+  }
+  function hint() {
+    const s = sm(), brake = isAuto() && s && s.getSettings().spaceBrake;
+    return isAuto() ? '<kbd>Enter</kbd> picks the highlighted choice' + (brake ? ' · <kbd>Space</kbd> pauses the scan' : '')
+      : 'Tap <kbd>Space</kbd> = next · hold <kbd>Space</kbd> = back · <kbd>Enter</kbd> = choose';
+  }
+
+  /* ══ mouse and touch ════════════════════════════════════════════════════ */
+  function pointAndPick(id) {
+    if (!choice || !choice.active || performance.now() - openedAt < GHOST_MS) return;
+    const cur = choice.context;
+    if (!cur || !cur.items.some(it => it.id === id)) { if (lineRoot && lineRoot.direct) lineRoot.direct(id); return; }
+    if (choice.getState().id !== id) {
+      if (choice.getState().depth > 0) {
+        for (let k = 0; k < cur.items.length + 2 && choice.getState().id !== id; k++) choice.step(1);
+        if (choice.getState().id !== id) return;
+      } else choice.align(id);
+    }
+    choice.select();
+  }
+
+  /* ══ switch input ═══════════════════════════════════════════════════════ */
+  const isSwitch = c => c === 'Space' || c === 'Enter' || c === 'NumpadEnter';
+  const norm = c => (c === 'NumpadEnter' ? 'Enter' : c);
+  function clearBack() { clearTimeout(backHold); backHold = null; clearInterval(backRepeat); backRepeat = null; didBack = false; }
+  function clearPauseWatch() { clearInterval(pauseWatch); pauseWatch = null; ring(0); }
+  function clearKeys() { down.Space = down.Enter = false; braking = false; clearBack(); clearPauseWatch(); if (choice) choice.setInputHeld(false); }
+  /** A key already down when a new screen opens belongs to the old one: its release is ignored. */
+  function swallowHeld() {
+    if (down.Space) ignore.Space = true;
+    if (down.Enter) ignore.Enter = true;
+    clearKeys();
+  }
+  function ring(p) {
+    const r = $('holdRing');
+    r.classList.toggle('on', p > 0);
+    r.querySelector('i').style.setProperty('--p', Math.max(0, Math.min(1, p)).toFixed(3));
+  }
+  /** Where a 5 s Enter hold opens Pause: the court's root (page-2 gives it onPause), or anywhere inside a
+   *  restaurant that is not a card, playouts included (spec 6.3). */
+  function pauseRoute() {
+    if (ctx === 'card') return null;
+    if (lineRoot && lineRoot.onPause && ctx === 'court') return lineRoot.onPause;
+    const g = G();
+    return g && g.inShift && g.inShift() ? g.pause : null;
+  }
+  function onKeyDown(e) {
+    if (!isSwitch(e.code)) return;
+    e.preventDefault();
+    if (e.repeat) return;
+    const k = norm(e.code);
+    if (ignore[k]) ignore[k] = false;
+    if (down[k]) return;
+    down[k] = true; downAt[k] = performance.now();
+    if (ctx !== 'none' && choice && choice.active) {
+      if (k === 'Space') braking = choice.brakePress();
+      if (k !== 'Space' || !braking) choice.setInputHeld(true);
+      if (k === 'Space' && !braking && !backHold && !backRepeat) {
+        didBack = false;
+        backHold = setTimeout(() => {
+          backHold = null; didBack = true; choice.step(-1);
+          backRepeat = setInterval(() => choice.step(-1), interval());
+        }, SCAN_BACK_HOLD);
+      }
+    }
+    if (k === 'Enter' && pauseRoute()) watchPauseHold();
+  }
+  /** Holding Enter for 5 seconds also opens Pause (a ring shows from 2 s); that release is swallowed. */
+  function watchPauseHold() {
+    clearPauseWatch();
+    pauseWatch = setInterval(() => {
+      if (!down.Enter) { clearPauseWatch(); return; }
+      const route = pauseRoute();
+      if (!route) { clearPauseWatch(); return; }
+      const held = performance.now() - downAt.Enter;
+      if (held >= PAUSE_HOLD_MS) { clearPauseWatch(); ignore.Enter = true; route(); return; }
+      if (held >= PAUSE_HOLD_SHOW) ring((held - PAUSE_HOLD_SHOW) / (PAUSE_HOLD_MS - PAUSE_HOLD_SHOW));
+    }, 50);
+  }
+  function onKeyUp(e) {
+    if (!isSwitch(e.code)) return;
+    e.preventDefault();
+    const k = norm(e.code);
+    if (ignore[k]) { ignore[k] = false; down[k] = false; if (choice) choice.setInputHeld(down.Space || down.Enter); return; }
+    if (!down[k]) return;
+    down[k] = false;
+    if (k === 'Enter') clearPauseWatch();
+    if (ctx === 'none' || !choice || !choice.active) return;
+    if (k === 'Space') {
+      const wasBack = didBack, wasBrake = braking;
+      clearBack(); braking = false;
+      if (wasBrake) choice.brakeRelease();
+      else if (!wasBack) choice.step(1);
+    } else choice.select();
+    choice.setInputHeld(down.Space || down.Enter);
+  }
+  /** Focus lost, or the hub's input guard dropped a press: nothing may stay half-held. */
+  function onBlur() {
+    clearKeys(); ignore.Space = ignore.Enter = false;
+    if (choice) choice.cancelInput();
+    if (G() && G().blur) G().blur();
+  }
+
+  /* ══ the routes in and out ══════════════════════════════════════════════ */
+  function exitGame() {
+    if (choice) choice.sync(null);
+    ctx = 'none';
+    speak('Exiting to hub');
+    setTimeout(() => {
+      if (window.parent && window.parent !== window) window.parent.postMessage({ action: 'focusBackButton' }, '*');
+      else window.location.href = '../../../index.html';
+    }, 700);
+  }
+  /** A one-way door: the safe choice first, and the consequence spoken on open (§7). Cancel returns to the
+   *  card it came from, at -1. */
+  function confirm(id, title, warn, yes, fn) { openCard('confirm', { id, title, warn, yes, fn, from: cardName, fromOpts: cardOpts }); }
+  let settingsReturn = { name: 'title', opts: {} };
+  /** Settings, from any card: Back returns to it. */
+  function openSettings() { if (ctx === 'card' && cardName !== 'settings') settingsReturn = { name: cardName, opts: cardOpts }; openCard('settings'); }
+
+  /* ══ SCREENS ════════════════════════════════════════════════════════════ */
+  const onOff = v => (v ? 'On' : 'Off');
+  const cycle = (list, v) => list[(list.indexOf(v) + 1) % list.length];
+  const NAMES = {
+    cooking: { simple: 'Simple', timed: 'Timed' },
+    speed: { verySlow: 'Very Slow', slow: 'Slow', normal: 'Normal' },
+    orders: { stars: 'Follow the Stars', one: 'One Item' },
+    manager: { hintsJokes: 'Hints and Jokes', hints: 'Hints Only', off: 'Off' },
+    characterVoices: { voices: 'Voices and Captions', captions: 'Captions Only', off: 'Off' },
+    theme: { standard: 'Standard', contrast: 'High Contrast' },
+    motion: { full: 'Full', reduced: 'Reduced' },
+    textSize: { normal: 'Normal', large: 'Large', xlarge: 'Extra Large' },
+  };
+  const SAYS = {
+    cooking: { simple: 'Simple. You pick how done, and it always comes out that way.', timed: 'Timed. Watch it cook and take it off at the right moment.' },
+    orders: { stars: "Follow the stars. Orders grow with the restaurant's stars.", one: 'One item. Every order is one item.' },
+    manager: { hintsJokes: 'Hints and Jokes. Mitch points things out and cracks wise.', hints: 'Hints Only. Mitch points things out, no jokes.', off: 'Off. Mitch stays quiet.' },
+  };
+  /** A setting item: its label, value and what it means, said on every change. */
+  function setting(id, label, value, say, change, off) {
+    return { id, label, value, off, say: label + ', ' + (say || value), action() {
+      change();
+      refreshCard();
+      const it = card.items.find(x => x.id === id);
+      if (choice && it) choice.announce(it.say);
+    } };
+  }
+  const pick = key => setting(key, labelOf(key), NAMES[key][BB.save.get(key)], (SAYS[key] || {})[BB.save.get(key)],
+    () => BB.save.set(key, cycle(F().SETTING_VALUES[key], BB.save.get(key))));
+  const labelOf = k => ({ cooking: 'Cooking', speed: 'Cooking Speed', orders: 'Order Size', manager: 'Assistant Manager', characterVoices: 'Character Voices',
+    theme: 'Colour Profile', motion: 'Motion', textSize: 'Text Size' })[k];
+  const EXIT = { title: 'Exit the game?', warn: 'You will go back to the hub.', yes: 'Exit Game' };
+
+  const SCREENS = {
+    /* the main menu (spec 6.1) */
+    title: () => ({
+      top: '<div class="logo"><span class="top">BEN\'S</span><span class="main">Food Court</span></div>',
+      title: '', sub: 'Seven restaurants. Every order just right.', speech: "Ben's Food Court",
+      items: [
+        { id: 'play', label: 'Play', icon: '🏬', say: 'Play. Go to the food court.', action: () => BB.court.show() },
+        { id: 'tutorial', label: 'Tutorial', icon: '🎓', say: 'Tutorial. One order, with Mitch showing you how.', action: () => openCard('tutorials') },
+        { id: 'settings', label: 'Settings', icon: '⚙️', action: () => openSettings() },
+        { id: 'exit', label: 'Exit Game', icon: '🚪', action: () => confirm('exit', EXIT.title, EXIT.warn, EXIT.yes, exitGame) },
+      ],
+    }),
+    /* the tutorial picker: one item per open, built restaurant in U order; parts when more than four; then Back */
+    tutorials: () => ({
+      title: 'Tutorial', sub: 'One order, with Mitch showing you how. Which restaurant?', speech: 'Tutorial. Which restaurant?',
+      items: BB.court.picker().concat([{ id: 'back', label: 'Back', icon: '↩', action: () => openCard('title') }]),
+    }),
+    /* the stand-in court (js/court.js; page-2 replaces it with the real court) */
+    court: o => {
+      const lines = (o.news || []).concat(o.goal ? [o.goal] : []);
+      return {
+        title: 'Food Court', sub: 'Pick a restaurant.',
+        html: lines.length ? '<p class="news">' + esc(lines.join(' ')) + '</p>' : '',
+        speech: ['Food court.'].concat(lines).join(' '),
+        items: BB.court.stops(),
+      };
+    },
+    courtPause: () => ({
+      title: 'Back in 5', speech: 'Paused',
+      items: [
+        { id: 'continue', label: 'Continue', icon: '▶️', action: () => BB.court.resume() },
+        { id: 'help', label: 'Help', icon: '❓', say: 'Help. Says how the court is doing.', action: () => { const t = BB.court.help(); if (choice && t) choice.announce(t); } },
+        { id: 'settings', label: 'Settings', icon: '⚙️', action: () => openSettings() },
+        { id: 'menu', label: 'Main Menu', icon: '🏠', action: () => openCard('title') },
+        { id: 'exit', label: 'Exit Game', icon: '🚪', action: () => confirm('exit', EXIT.title, EXIT.warn, EXIT.yes, exitGame) },
+      ],
+    }),
+    /* the first visit to a restaurant (spec 6.1): Play and Skip both set tutorialDone */
+    tutorialOffer: o => ({
+      title: o.pack.name, sub: 'First time here? Mitch can walk you through one order.',
+      speech: o.pack.name + '. First time here? Mitch can walk you through one order.',
+      items: [
+        { id: 'tutorial', label: 'Play the Tutorial', icon: '🎓', action: () => G().offer('tutorial') },
+        { id: 'skip', label: 'Skip It', icon: '🍽️', action: () => G().offer('skip') },
+        { id: 'court', label: 'Food Court', icon: '🏬', action: () => G().offer('court') },
+      ],
+    }),
+    /* the five-star event is due (spec 4.4) */
+    event: o => {
+      const ev = o.pack.events && o.pack.events.five ? o.pack.events.five : { name: 'The five-star event' };
+      return {
+        title: ev.name, sub: 'The five-star event at ' + esc(o.pack.name) + '. Win it for the fifth star and the gold sign.',
+        speech: ev.name + '. The five-star event at ' + o.pack.name + '. Win it for the fifth star and the gold sign.',
+        items: [
+          { id: 'event', label: 'Start the Event', icon: '⭐', action: () => G().startShift({ event: true }) },
+          { id: 'shift', label: 'Normal Shift', icon: '🍽️', action: () => G().startShift() },
+          { id: 'court', label: 'Food Court', icon: '🏬', action: () => BB.court.show() },
+        ],
+      };
+    },
+    /* Settings (spec 6.4): the 17 rows in order; Back returns to the card it came from */
+    settings: () => {
+      const v = vm(), s = sm();
+      const tts = v ? v.getSettings().ttsEnabled : false;
+      const voice = v && v.getCurrentVoice() ? v.getVoiceDisplayName(v.getCurrentVoice()) : 'Default';
+      const auto = isAuto(), simple = BB.save.get('cooking') !== 'timed';
+      const gq = BB.world && BB.world.graphics;
+      const gLabel = () => (gq ? gq.label() : 'Graphics quality: unavailable outside the hub');
+      const gValue = () => gLabel().replace(/^Graphics quality:\s*/i, '');
+      const length = +BB.save.get('shiftLength');
+      return {
+        title: 'Settings', sub: '', cols2: true,
+        items: [
+          setting('tts', 'Text to Speech', onOff(tts), null, () => v && v.toggleTTS()),
+          setting('voice', 'Voice', voice, null, () => v && v.cycleVoice()),
+          pick('cooking'),
+          Object.assign(pick('speed'), simple ? { off: true } : {}),
+          setting('shiftLength', 'Shift Length', length + ' customers', length + ' customers. From the next shift.',
+            () => BB.save.set('shiftLength', cycle(F().SETTING_VALUES.shiftLength, length))),
+          pick('orders'),
+          pick('manager'),
+          pick('characterVoices'),
+          pick('theme'),
+          pick('motion'),
+          pick('textSize'),
+          setting('graphics-quality', 'Graphics Quality', gValue(), gLabel(), () => { if (gq) gq.cycle(); }, !gq),
+          setting('autoScan', 'Auto Scan', auto ? 'On — One Switch' : 'Off — Two Switches',
+            auto ? 'On. One switch. Enter picks the highlighted choice.' : 'Off. Two switches. Space moves, Enter picks.', () => s && s.toggleAutoScan()),
+          setting('scanSpeed', 'Scan Speed', s ? s.getScanInterval() / 1000 + ' s' : '2 s', s ? s.getScanInterval() / 1000 + ' seconds' : null, () => s && s.cycleScanSpeed()),
+          setting('sfx', 'Sound Effects', onOff(BB.save.get('sfx')), null, () => BB.save.set('sfx', !BB.save.get('sfx'))),
+          { id: 'reset', label: 'Reset Progress', icon: '♻️', say: 'Reset progress. Asks first.',
+            action: () => confirm('reset', 'Reset progress?', 'Every restaurant starts again: its stars, coins, tutorial offer and any shift in progress. Settings stay.',
+              'Reset Progress', () => { BB.save.resetProgress(); if (!G().afterReset()) openCard('settings'); }) },
+          { id: 'back', label: 'Back', icon: '↩', action: () => openCard(settingsReturn.name, settingsReturn.opts) },
+        ],
+      };
+    },
+    /* the restaurant's Pause (spec 6.3) */
+    pause: () => {
+      const tut = G().inTutorial(), words = G().ticketWords();
+      const kept = tut ? 'The tutorial stops here. You can play it again any time.' : 'This shift is saved. You can finish it later.';
+      return {
+        title: 'Back in 5', speech: 'Paused',
+        items: [
+          { id: 'continue', label: 'Continue', icon: '▶️', action: () => G().resume() },
+          { id: 'ticket', label: 'Ticket', icon: '🧾', off: !words, say: 'Ticket. Hear the order again.', action: () => { const t = G().ticketWords(); if (t && choice) choice.announce(t); } },
+          { id: 'help', label: 'Help', icon: '❓', say: 'Help. Says how this restaurant works.', action: () => { const t = G().help(); if (choice) choice.announce(t); } },
+          { id: 'restart', label: 'Restart Shift', icon: '🔁', action: () => confirm('restart', tut ? 'Restart the tutorial?' : 'Restart the shift?',
+            tut ? 'The tutorial starts again from the first step.' : 'This shift starts again. Orders served so far are lost.', tut ? 'Restart Tutorial' : 'Restart Shift', () => G().restart()) },
+          { id: 'settings', label: 'Settings', icon: '⚙️', action: () => openSettings() },
+          { id: 'court', label: 'Food Court', icon: '🏬', action: () => confirm('court', 'Back to the food court?', kept, 'Food Court', () => G().leaveToCourt()) },
+          { id: 'menu', label: 'Main Menu', icon: '🏠', action: () => confirm('menu', 'Go to the main menu?', kept, 'Main Menu', () => G().quit()) },
+          { id: 'exit', label: 'Exit Game', icon: '🚪', action: () => confirm('exit', EXIT.title,
+            tut ? 'The tutorial stops here, and you go back to the hub.' : 'This shift is saved, and you go back to the hub.', EXIT.yes, () => G().exitGame()) },
+        ],
+      };
+    },
+    confirm: o => ({
+      title: o.title, sub: esc(o.warn), speech: o.title + ' ' + o.warn,
+      items: [
+        { id: 'cancel', label: 'Cancel', icon: '↩', action: () => openCard(o.from, o.fromOpts) },
+        { id: 'yes', label: o.yes, icon: '✔️', action: o.fn },
+      ],
+    }),
+    /* the results (spec 6.3): the stars gained, a restaurant opened, the gold sign, the celebration */
+    results: o => {
+      const words = o.words || [];
+      const head = o.tutorial ? 'Tutorial done' : o.event === 'won' ? 'Event won' : o.event === 'failed' ? 'Not this time' : 'Shift done';
+      const sub = o.tutorial ? 'Ready for a real shift?' : o.orders + ' orders · ' + o.coins + ' coins in tips';
+      return {
+        title: head, sub,
+        html: (o.stars && o.stars.length ? '<p class="stars">' + o.stars.map(n => '★'.repeat(n) + '☆'.repeat(3 - n)).join('  ') + '</p>' : '') +
+          (words.length ? '<p class="news">' + esc(words.join(' ')) + '</p>' : ''),
+        speech: o.tutorial ? 'Tutorial done. Ready for a real shift?'
+          : head + '. ' + o.orders + ' orders, ' + o.threeStars + ' with three stars. ' + o.coins + ' coins in tips. ' + words.join(' '),
+        items: [
+          { id: 'again', label: o.tutorial ? 'Start a Shift' : 'Another Shift', icon: '🍽️', action: () => G().again() },
+          { id: 'court', label: 'Food Court', icon: '🏬', action: () => G().leaveToCourt() },
+          { id: 'exit', label: 'Exit Game', icon: '🚪', action: () => confirm('exit', EXIT.title, EXIT.warn, EXIT.yes, exitGame) },
+        ],
+      };
+    },
+  };
+
+  function applyLook() {
+    document.body.dataset.motion = BB.save.get('motion');
+    document.body.dataset.text = BB.save.get('textSize');
+    document.body.dataset.theme = BB.save.get('theme');
+  }
+
+  function init() {
+    initChoice();
+    applyLook();
+    BB.save.onChange(applyLook);
+    if (sm()) sm().subscribe(() => { if (ctx === 'card') refreshCard(); });
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onBlur);
+    window.addEventListener('narbe-input-cancelled', onBlur);
+    window.addEventListener('resize', frame);
+    document.addEventListener('click', e => {
+      const el = e.target.closest('.ctl, .prop, .store');
+      if (el && el.dataset.id) pointAndPick(el.dataset.id);
+    });
+  }
+
+  /** For the jsdom checks: where the scan is and what is on offer. card is the open card, or ''. */
+  function __dbg() {
+    const st = choice ? choice.getState() : null, cur = choice && choice.context;
+    return { ctx, card: cardName, place: document.body.dataset.place, index: st ? st.index : -1, id: st ? st.id : null, depth: st ? st.depth : 0,
+      backStop: !!(st && st.backStop), parked: !!(st && st.parked), items: cur ? cur.items.map(it => it.id) : [], active: !!(choice && choice.active),
+      held: heldKeys(), scan: st ? { braked: !!st.braked, inputHeld: !!st.inputHeld, waiting: !!st.waitingForSpeech, suspended: !!st.suspended, keyHeld: !!st.held } : null };
+  }
+
+  BB.ui = { init, line, suspend, openCard, closeCard, refreshCard, announce, confirm, openSettings, exitGame, heldKeys, __dbg,
+    get context() { return ctx; }, set context(v) { ctx = v; }, get card() { return cardName; } };
+})();

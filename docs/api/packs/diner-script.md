@@ -1,0 +1,144 @@
+# Ben's Burger Bar, the script in words (content-diner: diner-script, 2026-11-08)
+
+## Voicecut (phase 3, 2026-11-10): what changed in this script
+
+The user approved cutting the voice script: no recordings exist, and every line is text to speech until a future
+voice pass. **The tables and notes below describe the script before this cut where they mention `complain.extra`,
+`.unasked`, `.missing`, `.tooMany`, `.tooFew`, `.done`, `.pick` or `.more`: those moments are gone.** Now:
+
+- **Every customer's per-food complaint lines were deleted** (they were recorded once per value, per customer). A
+  customer now says one of their own `complain` lines, which name no food and live in `packs/cast/script.js` (8 to 10
+  each, locals too; their best old jokes kept, food-free). This pack keeps two 'customer' fallbacks for `complain`.
+- **Mitch reads the mistake** (`mistake.extra`, `mistake.unasked`, `mistake.missing`, `mistake.tooMany`, `mistake.tooFew`, `mistake.done`, `mistake.pick`, `mistake.more`), one line each, from the ticket and so with
+  no pronoun: "The ticket said no {ings}." / "Nobody ordered {ings}." / "The ticket said {ing}. That got left off." /
+  "The ticket said {want}." / "The ticket said {wanted}." / "The ticket said {wanted}. We went over." (or "We came up short.").
+  After two readouts (one after a gross-out) he says `mistake.more`; the receipt still lists every mistake in text.
+- **`complain.gross.*` lines have no blanks**: the hair and fly lines say "my burger"; Mitch's `hair.1` now says "on the {ing}" (was "that {ing}": "that pickles").
+- **Tutorial warnings are listed only for what the tutorial order runs through** (`SC.varsFor`), and The two `tutorial.warn.unasked` lines say "the ticket has no {ings}" (was "there's no {ing}": "there's no pickles").
+- The file is 274 lines now. `node tools/voice-clips.cjs diner` lists its clips; the whole game's report is
+  `docs/api/reports/3-voicecut.md`.
+
+`packs/diner/script.js` is the full script of the first restaurant and **the template the other content agents
+copy** for their own `packs/<pack>/script.js`. The format is `docs/api/script.md`; the pack it belongs to is
+`docs/api/packs/diner.md`; the lines that come in from the cast are `packs/cast/script.js`. Before this pass the
+file held the Burger Bar's 145 recorded-against lines; they are at `docs/backup/packs/diner/script.js.before-2a`
+(and, frozen for the diner-specific tests, `tests/packs/diner-golden/script.js`).
+
+**Check it** (from the game folder):
+
+```
+BB_PACKS=diner node --test "tests/script.test.cjs"
+node -e "const b=require('./tests/bot.cjs'); const R=b.restaurants().find(r=>r.id==='diner'); console.log(b.SC.check(R.pack,R.script), b.SC.coverage(R.pack,R.script))"
+```
+
+## 1. At a glance
+
+| | |
+|---|---|
+| lines | 324: the 145 the Burger Bar recorded against, unchanged in text and id, plus 179 new |
+| flags | `plainIds: true` (clip ids stay `<speaker>/<id>[.<value>]`); the **pack** says `format: 3`, so the coverage test runs |
+| speakers | `mitch` (in `mitch-burger`), the `customer` fallback, and the nine who come here: marge, gus, bev, vernon, sal, dale, oakes, reginald, kai. No locals, no cameo |
+| merged in | 205 cast lines for those nine (greet, smalltalk, goodbye, mention): `SC.merge(pack, BBScripts.diner, BBScripts.cast)` |
+| ids | kept ones as they were (`greet.1`, `usual`, `cook`); new ones `<moment>.<n>`: `odd.fivePatties.1`, `arrive.1`, `uniform.1`, `fryer.1`, `cookFryer.1`, `eventIntro.1`, `gag.1`. The cast's are `<moment>.c<n>`, so the two never collide |
+| delivery | every new line has a delivery note for the final voice pass. Bev's say "firm and commanding, not shouted" (the round-1 voice picks: her caps are emphasis, not volume) |
+| tags | `[sigh]`, `[laughing]`, `[clears throat]`, `[a slow whistle]`: kept for the recording, dropped from captions and text to speech |
+
+## 2. Conventions settled here (copy these)
+
+- **One changing blank per line.** A line uses `{want}` or `{got}`, never both: the clip id carries one value, so a
+  line with two would record wrong. `each` names it.
+- **No `{slot}` or `{value}` at the diner.** The diner has no slots (its picks are `from` and `of`), so a pick
+  mistake fills `{want}`/`{got}` with "fries", "onion rings", "small", "medium", "cola", "lemon-lime", and `{slot}`
+  would stay unfilled. Pick complaints here say "I said {want}." A pack with slots writes "I said {want} {slot}."
+- **Count complaints have no blank.** The patty is the only thing the diner counts (`add` with `max: 3`), so
+  `complain.tooMany`/`tooFew` and `tutorial.warn.tooMany`/`tooFew` say "patty" outright. (`{count}` and `{ings}`
+  do fill: "two", "patties". But `SC.varsFor` enumerates `each: 'ing'` over Add steps with `max` 1, so a counted
+  line would record the wrong ingredients. Leave the blank out unless your pack counts several things.)
+- **`order.odd.<id>` is the whole order sentence.** The page says the greet, then this instead of `W.said`'s
+  "Bacon Cheeseburger, medium, no onions." So each line names the recipe and the ridiculous part, in one or two
+  sentences, and the ticket (plain and complete) is the one to follow: "The Diner Tower, with five patties. I won't
+  be counting." Anything the line can't make is only ever said (spec 2.3). The 'customer' fallback has one of each;
+  the regulars have their own where the character is funnier (all seven for `fivePatties`; six for `nothingGreen`,
+  Marge excepted; four for `bunInside`: Marge, Vernon, Sal, Oakes).
+- **`order.dislike` lines name the dislike, not a blank.** Sal's are about lettuce, Oakes's five are a fresh
+  over-researched reason to hate onions each visit (spec 2.2). The moment allows `{ing}`, but the dislike is fixed
+  per pack, so plain words read better and record as one clip.
+- **`order.gag` belongs to locals, and to Coach Bev here.** The diner has no locals, so `order.gag` is required of
+  nobody; Bev has three "for the team" lines (each under 8 s) for the Burger Eating Contest's finale, where her team
+  is spoken of and never shown (spec 4.4). `SC.check` allows any customer of the pack to have the moment.
+- **`visitor.arrive` is an entrance, not an introduction.** The cast greet that follows introduces them ("Reginald.
+  Critic. The scarf is load-bearing."), so the arrive line is the moment they sweep in (Reginald) or open the
+  notebook (Kai).
+- **`uniform` is about the uniform in this pack** (red diner shirt, paper hat, the tie and taped badge under it):
+  three lines, said on the first shift here each session.
+- **Tutorial lines fit the pack's tutorial order.** Marge's bacon cheeseburger, medium, no onions, with mouldy
+  cheese: so the warnings say "she", the gross warning says "the green stuff", and `tutorial.warn.tooFew` means
+  Done with no patty ("That's a bun sandwich"). Every station has two lines even when the tutorial never visits it
+  (`tutorial.fryer`, `tutorial.drinks`, `tutorial.cook.fryer`: the registry requires them).
+- **Event lines take `{name}`**, the event's name ("The Burger Eating Contest"), and fit it mid-sentence: "It's
+  {name}.", "{name} fell short.", "{name} is a marathon, not a sprint." A failed event is never the player's fault
+  in the words: the contestants or Mitch carry it.
+- **React lines are about this restaurant's food** but mostly stay item-neutral ("burger" at worst), because from
+  level 3 an order can be a side with a drink. Dale's ring lines and Reginald's Tower lines are the deliberate
+  exceptions: Dale always has rings from level 2, Reginald always orders the Tower (`newest`).
+- **Restaurant-flavoured `smalltalk`/`goodbye`** are optional extras on top of the cast's: one `smalltalk` each
+  (the corner booth, Delores blocking Sal's cart, Bev's team sprinting round it, the fryer's sixty-cycle hum), and a
+  `goodbye` for Marge, Dale, Oakes, Reginald and Kai. The cast's counts already meet the minimums.
+
+## 3. Who has what (own lines in this file; the cast's in the last three columns)
+
+| speaker | own lines | react 3 / 2 / 1 | react.gross | complaints of their own | order moments | cast greet / smalltalk / goodbye |
+|---|---|---|---|---|---|---|
+| customer (fallback) | 38 | 3 / 3 / 3 | 2 | extra 2, unasked 2, missing 2, tooMany 2, tooFew 2, done 3 (one with `{got}`), pick 2, more 2, gross.* 1 each | odd × 3 | greet 2 (the old fallback; the cast covers everyone) |
+| marge | 23 | 3 / 3 / 3 | 1 | extra, unasked, missing, done | usual 2, odd fivePatties, bunInside | 6 / 7 / 6, plus greet 3, smalltalk 1, goodbye 1 here |
+| gus | 22 | 3 / 3 / 3 | 1 | extra, unasked, missing, done | twin 2, odd fivePatties, nothingGreen | 6 / 7 / 6, plus greet 3, smalltalk 1 here |
+| bev | 25 | 3 / 3 / 3 | 1 | extra, unasked, missing, done | gag 3, odd fivePatties, nothingGreen; favourite 2 | 6 / 6 / 6, plus greet 3, smalltalk 1 here |
+| vernon | 22 | 3 / 3 / 3 | 1 | extra, unasked, missing, done, pick | odd × 3 | 6 / 6 / 6, plus greet 3, smalltalk 1 here |
+| sal | 27 | 3 / 3 / 3 | 1 | extra, unasked, missing, done, pick, more | dislike 2, odd × 3; favourite 2 | 6 / 6 / 6, plus greet 3, smalltalk 1 here |
+| dale | 21 | 3 / 3 / 3 | 1 | extra, unasked, missing, done, pick | odd fivePatties, nothingGreen; favourite 2 | 4 / 5 / 4, plus smalltalk 1, goodbye 1 here |
+| oakes | 25 | 3 / 3 / 3 | 1 | extra, unasked, missing, done, pick | dislike 5, odd × 3 | 4 / 5 / 4, plus smalltalk 1, goodbye 1 here |
+| reginald | 19 | 3 / 3 / 3 | 1 | extra, unasked, missing, done, pick | visitor.arrive 2 | 4 / 5 / 4, plus smalltalk 1, goodbye 1 here |
+| kai | 19 | 3 / 3 / 3 | 1 | extra, unasked, missing, done, pick | visitor.arrive 2 | 4 / 5 / 4, plus smalltalk 1, goodbye 1 here |
+
+Complaints a customer has only one of their own fall through to the 'customer' lines too (anyone with fewer than
+two own lines for a moment says both; `SC.candidates`).
+
+**Mitch (83 lines):** shift.start 5, shift.end 4, uniform 3; gross.mouldy 3, wilted 3, charred 3, hair 2, fly 2;
+nearly 3; after.3 3, after.1 3, after.gross 3; every tutorial moment 2 (intro, ticket, grill, cook.grill, board,
+gross, review, serve, fryer, cook.fryer, drinks, and the nine warnings); event.intro 2, event.celebrate 2,
+event.again 2.
+
+## 4. What the page does with it (page-1, page-2)
+
+- Says a visitor's `visitor.arrive` before their greet; a customer's own `order.gag` after the order when they have
+  one (Bev's "for the team" on the event finale); `order.odd.<id>` instead of the order sentence; `uniform` with the
+  first `shift.start` at a restaurant in a session.
+- Passes the mistake or warning itself as the vars (`SC.fill` turns `{want}`, `{got}`, `{ing}` into words), and
+  `{ name: pack.events.five.name }` for `event.*`.
+- Picks with `SC.pick(pack, script, who, moment, vars, used, rnd, 'customer' | null)`: no line repeats in a shift
+  until the moment runs out.
+- `smalltalk` and `goodbye` are skipped when Character Voices is Off; every character line plays only while the
+  scan is suspended (script.md 7).
+
+## 5. For the voice pass
+
+- `SC.everyClip(pack, script, { customers })` on the merged script lists **1,984 clips**: 1,779 from this file
+  (every `each` value spelt out: ingredients, Simple's stages, fries and onion rings) and 205 cast lines.
+- Lines with `each: 'got'` record one clip per Simple stage; Timed's last stages (charred, burnt) fall back to text
+  to speech, as `got` only takes them in Timed.
+- `SC.varsFor` enumerates `from` picks (fries, onion rings) but not the diner's `of: 'size'` and `of: 'flavour'`
+  picks, so the pick complaints' size and drink values (small, medium, large, cola, lemon-lime, orange soda,
+  lemonade, iced tea) are not in the clip list and play as text to speech (Request to js/core/script.js's owner).
+- A 'customer' line is listed once per speaker who needs it (fewer than two own lines for that moment), as
+  `<speaker>/customer.<id>[.<value>]`.
+
+## 6. Copying this for another restaurant
+
+Keep the blocks in this order: Mitch (shift, uniform, gross, nearly, after, tutorial, event), the 'customer'
+fallbacks, then one block per speaker. Write: every 'customer' fallback the registry marks F for your pack
+(`SC.moments(pack)` lists them, `order.odd.<id>` and `complain.gross.<id>` included); react 3/2/1 (3 each) for every
+regular, visitor and local, about your food; `order.usual/twin/dislike/favourite` for whoever has those pack fields;
+`order.gag` and greet/smalltalk/goodbye (3 each) for your locals, built round their gag; `visitor.arrive` for
+reginald and kai; Mitch's uniform, tutorial lines for every station and cook step (2 each), every gross-out (2
+each), and the three event lines. Leave `plainIds` out (your clip ids are `<speaker>/<pack>:<id>`), set
+`format: 3` on the pack when `SC.coverage` is empty, and run the two checks at the top.

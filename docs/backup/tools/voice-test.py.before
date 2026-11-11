@@ -1,0 +1,199 @@
+"""Ben's Burger Bar - the voice quality test: one line per character, made several ways, for a listening page.
+
+  C:/VoiceStudio/venv/Scripts/python.exe tools/voice-test.py [characters...]
+
+Writes voice-source/quality-test/round1/<character>/<variant>.mp3, and clips.js, which the listening page
+voice-source/quality-test/round1/index.html reads (open it straight from the folder; it needs no server). On the page,
+each version can get a thumbs up or down, one can be starred as the best, and there is a notes box per character;
+"Save my picks" downloads them as burger-bar-voice-picks.json for Claude to read before the lines are recorded again.
+
+What changes between versions (the rest stays as the game's own recording was made):
+  Takes          the same settings with other seeds: how much one take differs from the next
+  Model settings more render steps; guidance 3.0 (sticks harder to the voice and the delivery note) or 1.5
+                 (looser); continuing on from the voice's own sample (closest to the designed voice, no delivery)
+  Delivery       the character's own experiments: other delivery notes, a word spelt how it should sound, a tag
+                 like [laughing] left out to hear whether it does anything
+  After touches  the game's take slowed to 90%, made clearer (+3 dB around 3 kHz, less boom) or pitched
+                 (rubberband, formants moved with the pitch, the way Voice Studio's Pitch effect does it)
+
+Nothing here touches the game's own recordings or its voice manifest.
+"""
+import json
+import re
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import voices  # noqa: E402  (Voice Studio's worker, speech check and export, as the game's recordings use them)
+from voices import CFG, GAME, OUT, STEPS, TAKES_DIR, VOICES, Worker, checks, export, measure  # noqa: E402
+
+# Round 1 (2026-11-07); its picks are voice-source/burger-bar-voice-picks.json. Round 2 is tools/voice-styles.py.
+DEST = GAME / 'voice-source' / 'quality-test' / 'round1'
+CLIPS = GAME / 'voice-source' / 'clips.json'
+CAST = json.loads((GAME / 'tools' / 'voices.json').read_text(encoding='utf-8'))
+TAG = re.compile(r'\[[^\]]*\]\s*')
+
+# One line each: the clip id in the game, then the character's own experiments and which way their pitch is tried.
+TESTS = {
+    'mitch': {
+        'clip': 'mitch/intro', 'why': 'The first thing a new player hears: long, with pauses, and he has to sound like Mitch.',
+        'pitch': (1.5, 'Higher', 'one and a half semitones up: younger, more strained'),
+        'extra': [
+            ('upbeat', 'Delivery note: upbeat', 'Adds the delivery note "(upbeat, friendly and welcoming)".',
+             {'delivery': 'upbeat, friendly and welcoming'}),
+            ('coffee', 'Delivery note: too much coffee', 'Adds "(fast-talking and jittery, like he has had too much coffee)".',
+             {'delivery': 'fast-talking and jittery, like he has had too much coffee'}),
+        ]},
+    'marge': {
+        'clip': 'marge/react2.1', 'why': 'The speech check heard her "hon" as "Aunt" in the game\'s take.',
+        'pitch': (-1.0, 'Deeper', 'one semitone down: older, raspier'),
+        'extra': [
+            ('hun', 'Spelt "hun"', 'The voice model is given "hun" instead of "hon" (the caption would still say hon).',
+             {'text': "It's fine, hun. I was married forty years. I know fine."}),
+            ('dry', 'Delivery note: dry and knowing', 'Adds "(warm but dry, like a grandmother who has seen it all)".',
+             {'delivery': 'warm but dry, like a grandmother who has seen it all'}),
+        ]},
+    'gus': {
+        'clip': 'gus/react3.2', 'why': 'Has a [laughing] tag; the speech check never hears the laugh and drops the "Mm".',
+        'pitch': (-1.5, 'Deeper', 'one and a half semitones down: bigger, more rumble'),
+        'extra': [
+            ('notag', 'Without the [laughing] tag', 'The same words with the tag taken out: does the tag do anything?',
+             {'text': "Mm. Beautiful. I might cry. Don't tell the other truckers."}),
+            ('chuckle', 'Delivery note: chuckling', 'Tag taken out; adds "(chuckling warmly, a gentle giant)".',
+             {'text': "Mm. Beautiful. I might cry. Don't tell the other truckers.", 'delivery': 'chuckling warmly, a gentle giant'}),
+        ]},
+    'bev': {
+        'clip': 'bev/greet.2', 'why': 'Coach Bev shouts; the game\'s take has the note "(booming, shouting like a coach)".',
+        'pitch': (-1.0, 'Deeper', 'one semitone down: bigger, more booming'),
+        'extra': [
+            ('nonote', 'No delivery note', 'The same words without "(booming, shouting like a coach)".', {'delivery': ''}),
+            ('cheer', 'Delivery note: friendly coach', 'Instead: "(loud, cheerful and encouraging, a coach on the sidelines)".',
+             {'delivery': 'loud, cheerful and encouraging, a coach on the sidelines'}),
+        ]},
+    'vernon': {
+        'clip': 'vernon/greet.2', 'why': 'Has a [sigh] tag and the note "(slow, bored, droning)".',
+        'pitch': (-1.5, 'Deeper', 'one and a half semitones down: a deeper drone'),
+        'extra': [
+            ('notag', 'Without the [sigh] tag', 'Tag taken out; the delivery note stays.',
+             {'text': 'Ah. You again. My eleven followers are waiting.'}),
+            ('sighnote', 'Delivery note: heavy sigh', 'Tag taken out; instead "(a long heavy sigh first, then slow, bored and pompous)".',
+             {'text': 'Ah. You again. My eleven followers are waiting.', 'delivery': 'a long heavy sigh first, then slow, bored and pompous'}),
+        ]},
+}
+
+
+def post(src, dst, kind, semis=0.0):
+    """An after touch on the game's take, levelled and saved like the game's own clips."""
+    chain = {'slow': 'rubberband=tempo=0.9',
+             'clear': 'equalizer=f=3200:t=q:w=1.4:g=3,equalizer=f=220:t=q:w=1.0:g=-2',
+             'pitch': f'rubberband=pitch={2 ** (semis / 12):.4f}:formant=shifted'}[kind]
+    subprocess.run([checks.ffmpeg(), '-v', 'error', '-y', '-i', str(src), '-af', chain + ',loudnorm=I=-17:TP=-1.5:LRA=11',
+                    '-ac', '1', '-ar', '44100', '-b:a', '64k', str(dst)], check=True)
+
+
+def heard(path, text, work, tag):
+    """The speech check on a saved clip (as a wav of its own: the check names its 16 kHz copy after the input)."""
+    tmp = work / f'{tag}.wav'
+    asr = work / 'asr'
+    asr.mkdir(exist_ok=True)
+    subprocess.run([checks.ffmpeg(), '-v', 'error', '-y', '-i', str(path), str(tmp)], check=True)
+    said, diffs, _, secs, rate = measure(tmp, TAG.sub('', text), asr, pitch_too=False)
+    return {'heard': said, 'diffs': diffs, 'seconds': round(secs, 2), 'rate': round(rate, 2)}
+
+
+def main(names):
+    clips = {c['clip']: c for c in json.loads(CLIPS.read_text(encoding='utf-8'))}
+    manifest = json.loads((OUT / 'manifest.json').read_text(encoding='utf-8'))
+    names = names or list(TESTS)
+    work = DEST / 'work'
+    work.mkdir(parents=True, exist_ok=True)
+    TAKES_DIR.mkdir(parents=True, exist_ok=True)
+    data_file = DEST / 'clips.json'
+    data = json.loads(data_file.read_text(encoding='utf-8')) if data_file.exists() else {}
+    w = Worker()
+    t0 = time.time()
+    try:
+        for name in names:
+            T, c = TESTS[name], clips[TESTS[name]['clip']]
+            ref = VOICES / ('bb-' + name) / 'ref.wav'
+            vjson = json.loads((VOICES / ('bb-' + name) / 'voice.json').read_text(encoding='utf-8'))
+            folder = DEST / name
+            folder.mkdir(parents=True, exist_ok=True)
+            game = manifest.get(c['clip']) or {}
+            in_game = game.get('hash') == c['hash'] and (OUT / game['file']).exists()
+            seed0 = game.get('seed', 1) if in_game else 1
+            others = [s for s in (1, 2, 3, 4, 5) if s != seed0][:2]
+            base = {'seed': seed0, 'steps': STEPS, 'cfg': CFG, 'delivery': c.get('delivery') or '', 'text': c['text'], 'mode': 'clone'}
+            plan = [
+                ('now', 'Takes', 'Now in the game', 'The take the game plays today (seed %d, %d render steps, guidance %.1f).' % (seed0, STEPS, CFG), {}),
+                ('take2', 'Takes', 'Another take', 'Same settings, another seed: how much one take differs from the next.', {'seed': others[0]}),
+                ('take3', 'Takes', 'A third take', 'Same settings, another seed.', {'seed': others[1]}),
+                ('steps40', 'Model settings', 'More render steps', '40 render steps instead of 24: slower to make, sometimes cleaner.', {'steps': 40}),
+                ('cfg3', 'Model settings', 'Follows harder', 'Guidance 3.0 instead of 2.0: sticks closer to the voice and the delivery note; can sound stiffer.', {'cfg': 3.0}),
+                ('cfg15', 'Model settings', 'Looser', 'Guidance 1.5: freer and more varied; can drift from the voice.', {'cfg': 1.5}),
+                ('closest', 'Model settings', 'Closest to the voice sample', 'Carries on from the voice\'s own sample recording: nearest to the designed voice, but delivery notes are ignored.', {'mode': 'continue'}),
+            ] + [(vid, 'Delivery', label, what, s) for vid, label, what, s in T['extra']] + [
+                ('slower', 'After touches', 'Slower', 'The game\'s take at 90% speed, same pitch.', {'post': 'slow'}),
+                ('clearer', 'After touches', 'Clearer', 'The game\'s take with the consonants brought forward (+3 dB around 3 kHz) and less boom.', {'post': 'clear'}),
+                ('pitch', 'After touches', T['pitch'][1], 'The game\'s take ' + T['pitch'][2] + '.', {'post': 'pitch'}),
+            ]
+            rows = []
+            now_src = None
+            for vid, group, label, what, change in plan:
+                s = dict(base, **change)
+                dst = folder / (vid + '.mp3')
+                row = {'id': vid, 'group': group, 'label': label, 'what': what, 'file': f'{name}/{vid}.mp3',
+                       'settings': {k: s[k] for k in ('seed', 'steps', 'cfg', 'delivery', 'mode')}, 'text': s['text']}
+                if s.get('post'):
+                    if not now_src:
+                        continue
+                    post(now_src, dst, s['post'], T['pitch'][0])
+                    row['settings'] = {'post': s['post'] + ((' %+.1f semitones' % T['pitch'][0]) if s['post'] == 'pitch' else '')}
+                    row.update({'heard': None, 'diffs': [], 'seconds': None, 'rate': None})
+                    rows.append(row)
+                    print(f'  {name} {vid}: after touch on the game\'s take', flush=True)
+                    continue
+                if vid == 'now' and in_game:
+                    shutil.copyfile(OUT / game['file'], dst)
+                    now_src = dst
+                else:
+                    wav = work / f'{name}-{vid}.wav'
+                    job = {'id': f'{name}-{vid}', 'out': str(wav), 'seed': s['seed'], 'steps': s['steps'], 'cfg': s['cfg'], 'retry': True}
+                    if s['mode'] == 'continue':
+                        job.update({'text': s['text'], 'prompt': str(ref), 'prompt_text': vjson.get('ref_text', '')})
+                    else:
+                        job.update({'text': (f"({s['delivery']})" if s['delivery'] else '') + s['text'], 'reference': str(ref)})
+                    ans = w.render(job)
+                    if not ans.get('ok'):
+                        print(f'  {name} {vid}: FAILED {ans.get("error")}', flush=True)
+                        continue
+                    export(wav, dst)
+                    wav.unlink()
+                    if vid == 'now':
+                        now_src = dst
+                row.update(heard(dst, s['text'], work, f'{name}-{vid}-check'))
+                rows.append(row)
+                print(f"  {name} {vid}: heard '{row['heard']}' ({len(row['diffs'])} differences, {row['rate']} words/s)", flush=True)
+            data[name] = {'id': name, 'name': CAST[name]['name'], 'clip': c['clip'], 'line': c['text'], 'delivery': c.get('delivery') or '',
+                          'why': T['why'], 'describe': CAST[name]['describe'], 'portrait': f'../../../packs/diner/art/cast/{name}/neutral.webp',
+                          'variants': rows}
+            write(data)
+            print(f'{name}: {len(rows)} versions ({time.time() - t0:.0f} s so far)', flush=True)
+    finally:
+        w.close()
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def write(data):
+    order = [k for k in TESTS if k in data]
+    out = {'made': time.strftime('%Y-%m-%d %H:%M'), 'voices': [data[k] for k in order]}
+    (DEST / 'clips.json').write_text(json.dumps(data, indent=1), encoding='utf-8')
+    (DEST / 'clips.js').write_text('/* Built by tools/voice-test.py for index.html. */\nwindow.VOICE_TEST = ' + json.dumps(out, indent=1) + ';\n',
+                                   encoding='utf-8')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

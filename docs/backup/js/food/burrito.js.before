@@ -1,0 +1,1491 @@
+/** Ben's Food Court - Ben's Burritos' food in 3D (docs/api/food.md section 12 walks through it; docs/api/packs/burrito.md
+ *  section 10 is the list of looks it draws).
+ *
+ *  The same toon style as the Burger Bar and the Pizza Parlor: chunky cel-shaded food with ink outlines. Nothing here
+ *  stacks, so the kit's `stack` is never used. Every filling lies ON what is under it: a layout keeps a "ground" (the
+ *  height of the food at any point) and gives each part a region of it (a band down a tortilla, a strip in a taco, a
+ *  wedge or a heap in a bowl); a part builds its mound or its pieces on that ground and raises it for the next part, so
+ *  nothing floats and nothing sinks (food.md 7: bounding boxes are not surfaces).
+ *
+ *    burrito       the flat flour tortilla on its square of foil, the fillings in a band down its middle in line order
+ *                  and the hot sauce zigzagged over them; once wrapped (made.auto has `wrap`), a fat rolled burrito
+ *                  lying across the counter, its closed end in foil, the open end cut on the bias toward the viewer
+ *                  showing the fillings' colours; once burst (`burst`), the same in a second tortilla (two tortilla
+ *                  edges at the open end), with beans, rice and a smear of sour cream spilled on a scrap of foil
+ *    bowl          the orange bowl with its green rim stripe: rice and beans in the bottom and the rest in loose heaps;
+ *                  once arranged (`arrange`), every part its own tidy wedge, nothing touching, the sauce across
+ *    tacos         three small soft tortillas on a steel holder tray, open with the fillings in a strip; once folded
+ *                  (`fold`), three half-moons standing in the holder's V rods, the fillings showing along the top
+ *    chipsBasket   a red-and-white checked paper boat of tortilla chips, the salsa cup and the guacamole cup beside it,
+ *                  the lime wedge on the rim
+ *    giantBurrito  the burrito, drawn 1.6x by the kit, with a red pennant with a flame stuck in its top
+ *
+ *  The vessel drawn is the style PICKED (made.picks.style): a bowl picked for a burrito ticket is drawn as a bowl.
+ *  The toast is a `want`: read from made.picks.toast (o.stage on the griddle). Doneness is a colour AND a mark
+ *  (DESIGN.md): the tortilla browns through the pack's ramp and gets press stripes, 0 / 2 faint / 3 brown with toasty
+ *  spots / 4 dark with blistered crisp edges / black with smoke.
+ *
+ *  Sets, by backdrop name: counter (spec 5.2: line 0.80, a cream top with the storefront's orange plank edge), prep
+ *  (the painted steel counter is the surface: the burrito line and the chip basket) and griddle (the painted dark
+ *  plate; cook 'griddle'). The kitchen lines were measured from art-source/backdrops: prep 62.5%, griddle 74.4%.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./kit.js'));
+  else factory(root.BB.food);
+})(typeof window === 'undefined' ? globalThis : window, function (food) {
+  'use strict';
+  food.register('burrito', k => {
+    const THREE = k.THREE, PI = Math.PI;
+    const V = (x, y, z) => new THREE.Vector3(x, y, z);
+    const P0 = () => Promise.resolve();
+    const TOP = 0.5;                                     // every kitchen work surface's height (as the diner's)
+    // Soft, lightly toasted, toasted, extra crispy, burnt: the pack's `burrito` and `tacos` ramps say the same.
+    const TOAST = [0xf3e3bf, 0xeccb8a, 0xd9a356, 0xb5732c, 0x3e2614];
+    const TACO = [0xf2e0b0, 0xe9c47e, 0xd69c4c, 0xb06c28, 0x3d2513];
+    // The press stripes, stage by stage (the doneness mark): how many, their colour, their thickness.
+    const STRIPES = [[0, 0, 0], [2, 0xc08a3a, 0.0042], [3, 0x7a4418, 0.0058], [4, 0x3e200a, 0.0068], [5, 0x0c0705, 0.0075]];
+    const FLOURISH = ['wrap', 'fold', 'arrange', 'burst'];
+    const C = { foil: 0xd8dfe5, foilDark: 0xa3adb6, steel: 0xaab3ba, steelDark: 0x6f7880, cream: 0xfff4e2, orange: 0xe8792b, green: 0x2f8a3e };
+    // The counter (spec 5.2): its top's back edge at 80% of the picture; the order's spot, its depth (row), front.
+    const COUNTER = { line: 0.80, top: 0.92, back: -0.2, x: -0.3, row: 0.55, front: 1.06, scale: 1.25 };
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    /* ── shared geometry (kept: never freed with a build) ── */
+    const geos = {};
+    const kept = (key, make) => geos[key] || (geos[key] = k.keep(make()));
+    /** Two or more geometries as one (non-indexed): position and normal only. */
+    function merge(list) {
+      const parts = list.map(g => (g.index ? g.toNonIndexed() : g));
+      const n = parts.reduce((t, g) => t + g.attributes.position.count, 0);
+      const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3);
+      let o = 0;
+      parts.forEach(g => {
+        if (!g.attributes.normal) g.computeVertexNormals();
+        pos.set(g.attributes.position.array, o * 3); nor.set(g.attributes.normal.array, o * 3);
+        o += g.attributes.position.count;
+      });
+      const out = new THREE.BufferGeometry();
+      out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+      return out;
+    }
+    /** made without some flourishes (a hook plays them over the item drawn without them). */
+    const without = (made, ids) => Object.assign({}, made, { auto: ((made && made.auto) || []).filter(a => !ids.includes(a)) });
+    const has = (made, id) => !!(made && made.auto && made.auto.includes(id));
+    const pickOf = (made, slot) => made && made.picks && made.picks[slot];
+
+    /* ── the toast: o.stage (the griddle, the dial), else what made.picks.toast says; soft before the griddle ── */
+    function toastIndex(made, o) {
+      if (o && o.stage !== undefined && o.stage !== null) return clamp(o.stage | 0, 0, 4);
+      const t = pickOf(made, 'toast');
+      if (!t) return 0;
+      const list = k.stageList(null, 'toast') || ['soft', 'lightlyToasted', 'toasted', 'extraCrispy', 'burnt'];
+      return Math.max(0, list.indexOf(t));
+    }
+    /** A look's colour at a stage: look.ramp as a list or { stageName: colour }, else the fallback list. */
+    function rampAt(look, s, list) {
+      const r = look && look.ramp;
+      s = clamp(s | 0, 0, 4);
+      if (Array.isArray(r) && r.length) return r[Math.min(s, r.length - 1)];
+      if (r && typeof r === 'object') {
+        const names = k.stageList(null, 'toast');
+        if (names && r[names[s]] !== undefined) return r[names[s]];
+      }
+      return list[s];
+    }
+    const tortillaColour = (s, ing) => rampAt(k.lookOf(ing || 'burrito'), s, ing === 'tacos' ? TACO : TOAST);
+
+    /* ── the ground: the food's height at any point, raised part by part ── */
+    function ground(floor) {
+      const adds = [];
+      return {
+        at(x, z) { let y = floor(x, z); for (const a of adds) { const f = a.f(x, z); if (f > 0) y += a.h * f; } return y; },
+        add(h, f) { adds.push({ h, f }); },
+      };
+    }
+    /** A region of the ground a part fills: f(x, z) is 0 outside, 1 at its fullest (a rounded mound's profile). */
+    function region(G, f, span, salt) {
+      const [x0, x1, z0, z1] = span;
+      let area = 0;
+      for (let i = 0; i < 12; i++) for (let j = 0; j < 12; j++) if (f(x0 + (x1 - x0) * (i + 0.5) / 12, z0 + (z1 - z0) * (j + 0.5) / 12) > 0) area++;
+      area *= (x1 - x0) * (z1 - z0) / 144;
+      const R = {
+        G, f, span, area, salt: salt || '',
+        /** n points spread evenly inside (f above minF), on the ground, kept dmin apart where they can be. */
+        points(n, seed, dmin, minF, lift) {
+          const rnd = k.rand(seed + R.salt), out = [], m = minF === undefined ? 0.2 : minF;
+          for (let i = 0; i < n; i++) {
+            let best = null, bestD = -1;
+            for (let tries = 0; tries < 24; tries++) {
+              const x = x0 + (x1 - x0) * rnd(), z = z0 + (z1 - z0) * rnd();
+              if (f(x, z) <= m) continue;
+              let d = Infinity;
+              for (const q of out) d = Math.min(d, Math.hypot(q.p[0] - x, q.p[2] - z));
+              if (d > bestD) { bestD = d; best = [x, z]; }
+              if (d >= (dmin || 0)) break;
+            }
+            if (best) out.push({ p: [best[0], G.at(best[0], best[1]) + (lift || 0), best[1]], nrm: [0, 1, 0], r: rnd() * PI * 2, t: rnd() });
+          }
+          return out;
+        },
+        /** How many pieces for a density given as pieces on a burrito's band (0.6 x 0.22). */
+        count(n, share) { return Math.max(1, Math.round(n * (area / 0.1) * (share || 1))); },
+        raise(h) { G.add(h, f); },
+        /** A smooth mound of height h over the region, on the ground (top only: it meets the ground at its edge). */
+        mound(h, mat, res) {
+          const nx = res || 26, nz = Math.max(4, Math.round(nx * (z1 - z0) / (x1 - x0)));
+          const pos = [], fs = [], idx = [];
+          for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
+            const x = x0 + (x1 - x0) * i / nx, z = z0 + (z1 - z0) * j / nz, fv = f(x, z);
+            pos.push(x, G.at(x, z) + h * Math.max(0, fv) + (fv > 0 ? 0 : -0.001), z); fs.push(fv);
+          }
+          const at = (i, j) => j * (nx + 1) + i;
+          for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+            const a = at(i, j), b = at(i + 1, j), c = at(i, j + 1), d = at(i + 1, j + 1);
+            if (Math.max(fs[a], fs[b], fs[c], fs[d]) > 0) idx.push(a, c, b, b, c, d);
+          }
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+          geo.setIndex(idx);
+          geo.computeVertexNormals();
+          return k.ink(geo, mat, true);
+        },
+        top() {
+          let t = -Infinity;
+          for (let i = 0; i <= 8; i++) for (let j = 0; j <= 8; j++) { const x = x0 + (x1 - x0) * i / 8, z = z0 + (z1 - z0) * j / 8; if (f(x, z) > 0) t = Math.max(t, G.at(x, z)); }
+          return Number.isFinite(t) ? t : G.at((x0 + x1) / 2, (z0 + z1) / 2);
+        },
+      };
+      return R;
+    }
+    /** A rounded band (a superellipse: a burrito's filling, a taco's strip). */
+    function band(G, cx, cz, w, d, salt) {
+      const f = (x, z) => { const q = 1 - Math.pow(Math.abs((x - cx) / w), 4) - Math.pow(Math.abs((z - cz) / d), 4); return q > 0 ? Math.pow(q, 0.55) : 0; };
+      return region(G, f, [cx - w, cx + w, cz - d, cz + d], salt);
+    }
+    /** A round heap. */
+    function heapAt(G, cx, cz, r, salt) {
+      const f = (x, z) => { const q = 1 - ((x - cx) ** 2 + (z - cz) ** 2) / (r * r); return q > 0 ? Math.pow(q, 0.6) : 0; };
+      return region(G, f, [cx - r, cx + r, cz - r, cz + r], salt);
+    }
+    /** A wedge of a bowl: angles a0..a1 (round the y axis, from +x toward +z), radii r0..r1, a gap kept at its sides. */
+    function wedge(G, a0, a1, r0, r1, gapW, salt) {
+      const am = (a0 + a1) / 2, half = (a1 - a0) / 2, rm = (r0 + r1) / 2, hr = (r1 - r0) / 2;
+      const f = (x, z) => {
+        const rr = Math.hypot(x, z);
+        if (rr < 1e-6) return 0;
+        let da = Math.atan2(z, x) - am;
+        while (da > PI) da -= 2 * PI;
+        while (da < -PI) da += 2 * PI;
+        const hwA = half - gapW / rr;          // the gap is a width, so the wedges stay apart near the middle too
+        if (hwA <= 0) return 0;
+        const fa = 1 - Math.pow(Math.abs(da) / hwA, 4), fr = 1 - Math.pow(Math.abs((rr - rm) / hr), 4);
+        return fa > 0 && fr > 0 ? Math.pow(fa * fr, 0.55) : 0;
+      };
+      const xs = [], zs = [];
+      for (let i = 0; i <= 12; i++) { const a = a0 + (a1 - a0) * i / 12; [r0, r1].forEach(r => { xs.push(Math.cos(a) * r); zs.push(Math.sin(a) * r); }); }
+      return region(G, f, [Math.min(...xs) - 0.01, Math.max(...xs) + 0.01, Math.min(...zs) - 0.01, Math.max(...zs) + 0.01], salt);
+    }
+    /** The region a part fills when it is drawn on its own (the tests, a dial): a small pile on y = 0. */
+    const alone = part => heapAt(ground(() => 0), 0, 0, 0.14, ':' + (part.ing || 'x'));
+
+    /* ── pieces ── */
+    const PIECE = {
+      rice: () => kept('rice', () => new THREE.SphereGeometry(0.0105, 6, 4).scale(1.9, 0.8, 0.9)),
+      bean: () => kept('bean', () => new THREE.SphereGeometry(0.017, 10, 6).scale(1.45, 0.78, 1)),
+      cube: () => kept('cube', () => new THREE.BoxGeometry(0.05, 0.036, 0.046)),
+      grill: () => kept('grill', () => merge([new THREE.BoxGeometry(0.052, 0.005, 0.0075).translate(0, 0.0185, 0.011), new THREE.BoxGeometry(0.052, 0.005, 0.0075).translate(0, 0.0185, -0.011)])),
+      pinkTop: () => kept('pinkTop', () => new THREE.BoxGeometry(0.031, 0.004, 0.027).translate(0, 0.0182, 0)),
+      strip: () => kept('strip', () => new THREE.TorusGeometry(0.05, 0.0095, 5, 10, 1.5).rotateX(PI / 2).scale(1, 0.75, 1)),
+      halfMoon: () => kept('halfMoon', () => new THREE.CylinderGeometry(0.03, 0.03, 0.013, 12, 1, false, 0, PI)),
+      ribbon: () => kept('ribbon', () => new THREE.TorusGeometry(0.03, 0.0075, 4, 10, 2.4).rotateX(PI / 2).scale(1, 0.5, 1)),
+      dice: () => kept('dice', () => new THREE.BoxGeometry(0.024, 0.02, 0.024)),
+      bit: () => kept('bit', () => new THREE.BoxGeometry(0.016, 0.012, 0.016)),
+      kernel: () => kept('kernel', () => new THREE.SphereGeometry(0.0135, 7, 5).scale(1, 0.8, 1.25)),
+      ring: () => kept('jring', () => new THREE.TorusGeometry(0.026, 0.0085, 6, 16).rotateX(PI / 2).scale(1, 0.75, 1)),
+      ringFlesh: () => kept('jflesh', () => new THREE.CircleGeometry(0.019, 14).rotateX(-PI / 2)),
+      onion: () => kept('onion', () => new THREE.BoxGeometry(0.02, 0.016, 0.02)),
+      dot: () => kept('dot', () => new THREE.CircleGeometry(0.02, 8).rotateX(-PI / 2)),
+      blister: () => kept('blister', () => new THREE.SphereGeometry(0.014, 8, 5).scale(1, 0.5, 1)),
+      chip: () => kept('chip', () => {
+        const sh = new THREE.Shape(), r = 0.078, cr = 0.014;
+        const pts = [0, 1, 2].map(i => { const a = PI / 2 + i * 2 * PI / 3; return [Math.cos(a) * r, Math.sin(a) * r]; });
+        pts.forEach(([x, y], i) => {
+          const [px, py] = pts[(i + 2) % 3], [nx, ny] = pts[(i + 1) % 3];
+          const a = [x + (px - x) * cr / r * 1.6, y + (py - y) * cr / r * 1.6], b = [x + (nx - x) * cr / r * 1.6, y + (ny - y) * cr / r * 1.6];
+          if (!i) sh.moveTo(a[0], a[1]); else sh.lineTo(a[0], a[1]);
+          sh.quadraticCurveTo(x, y, b[0], b[1]);
+        });
+        sh.closePath();
+        const geo = new THREE.ExtrudeGeometry(sh, { depth: 0.007, bevelEnabled: false, curveSegments: 3 });
+        geo.rotateX(-PI / 2);
+        // a slight curl, as a fried chip has
+        const p = geo.attributes.position;
+        for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + (p.getX(i) ** 2) * 2.2);
+        geo.computeVertexNormals();
+        return geo;
+      }),
+    };
+    const scat = (geo, colour, pts, opts) => k.scatter(geo, typeof colour === 'number' ? k.toon(colour) : colour, pts, Object.assign({ outline: 'thin' }, opts));
+
+    /* ── the fillings: each lies on its region's ground and raises it ── */
+    const regionOf = (part, o) => (o && o.region) || alone(part);
+    const seedOf = (part, o) => (part.ing || 'x') + ':' + (part.n || 0) + ':' + ((o && o.salt) || '');
+    /** A base layer (rice, beans): a smooth mound and grains or beans lying on it. */
+    function baseLayer(name, part, o, M) {
+      const L = k.lookFor(part), Rg = regionOf(part, o), g = new THREE.Group(), seed = seedOf(part, o);
+      g.name = name;
+      const mh = o && o.heap ? Math.max(M.h, o.heap) : M.h;
+      g.add(Rg.mound(mh, k.toon(M.body(L.colour))));
+      Rg.raise(mh);
+      const pts = Rg.points(k.thin(Rg.count(M.n, o && o.share), 6), seed, M.d, 0.25, -0.002);
+      g.add(scat(M.piece(), L.colour, pts, { tilt: M.tilt, size: M.size }));
+      if (M.flecks) M.flecks(L, Rg, seed, g);
+      return { g, h: Rg.top() };
+    }
+    function rice(part, o) {
+      return baseLayer('rice', part, o, {
+        h: 0.03, n: 110, d: 0.018, tilt: 0.9, size: 1, piece: PIECE.rice, body: c => k.mix(c, 0x9a8a70, 0.08),
+        flecks(L, Rg, seed, g) {
+          // white rice on a cream tortilla needs a cue: cilantro flecks (brown rice has its own colour)
+          const c = new THREE.Color(L.colour);
+          if (c.r + c.g + c.b > 2.5) g.add(scat(PIECE.dot(), 0x3f8a2a, Rg.points(k.thin(Rg.count(16, o && o.share), 4), seed + ':cil', 0.05, 0.3, 0.003).map(p => Object.assign(p, { s: 0.45 + p.t * 0.25 })), { outline: false }));
+          else g.add(scat(PIECE.rice(), k.mix(L.colour, 0x5a3a18, 0.3), Rg.points(k.thin(Rg.count(20, o && o.share), 6), seed + ':dk', 0.03, 0.3, 0.001), { outline: false, tilt: 0.9 }));
+        },
+      });
+    }
+    function beans(part, o) {
+      const L = k.lookFor(part), pinto = new THREE.Color(L.colour).r > 0.45;
+      return baseLayer('beans', part, o, {
+        h: 0.026, n: 46, d: 0.03, tilt: 0.7, size: 1, piece: PIECE.bean, body: c => k.mix(c, 0x000000, 0.12),
+        flecks(L2, Rg, seed, g) {
+          // black beans are glossy (a glint on each of a few), pinto beans speckled
+          const pts = Rg.points(k.thin(Rg.count(pinto ? 40 : 18, o && o.share), 6), seed + ':sp', 0.02, 0.3, 0.012).map(p => Object.assign(p, { s: pinto ? 0.28 : 0.3 }));
+          g.add(pinto ? scat(PIECE.dot(), 0x6a3a1e, pts, { outline: false }) : scat(PIECE.dot(), k.SHINE, pts, { outline: false }));
+        },
+      });
+    }
+    /** Pieces lying on the ground, raised by `lift` for whatever goes on next. */
+    function pieces(name, part, o, list, lift) {
+      const Rg = regionOf(part, o), g = new THREE.Group(), seed = seedOf(part, o), dense = (o && o.dense) || 1;
+      g.name = name;
+      if (o && o.heap) {
+        // a section of a bowl or a taco's strip: a solid heap of it, the pieces lying on top
+        g.add(Rg.mound(o.heap, k.toon(k.mix(list[0].colour, 0x000000, 0.12))));
+        Rg.raise(o.heap * 0.85);
+      }
+      list.forEach((P, i) => {
+        const pts = Rg.points(P.n === true ? 1 : k.thin(Math.round(Rg.count(P.n, o && o.share) * dense), P.min || 2), seed + ':' + i, P.d, P.minF === undefined ? 0.3 : P.minF, P.lift || 0)
+          .map(p => Object.assign(p, { s: (P.size || 1) * (P.jitter ? 0.85 + p.t * 0.3 : 1) }));
+        g.add(scat(P.piece(), P.colour, pts, { tilt: P.tilt, outline: P.outline }));
+        (P.with || []).forEach(W => g.add(scat(W.piece(), W.colour, pts, { tilt: P.tilt, outline: W.outline === undefined ? false : W.outline })));
+      });
+      Rg.raise(lift);
+      return { g, h: Rg.top() };
+    }
+    const meats = {
+      chicken: (part, o) => pieces('protein', part, o, [{ piece: PIECE.cube, colour: k.lookFor(part).colour, n: 15, d: 0.06, tilt: 0.3, jitter: true, with: [{ piece: PIECE.grill, colour: 0x6b3a1a }] }], 0.03),
+      steak: (part, o) => pieces('protein', part, o, [{ piece: PIECE.cube, colour: k.lookFor(part).colour, n: 15, d: 0.06, tilt: 0.3, jitter: true, with: [{ piece: PIECE.pinkTop, colour: 0xd9727a }] }], 0.03),
+      veggies: (part, o) => pieces('protein', part, o, [
+        { piece: PIECE.strip, colour: 0x3f8f2e, n: 8, d: 0.06, tilt: 0.5 },
+        { piece: PIECE.strip, colour: 0xd8372a, n: 8, d: 0.06, tilt: 0.5 },
+        { piece: PIECE.halfMoon, colour: 0xc9dc7c, n: 7, d: 0.06, tilt: 0.4, with: [{ piece: PIECE.halfMoon, colour: 0x2f6a22, outline: false }] }], 0.024),
+    };
+    /** The sour cream: a white dollop with a swirl peak; white on a cream tortilla, so a cool shadow under it and a
+     *  gloss highlight on it. */
+    const dollopGeo = () => kept('dollop:' + (k.low() ? 'lo' : 'hi'), () => {
+      const pts = [[0, 0], [0.05, 0], [0.056, 0.008], [0.052, 0.02], [0.042, 0.032], [0.03, 0.042], [0.018, 0.053], [0.007, 0.064], [0, 0.07]];
+      const geo = k.lathe(pts, k.seg(20));
+      const p = geo.attributes.position;
+      for (let i = 0; i < p.count; i++) {
+        const x = p.getX(i), y = p.getY(i), z = p.getZ(i), a = Math.atan2(z, x), m = 1 + 0.09 * Math.sin(a * 3 + y * 70);
+        p.setX(i, x * m); p.setZ(i, z * m);
+      }
+      geo.computeVertexNormals();
+      return geo;
+    });
+    function sourCream(part, o) {
+      const L = k.lookFor(part), Rg = regionOf(part, o), g = new THREE.Group(), seed = seedOf(part, o);
+      g.name = 'sourCream';
+      const n = o && o.dollops ? o.dollops : Math.max(1, Math.min(3, Math.round(Rg.area / 0.045)));
+      Rg.points(n, seed, 0.16, 0.4, 0).forEach((p, i) => {
+        const s = (o && o.dollopScale) || 1;
+        const shadow = new THREE.Mesh(kept('shadow', () => new THREE.CircleGeometry(0.066, 16).rotateX(-PI / 2)), k.toon(0xb9c3d6));
+        shadow.position.set(p.p[0] + 0.008, p.p[1] + 0.002, p.p[2] + 0.01); shadow.scale.setScalar(s);
+        const d = k.ink(dollopGeo(), k.toon(L.colour));
+        d.position.set(p.p[0], p.p[1] - 0.003, p.p[2]); d.rotation.y = p.r; d.scale.setScalar(s);
+        const gloss = new THREE.Mesh(kept('gloss', () => new THREE.SphereGeometry(0.012, 8, 6).scale(1.4, 0.5, 0.8)), k.SHINE);
+        gloss.position.set(p.p[0] - 0.016 * s, p.p[1] + 0.038 * s, p.p[2] + 0.018 * s);
+        g.add(shadow, d, gloss);
+      });
+      Rg.raise(0.012);
+      return { g, h: Rg.top() + 0.06 };
+    }
+    /** Guacamole: lumpy green scoops with darker flecks (each its own mesh, so a brown one's spots land on it). */
+    const scoopGeo = i => kept('scoop:' + i + ':' + (k.low() ? 'lo' : 'hi'), () => {
+      const geo = new THREE.SphereGeometry(0.052, k.seg(16), k.seg(10), 0, PI * 2, 0, PI / 2), p = geo.attributes.position, R = k.rand('scoop' + i);
+      const b = [R() * 6, R() * 6, R() * 6];
+      for (let j = 0; j < p.count; j++) {
+        const x = p.getX(j), y = p.getY(j), z = p.getZ(j), a = Math.atan2(z, x);
+        const m = 1 + 0.12 * Math.sin(a * 4 + b[0]) * Math.cos(y * 40 + b[1]) + 0.06 * Math.sin(a * 7 + b[2]);
+        p.setXYZ(j, x * m, y * 0.72 * m, z * m);
+      }
+      geo.computeVertexNormals();
+      return geo;
+    });
+    function guacamole(part, o) {
+      const L = k.lookFor(part), Rg = regionOf(part, o), g = new THREE.Group(), seed = seedOf(part, o);
+      g.name = 'guacamole';
+      const n = o && o.scoops ? o.scoops : Math.max(1, Math.min(3, Math.round(Rg.area / 0.045)));
+      const s = (o && o.scoopScale) || 1;
+      Rg.points(n, seed, 0.16, 0.4, -0.004).forEach((p, i) => {
+        const m = k.ink(scoopGeo(i % 3), k.toon(L.colour));
+        m.position.set(p.p[0], p.p[1], p.p[2]); m.rotation.y = p.r; m.scale.setScalar(s * (0.9 + p.t * 0.2));
+        m.name = 'scoop';
+        g.add(m);
+      });
+      const S = k.surfaceOf(g, 0.45);
+      g.add(scat(PIECE.dot(), k.mix(L.colour, 0x2a4a10, 0.45), k.onSurface(S, k.thin(10 * n, 4), seed + ':fl', 0.003).map(p => Object.assign(p, { s: 0.3 + p.t * 0.2 })), { outline: false }));
+      g.add(scat(PIECE.dot(), 0xe9f2c0, k.onSurface(S, k.thin(5 * n, 2), seed + ':on', 0.003).map(p => Object.assign(p, { s: 0.22 })), { outline: false }));
+      Rg.raise(0.014);
+      return { g, h: Rg.top() + 0.035 };
+    }
+    /** Six jalapeno rings, spread out so they can be counted (Coach Bev does): green rings with pale seeded middles. */
+    function jalapenos(part, o) {
+      const L = k.lookFor(part), Rg = regionOf(part, o), g = new THREE.Group(), seed = seedOf(part, o);
+      g.name = 'jalapenos';
+      const n = o && o.rings !== undefined ? o.rings : 6;
+      const pts = Rg.points(n, seed, 0.11, 0.35, 0.008).map(p => Object.assign(p, { s: (o && o.ringScale) || 1.15 }));
+      g.add(scat(PIECE.ring(), L.colour, pts, { tilt: 0.25 }));
+      g.add(scat(PIECE.ringFlesh(), 0xd9eaa0, pts.map(p => Object.assign({}, p, { p: [p.p[0], p.p[1] + 0.001, p.p[2]] })), { tilt: 0.25, outline: false }));
+      const seeds = [];
+      pts.forEach((p, i) => { for (let j = 0; j < 3; j++) { const a = j * 2.1 + i; seeds.push({ p: [p.p[0] + Math.cos(a) * 0.008 * p.s, p.p[1] + 0.004, p.p[2] + Math.sin(a) * 0.008 * p.s], nrm: [0, 1, 0], r: a, t: 0.5, s: 0.32 }); } });
+      g.add(scat(PIECE.dot(), 0xfff6d8, seeds, { outline: false }));
+      Rg.raise(0.006);
+      return { g, h: Rg.top() + 0.01 };
+    }
+    const toppings = {
+      cheese: (part, o) => {
+        const s = toastIndex(o && o.item, o), L = k.lookFor(part), melt = s >= 2;
+        return pieces('cheese', part, o, [{ piece: () => k.piece('shred'), colour: melt ? k.mix(L.colour, 0xffd25a, 0.4) : L.colour, n: 70, d: 0.016, tilt: melt ? 0.6 : 1.3, size: melt ? 1.15 : 1.05, minF: 0.25, lift: melt ? -0.003 : 0 }], 0.008);
+      },
+      lettuce: (part, o) => pieces('lettuce', part, o, [
+        { piece: PIECE.ribbon, colour: k.lookFor(part).colour, n: 26, d: 0.03, tilt: 1.0 },
+        { piece: PIECE.ribbon, colour: 0xc8ee8e, n: 14, d: 0.03, tilt: 1.0 }], 0.012),
+      pico: (part, o) => pieces('pico', part, o, [
+        { piece: PIECE.dice, colour: k.lookFor(part).colour, n: 26, d: 0.03, tilt: 0.8 },
+        { piece: PIECE.bit, colour: 0xf6f2e6, n: 12, d: 0.03, tilt: 0.8 },
+        { piece: PIECE.dot, colour: 0x2f7a22, n: 10, d: 0.04, tilt: 0.2, outline: false, size: 0.4, lift: 0.012 }], 0.01),
+      corn: (part, o) => pieces('corn', part, o, [{ piece: PIECE.kernel, colour: k.lookFor(part).colour, n: 34, d: 0.022, tilt: 0.7 }], 0.008),
+      onions: (part, o) => pieces('onions', part, o, [
+        { piece: PIECE.onion, colour: k.lookFor(part).colour, n: 16, d: 0.026, tilt: 0.8 },
+        { piece: PIECE.onion, colour: 0xd9c7ea, n: 8, d: 0.026, tilt: 0.8 }], 0.008),
+    };
+
+    /* ── the hot sauce: a zigzag drizzle that follows the food's surface; the bottle with its chili marks ── */
+    /** A drizzle across a region's span, on its ground: a tube grown along its length by setDrawRange. */
+    function drizzle(part, o) {
+      const L = k.lookFor(part), Rg = regionOf(part, o), g = new THREE.Group();
+      g.name = 'sauce';
+      const [x0, x1, z0, z1] = Rg.span, w = (x1 - x0) / 2, d = (z1 - z0) / 2, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+      const turns = (o && o.turns) || 5, raw = [];
+      for (let i = 0; i <= turns; i++) raw.push([cx - w * 0.82 + (2 * w * 0.82) * i / turns, cz + (i % 2 ? 0.6 : -0.6) * d]);
+      let pts = raw;
+      for (let it = 0; it < 3; it++) {
+        const q = [pts[0]];
+        for (let i = 0; i < pts.length - 1; i++) { const a = pts[i], b = pts[i + 1]; q.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25], [a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]); }
+        q.push(pts[pts.length - 1]); pts = q;
+      }
+      const r = (o && o.sauceR) || 0.0095, path = [];
+      pts.forEach(([x, z], i) => {
+        if (i && i < pts.length - 1) return path.push(V(x, Rg.G.at(x, z) + r * 0.7, z));
+        path.push(V(x, Rg.G.at(x, z) + r * 0.7, z));
+      });
+      // sample densely so the tube follows the ground between the zigzag's corners
+      const curve0 = new THREE.CatmullRomCurve3(path, false, 'centripetal'), dense = [];
+      for (let i = 0; i <= 90; i++) { const p = curve0.getPointAt(i / 90); p.y = Rg.G.at(p.x, p.z) + r * 0.7; dense.push(p); }
+      const curve = new THREE.CatmullRomCurve3(dense, false, 'centripetal');
+      const SEG = 120, RAD = 6, geo = new THREE.TubeGeometry(curve, SEG, r, RAD, false);
+      geo.scale(1, 0.7, 1);
+      const tube = k.inkThin(geo, k.toon(L.colour));
+      const capA = new THREE.Mesh(kept('cap', () => new THREE.SphereGeometry(1, 8, 6)), k.toon(L.colour)), capB = capA.clone();
+      capA.scale.set(r, r * 0.7, r); capB.scale.set(r, r * 0.7, r);
+      capA.position.copy(curve.getPointAt(0)); capB.position.copy(curve.getPointAt(1));
+      g.add(tube, capA, capB);
+      const glints = [0.12, 0.33, 0.52, 0.71, 0.9].map(u => { const m = new THREE.Mesh(kept('glint', () => new THREE.SphereGeometry(0.006, 6, 4).scale(2, 0.6, 1)), k.SHINE); m.position.copy(curve.getPointAt(u)).add(V(0, r * 0.55, 0)); g.add(m); return m; });
+      g.userData.drizzle = {
+        curve,
+        grow(u) {
+          u = clamp(u, 0, 1);
+          geo.setDrawRange(0, Math.round(u * SEG) * RAD * 6);
+          capA.visible = u > 0; capB.visible = u >= 1;
+          glints.forEach((m, i) => { m.visible = u >= [0.12, 0.33, 0.52, 0.71, 0.9][i] + 0.04; });
+        },
+      };
+      return { g, h: Rg.top() + r };
+    }
+    /** A hot sauce bottle as the prep shelf paints them: the sauce's colour, a cream label with 1-3 chili marks, a
+     *  dark cap. No words. userData.bottle.tip: the nozzle's height. */
+    function sauceBottle(part) {
+      const L = k.lookFor(part), g = new THREE.Group(), S = 1.15;
+      g.add(k.ink(k.lathe([[0, 0], [0.046, 0], [0.05, 0.01], [0.05, 0.13], [0.044, 0.15], [0.02, 0.175], [0.017, 0.2], [0, 0.2]], k.seg(20), S), k.toon(L.colour)));
+      g.add(k.ink(k.lathe([[0, 0.195], [0.021, 0.195], [0.022, 0.235], [0.012, 0.245], [0, 0.245]], k.seg(14), S), k.toon(0x2b1a12)));
+      const label = new THREE.Mesh(new THREE.CylinderGeometry(0.0515 * S, 0.0515 * S, 0.07 * S, k.seg(20), 1, true), k.toon(0xfff4dc));
+      label.position.y = 0.075 * S;
+      g.add(label);
+      const n = L.chilies || 1;
+      for (let i = 0; i < n; i++) {
+        const ch = new THREE.Group(), x = (i - (n - 1) / 2) * 0.026 * S;
+        const body = k.inkThin(new THREE.SphereGeometry(0.009 * S, 8, 6).scale(1, 2.2, 1), k.toon(0xd8261a));
+        body.rotation.z = 0.5;
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.003 * S, 0.003 * S, 0.01 * S, 5), k.toon(0x3f8a2a));
+        stem.position.set(-0.009 * S, 0.018 * S, 0);
+        ch.add(body, stem);
+        ch.position.set(x, 0.075 * S, 0.052 * S);
+        g.add(ch);
+      }
+      const glint = new THREE.Mesh(new THREE.CylinderGeometry(0.0512 * S, 0.0512 * S, 0.03 * S, 10, 1, true, -0.7, 0.22), k.SHINE);
+      glint.position.y = 0.125 * S;
+      g.add(glint);
+      g.userData.bottle = { tip: 0.245 * S, colour: L.colour };
+      g.userData.part = part;
+      return { g, h: 0.245 * S };
+    }
+
+    /* ── the tortilla, the foil, the bowl, the taco holder, the chip boat, the cups ── */
+    const TORT = { r: 0.4, t: 0.011 };
+    function freckles(g, pts, colour, size) { g.add(scat(PIECE.dot(), colour, pts.map(p => Object.assign(p, { s: size * (0.6 + p.t * 0.7) })), { outline: false })); }
+    /** A flat flour tortilla (radius r) at a toast stage: its colour, toasty freckles, and the press stripes. */
+    function flatTortilla(r, s, seed, ing) {
+      const g = new THREE.Group(), t = TORT.t;
+      g.name = 'tortilla';
+      g.add(k.ink(k.lathe([[0, 0], [r - 0.006, 0], [r, 0.004], [r - 0.002, t * 0.8], [r - 0.012, t], [0, t]], k.seg(48)), k.toon(tortillaColour(s, ing))));
+      const S = { kind: 'disc', r: r * 0.92, y: t + 0.001 };
+      freckles(g, k.sample(S, k.thin(Math.round(22 * (r / 0.4) ** 2) + 4, 6), seed + ':fr'), k.mix(tortillaColour(s, ing), 0x8a5a24, 0.35), r < 0.25 ? 0.4 : 0.55);
+      stripesFlat(g, r, s, t + 0.0015, seed);
+      return { g, h: t };
+    }
+    /** Straight press stripes across a flat disc (cut to its edge) and the stage's crisp marks. */
+    function stripesFlat(g, r, s, y, seed) {
+      const [n, col, th] = STRIPES[s];
+      for (let i = 0; i < n; i++) {
+        const x = (i - (n - 1) / 2) * r * 1.5 / Math.max(n, 2), half = Math.sqrt(Math.max(0, r * r - x * x)) * 0.86;
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(th * 2.2, th * 0.5, half * 2), k.toon(col));
+        bar.position.set(x, y, 0); bar.rotation.y = 0.35;
+        g.add(bar);
+      }
+      if (s >= 2) freckles(g, k.sample({ kind: 'disc', r: r * 0.85, y: y + 0.0005 }, s === 2 ? 8 : 14, seed + ':ts'), s >= 4 ? 0x120a06 : 0x7a4418, r < 0.25 ? 0.5 : 0.7);
+    }
+    /** A square of foil with a few crinkle lines. */
+    function foilSheet(w, d, seed) {
+      const g = new THREE.Group();
+      const sheet = new THREE.Mesh(new THREE.BoxGeometry(w, 0.005, d), k.toon(C.foil));
+      sheet.position.y = 0.0025;
+      g.add(sheet);
+      const R = k.rand(seed + ':foil');
+      for (let i = 0; i < 7; i++) {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(w * (0.12 + R() * 0.16), 0.002, 0.006), i % 2 ? k.toon(0xf2f5f7) : k.toon(C.foilDark));
+        m.position.set((R() - 0.5) * w * 0.5, 0.0055, (R() - 0.5) * d * 0.7); m.rotation.y = (R() - 0.5) * 1.0;
+        g.add(m);
+      }
+      return g;
+    }
+    /** The bowl: orange outside with a green stripe under the rim, cream inside; its floor at BOWL.floor. */
+    const BOWL = { r: 0.37, h: 0.11, floor: 0.03 };
+    const BOWL_IN = [[0, 0.03], [0.2, 0.03], [0.27, 0.055], [0.337, 0.102]];
+    function innerY(rr) {
+      if (rr <= BOWL_IN[1][0]) return BOWL.floor;
+      for (let i = 2; i < BOWL_IN.length; i++) { const [r0, y0] = BOWL_IN[i - 1], [r1, y1] = BOWL_IN[i]; if (rr <= r1) return y0 + (y1 - y0) * (rr - r0) / (r1 - r0); }
+      return BOWL_IN[BOWL_IN.length - 1][1];
+    }
+    function bowlVessel() {
+      const g = new THREE.Group();
+      g.name = 'bowl';
+      g.add(k.ink(k.lathe([[0, 0], [0.2, 0], [0.215, 0.008], [0.3, 0.06], [0.352, 0.098], [0.37, 0.11]], k.seg(48)), k.toon(C.orange)));
+      g.add(k.ink(k.lathe([[0.37, 0.11], [0.356, 0.116], [0.337, 0.102], [0.27, 0.055], [0.2, 0.03], [0, 0.03]], k.seg(48)), k.toon(0xfff1dc), true));
+      g.add(k.inkThin(k.lathe([[0.3205, 0.075], [0.345, 0.093]], k.seg(48)).scale(1.012, 1, 1.012), k.toon(C.green)));
+      const rim = k.inkThin(new THREE.TorusGeometry(0.364, 0.007, 6, k.seg(48)).rotateX(PI / 2), k.toon(0xf28a3a));
+      rim.position.y = 0.112;
+      g.add(rim);
+      return { g, h: BOWL.floor, top: BOWL.h };
+    }
+    /** The taco holder: a steel tray; with V rods for each taco once they are folded. */
+    const TACOS = { r: 0.16, xs: [-0.36, 0, 0.36], tray: 0.016 };
+    function tacoTray(rods) {
+      const g = new THREE.Group();
+      g.name = 'holder';
+      const plate = k.ink(new THREE.BoxGeometry(1.12, TACOS.tray, 0.38), k.toon(C.steel));
+      plate.position.y = TACOS.tray / 2;
+      g.add(plate);
+      [[0, 0.19, 1.12, 0], [0, -0.19, 1.12, 0]].forEach(([x, z, len]) => { const lip = k.inkThin(new THREE.BoxGeometry(len, 0.02, 0.012), k.toon(0xc9d0d6)); lip.position.set(x, TACOS.tray + 0.006, z); g.add(lip); });
+      if (rods) {
+        // a steel cradle hugging each folded shell near its ends (the holder's zigzag)
+        const kap = (PI / 2 + 0.12) / TACOS.r, rodGeo = kept('cradle', () => {
+          const pts = [];
+          for (let i = 0; i <= 16; i++) { const th = -1.05 + 2.1 * i / 16; pts.push(V(0, (1 - Math.cos(th)) / kap + 0.004 - 0.008 * Math.cos(th), Math.sin(th) / kap + 0.008 * Math.sin(th))); }
+          return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.0055, 6, false);
+        });
+        TACOS.xs.forEach(x => [-0.1, 0.1].forEach(dx => { const m = k.inkThin(rodGeo, k.toon(0xc9d0d6)); m.position.set(x + dx, TACOS.tray, 0); g.add(m); }));
+      }
+      return g;
+    }
+    /** A folded (or folding) soft taco shell: t 0 lies flat, t 1 is the half-moon U, open at the top. Its own
+     *  geometry (it is animated). setFold(t). */
+    function tacoShell(r, colour) {
+      const NU = k.low() ? 12 : 18, NS = k.low() ? 8 : 12, pos = [], idx = [];
+      for (let j = 0; j <= NS; j++) for (let i = 0; i <= NU; i++) pos.push(0, 0, 0);
+      for (let j = 0; j < NS; j++) for (let i = 0; i < NU; i++) { const a = j * (NU + 1) + i, b = a + 1, c = a + NU + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.setIndex(idx);
+      const mesh = new THREE.Mesh(geo, k.toon(colour, { side: THREE.DoubleSide }));
+      const setFold = t => {
+        const kappa = t * (PI / 2 + 0.12) / r, p = geo.attributes.position;
+        for (let j = 0; j <= NS; j++) for (let i = 0; i <= NU; i++) {
+          const u = -r + 2 * r * i / NU, w = Math.sqrt(Math.max(0, r * r - u * u)) * 0.999, v = -w + 2 * w * j / NS;
+          let y = 0, z = v;
+          if (kappa > 1e-5) { y = (1 - Math.cos(kappa * v)) / kappa; z = Math.sin(kappa * v) / kappa; }
+          p.setXYZ(j * (NU + 1) + i, u, y + 0.004, z);
+        }
+        p.needsUpdate = true;
+        geo.computeVertexNormals();
+        geo.computeBoundingBox();
+        geo.computeBoundingSphere();
+      };
+      setFold(1);
+      return { mesh, geo, setFold };
+    }
+    /** The checked paper boat the chips come in. */
+    const CHECKS = {};
+    function checker(cols, rows) {
+      const key = cols + 'x' + rows;
+      if (CHECKS[key]) return CHECKS[key];
+      const data = new Uint8Array(cols * rows * 4);
+      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+        const red = (x + y) % 2 === 0, i = (y * cols + x) * 4;
+        data[i] = red ? 0xd0 : 0xff; data[i + 1] = red ? 0x2c : 0xfa; data[i + 2] = red ? 0x20 : 0xf2; data[i + 3] = 255;
+      }
+      const t = new THREE.DataTexture(data, cols, rows, THREE.RGBAFormat);
+      t.minFilter = t.magFilter = THREE.NearestFilter;
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.needsUpdate = true;
+      return (CHECKS[key] = new THREE.MeshToonMaterial({ color: 0xffffff, map: t, gradientMap: k.toon(0xffffff).gradientMap }));
+    }
+    const BOAT = { w: 0.44, d: 0.3, h: 0.07 };
+    function boat() {
+      const g = new THREE.Group(), t = 0.01;
+      g.name = 'boat';
+      const floor = k.ink(new THREE.BoxGeometry(BOAT.w, t, BOAT.d), k.toon(0xfaf4ea));
+      floor.position.y = t / 2;
+      g.add(floor);
+      [[0, BOAT.d / 2, BOAT.w, 0, 9], [0, -BOAT.d / 2, BOAT.w, PI, 9], [BOAT.w / 2, 0, BOAT.d, -PI / 2, 6], [-BOAT.w / 2, 0, BOAT.d, PI / 2, 6]].forEach(([x, z, len, turn, cols]) => {
+        const w = new THREE.Group(), side = k.ink(new THREE.BoxGeometry(len, BOAT.h, t), checker(cols, 2));
+        side.position.y = BOAT.h / 2;
+        w.add(side); w.position.set(x, t, z); w.rotation.y = turn; w.rotateX(0.32);
+        g.add(w);
+      });
+      return { g, h: t, top: BOAT.h + t };
+    }
+    /** A small round paper cup with something in it (salsa, guacamole). */
+    function cup(fillColour, scale, surface) {
+      const g = new THREE.Group(), s = scale || 1;
+      const geo = k.lathe([[0, 0], [0.06, 0], [0.064, 0.004], [0.08, 0.068], [0.086, 0.072], [0.076, 0.074], [0.072, 0.064], [0.056, 0.01], [0, 0.01]], k.seg(18), s).toNonIndexed();
+      geo.computeVertexNormals();
+      g.add(k.ink(geo, k.toon(0xfbfaf4)));
+      const f = k.fill([[0.056 * s, 0.01 * s], [0.073 * s, 0.062 * s]], 0.9, fillColour, surface !== undefined ? { seg: 18, surface } : { seg: 18 });
+      g.add(f.g);
+      return { g, h: 0.074 * s, surface: f.h, r: f.r };
+    }
+    /** The salsa in its cup: chunky (tomato or tomatillo or mango cubes, onion bits, cilantro). */
+    function salsaCup(part) {
+      const L = k.lookFor(part), c = cup(k.mix(L.colour, 0x000000, 0.1), 1.15, k.mix(L.colour, 0x000000, 0.04)), seed = 'salsa:' + part.ing;
+      c.g.name = 'salsa';
+      const S = { kind: 'disc', r: c.r * 0.8, y: c.surface + 0.004 };
+      c.g.add(scat(PIECE.dice(), part.ing === 'mangoSalsa' ? 0xffb21a : k.mix(L.colour, 0xffffff, 0.12), k.sample(S, k.thin(12, 7), seed + ':a').map(p => Object.assign(p, { s: 0.75 })), { tilt: 0.8 }));
+      c.g.add(scat(PIECE.bit(), part.ing === 'mangoSalsa' ? 0xb8325a : 0xf6f2e6, k.sample(S, k.thin(8, 4), seed + ':b').map(p => Object.assign(p, { s: 0.75 })), { tilt: 0.8 }));
+      c.g.add(scat(PIECE.dot(), 0x2f7a22, k.sample(Object.assign({}, S, { y: S.y + 0.006 }), k.thin(8, 4), seed + ':c').map(p => Object.assign(p, { s: 0.35 })), { outline: false }));
+      const glint = new THREE.Mesh(kept('cglint', () => new THREE.CircleGeometry(0.012, 8).rotateX(-PI / 2)), k.SHINE);
+      glint.position.set(-0.03, c.surface + 0.003, -0.025);
+      c.g.add(glint);
+      c.g.userData.part = part;
+      return { g: c.g, h: c.h + 0.01 };
+    }
+    /** A lime wedge: pale green flesh, dark green rind, standing on its rind. */
+    function limeWedge(part) {
+      const L = k.lookFor(part), g = new THREE.Group();
+      g.name = 'lime';
+      const geo = kept('lime', () => {
+        const sh = new THREE.Shape();
+        sh.moveTo(-0.07, 0);
+        sh.absarc(0, 0, 0.07, PI, 0, true);
+        sh.lineTo(-0.07, 0);
+        const e = new THREE.ExtrudeGeometry(sh, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 2, curveSegments: 10 });
+        e.translate(0, 0, -0.02);
+        e.rotateX(PI);                        // the round rind down, the flat flesh up
+        return e;
+      });
+      const m = k.ink(geo, [k.toon(0xd6f08e), k.toon(L.colour !== undefined ? k.mix(L.colour, 0x2a6a12, 0.35) : 0x4f9a2a)]);
+      m.position.y = 0.07;
+      g.add(m);
+      // a paler middle and the segment lines on the flesh face (toward the viewer)
+      const face = new THREE.Mesh(kept('limeFace', () => new THREE.CircleGeometry(0.045, 12, PI, PI)), k.toon(0xeefac0));
+      face.position.set(0, 0.07, 0.0275);
+      g.add(face);
+      for (let i = 1; i < 4; i++) {
+        const a = PI + PI * i / 4, l = new THREE.Mesh(kept('limeSeg', () => new THREE.BoxGeometry(0.052, 0.003, 0.001).translate(0.026, 0, 0)), k.toon(0xbfe07a));
+        l.position.set(0, 0.07, 0.0285); l.rotation.z = a;
+        g.add(l);
+      }
+      const wrap = new THREE.Group();
+      wrap.add(g);
+      wrap.userData.part = part;
+      return { g: wrap, h: 0.076 };
+    }
+
+    /* ── the rolled burrito ── */
+    const ROLL = { L: 0.72, R: 0.136, sq: 0.86, cut: 0.62, foil: 0.47 };
+    const ca = Math.cos(ROLL.cut), sa = Math.sin(ROLL.cut), ta = Math.tan(ROLL.cut);
+    const YC = ROLL.R * ROLL.sq, CX = ROLL.L / 2 - YC * ta - 0.004;      // the bias cut's plane: through (CX, YC), facing up and +x
+    function rollProfile(R, Lp) {
+      const pts = [[0, 0], [R * 0.45, 0.004], [R * 0.74, 0.02], [R * 0.9, 0.042], [R * 0.98, 0.072], [R, 0.105]];
+      for (let s = 0.135; s < Lp - 0.012; s += 0.026) pts.push([R * (1 + 0.022 * Math.sin(s * 21)), s]);
+      pts.push([R, Lp]);
+      return pts;
+    }
+    const PROFILE = rollProfile(ROLL.R, ROLL.L);
+    /** A point on (or dr off) the roll's surface: s along it from the closed end, phi round it (0 faces +z, -pi/2 is
+     *  the top). The burrito's own frame: along x, centred, resting on y = 0. */
+    function rollPoint(s, phi, dr) {
+      const r = k.radiusAt(PROFILE, s) + (dr || 0);
+      return V(s - ROLL.L / 2, YC - r * Math.sin(phi) * ROLL.sq, r * Math.cos(phi));
+    }
+    const beyondCut = (p, shift) => (p.x - CX) * ca + (p.y - YC) * sa + (shift || 0) > 0;
+    /** The lathe of a roll layer (the tortilla, a second tortilla, the foil), turned into the burrito's frame and cut
+     *  on the bias at the open end (shift: the cut moved back along its normal). */
+    function rollGeo(key, pts, shift, crinkle) {
+      return kept('roll:' + key + ':' + (k.low() ? 'lo' : 'hi'), () => {
+        const geo = k.lathe(pts, k.seg(30));
+        const p = geo.attributes.position, last = pts[pts.length - 1][1];
+        if (crinkle) for (let i = 0; i < p.count; i++) {
+          const x = p.getX(i), y = p.getY(i), z = p.getZ(i), a = Math.atan2(x, z);
+          const m = 1 + crinkle * k.noise(a * 1.7 + y * 31, 2.3);
+          p.setX(i, x * m); p.setZ(i, z * m);
+          if (Math.abs(y - last) < 1e-6) p.setY(i, y + 0.014 * k.noise(a * 2.3, 1.1));
+        }
+        geo.rotateZ(-PI / 2);
+        geo.translate(-ROLL.L / 2, 0, 0);
+        geo.scale(1, ROLL.sq, 1);
+        geo.translate(0, YC, 0);
+        for (let i = 0; i < p.count; i++) {
+          const v = V(p.getX(i), p.getY(i), p.getZ(i)), d = (v.x - CX) * ca + (v.y - YC) * sa + (shift || 0);
+          if (d > 0) p.setX(i, v.x - d / ca);
+        }
+        geo.computeVertexNormals();
+        return geo;
+      });
+    }
+    /** A flat shape in the bias cut's plane: geometry built in xy (x across the burrito, y up the cut), mapped on. */
+    function onCut(geo, shift) {
+      const p = geo.attributes.position, o = (shift || 0) / ca;
+      for (let i = 0; i < p.count; i++) {
+        const px = p.getX(i), py = p.getY(i) * ROLL.sq;
+        p.setXYZ(i, CX - py * ta - o, YC + py, -px);
+      }
+      geo.computeVertexNormals();
+      return geo;
+    }
+    const CUT_N = [ca, sa, 0];
+    /** What the fillings look like cut across: the colours of what went in, in a disc. */
+    function crossSection(made, parts, seed, rIn, shift) {
+      const g = new THREE.Group();
+      g.name = 'cut';
+      const look = id => { const p = parts.find(q => q.ing === id || q.slot === id); return p ? k.lookFor(p) : null; };
+      const baseCol = (look('rice') && look('rice').colour) || (look('beans') && look('beans').colour) || 0xe9d2a2;
+      g.add(new THREE.Mesh(onCut(new THREE.CircleGeometry(rIn, k.seg(24)), (shift || 0) + 0.0015), k.toon(k.mix(baseCol, 0x8a6a40, 0.08))));
+      const R = k.rand(seed + ':cut'), out = (id, piece, colour, n, size) => {
+        if (n <= 0) return;
+        const pts = [];
+        for (let i = 0; i < n; i++) {
+          const a = R() * PI * 2, rr = Math.sqrt(R()) * rIn * 0.82, px = Math.cos(a) * rr, py = Math.sin(a) * rr * ROLL.sq;
+          const q = V(CX - py * ta - (shift || 0) / ca, YC + py, -px).add(V(CUT_N[0], CUT_N[1], 0).multiplyScalar(0.003));
+          pts.push({ p: [q.x, q.y, q.z], nrm: CUT_N, r: R() * PI * 2, t: R(), s: size || 1 });
+        }
+        g.add(scat(piece(), colour, pts, { outline: 'thin', tilt: 0.4 }));
+      };
+      parts.forEach(p => {
+        const L = k.lookFor(p), sh = L.shape;
+        if (sh === 'rice') out('rice', PIECE.rice, L.colour, k.thin(26, 12), 1.1);
+        else if (sh === 'beans') out('beans', PIECE.bean, L.colour, 9, 1);
+        else if (sh === 'chickenPieces' || sh === 'steakPieces') out('protein', PIECE.cube, L.colour, 5, 0.75);
+        else if (sh === 'grilledVeggies') { out('veg', PIECE.dice, 0x3f8f2e, 3, 1); out('veg2', PIECE.dice, 0xd8372a, 3, 1); }
+        else if (sh === 'shreddedCheese') out('cheese', () => k.piece('shred'), L.colour, 7, 0.8);
+        else if (sh === 'shreddedLettuce') out('lettuce', PIECE.ribbon, L.colour, 4, 0.9);
+        else if (sh === 'pico') out('pico', PIECE.dice, L.colour, 5, 0.8);
+        else if (sh === 'cornKernels') out('corn', PIECE.kernel, L.colour, 6, 0.9);
+        else if (sh === 'sourCream') out('sc', PIECE.dot, L.colour, 3, 0.9);
+        else if (sh === 'guacamole') out('guac', PIECE.dot, L.colour, 3, 1.1);
+        else if (sh === 'jalapenoRings') out('jal', PIECE.ring, L.colour, 2, 0.6);
+      });
+      return g;
+    }
+    /** Press stripes across the roll's top, between s0 and s1 along it, and the stage's crisp marks. */
+    function stripesRoll(g, s, s0, s1, dr, seed) {
+      const [n, col, th] = STRIPES[s];
+      for (let i = 0; i < n; i++) {
+        const sAt = s0 + (s1 - s0) * (i + 0.5) / n, pts = [];
+        for (let j = 0; j <= 14; j++) {
+          const th2 = -1.25 + 2.5 * j / 14, p = rollPoint(sAt + th2 * 0.02, -PI / 2 + th2, dr + 0.0015);
+          if (!beyondCut(p, 0.006)) pts.push(p);
+        }
+        if (pts.length < 3) continue;
+        const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 20, th, 5, false), k.toon(col));
+        tube.scale.set(1, 1, 1);
+        g.add(tube);
+      }
+    }
+    /** Points on the roll's exposed upper surface (for freckles, toasty spots, blisters). */
+    function rollSpots(n, s0, s1, dr, seed, lift) {
+      const R = k.rand(seed), out = [];
+      for (let i = 0, tries = 0; out.length < n && tries < n * 6; tries++) {
+        const sAt = s0 + (s1 - s0) * R(), phi = -PI / 2 + (R() - 0.5) * 2.6, p = rollPoint(sAt, phi, dr + (lift || 0.0015));
+        if (beyondCut(p, 0.01)) continue;
+        const nrm = V(0, -Math.sin(phi), Math.cos(phi)).normalize();
+        out.push({ p: [p.x, p.y, p.z], nrm: [nrm.x, nrm.y, nrm.z], r: R() * PI * 2, t: R() });
+        i++;
+      }
+      return out;
+    }
+    /** The wrapped burrito: { g, h }. o.where 'griddle' draws it bare (it toasts out of its foil). */
+    function rolled(made, parts, s, o) {
+      const g = new THREE.Group(), seed = (made.recipe || 'b') + ':roll', burst = has(made, 'burst'), inFoil = !(o && o.where === 'griddle');
+      g.name = 'burrito';
+      const col = tortillaColour(s, 'burrito'), dr2 = burst ? 0.013 : 0;
+      const body = k.ink(rollGeo('body', PROFILE, 0, 0), k.toon(col));
+      body.name = 'tortilla';
+      g.add(body);
+      // the cut end: the tortilla's edge (a ring), the fillings inside
+      const ring = new THREE.Mesh(onCut(new THREE.RingGeometry(ROLL.R - 0.013, ROLL.R, k.seg(30), 1), 0.0008), k.toon(k.mix(col, 0xb08a50, 0.15)));
+      g.add(ring);
+      g.add(crossSection(made, parts, seed, ROLL.R - 0.013, 0));
+      // the closed end's folds: three creases where the tortilla was tucked in
+      [-0.6, 0.15, 0.9].forEach((phi, i) => {
+        const pts = [0.012, 0.03, 0.055, 0.085].map(sAt => rollPoint(sAt, phi - PI / 2 + i * 0.1, 0.002));
+        g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 10, 0.003, 4, false), k.toon(k.mix(col, 0x6a4a28, 0.45))));
+      });
+      let outer = null;
+      if (burst) {
+        // the second tortilla, a little fatter and a little shorter: the first one's edge peeks out of it
+        const OP = rollProfile(ROLL.R + 0.013, ROLL.L);
+        outer = new THREE.Group();
+        outer.name = 'outer';
+        outer.add(k.ink(rollGeo('outer', OP, 0.026, 0), k.toon(k.mix(col, 0xffffff, 0.05))));
+        outer.add(new THREE.Mesh(onCut(new THREE.RingGeometry(ROLL.R + 0.001, ROLL.R + 0.013, k.seg(30), 1), 0.0268), k.toon(k.mix(col, 0xb08a50, 0.12))));
+        g.add(outer);
+      }
+      const sFrom = inFoil ? ROLL.foil * ROLL.L : 0.02;
+      stripesRoll(outer || g, s, sFrom + 0.02, ROLL.L - 0.02, dr2, seed);
+      freckles(outer || g, rollSpots(k.thin(18, 8), sFrom, ROLL.L, dr2, seed + ':fr', 0.0015), k.mix(col, 0x8a5a24, 0.35), 0.4);
+      if (s >= 2) freckles(outer || g, rollSpots(s === 2 ? 8 : 14, sFrom, ROLL.L, dr2, seed + ':ts', 0.002), s >= 4 ? 0x120a06 : 0x7a4418, 0.5);
+      if (s >= 3) {
+        // blistered, crisp: dark bubbles along the top and round the cut edge
+        const bl = rollSpots(s === 3 ? 12 : 18, sFrom, ROLL.L, dr2, seed + ':bl', 0.001).map(p => Object.assign(p, { s: 0.8 + p.t * 0.5 }));
+        (outer || g).add(scat(PIECE.blister(), s >= 4 ? 0x1a0e08 : 0x8a4a1a, bl, { outline: false }));
+      }
+      if (inFoil) {
+        const FP = rollProfile(ROLL.R + 0.009 + dr2, ROLL.foil * ROLL.L);
+        const foil = k.ink(rollGeo('foil' + (burst ? 'b' : ''), FP, 0, 0.045), k.toon(C.foil));
+        foil.name = 'foil';
+        g.add(foil);
+        [0.08, 0.17, 0.24].forEach((sAt, i) => {
+          const pts = [-0.9, -0.5, -0.1].map(phi => rollPoint(sAt, phi - 0.4 * i, 0.012 + dr2));
+          g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 8, 0.004, 4, false), k.SHINE));
+        });
+      }
+      if (burst && inFoil) {
+        // the spill: a scrap of foil in front with beans, rice and a smear of sour cream on it
+        const spill = new THREE.Group();
+        spill.name = 'spill';
+        const sheet = new THREE.Mesh(kept('scrap', () => {
+          const sh = new THREE.Shape(), R = k.rand('scrap');
+          for (let i = 0; i < 9; i++) { const a = i / 9 * PI * 2, r = 0.11 * (0.8 + R() * 0.35); if (!i) sh.moveTo(Math.cos(a) * r * 1.5, Math.sin(a) * r); else sh.lineTo(Math.cos(a) * r * 1.5, Math.sin(a) * r); }
+          sh.closePath();
+          return new THREE.ShapeGeometry(sh).rotateX(-PI / 2);
+        }), k.toon(C.foil));
+        sheet.position.y = 0.002;
+        spill.add(sheet);
+        const smear = new THREE.Mesh(kept('smear', () => new THREE.SphereGeometry(0.04, 12, 6, 0, PI * 2, 0, PI / 2).scale(1.4, 0.25, 0.8)), k.toon(0xfbf8ef));
+        smear.position.set(0.05, 0.003, 0.01);
+        spill.add(smear);
+        const bean = parts.find(p => k.lookFor(p).shape === 'beans'), riceP = parts.find(p => k.lookFor(p).shape === 'rice');
+        if (bean) spill.add(scat(PIECE.bean(), k.lookFor(bean).colour, [[-0.08, 0.02], [-0.04, -0.03], [-0.1, -0.02], [0.0, 0.04]].map(([x, z], i) => ({ p: [x, 0.008, z], nrm: [0, 1, 0], r: i * 1.3, t: 0.5 })), { tilt: 0.3 }));
+        if (riceP) spill.add(scat(PIECE.rice(), k.lookFor(riceP).colour, [[-0.02, 0.0], [-0.06, 0.05], [0.1, -0.03], [-0.12, 0.03], [0.02, -0.04]].map(([x, z], i) => ({ p: [x, 0.006, z], nrm: [0, 1, 0], r: i * 2.1, t: 0.5 })), { tilt: 0.3 }));
+        spill.position.set(0.1, 0, 0.21);
+        g.add(spill);
+      }
+      if (s >= 4) smoke(g, 0.26);
+      return { g, h: (ROLL.R + dr2) * 2 * ROLL.sq + 0.01, outer };
+    }
+    /** Burnt: dark smoke rising off it (it sits still with Motion Reduced). */
+    function smoke(g, top) {
+      for (let i = 0; i < 3; i++) {
+        const p = k.puff(0x4f4a48, 0.85);
+        p.scale.setScalar(1.6);
+        p.position.set((i - 1) * 0.16, top + 0.05 + (i % 2) * 0.05, 0);
+        g.add(p);
+        k.spin(p, 'rise', { phase: i * 0.6, alpha: 0.85, height: 0.3 });
+      }
+    }
+    /** The giant's pennant: a toothpick with a red flag and a flame on it (no words). */
+    function pennant() {
+      const g = new THREE.Group();
+      g.name = 'pennant';
+      const stick = k.inkThin(k.cyl(0.0045, 0.2, 6), k.toon(0xe8d2a0));
+      stick.position.y = 0.1;
+      const flag = new THREE.Mesh(kept('flag', () => { const s = new THREE.Shape(); s.moveTo(0, 0); s.lineTo(0.11, -0.022); s.lineTo(0, -0.05); s.closePath(); return new THREE.ShapeGeometry(s); }), k.toon(0xd8261a, { side: THREE.DoubleSide }));
+      flag.position.set(0.004, 0.198, 0.001);
+      const flame = new THREE.Mesh(kept('flame', () => { const s = new THREE.Shape(); s.moveTo(0, 0); s.quadraticCurveTo(0.016, 0.01, 0.008, 0.03); s.quadraticCurveTo(0.004, 0.018, -0.002, 0.024); s.quadraticCurveTo(-0.014, 0.012, 0, 0); return new THREE.ShapeGeometry(s); }), k.toon(0xffc21a, { side: THREE.DoubleSide }));
+      flame.position.set(0.028, 0.164, 0.003);
+      g.add(stick, flag, flame);
+      return g;
+    }
+
+    /* ── layouts ── */
+    /** The parts, as k.sequence gives them, without the style (the vessel) and with what each slot is. */
+    function fillings(made, o) {
+      const seq = k.sequence(made, o);
+      return seq.parts.filter(p => p.slot !== 'style');
+    }
+    /** Build one filling part on a region (by its shape), with the kit (so a gross-out's fx land on it). */
+    const BASE = { rice: 1, beans: 1 };
+    function onRegion(part, Rg, o, extra) {
+      return k.food(part, Object.assign({}, o, { region: Rg }, extra || {}));
+    }
+    /** The burrito: flat on its foil with the band of fillings, or rolled once `wrap` is in made.auto. */
+    function burritoLayout(made, o) {
+      o = o || {};
+      const s = toastIndex(made, o), parts = fillings(made, o), g = new THREE.Group();
+      let h;
+      if (has(made, 'wrap') || o.where === 'griddle') {
+        const b = rolled(made, parts, s, o);
+        g.add(b.g);
+        h = b.h;
+        // a slight turn: the cut end faces the viewer
+        b.g.rotation.y = -0.42;
+      } else {
+        const seed = (made.recipe || 'b') + ':flat';
+        const sheet = foilSheet(0.9, 0.86, seed);
+        sheet.rotation.y = 0.06;
+        g.add(sheet);
+        const t = flatTortilla(TORT.r, s, seed, 'burrito');
+        t.g.position.y = 0.005;
+        g.add(t.g);
+        const y0 = 0.005 + TORT.t, G = ground(() => y0);
+        const W = { base: [0.3, 0.12], top: [0.29, 0.11] };
+        let top = y0;
+        parts.forEach((p, i) => {
+          const sh = k.lookFor(p).shape, base = sh === 'rice' || sh === 'beans';
+          const Rg = base && sh === 'beans' ? band(G, 0, 0, 0.28, 0.105, ':' + i) : base ? band(G, 0, 0, W.base[0], W.base[1], ':' + i) : band(G, 0, 0, W.top[0], W.top[1], ':' + i);
+          const b = onRegion(Object.assign({ n: i }, p), Rg, o, { item: made, stage: s });
+          if (BASE[p.slot]) b.g.name = p.slot;
+          else if (p.slot) b.g.name = p.slot;
+          g.add(b.g);
+          top = Math.max(top, b.h);
+        });
+        h = top;
+      }
+      if (k.giant(made) > 1 || shapeOfRecipe(made) === 'giantBurrito') {
+        const pn = pennant();
+        if (has(made, 'wrap') || o.where === 'griddle') { pn.position.set(-0.08, ROLL.R * 2 * ROLL.sq - 0.02, 0.02); pn.rotation.z = 0.15; }
+        else pn.position.set(-0.32, 0.01, -0.2);
+        g.add(pn);
+        h = Math.max(h, pn.position.y + 0.2);
+      }
+      const sc = o.contentScale || 1;
+      if (sc !== 1) g.scale.multiplyScalar(sc);
+      return { g, h: h * sc };
+    }
+    const shapeOfRecipe = made => { const R = made && made.recipe && (k.pack().recipes || {})[made.recipe]; return R && R.look && R.look.shape; };
+    /** Where a part's loose heap sits in the bowl before `arrange` (seeded by what it is). */
+    function looseSpot(id, i) {
+      const R = k.rand('loose:' + id), a = i * 2.4 + R() * 0.8, rr = 0.07 + R() * 0.13;
+      return [Math.cos(a) * rr, Math.sin(a) * rr];
+    }
+    /** The bowl: loose heaps, or once arranged every part its own wedge, nothing touching; the sauce across. */
+    function bowlLayout(made, o) {
+      o = o || {};
+      const parts = fillings(made, o), g = new THREE.Group(), v = bowlVessel(), arranged = has(made, 'arrange');
+      g.add(v.g);
+      const G = ground((x, z) => innerY(Math.hypot(x, z))), from = {};
+      const solid = parts.filter(p => k.lookFor(p).shape !== 'hotSauce');
+      const sauce = parts.find(p => k.lookFor(p).shape === 'hotSauce');
+      let top = BOWL.h;
+      if (arranged) {
+        const N = Math.max(1, solid.length), step = PI * 2 / N, gap = N > 1 ? 0.016 : 0;
+        solid.forEach((p, i) => {
+          const a0 = -PI / 2 - step / 2 + i * step, a1 = a0 + step;
+          const Rg = N === 1 ? heapAt(G, 0, 0, 0.26, ':' + i) : wedge(G, a0, a1, 0.035, 0.285, gap, ':' + i);
+          const b = onRegion(Object.assign({ n: i }, p), Rg, o, { item: made, ringScale: 0.9, dollops: 1, dollopScale: 1.35, scoops: 1, scoopScale: 1.4, share: 1, heap: 0.05, dense: 2.2 });
+          if (p.slot) b.g.name = p.slot;
+          const [lx, lz] = looseSpot(p.ing, i), am = (a0 + a1) / 2;
+          from[p.slot || p.ing] = V(lx - Math.cos(am) * 0.16, 0, lz - Math.sin(am) * 0.16);
+          b.g.userData.slideFrom = from[p.slot || p.ing];
+          g.add(b.g);
+          top = Math.max(top, b.h);
+        });
+      } else {
+        solid.forEach((p, i) => {
+          const sh = k.lookFor(p).shape;
+          let Rg;
+          if (sh === 'rice') Rg = heapAt(G, 0, 0, 0.29, ':' + i);
+          else if (sh === 'beans') Rg = heapAt(G, 0.06, 0.03, 0.2, ':' + i);
+          else { const [x, z] = looseSpot(p.ing, i); Rg = heapAt(G, x, z, 0.11, ':' + i); }
+          const b = onRegion(Object.assign({ n: i }, p), Rg, o, { item: made, dollops: 1, dollopScale: 1.2, scoops: 1, scoopScale: 1.2, heap: sh === 'rice' ? 0.035 : 0.045, dense: 2 });
+          if (p.slot) b.g.name = p.slot;
+          g.add(b.g);
+          top = Math.max(top, b.h);
+        });
+      }
+      if (sauce) {
+        const b = onRegion(Object.assign({ n: solid.length }, sauce), band(G, 0, 0, 0.25, 0.2, ':sauce'), o, { item: made, onFood: true, turns: 6 });
+        b.g.name = 'sauce';
+        g.add(b.g);
+        top = Math.max(top, b.h);
+      }
+      const sc = o.contentScale || 1;
+      if (sc !== 1) g.scale.multiplyScalar(sc);
+      return { g, h: top * sc, from };
+    }
+    /** The tacos: three on the holder, open (fillings in a strip) or folded into half-moons in the V rods; on the
+     *  griddle, three pressed half-moons in a row. setFold(i, t) folds one (the flourish). */
+    const PROTEIN = { chickenPieces: 1, steakPieces: 1, grilledVeggies: 1 };
+    function tacosLayout(made, o) {
+      o = o || {};
+      const parts = fillings(made, o), s = toastIndex(made, o), g = new THREE.Group(), seed = (made.recipe || 't') + ':taco';
+      const col = tortillaColour(s, 'tacos'), folded = has(made, 'fold'), griddle = o.where === 'griddle';
+      if (griddle) {
+        TACOS.xs.forEach((x, i) => g.add(pressed(parts, s, col, seed + i, x)));
+        if (s >= 4) smoke(g, 0.06);
+        return { g, h: 0.05 };
+      }
+      g.add(tacoTray(folded && o.foldT === undefined));
+      const shells = [], fills = [];
+      let top = 0.1;
+      TACOS.xs.forEach((x, ti) => {
+        const T = new THREE.Group();
+        T.position.set(x, TACOS.tray, 0);
+        T.name = 'taco' + ti;
+        const sh = tacoShell(TACOS.r, col);
+        T.add(sh.mesh);
+        // the stripes and the toast spots lie on the shell: drawn on the flat disc's coordinates, mapped with it
+        const marks = new THREE.Group();
+        T.add(marks);
+        const G = ground(() => 0.006), F = new THREE.Group();
+        F.name = 'fillings';
+        parts.forEach((p, i) => {
+          const b = onRegion(Object.assign({ n: i }, p), band(G, 0, 0, 0.105, 0.042, ':' + ti + ':' + i), o, Object.assign({ item: made, share: 1 / 3, rings: 2, ringScale: 0.85, dollops: 1, dollopScale: 0.6, scoops: 1, scoopScale: 0.6, sauceR: 0.006, turns: 4, salt: 't' + ti },
+            PROTEIN[k.lookFor(p).shape] ? { heap: 0.026, dense: 1.4 } : { dense: 2.2 }));
+          F.add(b.g);
+        });
+        T.add(F);
+        const set = t => {
+          sh.setFold(t);
+          F.position.y = 0.03 * t; F.scale.set(1, 1, 1 - 0.35 * t);
+          tacoMarks(marks, s, t, seed + ti);
+        };
+        set(o.foldT !== undefined ? o.foldT : folded ? 1 : 0);
+        shells.push(set); fills.push(F);
+        g.add(T);
+      });
+      top = folded ? 0.17 : 0.08;
+      return { g, h: top, setFold: (i, t) => shells[i] && shells[i](t), rods: () => g.add(tacoTray(true)) };
+    }
+    /** A taco's press stripes on its shell (folded t of the way): lines across the outside of the front wall. */
+    function tacoMarks(g, s, t, seed) {
+      while (g.children.length) { const c = g.children[0]; g.remove(c); if (c.geometry && !k.isKept(c.geometry)) c.geometry.dispose(); }
+      const [n, col, th] = STRIPES[s], r = TACOS.r, kappa = t * (PI / 2 + 0.12) / r;
+      const at = (u, v, lift) => {
+        let y = 0, z = v;
+        if (kappa > 1e-5) { y = (1 - Math.cos(kappa * v)) / kappa; z = Math.sin(kappa * v) / kappa; }
+        // outside of the front wall when folded (the normal out of the U: -cos, +sin), the top when flat
+        return t > 0.5 ? V(u, y + 0.004 - Math.cos(kappa * v) * lift, z + Math.sin(kappa * v) * lift) : V(u, y + 0.004 + lift, z);
+      };
+      for (let i = 0; i < n; i++) {
+        const u = (i - (n - 1) / 2) * 0.05, w = Math.sqrt(Math.max(0, r * r - u * u)) * 0.9, pts = [];
+        for (let j = 0; j <= 10; j++) { const v = t > 0.5 ? w * j / 10 : -w + 2 * w * j / 10; pts.push(at(u + (t > 0.5 ? 0.012 : 0.02) * (j / 10 - 0.5), v, 0.003)); }
+        g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 14, th * 0.85, 4, false), k.toon(col)));
+      }
+      if (s >= 2) {
+        const R = k.rand(seed + ':ts'), pts = [];
+        for (let i = 0; i < (s === 2 ? 5 : 9); i++) {
+          const u = (R() - 0.5) * r * 1.4, w = Math.sqrt(Math.max(0, r * r - u * u)) * 0.85, v = t > 0.5 ? w * (0.2 + R() * 0.75) : (R() * 2 - 1) * w;
+          const p = at(u, v, 0.0035);
+          const nrm = t > 0.5 ? V(0, -Math.cos(kappa * v), Math.sin(kappa * v)).normalize() : V(0, 1, 0);
+          pts.push({ p: [p.x, p.y, p.z], nrm: [nrm.x, nrm.y, nrm.z], r: R() * 6, t: 0.5, s: 0.35 + R() * 0.2 });
+        }
+        g.add(scat(PIECE.dot(), s >= 4 ? 0x120a06 : 0x7a4418, pts, { outline: false }));
+      }
+    }
+    /** A pressed half-moon taco on the griddle: two tortilla layers with the fillings' colour between, stripes on top. */
+    function pressed(parts, s, col, seed, x) {
+      const g = new THREE.Group(), r = TACOS.r * 1.05;
+      const geo = kept('halfDisc', () => { const sh = new THREE.Shape(); sh.moveTo(-r, 0); sh.absarc(0, 0, r, PI, 0, true); sh.lineTo(-r, 0); const e = new THREE.ExtrudeGeometry(sh, { depth: 0.012, bevelEnabled: false, curveSegments: 16 }); e.rotateX(PI / 2); return e; });
+      const filling = parts.find(p => ['chickenPieces', 'steakPieces', 'grilledVeggies'].includes(k.lookFor(p).shape));
+      const fcol = filling ? (k.lookFor(filling).shape === 'grilledVeggies' ? 0x4f9a3a : k.lookFor(filling).colour) : 0xd8402c;
+      const bottom = k.ink(geo, k.toon(col)); bottom.position.y = 0.012;
+      const mid = new THREE.Mesh(geo, k.toon(fcol)); mid.scale.set(0.93, 1, 0.93); mid.position.set(0, 0.024, 0.004);
+      const top = k.ink(geo, k.toon(col)); top.position.y = 0.036;
+      g.add(bottom, mid, top);
+      // bits of filling peeking out round the curved edge
+      const R = k.rand(seed + ':peek'), cols = parts.map(p => k.lookFor(p)).filter(L => L.shape !== 'hotSauce' && L.colour !== undefined).map(L => L.colour);
+      if (cols.length) {
+        const pts = [];
+        for (let i = 0; i < 9; i++) { const a = 0.25 + R() * (PI - 0.5); pts.push({ p: [Math.cos(a) * r * 0.97, 0.026, Math.sin(a) * r * 0.97], nrm: [0, 1, 0], r: R() * 6, t: R(), s: 0.9, c: cols[i % cols.length] }); }
+        cols.forEach((c, j) => { const mine = pts.filter((_, i) => i % cols.length === j); if (mine.length) g.add(scat(PIECE.dice(), c, mine, { tilt: 0.6 })); });
+      }
+      const [n, scol, th] = STRIPES[s];
+      for (let i = 0; i < n; i++) {
+        const u = (i - (n - 1) / 2) * r * 1.4 / Math.max(n, 2), len = Math.sqrt(Math.max(0, r * r - u * u)) * 0.9;
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(th * 2.2, th * 0.5, len), k.toon(scol));
+        bar.position.set(u, 0.0372, len / 2 + 0.004); bar.rotation.y = 0.25;
+        g.add(bar);
+      }
+      if (s >= 2) freckles(g, k.sample({ kind: 'disc', r: r * 0.6, y: 0.0375 }, s === 2 ? 5 : 9, seed + ':ts').map(p => (p.p[2] = Math.abs(p.p[2]) + 0.02, p)), s >= 4 ? 0x120a06 : 0x7a4418, 0.45);
+      g.position.set(x, 0, -0.12);
+      g.scale.setScalar(1.15);
+      return g;
+    }
+    /** Chips and salsa: the checked boat of chips, the salsa cup, the guacamole cup, the lime on the rim. */
+    function chipsLayout(made, o) {
+      o = o || {};
+      const seq = k.sequence(made, o), g = new THREE.Group();
+      let top = BOAT.h;
+      const body = k.food(Object.assign({ n: 0 }, seq.body || { ing: 'chips' }), Object.assign({}, o, { item: made }));
+      body.g.position.set(-0.12, 0, 0);
+      g.add(body.g);
+      top = Math.max(top, body.h);
+      let salsa = null;
+      seq.parts.forEach((p, i) => {
+        const sh = k.lookFor(p).shape;
+        if (sh === 'salsaCup') { const b = k.food(Object.assign({ n: i + 1 }, p), Object.assign({}, o, { item: made })); b.g.position.set(0.25, 0, 0.08); g.add(b.g); salsa = b.g; }
+        else if (sh === 'guacamole') {
+          const c = cup(k.lookFor(p).colour, 1.15);
+          c.g.name = 'guacCup';
+          const b = onRegion(Object.assign({ n: i + 1 }, p), heapAt(ground(() => c.surface), 0, 0, 0.07, ':gc'), o, { item: made, scoops: 1, scoopScale: 1.05 });
+          c.g.add(b.g);
+          c.g.position.set(0.43, 0, -0.06);
+          g.add(c.g);
+          top = Math.max(top, c.surface + 0.05);
+        } else if (sh === 'limeWedge') {
+          const b = k.food(Object.assign({ n: i + 1 }, p), Object.assign({}, o, { item: made }));
+          b.g.position.set(0.04, BOAT.h * 0.75, 0.13); b.g.rotation.set(-0.35, 0.5, 0.2);
+          g.add(b.g);
+        }
+      });
+      const sc = (o.contentScale || 1) * (o.where === 'line' ? 1.15 : 1);
+      if (sc !== 1) g.scale.multiplyScalar(sc);
+      return { g, h: top * sc, salsa };
+    }
+    /** Which layout: chips by the recipe's body; the rest by the style picked (nothing until one is). */
+    function itemLayout(made, o) {
+      const style = pickOf(made, 'style');
+      if (made.ing === 'chips') return chipsLayout(made, o);
+      if (style === 'bowl') return bowlLayout(made, o);
+      if (style === 'tacos') return tacosLayout(made, o);
+      if (style === 'burrito') return burritoLayout(made, o);
+      return { g: new THREE.Group(), h: 0 };
+    }
+
+    /* ── shapes: one builder per look.shape ── */
+    const nothing = () => ({ g: new THREE.Group(), h: 0 });
+    const shapes = {
+      // The bodies draw nothing: the style picked is the vessel (their looks carry the ramps for the dial).
+      burritoBody: nothing, tacoBody: nothing, bowlBody: nothing,
+      /** The basket of chips: the checked paper boat heaped with triangular chips, salt specks on them. */
+      chipBasket(part) {
+        const b = boat(), g = b.g, R = k.rand('chips:' + (part.n || 0)), n = k.thin(36, 26), list = [[], []];
+        for (let i = 0; i < n; i++) {
+          const a = R() * PI * 2, rr = Math.sqrt(R()), x = Math.cos(a) * rr * BOAT.w * 0.4, z = Math.sin(a) * rr * BOAT.d * 0.38;
+          const y = b.h + 0.02 + (1 - rr * rr) * 0.13 * (0.6 + 0.4 * R());
+          list[i % 2].push({ p: [x, y, z], nrm: [0, 1, 0], r: R() * PI * 2, t: R(), s: 0.95 + R() * 0.2 });
+        }
+        g.add(scat(PIECE.chip(), 0xf2c46a, list[0], { tilt: 2.4 }), scat(PIECE.chip(), 0xe2a446, list[1], { tilt: 2.4 }));
+        const salt = list[0].concat(list[1]).filter((_, i) => i % 2 === 0).map(p => ({ p: [p.p[0] + 0.01, p.p[1] + 0.012, p.p[2]], nrm: [0, 1, 0], r: 0, t: 0.5, s: 0.25 }));
+        g.add(scat(PIECE.dot(), 0xffffff, salt, { outline: false }));
+        return { g, h: b.top + 0.04 };
+      },
+      flourTortilla(part, o) {
+        const s = o && o.stage !== undefined ? clamp(o.stage | 0, 0, 4) : 0, g = new THREE.Group();
+        g.add(foilSheet(0.9, 0.86, 'alone'));
+        const t = flatTortilla(TORT.r, s, 'alone', 'burrito');
+        t.g.position.y = 0.005;
+        g.add(t.g);
+        return { g, h: 0.005 + TORT.t };
+      },
+      burritoBowl: () => { const b = bowlVessel(); return { g: b.g, h: BOWL.floor }; },
+      softTacos(part, o) {
+        const s = o && o.stage !== undefined ? clamp(o.stage | 0, 0, 4) : 0, g = new THREE.Group();
+        g.add(tacoTray(false));
+        TACOS.xs.forEach(x => { const t = flatTortilla(TACOS.r, s, 'taco' + x, 'tacos'); t.g.position.set(x, TACOS.tray, 0); g.add(t.g); });
+        return { g, h: TACOS.tray + TORT.t };
+      },
+      rice, beans,
+      chickenPieces: (part, o) => meats.chicken(part, o),
+      steakPieces: (part, o) => meats.steak(part, o),
+      grilledVeggies: (part, o) => meats.veggies(part, o),
+      shreddedCheese: (part, o) => toppings.cheese(part, o),
+      shreddedLettuce: (part, o) => toppings.lettuce(part, o),
+      pico: (part, o) => toppings.pico(part, o),
+      cornKernels: (part, o) => toppings.corn(part, o),
+      sourCream, guacamole,
+      jalapenoRings: jalapenos,
+      dicedOnions: (part, o) => toppings.onions(part, o),
+      /** On the food a zigzag drizzle; on its own, the bottle it waits in. */
+      hotSauce: (part, o) => (o && (o.region || o.onFood) ? drizzle(part, o) : sauceBottle(part)),
+      salsaCup,
+      limeWedge,
+    };
+
+    /* ── the line: fillings wait in a steel pan (the kit's tin) and are tipped on ── */
+    const TIN = {
+      rice: L => ({ piece: PIECE.rice(), mat: k.toon(L.colour), n: 90, size: 1.3, tilt: 1 }),
+      beans: L => ({ piece: PIECE.bean(), mat: k.toon(L.colour), n: 40, size: 1.05, tilt: 1 }),
+      shreddedCheese: L => ({ piece: 'shred', mat: k.toon(L.colour), n: 80, size: 1.15, tilt: 1.3 }),
+      shreddedLettuce: L => ({ piece: PIECE.ribbon(), mat: k.toon(L.colour), n: 40, size: 1.1, tilt: 1.2 }),
+      pico: L => ({ piece: PIECE.dice(), mat: k.toon(L.colour), n: 36, size: 1, tilt: 1 }),
+      cornKernels: L => ({ piece: PIECE.kernel(), mat: k.toon(L.colour), n: 50, size: 1.1, tilt: 1 }),
+      sourCream: L => ({ piece: dollopGeo(), mat: k.toon(L.colour), n: 6, size: 1.25, tilt: 0.3 }),
+      guacamole: L => ({ piece: scoopGeo(0), mat: k.toon(L.colour), n: 7, size: 1.1, tilt: 0.4 }),
+      jalapenoRings: L => ({ piece: PIECE.ring(), mat: k.toon(L.colour), n: 16, size: 1.1, tilt: 1 }),
+      dicedOnions: L => ({ piece: PIECE.onion(), mat: k.toon(L.colour), n: 36, size: 1, tilt: 1 }),
+    };
+    /** A filling's pan: the same piece and colour, drawn 1.2 times up (small next to the burrito on the counter). */
+    function tinOf(part) {
+      const L = k.lookFor(part), T = TIN[L.shape];
+      const b = k.tin(part, T ? T(L) : undefined);
+      const hp = b.g.getObjectByName('heap');
+      if (hp && L.shape === 'pico') hp.add(k.heap(PIECE.bit(), k.toon(0xf6f2e6), { n: k.thin(14, 7), r: 0.1, h: 0.09, seed: 'tinpico' }).g);
+      if (hp && L.shape === 'shreddedLettuce') hp.add(k.heap(PIECE.ribbon(), k.toon(0xc8ee8e), { n: k.thin(18, 9), r: 0.1, h: 0.09, seed: 'tinlet', tilt: 1.2 }).g);
+      if (hp && L.shape === 'jalapenoRings') hp.add(k.heap(PIECE.ringFlesh(), k.toon(0xd9eaa0), { n: k.thin(10, 5), r: 0.09, h: 0.095, seed: 'tinjal' }).g);
+      b.g.scale.setScalar(1.2);
+      b.h *= 1.2;
+      return b;
+    }
+    const lines = {
+      tin: { incoming: part => Object.assign(tinOf(part), { rest: 0.045 }), add: c => k.tip(c) },
+    };
+    const applies = { rice: 'tin', beans: 'tin', shreddedCheese: 'tin', shreddedLettuce: 'tin', pico: 'tin', cornKernels: 'tin', sourCream: 'tin', guacamole: 'tin', jalapenoRings: 'tin', dicedOnions: 'tin' };
+
+    /* ── gross-out fx that follow the food (the kit's otherwise) ── */
+    const kitFx = name => (k.module('kit').fx || {})[name];
+    const fx = {
+      /** A hair lies along the food's own surface (the beans' band), not across its bounding box's top. */
+      hair(g, v, box, c) {
+        // a dark hair on black beans cannot be seen: on dark food it is a pale (grey-blond) one
+        const L = c && c.part ? k.lookFor(c.part.userData && c.part.userData.part ? c.part.userData.part : c.part) : null;
+        const dark = L && L.colour !== undefined && new THREE.Color(L.colour).getHSL({}).l < 0.3;
+        if (typeof v !== 'number') v = dark ? 0xeadcb8 : 0x1a1410;
+        const Rg = c && c.o && c.o.region;
+        if (!Rg) return kitFx('hair')(g, v, box, c);
+        const [x0, x1, z0, z1] = Rg.span, cz = (z0 + z1) / 2, d = (z1 - z0) / 2, pts = [], R = k.rand('hair:' + ((c.part && c.part.ing) || ''));
+        for (let i = 0; i <= 16; i++) {
+          const x = x0 + (x1 - x0) * (0.18 + 0.64 * i / 16), z = cz + Math.sin(i * 0.8 + R() * 0.6) * d * 0.4;
+          pts.push(V(x, Rg.G.at(x, z) + 0.012, z));
+        }
+        g.add(k.fxPart(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.0055, 5, false), k.toon(v))));
+      },
+      /** Spots on the food's own upper surface (the brown guacamole's scoops), not floating at its box's top. */
+      spots(g, v, box, c) {
+        const S = k.surfaceOf(g, 0.5);
+        if (S.count < 12) return kitFx('spots')(g, v, box, c);
+        const o = typeof v === 'object' ? v : { colour: typeof v === 'number' ? v : 0x7fae3a };
+        const pts = k.onSurface(S, o.n || 9, 'spots:' + ((c.part && c.part.ing) || '') + ':' + ((c.part && c.part.n) || 0), 0.004).map(p => Object.assign(p, { s: 0.6 + p.t * 0.7 }));
+        g.add(k.fxPart(scat(kept('spot', () => new THREE.CircleGeometry(0.02, 10).rotateX(-PI / 2)), o.colour, pts, { outline: false })));
+      },
+    };
+
+    /* ── flourishes ── */
+    const autos = {
+      /** The flat tortilla's sides fold in over the band, it rolls up from the near edge, and the foil folds round
+       *  its closed end. */
+      burritoWrap(c, e, made) {
+        if (pickOf(made, 'style') !== 'burrito') return popIt(c, made);
+        const after = without(made, ['burst']);
+        const flat = c.showItem(without(made, ['wrap', 'burst']));
+        if (!flat || k.reduced()) { c.showItem(after); return P0(); }
+        const g = flat.g, s0 = g.scale.clone();
+        return k.tween(380, t => { const e2 = k.ease(t); g.scale.set(s0.x * (1 - 0.25 * e2), s0.y * (1 + 0.6 * e2), s0.z * (1 - 0.62 * e2)); })
+          .then(() => {
+            if (c.onApply) c.onApply();
+            const b = c.showItem(after), bg = b && b.g;
+            if (!bg) return P0();
+            const s1 = bg.scale.clone(), r = bg.children[0];
+            const r0 = r ? r.rotation.x : 0;
+            return k.tween(420, t => {
+              const e2 = k.ease(t);
+              bg.scale.set(s1.x * (0.85 + 0.15 * e2), s1.y * (0.45 + 0.55 * e2), s1.z * (1.5 - 0.5 * e2));
+              if (r) r.rotation.x = r0 + (1 - e2) * -1.4;
+            });
+          })
+          .then(() => { const b = c.showItem(after); return b ? c.pop(b.g) : P0(); });
+      },
+      /** Each taco flops over its filling, one after another; the holder's rods pop up last. */
+      tacoFold(c, e, made) {
+        if (pickOf(made, 'style') !== 'tacos') return popIt(c, made);
+        if (k.reduced()) { c.showItem(made); return P0(); }
+        const b = c.showItem(made, { foldT: 0 });
+        if (!b || !b.setFold) { c.showItem(made); return P0(); }
+        let p = P0();
+        [0, 1, 2].forEach(i => { p = p.then(() => k.tween(300, t => { const e2 = k.ease(t); b.setFold(i, Math.min(1, e2 * 1.08) - Math.max(0, e2 - 0.93)); })); });
+        return p.then(() => { if (c.onApply) c.onApply(); const b2 = c.showItem(made); return b2 ? c.pop(b2.g) : P0(); });
+      },
+      /** The parts slide out of their loose heaps into tidy wedges, then the bowl settles. */
+      bowlArrange(c, e, made) {
+        if (pickOf(made, 'style') !== 'bowl') return popIt(c, made);
+        const b = c.showItem(made);
+        if (!b || k.reduced()) return P0();
+        const moving = [];
+        b.g.traverse(o => { if (o.userData.slideFrom) moving.push({ o, from: o.userData.slideFrom.clone(), p0: o.position.clone() }); });
+        moving.forEach(m => m.o.position.copy(m.p0).add(m.from));
+        return k.tween(620, t => {
+          moving.forEach((m, i) => {
+            const u = clamp(t * 1.6 - i * (0.6 / Math.max(1, moving.length)), 0, 1), e2 = k.ease(u);
+            m.o.position.copy(m.p0).add(m.from.clone().multiplyScalar(1 - e2));
+            m.o.position.y = m.p0.y + Math.sin(u * PI) * 0.03;
+          });
+        }).then(() => { if (c.onApply) c.onApply(); return c.pop(b.g); });
+      },
+      /** The wrapped burrito bulges, wobbles and pops: beans, rice and sour cream fly out onto a scrap of foil with a
+       *  puff of steam; a second tortilla flops over it and rolls round it. */
+      burritoBurst(c, e, made) {
+        if (pickOf(made, 'style') !== 'burrito') return popIt(c, made);
+        if (k.reduced()) { c.showItem(made); return P0(); }
+        const before = c.showItem(without(made, ['burst']));
+        if (!before) { c.showItem(made); return P0(); }
+        const g = before.g, s0 = g.scale.clone();
+        return k.tween(700, t => {
+          const swell = 1 + 0.16 * k.ease(t), wob = Math.sin(t * PI * 9) * 0.05 * t;
+          g.scale.set(s0.x * (1 + wob * 0.3), s0.y * (swell - wob), s0.z * (swell + wob));
+        }).then(() => {
+          if (c.onApply) c.onApply();
+          const b = c.showItem(made), bg = b && b.g;
+          if (!bg) return P0();
+          const spill = bg.getObjectByName('spill'), outer = bg.getObjectByName('outer');
+          c.F.updateMatrixWorld(true);
+          const steam = [];
+          for (let i = 0; i < 3; i++) {
+            const p = k.puff(0xffffff, 0.75);
+            p.position.copy(c.toF(bg, V(0.22 + i * 0.04, 0.2, 0.08)));
+            p.scale.setScalar(1.4);
+            c.F.add(p); steam.push(p);
+          }
+          const sp0 = spill ? spill.position.clone() : null;
+          if (outer) outer.scale.set(0.05, 1, 1);
+          return k.tween(520, t => {
+            const e2 = k.ease(t);
+            if (spill) { spill.position.set(sp0.x - 0.12 * (1 - e2), sp0.y + Math.sin(t * PI) * 0.18, sp0.z - 0.15 * (1 - e2)); spill.scale.setScalar(0.4 + 0.6 * e2); }
+            steam.forEach((p, i) => { p.position.y += 0.004; p.userData.mat.opacity = 0.75 * (1 - t); });
+          }).then(() => {
+            steam.forEach(p => { c.F.remove(p); k.free(p); });
+            if (!outer) return P0();
+            return k.tween(460, t => { const e2 = k.ease(t); outer.scale.set(0.05 + 0.95 * e2, 1 + 0.15 * Math.sin(t * PI), 1 + 0.15 * Math.sin(t * PI)); outer.rotation.x = (1 - e2) * 2.2; });
+          }).then(() => { const b2 = c.showItem(made); return b2 ? c.pop(b2.g) : P0(); });
+        });
+      },
+    };
+    function popIt(c, made) { const b = c.showItem(made); return b ? c.pop(b.g) : P0(); }
+
+    /* ── the griddle: the item lies on the dark plate; steam while it toasts, smoke when burnt ── */
+    function steam(c, at, top) {
+      const R = k.rand('steam');
+      for (let i = 0; i < 3; i++) {
+        const p = k.puff(0xffffff, 0.6);
+        p.position.set(at.x + (i - 1) * 0.22 + (R() - 0.5) * 0.05, at.y + top + 0.04, at.z + (R() - 0.5) * 0.08);
+        p.scale.setScalar(1.3);
+        c.F.add(p);
+        k.spin(p, 'rise', { phase: i * 0.7, alpha: 0.6, height: 0.3 });
+      }
+    }
+    const cooks = {
+      griddle: {
+        show(c, s) {
+          const made = s.made || c.state.made || (s.ing ? { recipe: null, ing: s.ing, parts: [], picks: { style: s.ing === 'tacos' ? 'tacos' : 'burrito' }, counts: {}, auto: [], gross: [] } : null);
+          if (!made) return;
+          const A = c.anchors, b = k.item(made, { stage: s.stage || 0, where: 'griddle', set: 'griddle' });
+          if (A.giantMax && b.giant > A.giantMax) { const f = A.giantMax / b.giant; b.g.scale.multiplyScalar(f); b.h *= f; }
+          b.g.position.copy(A.plate);
+          b.g.name = 'item';
+          c.F.add(b.g);
+          if (s.cooking || s.steam) steam(c, A.plate, b.h);
+        },
+        /** The item slides onto the plate from the right. */
+        add(c, s) {
+          c.redraw({ ing: s.ing, n: s.n, stage: 0, cooking: false });
+          const item = c.F.getObjectByName('item');
+          if (!item || k.reduced()) return P0();
+          const p0 = item.position.clone();
+          return k.tween(300, t => { item.position.x = p0.x + (1 - k.ease(t)) * 1.3; });
+        },
+        /** Simple: it toasts a stage at a time to the one chosen (the stripes appear one by one), a hiss of steam at
+         *  the end. Timed: it is shown at the stage it came off at. */
+        run(c, s) {
+          const stage = s.stage | 0, ms = s.ms || 1800;
+          if (k.reduced() || c.state.timed) { c.redraw({ stage, cooking: false, steam: false }); return P0(); }
+          let p = P0();
+          for (let i = 1; i <= stage; i++) p = p.then(() => { c.redraw({ stage: i, cooking: true }); return k.wait(ms * 0.7 / Math.max(1, stage)); });
+          return p.then(() => { c.redraw({ stage, cooking: false, steam: true }); return k.wait(ms * 0.2); })
+            .then(() => { c.redraw({ stage, cooking: false, steam: false }); });
+        },
+        stage(c, s) { c.redraw({ stage: s.stage, cooking: true }); },
+      },
+    };
+
+    /* ── the sets, by backdrop name ── */
+    const sets = {
+      counter: {
+        // Solved to its picture like a station (spec 5.2): the counter top's back edge lands at 80% of the picture.
+        // Everything here lies flat on the counter top, so nothing covers the painted queue.
+        x: 12, line: COUNTER.line, surface: { y: COUNTER.top, back: COUNTER.back },
+        cam: { pos: [0, COUNTER.top + 1.15, COUNTER.back + 4.6], at: [0, COUNTER.top + 1.15 - 1.55, COUNTER.back - 1], fov: 38 },
+        build(g) {
+          // The Burritos' counter as the court picture draws it: a cream top over bright orange planks, the orange
+          // edge along the customer's side with a dark brown trim line.
+          const T = COUNTER.top, B = COUNTER.back, D = 3.6, L = 16;
+          const top = new THREE.Mesh(new THREE.BoxGeometry(L, 0.12, D), k.toon(0xfff3dc)); top.position.set(0, T - 0.06, B + D / 2); g.add(top);
+          const body = new THREE.Mesh(new THREE.BoxGeometry(L, T - 0.12, D - 0.1), k.toon(0xf07a14)); body.position.set(0, (T - 0.12) / 2, B + D / 2 + 0.05); g.add(body);
+          const flat = (z0, z1, mat) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(L, z1 - z0).rotateX(-PI / 2), mat); m.position.set(0, T + 0.0015, B + (z0 + z1) / 2); g.add(m); return m; };
+          flat(0, 0.07, k.toon(0xf28a1e));                                   // the orange edge, the storefront's planks
+          flat(0.07, 0.085, k.toon(0x5a2a08));                               // the dark brown trim line
+          [0.6, 1.4, 2.4].forEach(z => flat(z, z + 0.008, k.toon(0xf6e4c4)));   // faint seams in the cream
+          return {
+            spots: [V(COUNTER.x, T, COUNTER.row)], row: COUNTER.row, contentScale: COUNTER.scale,
+            back: B + 0.03, front: COUNTER.front, minX: -2.4, maxX: 0.6, minScreenX: SPAN.left,
+          };
+        },
+      },
+      prep: {
+        // The burrito line's plain steel counter (measured: it starts at 62.5% of the picture, under the steam
+        // table's front edge). The painted steel is the surface: no slab. The board camera.
+        x: 0, line: 0.625, surface: { y: TOP, back: -0.5 },
+        cam: { pos: [0.329, 2.573, 3.277], at: [0.329, 1.115, 0.15], fov: 30 },
+        build() {
+          return { stack: V(-0.04, TOP, 0.06), incoming: V(0.98, TOP + 0.12, 0.15), surface: TOP, giantMax: 1.05 };
+        },
+        /** A pick here: the base is set down (style), a scoop drops into the band (rice, beans, protein), the bottle
+         *  zigzags the sauce on, the salsa cup is set down. The flourishes that follow play from their own hooks. */
+        pick(c, e, made) {
+          if (!made) return P0();
+          const before = without(made, FLOURISH);
+          if (e.slot === 'sauce') return sauceOn(c, e, before);
+          const b = c.showItem(before);
+          if (c.onApply) c.onApply();
+          if (!b || k.reduced()) return P0();
+          if (e.slot === 'style') return c.drop(b.g, 0.3, 260).then(() => c.pop(b.g));
+          if (e.slot === 'salsa' && b.salsa) return c.drop(b.salsa, 0.4, 280);
+          const part = b.g.getObjectByName(e.slot);
+          if (part) {
+            const y = part.position.y;
+            return k.tween(300, t => { const e2 = k.ease(t); part.position.y = y + (1 - e2) * 0.28; part.scale.set(1, 0.6 + 0.4 * e2 + Math.sin(t * PI) * 0.15, 1); });
+          }
+          return c.pop(b.g);
+        },
+      },
+      griddle: {
+        // The dark steel griddle (measured: its plate starts at 74.4% of the picture, under the ink line of its back
+        // lip). The painted plate is the surface; the page draws the grill press (the tool). The board camera.
+        x: 24, line: 0.744, surface: { y: TOP, back: -0.5 }, cook: 'griddle',
+        cam: { pos: [0.329, 2.573, 3.277], at: [0.329, 1.115, 0.15], fov: 30 },
+        build() { return { plate: V(-0.02, TOP, 0.02), surface: TOP, giantMax: 1.0 }; },
+      },
+    };
+    /** The sauce pick: the bottle comes over, turns and zigzags its sauce along the food, then goes on. */
+    function sauceOn(c, e, made) {
+      const b = c.showItem(made);
+      if (c.onApply && (!b || k.reduced() || e.value === 'noSauce')) c.onApply();
+      if (!b || k.reduced()) return P0();
+      let D = null;
+      b.g.traverse(o => { if (!D && o.userData.drizzle) D = { g: o, d: o.userData.drizzle }; });
+      if (!D) return c.pop(b.g);
+      const look = k.slotLook('sauce', e.value) || {};
+      const bottle = sauceBottle({ ing: e.value, look }).g;
+      c.F.add(bottle);
+      const at = u => c.toF(D.g, D.d.curve.getPointAt(clamp(u, 0, 1)));
+      const lean = PI - 0.5;
+      const hold = u => at(u).add(V(0.03, 0.3, 0));
+      const from = (c.anchors.incoming || V(1, TOP, 0)).clone().add(V(0.3, 0, 0));
+      D.d.grow(0);
+      bottle.position.copy(from);
+      return k.tween(320, t => { const e2 = k.ease(t); bottle.position.lerpVectors(from, hold(0), e2); bottle.position.y += Math.sin(t * PI) * 0.2; bottle.rotation.z = lean * e2; })
+        .then(() => { if (c.onApply) c.onApply(); return k.tween(900, t => { D.d.grow(t); bottle.position.copy(hold(t)); bottle.rotation.x = Math.sin(t * PI * 6) * 0.08; }); })
+        .then(() => { D.d.grow(1); const p0 = bottle.position.clone(); return k.tween(300, t => { const e2 = k.ease(t); bottle.rotation.z = lean * (1 - e2); bottle.position.set(p0.x + e2 * 2.4, p0.y + Math.sin(t * PI) * 0.15, p0.z); }); })
+        .then(() => { c.F.remove(bottle); k.free(bottle); });
+    }
+
+    /* ── the counter: one item at its spot; more side by side, left of the painted queue, at every window shape ── */
+    // The page keeps the Back in 5 sign in the bottom-left corner (to 12.5% of the window) and the order left of the
+    // counter picture's own painted queue (BBArt.burrito.counter: 56.4% across): world.js hands arrange()
+    // anchors.maxScreenX and anchors.lineY. In Node (no anchors from world.js) the shape is 16:9 and the queue 56.4%.
+    const SPAN = { left: 0.14, queue: 0.564, gap: 0.1 };
+    function windowAspect() {
+      const w = typeof innerWidth === 'number' ? innerWidth : 0, h = typeof innerHeight === 'number' ? innerHeight : 0;
+      return w > 0 && h > 0 ? w / h : 16 / 9;
+    }
+    function counterCamera(aspect, lineY) {
+      const d = sets.counter, cam = new THREE.PerspectiveCamera(d.cam.fov, aspect, 0.1, 60);
+      cam.position.set(d.cam.pos[0], d.cam.pos[1], d.cam.pos[2]);
+      cam.lookAt(d.cam.at[0], d.cam.at[1], d.cam.at[2]);
+      cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+      const want = typeof lineY === 'number' ? lineY : food.lineOnScreen(d.line, aspect, d.picture);
+      const dy = food.lensShift(cam, V(d.cam.at[0], d.surface.y, d.surface.back), want);
+      cam.view = { enabled: true, fullWidth: 1, fullHeight: 1, offsetX: 0, offsetY: -dy, width: 1, height: 1 };
+      cam.updateProjectionMatrix();
+      return cam;
+    }
+    function xAcross(cam, fx2, z) {
+      const a = V(0, COUNTER.top, z).project(cam), b = V(1, COUNTER.top, z).project(cam);
+      return (fx2 * 2 - 1 - a.x) / (b.x - a.x);
+    }
+    const counter = {
+      /** One item at its spot when it fits there; more (or a giant): side by side in ticket order between the Pause
+       *  sign and the painted queue on this window (at the items' near edge), shrunk together only if they do not
+       *  fit; world.js then keeps each on the counter top it can see. */
+      arrange(n, items, anchors) {
+        const aspect = windowAspect(), cam = counterCamera(aspect, anchors.lineY);
+        const right = typeof anchors.maxScreenX === 'number' ? anchors.maxScreenX
+          : (aspect < food.PICTURE ? 0.5 + (SPAN.queue - 0.5) * food.PICTURE / aspect : SPAN.queue) - 0.006;
+        const sizes = items.map(m => {
+          const b = k.item(m, { where: 'counter', set: 'counter', contentScale: anchors.contentScale });
+          const box = k.boxOf(b.g), sc = b.g.scale.x;
+          k.free(b.g);
+          return { w: (box.max.x - box.min.x) * sc, mid: (box.min.x + box.max.x) / 2 * sc, near: box.max.z * sc };
+        });
+        const z = anchors.row + Math.max(...sizes.map(s => s.near));
+        const x0 = xAcross(cam, typeof anchors.minScreenX === 'number' ? anchors.minScreenX : SPAN.left, z), x1 = xAcross(cam, right, z);
+        const spot = anchors.spots[0];
+        if (n === 1 && spot.x + sizes[0].mid - sizes[0].w / 2 >= x0 && spot.x + sizes[0].mid + sizes[0].w / 2 <= x1) return [{ p: spot.clone(), s: 1 }];
+        const total = sizes.reduce((t, x) => t + x.w, 0) + SPAN.gap * (n - 1), s = Math.min(1, (x1 - x0) / total);
+        let x = x0 + ((x1 - x0) - total * s) / 2;
+        return sizes.map(({ w, mid }) => {
+          const p = V(x + (w / 2 - mid) * s, COUNTER.top, anchors.row);
+          x += (w + SPAN.gap) * s;
+          return { p, s };
+        });
+      },
+    };
+
+    const layouts = { burrito: itemLayout, giantBurrito: itemLayout, bowl: itemLayout, tacos: itemLayout, chipsBasket: itemLayout };
+    return {
+      shapes, sets, cooks, lines, applies, autos, layouts, counter, fx,
+      /** Recipe looks name the layout (burrito, bowl, tacos, chipsBasket, giantBurrito); each draws the style picked. */
+      layoutOf(made) {
+        const s = shapeOfRecipe(made);
+        if (layouts[s]) return s;
+        if (made.ing === 'burrito' || made.ing === 'tacos' || made.ing === 'bowl' || made.ing === 'chips') return 'burrito';
+        return null;
+      },
+      // Doneness colours by stage for the dial plates (world.colourOf) when a look has no ramp of its own.
+      ramps: { burritoBody: TOAST, flourTortilla: TOAST, tacoBody: TACO, softTacos: TACO },
+    };
+  });
+  return food;
+});

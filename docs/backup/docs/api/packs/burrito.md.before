@@ -1,0 +1,394 @@
+# Ben's Burritos, the pack in words (content-burrito, 2026-11-09)
+
+`packs/burrito/pack.js` (pack version 1), the second restaurant to unlock (left arm, lower). Format:
+`docs/api/pack-format.md`; the line `docs/api/line.md`; the script `docs/api/script.md`; sounds `docs/api/audio.md`;
+the food `docs/api/world.md` and `docs/api/food.md`. Worked example: the Pizza Parlor (`docs/api/packs/pizza.md`).
+**food-burrito works from section 10** (every look, set, flourish and cook to draw). **The script works from
+section 12** (every moment and who must say it).
+
+**Check it** (from the game folder):
+
+```
+node -e "const B=require('./tests/bot.cjs'),SC=require('./js/core/script.js'),R=B.restaurants().find(r=>r.id==='burrito');console.log(B.schema.validate(R.pack),SC.check(R.pack,R.script),SC.coverage(R.pack,R.script))"
+node -e "console.table(require('./tests/bot.cjs').pressReport('burrito'))"
+BB_PACKS=burrito node --test "tests/*.test.cjs"
+```
+
+## 1. At a glance
+
+| | |
+|---|---|
+| id, name | `burrito`, "Ben's Burritos" (court: "Burritos", left arm, slot 2, locked at the start, the 2nd to unlock) |
+| version | 1 |
+| format | `3`: `packs/burrito/script.js` covers every moment (content-burrito, 2026-11-09; the script in words: `docs/api/packs/burrito-script.md`) |
+| manager | `{ id: 'mitch', art: 'mitch-burrito' }`: red bandana, green apron, a hot-sauce-stained badge (tie and taped badge underneath) |
+| backdrops | `counter`, and by station `prep` (prep, chips) and `griddle` (griddle). All three exist (`BBArt.burrito`) |
+| courses | `['main', 'side']`: burritos, bowls and tacos are mains; chips and salsa the side |
+| levels | `{}`: the engine's ladder unchanged |
+| no paging | protein and hot sauce have 4 values (4 answers, Ticket, Pause), every other pick 3; nothing pages, nothing repeats |
+
+## 2. The line: stations and steps
+
+| Station | backdrop | Steps, in order | redo | tool | sounds |
+|---|---|---|---|---|---|
+| `prep` "Burrito Line" | `prep` | Pick `style` → Pick `rice` and Pick `beans` (burritos and bowls) → Pick `protein` → Add, one each: cheese, lettuce, pico, corn, sour cream, guacamole, jalapeños, onions (tacos only) → Pick `sauce` → the flourishes by themselves: `wrap` (burritos, show `burritoWrap`), `fold` (tacos, `tacoFold`), `arrange` (bowls, `bowlArrange`), then `burst` (the Everything Burrito and the Challenge Burrito, `burritoBurst`) | "Redo the Order" | | `{ auto: 'wrap' }` (add: `plop`) |
+| `griddle` "Griddle" | `griddle` | Cook, stage set `toast`, `want: 'toast'` (the item: a wrapped burrito, or the tacos) | "Toast Again" | `grillPress` | `{ cook: 'press' }` |
+| `chips` "Chip Basket" | `prep` | Pick `salsa` → Add guacamole → Add lime | "Redo the Chips" | | (add: `plop`) |
+
+A burrito runs prep → griddle; tacos prep → griddle; a bowl prep only (it is never toasted); chips and salsa the chip
+basket. The `when` steps read the ticket (never what was picked), so the same ticket always asks the same steps:
+tacos never ask rice or beans and always ask onions; nothing else changes by order.
+
+What the player hears (words.js; Timed changes only the griddle):
+
+- "Burrito Line. Style: Burrito, Bowl or Tacos?" → "Rice: White, Brown or None?" → "Beans: Black, Pinto or None?" →
+  "Protein: Chicken, Steak, Veggies or None?" → "Cheese." Add / Skip, then "Lettuce.", "Pico.", "Corn.", "Sour
+  cream.", "Guacamole.", "Jalapeños." (tacos: "Onions.") → "Hot Sauce: Mild, Medium, Hot or None?" → the wrap (or the
+  fold, or the bowl settling) plays by itself. A bad one: "The brown guacamole." Add / Skip / Swap It; on a pick, "Black
+  beans with a hair in them" sits among the answers with Swap It.
+- "Griddle. How toasted?" Lightly Toasted / Toasted / Extra Crispy. Timed: "Griddle. Lift the press when it is right.",
+  one button **Lift the Press** (said "Lift the press. Toasted"); left on, it stops at Burnt.
+- "Chips and Salsa. Salsa: Red, Green or Mango?" (a fresh item on a two-item order is named by the item) → "Guacamole."
+  Add / Skip → "Lime." Add / Skip. A bad salsa: "Red salsa with a fly in it" among the answers, with Swap It.
+- Review: "Here it is." Ring It Up, Redo the Order, Toast Again (with chips, Redo… as a row when there are more than
+  three).
+
+**Toppings are Add steps, not a repeat pick** (pilot.md 5.2): the brown guacamole sits on one, Sal's lettuce and
+Oakes's onions are held as recipe parts, and nothing hides behind More….
+
+**Changes to the brief, and why:**
+
+- **Onions, tacos only.** Spec 5.4 and 2.3 have Oakes hate onions "in every pack that has them (pico does not count)",
+  and the brief's toppings have none. Street tacos come with onions, so tacos ask one more Add (onions) and skip rice
+  and beans; burritos stay at the level-1 budget of 14.
+- **"Veggies"**, not "Veggie": the protein value reads the same on the answer ("Veggies") and on the ticket ("veggies").
+- **The style is fixed by the recipe** (its name says it: Chicken Burrito, Chicken Bowl, Steak Tacos), so the first
+  answer always matches the name on the ticket. The ticket says "burrito style", "bowl style", "taco style".
+- **The toast is a `want`** (the recipe slot `toast`), so the customer says it in line order ("Steak Burrito, white
+  rice, black beans, mild sauce, toasted"); a `done` would be said first ("Steak Burrito, toasted, white rice…").
+- **The burst is a flourish, not a gross-out** (spec 4.6): the Everything Burrito always bursts after its wrap and is
+  wrapped again in a second tortilla. That makes the odd order "a burrito wrapped inside another burrito" come true by
+  accident. It is never random, never judged, never a mistake.
+- **The fly is in the chips' salsa** (a pick of three), the hair in the beans (a pick of three), the brown on the
+  guacamole (an Add on the line and at the chip basket).
+- **A flourish for every style** (wrap, fold, arrange): a Motion Full shift always has one, and each style ends on its
+  own small payoff.
+
+## 3. Cooking: one stage set
+
+| set | stages (first .. last) | Simple `choose` | ask | stop | speed |
+|---|---|---|---|---|---|
+| `toast` | soft, lightlyToasted, toasted, extraCrispy, burnt | Lightly Toasted, Toasted, Extra Crispy | "How toasted?" | "Lift the Press" | pack `cookSpeeds` 12 / 8 / 5 s a stage, `wantedScale` 2 (the Burger Bar's grill) |
+
+Stage names: Soft, Lightly Toasted, Toasted, Extra Crispy, Burnt. **Burnt is Timed's last stage** (one mistake,
+`complain.done`), never a gross-out. Every griddled recipe names `toast: { pick: 'toast' }` in its slots (normal
+Toasted); the Fire Burrito `{ pick: 'crispToast' }` (normal Extra Crispy).
+
+## 4. Recipes
+
+`level` is the only gate. Prices are the tip's base. "As written" is the ticket with the normal picks (change 0).
+
+| id | Name | level | course | stations | price | As written (the ticket) | Can change |
+|---|---|---|---|---|---|---|---|
+| `chickenBurrito` | Chicken Burrito | 1 | main | prep, griddle | 8 | burrito style, white rice, black beans, chicken, with cheese, lettuce, pico and sour cream, mild sauce, toasted | rice, beans, sauce, toast; holds lettuce, sour cream; adds corn, guacamole, jalapeños |
+| `steakBurrito` | Steak Burrito | 1 | main | prep, griddle | 9 | burrito style, white rice, black beans, steak, with cheese, lettuce, pico, guacamole and jalapeños, mild sauce, toasted | picks; holds lettuce, guacamole; adds sour cream, corn |
+| `beanCheese` | Bean and Cheese Burrito | 1 | main | prep, griddle | 6 | burrito style, rice: none, pinto beans, protein: none, with cheese, mild sauce, toasted | beans (`pintoBeans`), sauce, toast; adds pico, sour cream |
+| `chickenBowl` | Chicken Bowl | 1 | main | prep | 8 | bowl style, white rice, black beans, chicken, with cheese, lettuce, pico, corn and sour cream, mild sauce | rice, beans, sauce; holds lettuce, sour cream; adds guacamole, jalapeños |
+| `veggieBowl` | Veggie Bowl | 2 | main | prep | 8 | bowl style, white rice, black beans, veggies, with cheese, lettuce, pico, corn and guacamole, mild sauce | picks; holds cheese, lettuce; adds sour cream, jalapeños |
+| `steakTacos` | Steak Tacos (plural "Plates of Steak Tacos") | 2 | main | prep, griddle | 9 | taco style, steak, with cheese, pico and onions, medium sauce, toasted | sauce (`tacoSauce`), toast; holds cheese, onions; adds lettuce, guacamole, jalapeños |
+| `chickenTacos` | Chicken Tacos ("Plates of Chicken Tacos") | 2 | main | prep, griddle | 8 | taco style, chicken, with cheese, lettuce, pico, sour cream and onions, medium sauce, toasted | picks; holds lettuce, sour cream, onions; adds corn, guacamole |
+| `chips` | Chips and Salsa ("Baskets of Chips and Salsa") | 2 | side | chips | 3 | red salsa, with lime | salsa; holds lime; adds guacamole |
+| `everythingBurrito` | Everything Burrito | 3 | main | prep, griddle | 12 | burrito style, white rice, black beans, steak, with cheese, lettuce, pico, corn, sour cream, guacamole and jalapeños, mild sauce, toasted; **bursts and is wrapped again** | picks; holds lettuce, corn, jalapeños |
+| `fireBurrito` | Fire Burrito | 3 | main | prep, griddle | 10 | burrito style, white rice, black beans, chicken, with cheese, pico, sour cream and jalapeños, hot sauce, extra crispy | rice, beans, toast (`crispToast`); holds sour cream; adds guacamole |
+| `challengeBurrito` | Challenge Burrito | `'event'` | main | prep, griddle | 24 | burrito style, white rice, black beans, steak, with everything, hot sauce, toasted (the finale says extra crispy); `look: { shape: 'giantBurrito', giant: true }`; **bursts** | the finale only |
+
+Slots and picks (level 5 uses the fancy lists):
+
+| slot (question) | values (label; ticket words) | picks: values, normal, fancy |
+|---|---|---|
+| `style` "Style" | burrito "Burrito", bowl "Bowl", tacos "Tacos"; "burrito style", "bowl style", "taco style" | fixed by every recipe |
+| `rice` "Rice" | whiteRice "White", brownRice "Brown", noRice "None"; "white rice", "rice: none" | `rice` white/brown, white, fancy + none |
+| `beans` "Beans" | black "Black", pinto "Pinto", noBeans "None"; "black beans", "beans: none" | `beans` black/pinto, black, fancy + none; `pintoBeans` pinto/black, pinto |
+| `protein` "Protein" | chicken "Chicken", steak "Steak", veggies "Veggies", noProtein "None"; "chicken", "protein: none" | fixed by every recipe |
+| `sauce` "Hot Sauce" | mildSauce "Mild", mediumSauce "Medium", hotSauce "Hot", noSauce "None"; "mild sauce", "hot sauce: none" | `sauce` mild/medium/hot, mild, fancy + none; `tacoSauce` the same, normal medium |
+| `salsa` "Salsa" | redSalsa "Red", greenSalsa "Green", mangoSalsa "Mango"; "red salsa" | `salsa` red/green, red, fancy + mango |
+| (stage, `want`) | the `toast` set | `toast` lightly/toasted/extra crispy, toasted; `crispToast` extra crispy/toasted, extra crispy |
+
+The value ids avoid every word js/core quotes (`medium`, `extra`, `done`, `one`, `two`, `plain`, `event`, `tutorial`):
+`tests/pack.test.cjs` fails a pack id that js/core quotes, comments included.
+
+**Combos** (level 3 up): one item, or two at the level's `more` odds: a main and chips and salsa, in that order. Never
+two mains except Gus's two of one thing. Order Size "One Item" makes every order one item.
+
+## 5. The ladder (`levels: {}`)
+
+| Level | On offer | Items | Gross-outs | Extras |
+|---|---|---|---|---|
+| 1 | chicken, steak, bean and cheese burritos; chicken bowl | 1; at most 2 optional parts; change 0.2 | none | |
+| 2 | + veggie bowl, steak tacos, chicken tacos, chips and salsa | 1; change 0.3 | none | |
+| 3 | + Everything Burrito, Fire Burrito | 1 or 2: a main + chips | 0.3 an order, at most 2 a shift, never the first | |
+| 4 | the same | as 3, change 0.4 | as 3 | one odd order at 50% a shift; one visitor (Reginald, Kai or Chef Hiro), never first |
+| 5 | the same | as 4, change 0.5, fancy (None rice, beans and sauce; mango salsa) | 0.35, at most 2 | odd orders at 60%, `justTortilla` too |
+
+Measured (300 five-order shifts a level in each mode, 1500 orders each, every one three stars with the right answers):
+two-item orders 39% at level 3, 30% at 4, 35% at 5, 49% in the event (the finale is two); the hair in the beans about
+60% of the gross-outs, the brown guacamole 25%, the fly in the salsa 15% (it needs chips on the order); level-4
+visitors Reginald 37%, Chef Hiro 34%, Kai 28%; Sal never got lettuce, Oakes never onions, Inferno never a sauce but hot.
+
+## 6. Ridiculous orders (level 4 and 5)
+
+The customer says `order.odd.<id>` instead of the order; the ticket is plain and complete. At most one a shift, never
+the first order or the visitor's. **An odd order is made as written** (normal picks: a `wants` does not reach it), so
+Inferno, whose wants make everything hot, has only his own.
+
+| id | level | recipe | the change | The ticket | Who | Presses |
+|---|---|---|---|---|---|---|
+| `doubleWrap` | 4 | everythingBurrito | none: "a burrito wrapped inside another burrito" is said; the Everything Burrito bursts after its wrap and gets a second tortilla anyway | Everything Burrito as written | the regulars and Rita | 14 |
+| `noAvocado` | 4 | veggieBowl | holds guacamole ("guacamole, but no avocado": guacamole is avocado) | Veggie Bowl: bowl style, white rice, black beans, veggies, with cheese, lettuce, pico and corn, mild sauce | the regulars and Rita | 13 |
+| `hottest` | 4 | chickenBurrito | hot sauce ("the hottest you've got": they will cry, and say so) | Chicken Burrito: …, hot sauce, toasted | the regulars and Rita, never Inferno | 14 |
+| `fireAlarm` | 4 | fireBurrito | extra crispy ("hot enough to set off the fire alarm", the one on the prep wall with the little mustache) | Fire Burrito as written | Inferno only | 14 |
+| `justTortilla` | 5 | beanCheese | holds cheese; beans none, sauce none, lightly toasted ("just the tortilla") | Bean and Cheese Burrito: burrito style, rice: none, beans: none, protein: none, nothing else on it, hot sauce: none, lightly toasted (the name is the joke) | the regulars and Rita | 14 |
+
+## 7. The five-star event: The Burrito Challenge
+
+```js
+events: { five: { name: 'The Burrito Challenge',
+  customers: ['marge', 'gus', 'bev', 'vernon', 'sal', 'oakes', 'rita', 'reginald', 'kai'],
+  finale: { customer: 'inferno', items: [{ recipe: 'challengeBurrito', set: { toast: 'extraCrispy' } },
+    { recipe: 'chips', set: { salsa: 'greenSalsa' } }] } } }
+```
+
+- A crowd gathers to watch Inferno take on the giant burrito, **spoken of, never shown**: the watchers are the drawn
+  cast, ordering while they wait (Shift Length orders at level-4 complexity, no visitors, no odd orders).
+- The finale, always last: Inferno orders the Challenge Burrito "with every sauce" (said, never made: the ticket is
+  hot) and chips with green salsa. "Challenge Burrito: burrito style, white rice, black beans, steak, with cheese,
+  lettuce, pico, corn, sour cream, guacamole and jalapeños, hot sauce, extra crispy. Chips and Salsa: green salsa, with
+  lime." 17 presses. The giant is drawn 1.6 times bigger, bursts like the Everything Burrito and gets a second giant
+  tortilla; it adds no choices. Inferno says his `order.gag` after it (game.js: the finale's customer). If he isn't
+  drawn, the first drawn regular (Marge) orders it.
+- Mitch: `event.intro`, `event.celebrate`, `event.again` (`{name}`: the event).
+
+## 8. Who comes in, and what they order
+
+| id | role here | likes (others 0.5) | also | Brief (proposal / spec 2.3) |
+|---|---|---|---|---|
+| `marge` | regular | bean and cheese 3 | `usual`: bean and cheese, pinto, mild, toasted (`order.usual`) | "Bean and cheese" |
+| `gus` | regular | chicken burrito 2, steak burrito 2 | cast `twin`: two of one thing from level 3 (`order.twin`) | "Two burritos" |
+| `bev` | regular | steak burrito 3 | `favourite`: steak burrito, +2 (`react.favourite`: she counts the jalapeños out loud) | "Steak burrito, counts the pickled jalapeños out loud" |
+| `vernon` | regular | chicken bowl 2, veggie bowl 2 | `set`: brown rice, black beans, mild sauce; cast `exact` | "Bowl, nothing touching" (said; the bowl's `arrange` flourish shows it) |
+| `sal` | regular | steak burrito 3, steak tacos 2 | `dislikes: ['lettuce']`: held wherever it comes (`order.dislike`) | "Steak, never lettuce" |
+| `oakes` | regular (spec 5.4) | chicken tacos 2, steak tacos 1, veggie bowl 1 | `dislikes: ['onions']`: held on tacos (`order.dislike`) | a new reason to hate onions |
+| `inferno` | local | Fire Burrito 3, steak tacos 2, steak burrito 1 | `favourite`: Fire Burrito, +2; `wants`: hot sauce, extra crispy; `order.gag`; the event's finale; only `fireAlarm` of the odd orders | wants it hotter until smoke comes out of his ears |
+| `rita` | local | Everything Burrito 3, steak 2, chicken 2 | `favourite`: Everything Burrito, +2; `order.gag`: "one of everything" is said, never made; the tutorial customer | construction worker on her lunch break |
+| `reginald` | visitor, level 4 | Everything Burrito 2 | cast `newest`: the newest recipe on offer | the critic |
+| `kai` | visitor, level 4 | chicken burrito 2, bean and cheese 1 | cast `short`: one item | the young reviewer |
+| `hiro` | visitor, level 4 (cameo, spec 2.2) | chicken burrito 3 | `always`: a chicken burrito (he came to watch the roll; at level 4 sometimes with chips); `set`: lightly toasted | Ben's Sushi's master, here to judge the roll |
+
+`tests/cast.test.cjs` (who can meet, voices) passes with Hiro listed (his new meetings: Inferno, Rita, Oakes).
+
+## 9. Gross-outs (from level 3)
+
+| id | on | label (`say`) | fx (all the kit's) | What it does |
+|---|---|---|---|---|
+| `brown` | guacamole (an Add, on the line and at the chip basket) | "the brown {name}" → "The brown guacamole." | `tint` #7a6528, `spots` (#4a3a12, 8) | Mitch `gross.brown`; served: `react.gross`, `complain.gross.brown` |
+| `hair` | the beans pick: black, pinto | "{name} beans with a hair in them" → "Black beans with a hair in them" | `hair` | as above, `.hair` (pick: `{value}`/`{slot}` lines) |
+| `fly` | the chips' salsa pick: red, green, mango | "{name} salsa with a fly in it" → "Red salsa with a fly in it" | `fly` (game.js plays `buzz` for the id `fly`) | as above, `.fly` (pick lines) |
+
+Swap It replaces it and asks again; Skip (on the guacamole) sends it away, a missing-topping mistake if the ticket
+wanted it; another value on a pick is a pick mistake. The receipt says e.g. "Beans: black beans with a hair in them".
+Burnt is Timed's last stage instead; the bursting burrito is a flourish (spec 4.6).
+
+## 10. For food-burrito: every look, set, flourish and cook
+
+`made()` of a burrito: `{ recipe, ing: 'burrito', parts: [{ ing: 'cheese' }, { ing: 'guacamole', gross? }, ...],
+gross, picks: { style, rice, beans, protein, sauce, toast }, counts: {}, auto: ['wrap'] }` (`auto` grows as the
+flourishes run: `wrap`, then `burst` on the Everything and Challenge burritos). **There is no `made.done`: the toast is
+a `want`, so read it from `made.picks.toast`** (and `o.stage` on the griddle). Tacos: `ing: 'tacos'`, picks `{ style,
+protein, sauce, toast }`, `auto: ['fold']`. A bowl: `ing: 'bowl'`, picks `{ style, rice, beans, protein, sauce }`, `auto:
+['arrange']`, never toasted. Chips: `{ recipe: 'chips', ing: 'chips', parts: [guacamole?, lime?], picks: { salsa } }`.
+**No station `builds`**: `k.sequence` gives the item's **body** (`burrito`, `bowl`, `tacos`, `chips`; its `done` is
+undefined) and then the parts in line order: the style value, the rice value, the beans value, the protein value, the
+toppings, the sauce value. **Recipe looks name the layout** (`layoutOf` reads `pack.recipes[made.recipe].look.shape`):
+`burrito`, `bowl`, `tacos`, `chipsBasket`, `giantBurrito`. The vessel the player sees is the **style picked**
+(`made.picks.style`), so a bowl picked for a burrito ticket is drawn as a bowl.
+
+| look.shape | used by | set(s) | how it looks | with cooking (`made.picks.toast`, or `o.stage` on the griddle) |
+|---|---|---|---|---|
+| `burritoBody` | ingredient `burrito` (the body) | all | draws nothing of its own (the tortilla is the style value); `look.ramp` is the tortilla's colour at each toast stage (the griddle plates' swatches) | the ramp |
+| `tacoBody` | ingredient `tacos` | all | as `burritoBody`, the taco tortillas' ramp | the ramp |
+| `bowlBody` | ingredient `bowl` | all | draws nothing (the bowl is the style value) | none |
+| `chipBasket` | ingredient `chips` (the side's body) | prep (chip basket), counter | a red-and-white checked paper boat heaped with triangular tortilla chips (`k.heap`), salt specks | none |
+| `flourTortilla` | style `burrito` | prep, griddle, counter | a big round flour tortilla, toasty freckles, laid flat on a square of foil; the fillings go in a band down its middle | its colour from the ramp |
+| `burritoBowl` | style `bowl` | prep, counter | a wide, shallow bowl, orange (#e8792b) with a green rim stripe (the theme) | none |
+| `softTacos` | style `tacos` | prep, griddle, counter | three small soft tortillas, open, side by side in a steel zigzag taco holder | the ramp |
+| `rice` | rice `whiteRice` #fbf8f0 (cilantro flecks), `brownRice` #c69a5e | prep, counter | a mound of grains (a band in a burrito, a section in a bowl) | none |
+| `beans` | beans `black` #2b2230 (glossy), `pinto` #b0703f (speckled) | prep, counter | a band of small oval beans | none |
+| `chickenPieces` | protein `chicken` #e0b070 | prep, counter | grilled cubes with dark grill lines | none |
+| `steakPieces` | protein `steak` #7a3b22 | prep, counter | seared cubes, a pink centre on cut faces | none |
+| `grilledVeggies` | protein `veggies` #4f9a3a | prep, counter | strips of green and red pepper and zucchini half-moons (no onions: Oakes) | none |
+| `shreddedCheese` | cheese #f5b83a | prep, counter | orange-yellow shreds | melts a little (glossier) once toasted |
+| `shreddedLettuce` | lettuce #8ccf4d | prep, counter | pale green ribbons | none |
+| `pico` | pico #d8402c | prep, counter | diced tomato with white onion bits and cilantro flecks | none |
+| `cornKernels` | corn #f6d03a | prep, counter | yellow kernels (one `k.scatter`) | none |
+| `sourCream` | sour cream #fbf8ef | prep, counter | a white dollop with a swirl peak; **white on a cream tortilla needs a cue**: a soft cool shadow under it and a gloss highlight | none |
+| `guacamole` | guacamole #7fb93c | prep, chip basket, counter | a lumpy green scoop with darker flecks (on the chips: in a small cup beside them) | none |
+| `jalapenoRings` | jalapeños #4f9a2a | prep, counter | **six** separate green rings with pale seeds: Coach Bev counts them, so they must be countable | none |
+| `dicedOnions` | onions #f4efe2 (tacos only) | prep, counter | small translucent white cubes; white on cream: a faint lilac edge and shadow | none |
+| `hotSauce` | sauce `mildSauce` #8cb83a (1 chili), `mediumSauce` #f08a1c (2), `hotSauce` #d23a16 (3) (`look.chilies`) | prep, counter | waiting: the bottle with that many chili marks on its label (the prep shelf's bottles, no text); on the food a zigzag drizzle of its colour (`k.bead`, path `drizzle`); None draws nothing | none |
+| `salsaCup` | salsa `redSalsa` #c8321f, `greenSalsa` #5f9a2e, `mangoSalsa` #f2a531 | chip basket, counter | a small round cup of chunky salsa beside the chips | none |
+| `limeWedge` | lime #8fd14f | chip basket, counter | a lime wedge on the basket's rim | none |
+| `burrito` | recipe look: every burrito but the giant | layout | **before `wrap`**: the flat tortilla on its foil, the fillings in a band down the middle in line order, the sauce zigzag on top. **After `wrap`** (in `made.auto`): a fat rolled burrito, ends tucked, its bottom half in foil, the top end open showing a cross-section of the fillings' colours. **After `burst`**: the same in a second tortilla (two tortilla edges at the open end, the inner one peeking out), a few beans and a smear on the foil | the tortilla by `made.picks.toast` (`o.stage` on the griddle): colour plus press stripes (below) |
+| `bowl` | recipe look: both bowls | layout | **before `arrange`**: rice and beans in the bottom, the protein and toppings in loose heaps; **after `arrange`**: every part its own tidy wedge or row, nothing touching (Vernon's whole personality), the sauce zigzag across | none |
+| `tacos` | recipe look: both tacos | layout | the holder with three tortillas; **before `fold`**: open, each with the protein and toppings in it (small); **after `fold`**: each folded into a half-moon, fillings showing at the top edge; on the griddle (the cook view) the three lie in a row out of the holder | colour plus press stripes |
+| `chipsBasket` | recipe look of `chips` | layout | the checked paper boat of chips, the salsa cup beside it, the guacamole cup if added, the lime wedge on the rim | none |
+| `giantBurrito` | recipe look of `challengeBurrito`, `giant: true` | layout | the `burrito` layout, drawn giant by the kit (1.6×; cap it on prep and the griddle with `giantMax`), a little red pennant with a flame (no text) stuck in its top; it bursts and gets a second giant tortilla like the Everything Burrito | as `burrito` |
+
+**The toast, stage by stage** (the griddle's cook view and the counter): doneness shows as a colour AND a mark, and
+neighbouring stages differ at the cook view's size by both. The ramp is the ingredient's `look.ramp`.
+
+| stage | colour (burrito ramp) | mark |
+|---|---|---|
+| soft | pale cream #f3e3bf | no stripes, matt |
+| lightlyToasted | light gold #eccb8a | two faint golden press stripes |
+| toasted | golden brown #d9a356 | three brown stripes, toasty spots |
+| extraCrispy | deep brown #b5732c | four dark stripes, blistered crisp edges |
+| burnt | charcoal #3e2614 | black all over, smoke wisps |
+
+**Sets** (measure your own lines, food.md 4; the pictures were asked for prep 62 and griddle 65: the prep's plain
+steel counter starts at y 635 of 1024 by its generation notes, the griddle's dark plate at about y 666-730):
+
+- `counter`: `line 0.80`, `surface { y, back }`, its own camera (copy the pizza's `counter.arrange`, food.md 5). As the
+  court picture draws the Burritos counter: a **cream top** (about #f6ead2) with a **bright orange plank front**
+  (about #f07a14) and a dark brown trim line, the counter picture's returns orange. The order lies flat on the top
+  between the Pause sign and the painted queue: `BBArt.burrito.counter.queue` is x 0.564-0.835 (the sunflower woman,
+  the sun hat, the man fanning his mouth), heads from 0.462, feet 0.665; read it from the manifest, never measure
+  again (2b-seams). A burrito lies along x, a bowl and tacos are low: everything stays flat; a main and chips side by
+  side, two mains side by side, the giant alone shrunk to fit.
+- `prep`: the plain steel counter below the steam table. The vessel (the style picked) low and left of centre, the
+  next ingredient on the right (`incoming`: a heap in a steel pan or tin, the kit's `tin`), `giantMax` for the giant.
+  Its `pick` hook: `style` sets the base down (tortilla on foil, bowl, or taco holder); `rice`, `beans`, `protein` spoon
+  a scoop from the pan into the band; `sauce` tips that bottle and zigzags it on (None: nothing); on the chip basket
+  `salsa` sets the cup down. Its `auto` (or `autos`): **`burritoWrap`** (the sides fold in, it rolls up from the near
+  edge, the foil folds round its bottom half), **`tacoFold`** (each tortilla flops over its filling, one after another),
+  **`bowlArrange`** (the parts slide into tidy sections, a small settle), **`burritoBurst`** (the wrapped burrito
+  bulges, wobbles and pops along its seam; beans, rice and a dab of sour cream arc out onto the foil with a puff of
+  steam; then a second tortilla flops over and rolls round it). Every flourish resolves at once under Reduced. A
+  flourish whose style was not picked (a bowl picked for a burrito ticket) plays nothing, or the kit's `pop`, and never
+  throws.
+- `griddle`: the dark steel griddle (the press hangs open, painted, above). `cook: 'griddle'`: `show(c, s)` draws the
+  item at `s.stage` (a wrapped burrito lies across the plate; tacos lie in a row); Simple's `run` toasts it to the
+  chosen stage (steam puffs, the stripes appear one by one, a little hiss of steam at the end); Timed: it toasts on a
+  stage at a time, smoke at burnt. The Timed control prop is the page's `grillPress`. Nothing is drawn above the food
+  (the page draws the tool).
+
+Gross-out fx are the kit's (`tint`, `spots`, `hair`, `fly`); the hair lies across the bean band, the fly sits on the
+salsa cup's surface.
+
+## 11. Sounds
+
+`prep`: `auto: 'wrap'` (every flourish, the burst included until the page plays `burst`: Requests); `griddle`: `cook:
+'press'` (the press comes down: Simple when the stage is chosen, Timed when the clock starts). Every Add plays the
+default `plop`, each Timed stage `tick`. The page plays `swoosh` (Skip), `toss` (Swap It), `buzz` (the gross-out id
+`fly`), `ding`, `kaching`, `stars`, `ew` as for the diner. All exist (`packs/burrito/sound`, `packs/shared/sound`);
+`tests/voices.test.cjs` checks them. `burst` (`packs/burrito/sound/burst.wav`) waits for the page (audio.md 5.2 lists
+it as the page's, "with the bursting-burrito joke").
+
+## 12. For the script: every moment and who must say it
+
+`SC.moments(pack)` on the merged pack: 57 moments, 240 coverage items with an empty script. **Written** (content-burrito, 2026-11-09): `packs/burrito/script.js`, 384 lines, `SC.check` and `SC.coverage` both empty; conventions and counts in `docs/api/packs/burrito-script.md`. F = the pack's 'customer'
+fallback lines count for anyone with fewer than two of their own.
+
+- **Customers, everyone** (marge gus bev vernon sal oakes inferno rita reginald kai hiro): `greet` ×3, `smalltalk` ×3,
+  `goodbye` ×3 (the cast script supplies these for the regulars and visitors; **inferno, rita and hiro need their own
+  here**); `react.3`/`.2`/`.1` ×3 of their own; F: `react.gross`, `complain.extra`/`.unasked`/`.missing` ({ing}{ings}),
+  `complain.done` ({want}: stage words), `complain.pick` ({slot}{want}), `complain.more`, `complain.gross.brown`
+  ({ing}), `complain.gross.hair` and `.fly` (pick gross-outs: {value}{slot}).
+- **Some**: `visitor.arrive` reginald kai hiro; `order.usual` marge; `order.twin` gus; `order.dislike` sal (lettuce),
+  oakes (onions); `order.gag` inferno, rita (locals at home, ≤ 8 s; Inferno's also after the event finale);
+  `react.favourite` bev (she counts the jalapeños), inferno, rita; F `order.odd.doubleWrap`, `.noAvocado`, `.hottest`,
+  `.justTortilla` (the regulars and Rita) and `.fireAlarm` (Inferno).
+- **Mitch** (2 each unless 1): `shift.start`, `shift.end`, `uniform` (1); `tutorial.intro`, `.ticket`, `.review`,
+  `.serve`, `.gross`; `tutorial.prep`, `.griddle`, `.chips`, `tutorial.cook.griddle`;
+  `tutorial.warn.extra`/`.unasked`/`.missing`/`.done`/`.pick`/`.gross`/`.grossSkip`; `gross.brown` ({ing}), `.hair`,
+  `.fly` ({value}); `nearly` ({want}{name}), `after.3`, `after.1`, `after.gross`, `event.intro`/`.celebrate`/`.again`
+  ({name}) (1).
+- **Not needed**: `complain.tooMany`/`.tooFew` and their warnings (no Add with a max above 1, no repeat).
+- **Blank words**: {slot} style, rice, beans, protein, hot sauce, salsa; {want}/{got} burrito, bowl, tacos, white,
+  brown, none, black, pinto, chicken, steak, veggies, mild, medium, hot, red, green, mango; stages lightly toasted,
+  toasted, extra crispy, soft, burnt; {ing} cheese, lettuce, pico, corn, sour cream, guacamole, jalapeños, onions,
+  lime, or burrito / tacos for `done`. Pick lines say "for the {slot}, I said {want}" ("for the hot sauce, I said
+  none"). Pick gross-out lines say "{value} beans" and "{value} salsa".
+- **The brief**: Inferno wants it hotter (smoke from his ears; the four-chili bottle on the shelf is never on a
+  ticket); Rita's "one of everything" (said, never made); Marge's bean and cheese usual; Gus's two burritos
+  (`order.twin`); Bev counts the jalapeños out loud (her favourite: six of them); Vernon's bowl, nothing touching;
+  Sal's steak, never lettuce; Oakes's new onion reason (tacos); Chef Hiro judges the roll; the odd orders as in
+  section 6; the tutorial customer is Rita ("she"); the finale is Inferno's.
+
+## 13. Help
+
+The pack's `help` (Pause > Help): "Ben's Burritos. Every order starts at the burrito line: pick the style, Burrito, Bowl
+or Tacos, then the rice, the beans and the protein. Then Add or Skip each topping as it comes down the line, and pick the
+hot sauce. A burrito wraps itself, and tacos fold themselves. Then the griddle: in Simple, pick how toasted, Lightly
+Toasted, Toasted or Extra Crispy; in Timed, the press comes down, so Lift the Press when it reaches the stage on the
+ticket. Bowls skip the griddle; tacos skip the rice and beans and get onions. Chips and salsa: pick the salsa, then Add
+or Skip the guacamole and the lime. The ticket lists everything: add what's on it, skip what isn't. If something looks
+wrong, Swap It brings a fresh one."
+
+## 14. Theme: bright orange and green
+
+| token | value | token | value | token | value |
+|---|---|---|---|---|---|
+| pageBg | #0f2a14 | ticketAccent | #a83e0a | cardValue | #ffe7a3 |
+| panelTop | #b04a0c | ticketNow | #e4f6d2 | logoTop | #ffb347 (orange) |
+| panelBottom | #7a300a | perforation | #d9c2a3 | logoMain | #c6f28a (lime) |
+| panelLip | #3f1704 | hudBg | rgba(40,20,6,.86) | wheelInk | #1b120e |
+| plateTop | #fffaf0 | gaugeBg | rgba(14,40,20,.92) | wheelSteel | #dfe4e8 |
+| plateBottom | #fde6c8 | star | #c97c00 | wheelDark | #2f8a3e (green spokes) |
+| mark | #7a2e0e | boardGlow | #124422 | board | #0e3519 |
+| labelBg | rgba(48,20,4,.9) | woodInset | #5a2a08 | wood | #f28a1e (bright orange frame) |
+
+A burnt-orange control panel; deep green menu boards in a bright orange frame (the storefront's planks); cream plates.
+**Contrast, computed** (WCAG; translucent tokens composited over white, the worst backdrop):
+
+- The highlight #ffd400 on: panelTop 3.83, panelBottom 6.51, boardGlow 7.82, gaugeBg 8.71, board 9.51, pageBg 10.77
+  (need 3; `tests/pack.test.cjs` checks the five it lists). A brighter orange panel fails: the court's #e0782a is 2.2.
+- Text: ink on plateTop 17.71, plateBottom 15.21, ticketNow 16.16; ticketAccent on paper 6.01 and on ticketNow 5.48;
+  white on labelBg 12.95, hudBg 11.66, gaugeBg 12.47, panelTop 5.48, panelBottom 9.31; chalk on board 11.97 and
+  boardGlow 9.84; cardValue 11.16 / 9.18; logoTop 7.65 / 6.29; logoMain 10.68 / 8.78 (need 4.5).
+- Graphics: star on the receipt's paper 3.17, board 4.13, boardGlow 3.39; mark on the plates 9.07 / 7.79 (need 3).
+  (A lighter green glow, #1d5c33, failed the star at 2.42 and logoTop at 4.48: the boards stay deep.)
+
+## 15. The tutorial
+
+Rita (the restaurant's own); one guided order through every station: "Chicken Burrito: burrito style, white rice,
+black beans, chicken, with cheese, lettuce, pico, sour cream and guacamole, mild sauce, toasted. Chips and Salsa: red
+salsa, with lime." The guacamole comes down the line brown (`gross: { item: 0, ing: 'guacamole', event: 'brown' }`), so
+Swap It is taught once. Always Simple; Mitch warns before each mistake. 17 presses done right, plus the Swap It: 18.
+
+## 16. Press counts (`pressReport('burrito')`, Serve included; Simple and Timed alike, the same at every level)
+
+| recipe | levels | presses |
+|---|---|---|
+| chickenBurrito, steakBurrito, beanCheese | 1-5 | 14 (style, rice, beans, protein, 7 toppings, sauce, griddle, Serve) |
+| chickenBowl | 1-5 | 13 (no griddle) |
+| veggieBowl | 2-5 | 13 |
+| steakTacos, chickenTacos | 2-5 | 13 (style, protein, 7 toppings, onions, sauce, griddle, Serve) |
+| chips | 2-5 | 4 (salsa, guacamole, lime, Serve) |
+| everythingBurrito, fireBurrito | 3-5 | 14 |
+| challengeBurrito (event) | event | 14 alone; the finale with chips 17 |
+
+Whole orders (bots, 1500 orders a level in each mode): levels 1 and 2 at most 14; levels 3-5 and the event at most 28
+(Gus's two burritos, 27, plus a Swap It); a burrito with chips 17 (18 with a Swap It); every odd order 13 or 14; the
+tutorial 18. Budget (spec 4.3): level 1 ≤ 14, any order ≤ 28: both met, the second exactly.
+
+## 17. Requests (for the owners named)
+
+- **page / whoever owns `index.html`**: done by this lane under the shared-file rules (`packs/burrito/pack.js` after the
+  cafe's lines; `packs/burrito/script.js` once it exists); the food line is food-burrito's to ask for.
+- **page**: play `burrito`'s `burst` for an auto event whose id is `burst` (audio.md 5.2 lists it as the page's); until
+  then the station's `wrap` plays for it (game.js plays the station's one `sounds.auto` for every flourish). The
+  griddle's Timed control is already drawn as the `grillPress` prop (stage.js `tool`, from the shared props manifest),
+  labelled "Lift the Press".
+- **food-burrito**: section 10: 23 shapes, 5 layouts, sets `counter`, `prep` (also the chip basket) and `griddle` (cook
+  `griddle`), four flourishes (`burritoWrap`, `tacoFold`, `bowlArrange`, `burritoBurst`), the toast stages by colour and
+  stripes, the toast read from `made.picks.toast`.

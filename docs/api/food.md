@@ -1,0 +1,446 @@
+# Writing a food module (food-pizza, 2026-11-09)
+
+How to draw one restaurant's food in 3D, step by step, for the food agents of phase 2b (smoothie, cafe, sushi,
+burrito, icecream). The frame, the registry and the kit are in `docs/api/world.md`: read its sections 3 and 4
+first. This file is the practice: the order to work in, how to measure a backdrop, how to build the counter
+(decision 4), how to look at your work with `tools/food-frames.cjs`, and the traps the pizza hit. Worked examples:
+`js/food/diner.js` (the first, world.md section 5) and `js/food/pizza.js` (the second, section 9 here).
+
+## 1. What you own and what you must not touch
+
+- **Yours:** `js/food/<pack>.js`. You may **extend** `js/food/kit.js` (add a shared builder others can use; never
+  rewrite it; keep every diner test green; back it up first, spec rule 0.4). `tools/food-frames.cjs` is food-pizza's
+  but any food agent may improve it the same way (back it up first).
+- **Not yours:** `js/world.js` and `js/food/diner.js` (page lane), `index.html` (page), `packs/<pack>/*` (your
+  content agent), `tests/food.test.cjs` (world lane). Ask for changes under Requests in your report.
+- **Your contract:** `docs/api/packs/<pack>.md` section 10 (or wherever your content agent lists "every look,
+  set, flourish and cook"). Every `look.shape` the pack names needs a builder, or `node --test` fails.
+- **Loading:** ask the page agent for one line in the world block of `index.html`, after `js/food/diner.js`:
+  `<script src="js/food/<pack>.js"></script>`.
+
+## 2. The file
+
+Copy the first five and last two lines of `js/food/pizza.js` (UMD: Node and the browser both load it) and fill the
+factory. Every section is optional; the kit and the diner fill gaps (world.md section 3).
+
+```js
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./kit.js'));
+  else factory(root.BB.food);
+})(typeof window === 'undefined' ? globalThis : window, function (food) {
+  'use strict';
+  food.register('<pack>', k => {
+    const THREE = k.THREE, V = (x, y, z) => new THREE.Vector3(x, y, z);
+    const shapes = { /* one builder per look.shape */ };
+    const sets = { counter: {...}, <backdrop>: {...} };
+    return { shapes, sets, layouts, layoutOf, cooks, lines, applies, autos, ramps, counter };
+  });
+  return food;
+});
+```
+
+Rules the tests hold you to (world.md 3): no `Math.random` (seed `k.rand` from the part: `id + ':' + part.n`);
+bodies are `k.toon`/`k.basic`, only ink hulls use a shader; many small pieces go in one `k.scatter`/`k.heap`; never
+build at load time and never capture the pack (call `k.pack()`); every builder returns `{ g, h }` with `h >= 0`, the
+group standing on y = 0.
+
+## 3. Step by step
+
+1. **Read** your pack doc (every look, set, cook, flourish, gross-out), world.md 3-4, then diner.js and pizza.js.
+2. **Measure each kitchen backdrop's surface line** (section 4). Write the numbers down: they are your sets' `line`.
+3. **Shapes first, one per `look.shape`.** Run `BB_PACKS=<pack> node --test "tests/food.test.cjs"` after each: the
+   first test lists every look still missing. Read the look with `k.lookFor(part)`, the stage with
+   `k.stageIndex(part, o)`. A shape is drawn alone (the tests, a tin on the line) and inside your layout (with the
+   options your layout passes): make both work.
+4. **A layout** when the kit's `stack` is wrong for your food (it piles every part on the one before). Name it from
+   the recipe's look (`layoutOf(made)` reads `pack.recipes[made.recipe].look.shape`). Use `k.sequence(made, o)` for
+   the parts in line order, `k.food(part, opts)` to build each, and pass your own options down (the pizza passes the
+   crust's inner radius, the rim's profile and the height the cut runs at).
+5. **Sets, one per backdrop name** (the counter and every station's `backdrop`): a camera, `line` and `surface`,
+   `build(g, k)` returning the anchors (world.md 3.2). Kitchen sets: copy the diner's board camera, then move it.
+   **The counter: section 5.**
+6. **Cooks** for every set with a cook step: `show(c, s)` draws `s.made` (a whole item) or `n` of `s.ing` at
+   `s.stage`; `add`, `run` (Simple's flourish, ends showing `s.stage`), `stage` (Timed). Doneness is a colour AND
+   a mark at every stage, and neighbouring stages must differ at the size the cook view shows them (section 7).
+7. **Lines:** how each Add waits and goes on (`lines.<name>.incoming/add`, chosen by `applies[look.shape]`). The kit
+   has `squirt` (bottle), `shake` (shaker) and `tin` (a steel tin tipped over: scattered toppings).
+8. **Flourishes:** `autos.<show>` for auto steps; set hooks `pick`, `finish`, `auto` (world.md 3.2).
+9. **Gross-outs** need nothing if the pack uses the kit's fx (`hair fly spots tint stink smoke droop`); check they
+   sit on your food in the frames.
+10. **Look** (section 6): `node tools/food-frames.cjs <pack>`, read every sheet, fix, repeat. Then the whole suite.
+
+## 4. Measuring a surface line
+
+The generated pictures miss the prompt's line by up to 2%, so every kitchen line is measured. The line is the
+first row of the painted work surface: the row just below the dark ink line where the wall (or the shelf, or the
+oven's base) ends. Walk up from inside the surface in a dozen columns and take the median (Python, PIL):
+
+```python
+from PIL import Image
+im = Image.open('art-source/backdrops/pizza-oven.png').convert('L'); W, H = im.size
+rows = []
+for i in range(1, 20):
+    x, y = int(W * i / 20), int(H * 0.80)          # 0.80: a row inside the painted surface
+    while y > 0 and im.getpixel((x, y)) > 70: y -= 1  # up to the first dark ink pixel
+    rows.append(y + 1)
+print(sorted(rows)[len(rows) // 2] / H)            # pizza-oven: 0.694; pizza-prep: 0.653
+```
+
+Columns that hit a painted object (a stool, a bag) give a wild row: the median ignores them, but read the list.
+Then check by eye: `node tools/food-frames.cjs <pack> <out> guides line` draws each set's line in green over the
+picture; your 3D surface's back edge (`surface.back`) must meet it. The counter's line is not measured: it is 0.80
+for every restaurant (spec 5.2).
+
+## 5. The counter (decision 4, spec 5.2, world.md "Counters (REVISED 2026-11-09)")
+
+Every counter picture is the view from behind the counter into the court, with a painted queue of three in the
+middle distance, stools, and a bottom 22% of bare floor that **the game's counter top covers**. The counter set:
+
+- `line: 0.80` and `surface: { y: <counter top>, back: <its back edge z> }`: world.js shifts the lens so the back
+  edge lands at 80% of the picture (85.5% of a 16:9 window, 82% of 16:10, 80% of 4:3, 96.7% of 21:9).
+- **Build only what lies flat on the counter top**: a top (wide: 16 units, so 21:9 is covered; deep, so its near
+  edge is below the window at every shape) and painted-on trims. Nothing rises above the line (no shakers, no
+  props: the page draws the register, bell and sign), so the painted queue stays clear.
+- **Colours from the court picture and the counter picture** (crop your storefront from `art-source/backdrops/
+  court.png` with the box in spec 6.2; sample the counter returns at the picture's edges). The pizza: a cream top
+  (`0xfff2e2`, which renders like the painted returns' `#fce6d4`), a brick-red bullnose, two rows of red-and-white
+  checked tiles along the customer's edge.
+- **Anchors** (world.md 3.2): `spots[0]` (one item), `row` (the depth several items sit at), `contentScale`,
+  `back` (the edge: an item's far side never goes behind it), `front` (the nearest z the top still shows at the
+  bottom of a 16:9 window), `minX..maxX` (the span world.js keeps items in), `minScreenX` (page-1's: a fraction of
+  the window's width, 0.14 for the Pause sign; world.js works `minX` out from it for each window).
+  **world.js (page-1, 2026-11-09) keeps every item between `back` and `front`, and on a wider window between `back`
+  and the nearest z that window still shows, shrinking an item that is too deep; it places the order again on every
+  resize.** So an order always fits; your camera decides how big it can be.
+- **Where:** in front of the served customer, whom the page centres at 24% of the picture (docs/api/page.md 7).
+  **The whole order stays left of the painted queue: right of 52% of the picture fails `tests/dom-play.cjs`** (the
+  queue is 52-76% across, 43-77% down), and clear of the Back in 5 sign in the bottom-left corner (to 12.5% of the
+  window). A flat order stands below a child's face (Kai shows head and shoulders only); a tall one must not cover it.
+  The camera's axis is the middle of the window at every shape, so a world x left of 0 stays left of 50%.
+- **One item** sits at `spots[0]` (the pizza: x -0.5, 30-49% of a 16:9 window). **Several** share the span between
+  the sign and the queue **at the window's own shape**: a narrower window has less room for the same food. The
+  pizza's `counter.arrange` (copy it) solves the counter camera for the window (`innerWidth/innerHeight`; 16:9 in
+  Node), turns 14% of the window and 52% of the picture into x on the counter top at the items' near edge, builds each item to
+  measure it, and sets them side by side, shrunk together only if they do not fit (pizza and knots: 430 px at 16:9,
+  322 px at 4:3). world.js calls it again on every resize. Its static `minX..maxX` are only a backstop, so make them
+  wide; world.js's own `across()` (when `arrange` returns null) uses fixed world units, which are right for one shape
+  only.
+- **The camera is a trade-off** between how well the food reads at 16:9 and how big it stays at 21:9, where only a
+  24-pixel strip of the counter top shows:
+  - **Flat food read from above** (pizza, a bowl, a tray of sushi): a camera ~1.25 above the top, 4.6 behind the
+    edge, fov 38, whose horizon meets the painted one at 16:9 (46%). The pizza is 249 x 89 px at 16:9, its rim on
+    the line; at 21:9 world.js draws it at a third of that (68 px). A lower camera trades one for the other
+    (scratch numbers: 1.0 above gives 252 px seen flatter, 0.31 deep to wide, and 96 px at 21:9).
+  - **Tall food read from the side** (burgers, cups, cones): page-1's diner camera sits 0.26 above the top, nearly
+    edge-on, so the order hardly shrinks at 21:9.
+  - Find yours with a few candidates: render `counter-one` at every shape (section 6) and read the FIT lines.
+- **`row` (or `counter.arrange`)** keeps a flat item's far side a little in front of the edge (the pizza: 0.28), so
+  its rim stays on or below the line; a giant is pushed back to the edge by world.js and may rise a few pixels.
+
+## 6. Looking: tools/food-frames.cjs
+
+```
+node tools/food-frames.cjs <pack> [out dir] [words...] [guides] [aspects] [nosheet]
+```
+
+It runs the real `js/world.js` and `js/core/line.js` in Node with a stub window and draws each moment with NARBE
+Racer's CPU renderer over the real backdrop (`art-source/backdrops/<pack>-<set>.png`, cover-scaled like the page).
+No browser, no GPU. The pizza's 111 frames take about a minute. Default out: `art-source/review/food-<pack>/`.
+
+- **Frames:** `line-*` every station before and after each step (every ingredient and slot value once, the
+  flourishes mid-air), `counter-<recipe>`, `cook-*` every stage on the heat and Simple's run, `timed-*`, `gross-*` and
+  `reduced-*` (every gross-out on the line, served, on the counter; then Motion Reduced), `giant-*` (event recipes
+  and the finale), `counter-one/-combo/-twin`, `low-*` (Graphics Quality Low). Then `sheet-NN.png` (12 to a sheet)
+  and `index.txt`.
+- **Words** filter by name (`counter`, `cook-pizza-stage`, `line-garlicKnots`; case matters); `guides` draws each
+  solved set's line (green) and, at the counter, the served customer's eyes-to-hips box (cyan) and the queue's zone
+  (yellow); `aspects` draws every counter frame at 16:10, 4:3 and 21:9 too (counter-one, -combo, -twin and the
+  finale always are: `...@16x10`, `@4x3`, `@21x9`), resizing the window the way the game does.
+- **The counter fit** is measured on every counter frame the way `tests/dom-play.cjs` checks the page: `FIT 16x9: on
+  screen, 249x89px, top 0px above the line, x 30.0-49.4%`. `cut Npx off the window`, `reaches the queue (right of
+  52% of the picture)` and `not on the counter top` are fixes; the summary at the end of the run and of `index.txt`
+  lists them. The jsdom driver itself (`--pack <id>`, once the page loads your pack) also checks a child's face.
+- **What the frames cannot show:** ink outlines (the CPU renderer hides the shader hulls, so the game looks crisper
+  than the frames), sprites, and motion (a fly is caught mid-orbit; Reduced shows where it rests).
+- **Timers** run on the frame clock: `k.wait` inside a flourish completes before the next picture.
+
+## 7. Traps (each one hit by the pizza)
+
+- **The kit's `stack` piles parts.** Seven toppings stacked 0.1 high float over the cheese. A layout that keeps
+  every topping on one surface (a hair apart, so two never sit inside each other) fixed it.
+- **Decorations on top float at a low camera.** The cut was straight bars at the pizza's highest point: from the
+  counter they stuck out past the rim like sticks. Make such things follow the surface and end at the food's edge
+  (the cut is a tube over the toppings, then over the rim's own profile).
+- **Bounding boxes are not surfaces.** Flecks, marks and glaze sampled on `k.boxOf(...)`'s top float over lumpy
+  food (the knots' browned spots looked like flies). Sample the real surface: the kit's `k.surfaceOf(g, minUp)`
+  takes the upward-facing vertices of the food's meshes once, `k.onSurface(S, n, seed, lift)` picks seeded points
+  from them (the knots build theirs and pass it down to the butter and parmesan as `o.surface`).
+- **A 3D slab over a painted surface** hides the picture's texture (the marble's veins, the hearth's stone). Let the
+  painted surface be the surface: the pizza's prep and oven sets draw no slab.
+- **DataTexture colours wash out** unless `texture.colorSpace = THREE.SRGBColorSpace`: the checks came out pink.
+- **Giants on every set:** a line set caps them with `giantMax` (world.js); a cook view does not, so cap in your
+  `show` (the oven: `anchors.giantMax`); the counter shrinks them to its depth. A heart pizza on a round pan was
+  deeper than the counter: a heart-shaped tray kept it big.
+- **Small things on the line** (a tin, a basket, a dip cup) read badly at 1280 x 720: draw them up (the tins 1.2x,
+  the knot basket 1.3x) and size heaps so pieces stay inside their tin (`T.tin` in pizza.js).
+- **Stages must differ at the cook view's size.** The pizza is ~200 px wide inside the oven: Light and Golden needed
+  different cheese colours, not only spots. Compare every stage side by side in one crop.
+- **White on white** (white sauce on dough) needs a cue: herb flecks.
+- **An effect that makes no sense for one item** (bubbling cheese on knots) must check what it is drawn on.
+- **The counter and 21:9:** see section 5; read the FIT lines rather than guessing.
+
+## 8. Checks before you hand over
+
+- `BB_PACKS=<pack> node --test "tests/food.test.cjs"` and then the whole suite: `node --test "tests/*.test.cjs"`.
+- `node tools/food-frames.cjs <pack>` and look at every sheet (and the 21:9 counter frames); the counter fit summary
+  clean except what you report.
+- Report: the looks you draw, your sets' lines (measured), your counter camera and its FIT lines at the four shapes.
+
+## 9. The worked example: js/food/pizza.js
+
+| Section | What it does |
+|---|---|
+| `shapes` | `pizzaPan` (round, deep for deep dish, a heart tray under the heart), `thinCrust` `regularCrust` `deepDishCrust` (lathe profiles; char flecks at Crispy and Burnt), `pizzaSauce` (red; white gets herb flecks), `bareDough` (flour specks), `mozzarella` (shreds raw, melted from Light, golden with spots, blistered, charred), seven toppings (`pepperoni sausage mushrooms greenPeppers redOnions blackOlives pineapple`: one seeded scatter each, spread evenly inside the rim), `pizzaCut` (4, 6 or 8 cuts), `garlicKnots` (six knots, browned spots on their surface), `garlicButter`, `parmesan` (on the knots' surface), `dipCup` |
+| `layouts` | `pizza` and `heartPizza` (pan, crust, sauce and cheese in layers, toppings on one surface, the cut over all), `knotBasket` (the checked basket, a tray in the oven; 1.3x on the line and counter) |
+| `layoutOf` | the recipe's look: `pizza`, `heartPizza`, `knotBasket` |
+| `sets.counter` | `line 0.80`, `surface { y: 0.92, back: -0.2 }`, cam `pos [0, 2.17, 4.4] at [0, 0.56, -1.2] fov 38`; cream top, brick-red bullnose, two rows of checks; anchors `spots [(-0.5, 0.92, 0.57)]`, `row 0.57`, `contentScale 0.9`, `back -0.2`, `front 1.06`, `minX -2.4`, `maxX 0.3`, `minScreenX 0.14` (a backstop: `counter.arrange` keeps the order between 14% of the window and 52% of the picture) |
+| `sets.prep` | `line 0.654`, `surface { y: 0.5, back: -0.5 }`, the diner's board camera; a steel slide on the painted marble; anchors `stack (0, 0.5, 0.06)`, `incoming (0.98, 0.62, 0.15)`, `giantMax 1.05`; hook `pick`: the wheel rolls each cut, the sauce spreads, the dip cup drops |
+| `sets.oven` | `line 0.694`, `surface { y: 0.5, back: -0.55 }`, a lower camera so the mouth and the hearth fit; anchors `hearth`, `mouth`, `rest`, `giantMax 1.1`; `cook: 'oven'` |
+| `cooks.oven` | the item on the peel in front, or inside the mouth while it bakes (cheese bubbles; dark smoke at Burnt); Simple: in on the peel, bakes a stage at a time, out; Timed: out on the peel |
+| `lines` | `tin` (every topping and the cheese: a heap in a steel tin, tipped onto the pizza), `brush` (the garlic butter: a pot, the brush dabs the knots); parmesan uses the kit's `shake` |
+| `autos.doughToss` | the dough ball spins up, stretches and lands as the chosen crust |
+| `counter.arrange` | one item at the spot when it fits there; more (or a giant): side by side between the Pause sign and the queue at the window's shape (section 5) |
+| `ramps` | the crusts and knots raw to burnt (the dial plates) |
+
+Measured lines: prep 65.4% (asked 62), oven 69.4% (asked 65). Counter FIT, every frame on screen and left of 52%:
+
+| order | 16:9 | 16:10 | 4:3 | 21:9 |
+|---|---|---|---|---|
+| one pizza | 249 x 89 px, 30-49% | 249 x 89, 28-49% | 249 x 89, 23-49% | 68 x 22, 41-45% |
+| pizza and knots | 430 x 87, 18-51% | 386 x 78 | 322 x 65 | 328 x 49 |
+| two pizzas | 429 x 72, 18-51% | 385 x 65 | 322 x 54 | 310 x 22 |
+| the heart and knots (the finale) | 395 x 95, 20-51% | 357 x 86 | 302 x 72 | 339 x 49 |
+
+The kit gained `k.surfaceOf(g, minUp)` and `k.onSurface(S, n, seed, lift)` (section 7): use them for anything that
+lands on lumpy food (sprinkles on a scoop or a donut, sesame on a roll, cheese on a burrito bowl).
+
+## 10. Ben's Cafe: js/food/cafe.js (food-cafe, 2026-11-09)
+
+Contract: `docs/api/packs/cafe.md` section 10. Two kinds of item, neither stacks: a drink fills a cup, a donut is a
+body with a shell of glaze and toppings on that shell.
+
+| Section | What it does |
+|---|---|
+| `layouts` | `coffeeCup` (every drink: the paper cup at the size pick's `look.scale`, the drink filling it, then foam cap, cream swirl, crema ring, syrup drizzles, sugar cubes, whip, latte-art heart, lid; `setFill(level, colour)` and `surface(level)` for pours; no cup until a size is picked), `donut` (ring or jelly ball by `picks.dough`, fried by `picks.fry` or `o.stage`, glaze shell, toppings on the shell; wax paper on the line and the counter; `o.noGlaze` draws it before the dunk) |
+| `shapes` | what WAITS on the line: `milkJug` (one open steel pitcher for every milk, banded in its label colour, the milk inside; 2026-11-11), `creamSwirl` (steel creamer), `espressoShot` (shot glass), `syrupPump` (a full-height pump bottle), `sugarCube` (a paper packet), `whippedCream` (red can), `sprinkles`/`coconutFlakes`/`choppedNuts` (open glass jars); plus `paperCup`, `cupSize`, `drinkBase`, `coffeeFill`, `cocoaFill`, `doughRing`, `doughBall`, `donutBody`, `glaze`, `bareDonut` on their own |
+| `lines` | (2026-11-11 playtest) every vessel comes over the cup's opening with its mouth above the rim, never through the cup: `jug` (the pitcher; a bad milk off the line pours like a picked one), `creamer` `shotGlass` (tip and pour), `pump` (the bottle stands beside the cup on the drip tray, its nozzle over the opening; only the stream goes in), `packet` (torn, poured, the empty packet laid beside the cup, where it stays to the counter), `whipCan` (turned over, the peak the cup keeps grows), `jar` (turned over, shaken, pieces fall). What went in is swapped into the item before the vessel leaves (`swapItem`), so nothing pops in afterwards; an Add leaves `hold` so the redraw after it shows no flourish still to come (the lid) |
+| `sets.coffee` | `line 0.611` (measured: the first row of the bare dark wood under the bar's cream front edge; asked 65), `surface { y: 0.5, back: -0.5 }`, cam `pos [0.33, 2.95, 2.45] at [0.33, 0.85, 0.05] fov 30` (about 40 degrees down, steeper than the board camera, so the drink is read inside the cup); a steel drip tray; anchors `stack (0.12, 0.53, 0.12)` (under the painted machine's left spout at 16:9, and low enough that the page's Timed gauge, bb.css `#gauge` at 53vh, clears a medium cup's drink), `spout (0.12, 1.36, 0.12)`, `incoming (0.95, 0.5, -0.08)`; `cook: 'pour'`; hook `pick`: size drops the cup, drink pours from the spout (Simple: to the ticket's strength, since `made` already holds it; a hot chocolate always), milk: the jug comes and tips in |
+| `sets.donuts` | `line 0.596` (measured: the bare pale counter under the steel back counter's front edge; asked 62), the same camera; anchors `stack (0.05, 0.5, -0.1)`, `vat (0.05, 0.5, 0.1)` (in front, under the Timed gauge), `bowl`, `incoming`, `giantMax 1.25`; `cook: 'fry'`; hook `pick`: the raw dough drops on the paper, a glaze leaves it bare for the dunk |
+| `cooks.pour` | the cup at `s.stage` of the pour; while Timed pours, the stream runs from the spout. Strength = colour AND height: three strength lines on the cup's inside back wall (Mild leaves two showing, Smooth one, Bold none); Burnt is near black with a dark ring and smoke |
+| `cooks.fry` | a countertop fryer drawn only in the cook view (not furniture: the dough and glaze stations stay clear), the donut in a wire basket, up while it waits, half in the oil while it fries; Simple: down, bubbles, flips by itself, up with a shake |
+| `autos` | `latteArt` (the milk's own pitcher, left pouring by the milk pick in the same pose, draws the one heart, then leaves), `lidOn` (the lid comes in from the line, drops, snaps, the cup bounces), `glazeDunk` (a bowl of that glaze, as big as the donut, slides in, the donut flips face-down just into it and comes up glazed; the wax paper stays on the counter) |
+| `counter.arrange` | the pizza's, with the Cafe's queue (59.9%); several items are packed against the queue side, so the customer's side stays clear |
+
+Doneness: raw dough is pale and a little smaller; Golden has a pale fry line round its middle, Dark Golden a darker
+line and freckles, Burnt is near black with cracks and smoke. Chocolate dough browns on its own ramp.
+
+Traps the Cafe hit:
+- **The camera decides whether a drink can be read.** At the board camera (25 degrees) a coffee at half the cup's
+  height is hidden by the near rim. Look down about 40 degrees, or make the cup shorter.
+- **Lathe faces point to the right of the profile's direction** (r right, y up): a lid or a foam cap listed from the
+  centre outwards faces down and vanishes from above. List a top surface from the rim inwards.
+- **A parametric grid's winding** (the glaze shell) can face inwards: check one frame from above.
+- **A see-through glaze** came out see-through to the floor in the CPU frames (the body behind was not drawn under
+  it). The sugar glaze is opaque, its colour the fried body's mixed with cream.
+- **Furniture in `build()` shows at every station of that backdrop.** The fryer is drawn by the cook's `show`.
+- **`made` in a hook already holds what the rest of the answer did** (strength, `auto: ['art']`, `['dunk']`,
+  `['lid']`): draw `without(made, [...])` first, then play the flourish.
+- `tools/food-frames.cjs` (food-cafe): reads `BBArt.<pack>.counter` (the picture's own queue box, eyes) and anchors the
+  counter at 21:9 as the page does; "combo" pairs the pack's two courses; a Timed `want` cook is walked to its last
+  stage with a picture at every stage (`timed-<ing>-stage-<name>`; the picture shows the stage before the one named).
+
+Counter FIT (food-frames, 1280 x 720 high):
+
+| order | 16:9 | 16:10 | 4:3 | 21:9 |
+|---|---|---|---|---|
+| one coffee (lid, two sugar packets) | 214 x 205, 34-51% | 214 x 205, 32-51% | 214 x 205, 29-51% | 214 x 205, 38-51% |
+| a coffee and a donut | 508 x 226, 19-59% | 440 x 213 | 375 x 181 | 518 x 226 |
+| two coffees | 382 x 205, 29-59% | 382 x 205 | 381 x 205 | 382 x 205 |
+| the finale: Giant Donut and Red Eye | 481 x 205, 20-58% | 410 x 184 | 344 x 156 | 586 x 252 |
+
+## 11. Ben's Smoothie Shack: js/food/smoothie.js (food-smoothie, 2026-11-09)
+
+Contract: `docs/api/packs/smoothie.md` section 10. A smoothie is built IN a clear blender jug (the prep table builds on
+`smoothie`), blended, then poured into a clear cup; the açaí bowl blends in the same jug and pours into a half coconut.
+Nothing stacks, so the kit's `stack` is never used.
+
+| Section | What it does |
+|---|---|
+| `layouts` | `smoothieCup` and `trophyCup` (one function): at prep the jug with its contents and the empty cup of `picks.size` beside it; at the blender (`o.set`/`o.where === 'blender'`) the jug on a pink motor base and the cup; once `made.auto` has `fill`, and always on the counter, the cup full, with its domed lid, a striped straw and the first fruit on the rim (a spoiled fruit takes the rim, spoiled). The build returns `jug`, `cup`, `setBase(t)`/`baseY(t)` (the base pour), `setJug(t)`/`setCup(t)`/`cupY(t)` (the cup fill). `giantDone`: the trophy is its own size (0.8 beside the jug, 0.95 on the counter), not a 1.6 stretch of everything. `acaiBowl`: the jug with frozen chunks at the blender and the empty coconut, then the coconut with the purple dome and the toppings in rows front to back (granola, banana slices, strawberry slices, blueberries, left to right in line order) and the honey zigzag over them |
+| `shapes` | each look in three forms, `o.form`: `'line'` (how it waits), `'jug'` (dropped in whole, `o.r` the room), `'bowl'` (a row on the dome, `o.row = { x, z0, z1, y(x, z), top }`). `blenderJug`, `paperCup` (a clear cup: the court picture and the prep shelf draw clear cups, so the blend's colour shows from the side), `baseLiquid` (a glass pitcher labelled orange / cow spots / oat; yogurt a tub), `strawberries`, `banana` (a whole yellow banana on the line: it reads at once and a brown one reads as spoiled), `mangoChunks`, `pineappleChunks`, `blueberries`, `spinachLeaves`, `proteinPowder` (a scoop; the powder is its `heap`), `honey` (a honey bear), `iceCubes`, `granola`, `acaiBlend` |
+| `lines` | `drop` (every fruit and extra: loose ones are lifted over and dropped in, small ones wait in a teal prep bowl that tips them in; protein puffs as it lands) and `honey` (the bear turns over, a golden stream). Waiting things are drawn 1.5x |
+| `autos` | `basePour` (the base's pitcher comes over, tips, the level rises: `setBase`), `cupFill` (the jug lifts off the motor, tips over the cup or the coconut, the cup fills while the jug empties, the jug goes back; then the lid, straw and garnish pop on) |
+| `cooks.blender` | `show`: the whole item at `s.stage` on the motor, a swirl turning on the top while Timed blends (`s.cooking`); `run` (Simple): a stage at a time to the answer, the jug shaking; `stage` (Timed): redraw, still swirling |
+| `fx` | `bug` (a dark beetle, legs up, in a big clear ice cube on top) and `sock` (a white tube sock with red and teal stripes, poking out and flopping over; the pack adds `stink`) |
+| `sets.counter` | `line 0.80`, `surface { y: 0.92, back: -0.2 }`, cam `pos [0, 1.97, 4.3] at [0, 0.62, -1.4] fov 36` (about 13 degrees down: the cups stand up, the bowl's toppings still read); golden bamboo planks (seams, node marks) with the storefront's teal trim along the customer's edge; anchors `spots [(-0.2, 0.92, 0.12)]`, `row 0.12`, `contentScale 0.95`, `front 1.0`, `minScreenX 0.14` |
+| `sets.prep` | `line 0.623` (measured: the bamboo rail's ink line, every column within a pixel; asked 62), `surface { y: 0.5, back: -0.5 }`, the board camera; the painted planks are the surface; a teal tray (the line) on the right; anchors `stack (0, 0.5, 0.06)`, `incoming (0.98, 0.535, 0.15)`; hook `pick`: the cup drops in, the base's pitcher slides up |
+| `sets.blender` | `line 0.652` (measured: the teal counter's top ink line; asked 65), `surface { y: 0.5, back: -0.5 }`, cam `pos [0.22, 2.62, 4.15] at [0.22, 1.1, 0.1] fov 30` (further back than the board's: the jug stands on a motor); no furniture (the painted teal is the surface); `cook: 'blender'` |
+| `counter.arrange` | the pizza's camera solve; a cup is tall, so the order stands right of a child's face (the customer at 24% of the picture plus 7.5% of the window) when it fits there, else across the whole stretch from the Pause sign; always left of `anchors.maxScreenX` |
+
+**The colour of a blend** is mixed from what went in (each fruit's flesh colour and weight, strawberries 1.8, blueberries
+1.5, spinach 2.5; a spoiled fruit murky), then pulled 15% toward juice or 30% toward a creamy base. Doneness: Unblended
+every piece whole on the base layer; Chunky 14% lighter, streaks against the glass, chunks of each fruit on top and in
+the wall; Smooth the colour, specks on the top and against the glass; Super Smooth 14% deeper, a wide gloss down the
+glass and on the top, no specks; Soupy 36% paler, lower, a white foam band with bubbles. The same marks show in the cup.
+
+Traps the shack hit:
+- **A liquid behind clear plastic comes out grey.** Plain toon in its middle band, under 15-30% of white glass, lost
+  most of its colour (a juice read beige). The shack's liquids are toon with a glow of half their own colour, drawn
+  35% more saturated than mixed, behind glass at 15%. Never ink a clear vessel (the hull shows through it as black).
+- **Average colours in sRGB, not linear light**: in linear light a green smoothie (banana, pineapple, spinach) came out
+  khaki and a strawberry banana salmon.
+- **A lathe that starts away from the axis leaves a hole**: the coconut's inside was see-through from above.
+- **Furniture-height things beside the backdrop's painted ones**: the jug on its motor stood over the shelf's painted
+  blenders; the blender camera sits further back than the board camera so the 3D one is about as big as theirs.
+
+Counter FIT (food-frames, 720 high): one medium cup 89 x 166 px at 40-47% (16:9; the same at 16:10, 4:3 and 21:9, the
+small cup 73 x 135, the large 109 x 204); a smoothie and a bowl 323 x 173, 24-49% (4:3 20-53%); two smoothies 208 x 166,
+36-52%; the finale (trophy and bowl) 402 x 230, 21-52% (4:3 21-57%). Every frame on screen and left of the queue (57%).
+
+## 12. Ben's Burritos: js/food/burrito.js (food-burrito, 2026-11-09)
+
+Contract: `docs/api/packs/burrito.md` section 10. Nothing stacks: every filling lies ON what is under it. A layout keeps
+a **ground** (`ground(floor)`: the food's height at any point, `at(x, z)`) and gives each part a **region** of it (a
+rounded `band` down a tortilla or a taco, a `wedge` or a `heapAt` in a bowl); a part builds its mound or its pieces on
+the ground there and raises it for the next part (`region.raise(h)`). So a burrito's rice, beans, protein and seven
+toppings lie in layers that follow each other, and the hot sauce is a tube laid along the ground (it never floats over
+a low edge). A shape drawn on its own (the tests, a dial) gets a small pile on y = 0. Copy `ground`/`region` for any
+food that piles loose things on loose things (a sundae's toppings, a sushi bowl).
+
+| Section | What it does |
+|---|---|
+| `layouts` | all five recipe looks go to one `itemLayout`, which draws the style PICKED (`made.picks.style`): nothing before it is picked; `chipsBasket` by `made.ing === 'chips'`. **burrito**: the flat tortilla on a square of foil with the band; once `wrap` is in `made.auto`, a rolled burrito (a lathe along x, squashed 0.86, its closed end tucked with creases and in crinkled foil, the open end cut on the bias at 0.62 rad so the cross-section of what went in faces up and to the viewer; turned -0.42 so the cut end faces the camera); once `burst`, a second, fatter, shorter tortilla over it (two tortilla rings at the cut) and a scrap of foil in front with beans, rice and a sour cream smear. On the griddle (`o.where === 'griddle'`) it is always rolled and bare. **giantBurrito**: the same plus a red pennant with a flame (the kit scales it 1.6). **bowl**: orange with a green band under the rim, cream inside; loose heaps, or once `arrange` one wedge per part with a gap between (`slideFrom` on each for the flourish); the sauce across the top. **tacos**: three tortillas on a steel tray; open with a strip each, or folded (`tacoShell`: a grid folded round x, open at the top) in steel cradles; the protein a solid strip so the fillings peek over the rim; `o.foldT` and `setFold(i, t)` for the flourish. On the griddle: three pressed half-moons. **chips**: a checked paper boat heaped with curled triangle chips and salt, the salsa cup, the guacamole cup, the lime half-wheel on the rim |
+| `shapes` | the bodies `burritoBody tacoBody bowlBody` draw nothing (their ramps are the dial's); `flourTortilla burritoBowl softTacos chipBasket`; `rice beans` (a mound and grains/beans on it; white rice has cilantro flecks, black beans glints, pinto specks); `chickenPieces` (cubes with two grill bars), `steakPieces` (dark cubes with a pink cut top), `grilledVeggies` (green and red strips, zucchini half-moons); `shreddedCheese` (glossier, melted from Toasted), `shreddedLettuce`, `pico` (tomato, onion, cilantro), `cornKernels`, `sourCream` (a swirled dollop on a cool shadow with a gloss), `guacamole` (lumpy scoops, each its own mesh, flecks on them), `jalapenoRings` (six, spread 0.11 apart so they can be counted), `dicedOnions` (white and lilac cubes); `hotSauce` (on food a drizzle with `userData.drizzle.grow(u)`; alone the bottle with 1-3 chili marks); `salsaCup` (chunks of its colour, onion, cilantro); `limeWedge` |
+| options a layout passes a part | `region`, `share` (a taco's third), `heap` (a solid mound under pieces: a bowl's wedge, a taco's protein), `dense` (more pieces), `dollops`/`dollopScale`, `scoops`/`scoopScale`, `rings`/`ringScale`, `sauceR`, `turns`, `salt` |
+| `lines.tin` | every filling, the rice and beans too (a gross pick waits in its pan), waits in the kit's tin drawn 1.2x; pico, lettuce and jalapenos get a second colour in the heap. The lime and the salsa wait as themselves |
+| `fx` | `hair` lies along the region's own surface, and is pale on dark food (a dark hair on black beans could not be seen); `spots` land on the food's own upper surface (`k.surfaceOf`), else the kit's |
+| `autos` | `burritoWrap` (the flat one squeezes in, the rolled one rolls into place, a pop), `tacoFold` (one taco after another, then a pop), `bowlArrange` (each wedge slides in from where its loose heap was, then a pop), `burritoBurst` (it swells and wobbles, the spill arcs out with steam, the second tortilla rolls round). Each draws `without(made, [...])` first: one answer brings the sauce pick, the wrap and the burst together, and `made` already holds all three. A flourish whose style was not picked pops |
+| `sets.counter` | `line 0.80`, `surface { y: 0.92, back: -0.2 }`, cam `pos [0, 2.07, 4.4] at [0, 0.52, -1.2] fov 38` (1.15 above the top: the bowl's wedges and the cut end both read); a cream top (#fff3dc) over orange planks, the orange edge (#f28a1e) and a dark brown trim line on the customer's side; anchors `spots [(-0.3, 0.92, 0.55)]`, `row 0.55`, `contentScale 1.25`, `back -0.17`, `front 1.06`, `minScreenX 0.14` |
+| `sets.prep` | `line 0.625` (measured: the steel counter under the steam table's front edge; asked 62), the board camera, no slab; anchors `stack (-0.04, 0.5, 0.06)`, `incoming (0.98, 0.62, 0.15)`, `giantMax 1.05`; hook `pick`: the style drops in, rice/beans/protein drop into the band, the sauce bottle comes over and zigzags (`grow`), the salsa cup is set down |
+| `sets.griddle` | `line 0.744` (measured: the dark plate under the back lip's ink line; asked 65), the board camera; anchors `plate (-0.02, 0.5, 0.02)`, `giantMax 1.0`; `cook: 'griddle'` |
+| `cooks.griddle` | the item at `s.stage` on the plate, steam while Timed toasts; Simple: a stage at a time (the stripes come one by one), a puff at the end; Timed: shown at the stage it came off |
+| `counter.arrange` | the pizza's camera solve, with `anchors.maxScreenX` (the queue at 56.4%) and the items' near edge as the cafe's |
+
+Doneness (colour AND mark, every neighbour different in both at the griddle's size): Soft pale cream, no stripes;
+Lightly Toasted light gold, 2 faint golden stripes; Toasted golden brown, 3 brown stripes and toasty spots; Extra Crispy
+deep brown, 4 dark stripes and dark blisters; Burnt charcoal, 5 black stripes, black spots and smoke. Tacos the same on
+their own ramp. The cheese inside goes glossier from Toasted.
+
+Traps the Burritos hit:
+- **One heap per topping stacks into a dome** in a small strip (a taco): only the protein gets a solid heap there.
+- **Sparse pieces read as confetti** in a bowl's wedge: a wedge is a solid heap of the topping with pieces on it.
+- **A deep bowl hides its food from the counter camera**: the bowl is 0.11 deep and the wedges heap up 0.05.
+- **An open shell must not be inked** (the inverted hull would fill the inside black in the browser); the taco shells
+  and the mounds have no hull, the pieces on them do.
+- **Contrast for fx**: the kit's dark hair vanished on black beans.
+
+Counter FIT (food-frames, 1280 x 720): one burrito 228 x 102 px at 34.9-52.7% (the same size at 16:10, 4:3 and 21:9;
+4:3 29.9-53.6%: at x -0.42 its raised foil end touched Kai's chin box at 4:3 in the page's "counter at" run, so the spot
+is x -0.3); a chicken bowl 246 x 84; steak tacos 307 x 59; chips and salsa 303 x 73; a burrito and chips 463 x 99, 19-56% (4:3
+354 x 76); two burritos 451 x 95; the finale (the Challenge Burrito and chips) 424 x 177, 22-55% (21:9 541 x 226).
+36 of 36 counter frames on screen and left of the painted queue.
+
+## 13. Ben's Sushi: js/food/sushi.js (food-sushi, 2026-11-09)
+
+Contract: `docs/api/packs/sushi.md` section 10. A roll is ONE layout (`sushiRoll`) drawn in one of four forms from the
+same parts, and every part's shape reads the form from `o.roll` (the roll's context: form, base, kind, sizes):
+
+| form | where | what it is |
+|---|---|---|
+| `sheet` | prep (and the mat at stage 0) | the nori flat on the mat, the rice slab with grains, the fillings in a band of lanes near the front edge, sesame on the rice, sauces zigzagged over the band. Inside-out (once rice is picked) is the sheet FLIPPED: fillings on the nori, a rice border round it |
+| `log` | the mat (stage > 0), the board before the slice | the nori (inside-out: rice) skin, both ends cut faces (rice ring + a patch per filling); on the mat the mat curls round it and the item is turned -0.32 so the right-hand cut face shows |
+| `pieces` | the board after `slice`, the counter, the boat | 6/8 in a row, 10 in two rows; each piece leans back toward the viewer (board 0.3, boat 0.45, counter 0.62 rad) so the cut face reads from a low camera |
+| `cone` | a hand roll once rolled (mat, counter) | a nori lathe cone lying on its side, mouth to the viewer, rice dome and filling sticks at the mouth; 1.4x on the counter's geta |
+
+The base is the vessel shape `rollMat`: the bamboo mat (flat, or curled by stage), the cutting board, the geta (the
+counter) or the boat (`sushiBoat`, giant 1.6 by the kit; line sets cap it at `giantMax` 1.0). Each filling's cut-face
+patch differs by SHAPE as well as colour (salmon rounded rect with fat lines, tuna rect with a sheen, crab disc with a
+red top, cucumber square with pale flesh, avocado crescent with skin, cream cheese white rect on a blue-grey edge: the
+white-on-white cue). Miso: `misoSoup` (red lacquer bowl, black inside, broth by `setLevel(t)`, a faint swirl, tofu,
+wakame, enoki), 1.6x and 0.2 forward at the soup station.
+
+| Section | What it does |
+|---|---|
+| `sets.counter` | `line 0.80`, `surface { y: 0.92, back: -0.2 }`, the pizza's camera (`pos [0, 2.17, 4.4] at [0, 0.56, -1.2] fov 38`); a golden hinoki top `0xf4c56a` (the counter picture's own sushi counter, #f9c955-#fdd276), an orange-wood edge on the customer's side, plank seams and grain, all flat; anchors `spots [(-0.45, 0.92, 0.42)]`, `row 0.42`, `contentScale 1.35` (the soup reads it; the roll's size is its own), `front 1.06`, `minScreenX 0.14` |
+| `sets.prep` | `line 0.628` (measured; asked 62), `surface { y: 0.5, back: -0.5 }`, cam `pos [0.329, 2.215, 2.508] at [0.329, 1.115, 0.15] fov 30` (the diner's board camera 25% closer: the mat reads at the size of the painted bowls); no furniture; anchors `stack (-0.02, 0.5, -0.06)`, `incoming (0.86, 0.5, 0.14)`; hooks `pick` (the nori drops; the rice spreads, then an inside-out sheet flips over; the miso's bowl waits) and `finish` (see below) |
+| `sets.roll` | `line 0.620` (measured; asked 60), the same camera, `cook: 'mat'`; anchors `stack (0.12, 0.5, 0.06)` (the board), `mat (0.02, 0.5, 0.08)`; hook `pick` (the pieces: the log waits for the knife) |
+| `cooks.mat` | `show` the item at `s.stage` on the mat; `run` (Simple, if the page ever shows the mat) a stage at a time; `stage` (Timed) redraw + a squeeze. Flat: the sheet; Loose: paler nori `0x3f6249`, the mat barely curled, the seam open; Firm: `0x1f3326`, the mat wrapped, one red string band; Tight: near-black `0x0c1610` with a shine, smaller, wrapped further, two bands; Squashed: flattened, the mat flat, rice blobs out of both ends, a dent. `ramps.rollMat` gives the plates the same colours |
+| `lines` | `bowl` (every filling and soup floater waits in a seigaiha bowl, 1.4x, applies its own gross fx to the heap; `k.tip`), `squirt` and `shake` (the kit's bottle 0.72x and shaker 0.8x, WRAPPED in a group so the kit's squeeze, which sets the wrapper's scale, keeps them small; the tip is scaled to match) |
+| `autos` | `rollSlice` (a knife cuts the log N-1 times, a dark ring at each cut, then the pieces part), `misoLadle` (a wooden ladle tips the picked miso in, `k.pour` raising `setLevel`) |
+| `fx.wink` | an eyeball with its pupil to the viewer and a tuna-red half-shell lid turning round it on a hinge (`spinY` on a child of a group turned 90 degrees about z, so the lid turns about the eye's horizontal axis: closed, lower lid, open, upper lid); Reduced: the lid turned PI/4, half down over the eye (mid-wink) |
+| `counter.arrange` | the pizza's camera solve, the right edge also held to `anchors.maxXAt(z)` (world.js pushes an item left of it back onto its neighbour), a 0.24 gap so two geta never touch |
+
+**Simple never shows the mat** (the page): `simple: 'auto'` cooks it inside the answer that ends the prep table and
+game.js changes scene only in `step()`, so the `cooked` event plays on the prep set, which has no cook. The prep
+set's `finish` hook therefore rolls it up on the mat it was built on (`made.done` is set in Simple, unset in Timed):
+the sheet squeezes into a log, then `showItem(made, { rolled: true })`. Timed shows the mat station as usual.
+
+Traps the sushi hit:
+- **End faces are seen edge-on** from a camera on the roll's axis's normal: turn the log (or the whole mat) a little.
+- **A mat as wide as the sheet hides the log's ends once curled**: the mat (0.62) is narrower than the log (0.76), so
+  the cut faces poke out of the rolled mat.
+- **A flat bead on tilted faces floats or sinks**: the sauce over the pieces is tilted with them (`pieces.tilt`) and
+  placed at the faces' middle (`faceY`, `faceZ`).
+- **Droop scales about the part's own origin**: on a layered sheet it sinks the nori into the mat. The roll strips
+  `soggy` from its nori part and draws soggy itself (olive nori, a slumped sheet); the waiting sheet keeps the kit fx.
+- **Patches on one face at one height z-fight** where they overlap: each filling gets its own tiny lift.
+- **`k.keep(null)`** throws: never call `kept(key, () => null)` hoping the key exists.
+- `tools/food-frames.cjs` (food-sushi): a stage set with `simple: 'auto'` gets its Timed walk run to the last stage
+  with a picture at every stage (`timed-<ing>-stage-<name>`), since the Simple walk shows none of it.
+
+Counter FIT (food-frames, 720 high; every frame on screen and left of the painted queue, 65.9%): one roll (8 pieces on
+a geta) 405 x 61 px, 25-57% at 16:9 (the same at 16:10, 4:3; 21:9 364 x 54); a roll and miso 548 x 69, 18-61% (4:3
+454 x 58, to 65.6%); two rolls 555 x 43 (4:3 452 x 35); a hand roll 175 x 82; a miso soup 117 x 68; the finale (the
+Sushi Boat and red miso) 538 x 99, 20-62% (4:3 431 x 79, 21:9 405 x 40).
+
+## 14. Ben's Ice Cream Emporium: js/food/icecream.js (food-icecream, 2026-11-10)
+
+Contract: `docs/api/packs/icecream.md` section 10. Two layouts draw everything. **`scoopItem`** (the recipe looks
+`coneStack cupStack sundaeCup bananaSplit kitchenSinkSundae`): the holder (a picked `holder` value, or the body: the
+boat, the sink), then the scoops placed for that holder by `scoopPlaces(kind, n, r)` (stacked on a cone, side by side
+then stacked in a cup, in a row in the boat, heaped two in front and one behind in the sink), all at `made.done`'s
+size; it hands the toppings `tops` (the scoop spheres with nothing above them), `crowns` (where cream and cherries
+go) and `surface` (the top scoops' real upward vertices, `k.surfaceOf`). **`shakeItem`** (`shakeGlass`): before
+`made.auto` has `glass`, the steel cup on a 3D mint mixer (`MIXER` from the glass's spot) with the empty glass
+waiting; after, the glass full at its stage with a straw, cream and cherry. Both mark where an Add lands with an empty
+group named `stack` (`userData.h` = the top), which world.js's `c.top()` reads.
+
+| Section | What it does |
+|---|---|
+| `shapes` | `scoopBall` (a unit ball with the scooper's curls and a ruffled skirt, its foot at y 0, centre at 0.66 r; `flecks`/`chunks` on its own surface; vanilla-bean specks on a plain light scoop, the white-on-white cue against cream; Avalanche slumps sideways with drips and a sliding lump), `plainCone` `waffleCone` (painted grid / diamond DataTextures, sRGB, in a chrome stand with a pink foot), `stripedCup` (striped texture, a pink spoon once it holds a scoop), `bananaBoat`, `sinkBasin` (tap and plug chain at the back, melted vanilla once scooped), `shakeCup`, `shakeScoop` (a scoop in a steel dish), `rainbowSprinkles`, `fudgeDrizzle`/`caramelDrizzle` (a drip cap over each top scoop: a sphere cap whose lower edge runs down in drips, two gloss highlights; a second sauce is a smaller cap), `whippedSwirl` (three ridged rings and a curled peak), `choppedNuts` (on the scoops and the cream, half each), `maraschino` (glossy, long stem) |
+| `layouts` | as above; on a kitchen set (`o.where === 'line'`) the item is drawn 1.6x, never taller than 0.95 (`LINE`); the Kitchen Sink on the counter draws itself 1.15x (`giantDone`) instead of the kit's 1.6 |
+| `sets.counter` | `line 0.80`, `surface { y: 0.92, back: -0.2 }`, the smoothie's camera (`pos [0, 1.97, 4.3] at [0, 0.62, -1.4] fov 36`: cones stand up); a cream top `0xfff3ec` with pale veins, the pink edge `0xf16487`, a white trim and a pale pink line on the customer's side; anchors `spots [(-0.2, 0.92, 0.16)]`, `row 0.16`, `contentScale 1.45`, `front 1.0`, `minScreenX 0.14` |
+| `sets.scoop` | `line 0.622` (measured: the freezer case's steel ledge under the wall's ink line; asked 62), the board camera, no furniture; anchors `stack (-0.12, 0.5, -0.3)` (on the ledge, between the painted cone and waffle dispensers), `scooper (0.42, 0.54, 0.3)` (over the tubs), `well()` (the painted warm-water sink, found for this window by `onPicture`), `giantMax 1.05`; `cook: 'scoop'`; hook `pick` (the holder drops in; each scoop flies from the scooper to its place) |
+| `sets.toppings` | `line 0.648` (measured: the marble's front edge, every column; asked 62), the board camera; anchors `stack (-0.22, 0.5, 0.06)`, `incoming (0.98, 0.5, 0.15)`, `giantMax 1.05`; `cook: 'shake'`; hook `pick` (the flavour's scoops drop into the steel cup) |
+| `cooks.scoop` | the item so far at `stack`; the scooper at `scooper` with a vanilla ball of the stage's size and the size marks under it: a dark sizing plate with 0-4 flat rings in the stage's colour (`MARK`: grey, mint, pink, gold, red, which are also `ramps.scoopBall`, the size plates' swatches). Simple grows it a stage at a time; Timed bobs it |
+| `cooks.shake` | the steel cup on the mixer at the stage (it turns while it mixes): lumpy (scoops in white milk), thick (a dome with stiff peaks, darker), creamy (smooth, a swirl), thin (flat, paler, bubbles), melted puddle (pale, foam, a ring up the wall where it stood) |
+| `lines` | `jar` (sprinkles, nuts: an open glass jar, its heap tipped with `k.tip`), `ladle` (fudge, caramel: a warmer pot; the ladle pours with `k.pour`), `whip` (the canister turns over, the swirl grows), `cherryJar` (the next one, the part itself, hops out: so a tomato is what goes on), `dish` (a shake flavour waiting, 1.8x). A clear jar or glass is never inked: `glassCues` (tinted rim and base, two streaks) make it read on white marble |
+| `fx` | `tomato` (the cherry 1.22x, matte orange-red, stem and gloss gone, a green star calyx on top), `frost` (white crystals and grey crust on the top 45% of what it spoils, after the pack's `tint`) |
+| `autos` | `scoopDip` (the scooper to the painted well, dips, drips, back), `bananaTuck` (the halves slide in from the sides), `milkPour` (a jug pours, `k.pour`), `shakePour` (the steel cup leaves the mixer, tips over the glass, the glass fills) |
+| `counter.arrange` | the smoothie's: right of the served customer's face when the order fits there, else from the Pause sign; always left of `anchors.maxScreenX` (the queue at 55%) |
+
+Traps the Emporium hit:
+- **The board camera is far for small food**: a cup is 0.2 wide, a pizza 0.9. Scale the item on the line sets (and
+  cap its height: a three-scoop waffle cone), not the camera, so the anchors and the backdrop still line up.
+- **A colour mark on a painted background vanishes**: a mint ring over the mint tub. The rings lie on a dark plate.
+- **A sauce cap the size of the scoop hides the flavour**: keep it to the top (0.78 rad) and let the drips run.
+- **Things beside each other in a cup read as one blob**: two scoops side by side need 0.72 r apart, not 0.58.
+- **A glass of liquid comes out grey** (the smoothie's trap again): `vivid()` +80% saturation, a glow of 30%, glass
+  at 15% and front faces only (DoubleSide doubled the white).
+- **The kitchen set's own painted machine can sit under the page's answer column** (the mixer at 85% across): draw a
+  3D one where the food is, only while it is in use.
+
+Counter FIT (food-frames, 720 high; every frame on screen and left of the painted queue, 55%): one cone 81 x 193 px
+at 40-46% (the same at 16:10, 4:3, 21:9); a cup 97 x 144; a sundae 126 x 186; a waffle cone deluxe 89 x 260; a
+shake 76 x 234; a banana split 225 x 168, 35-52%; a cone and a shake 180 x 236, 36-50% (4:3 32-51%); two cones
+200 x 193; the finale (the Kitchen Sink and a shake) 387 x 255, 19-49% (4:3 17.5-54%, 21:9 31-54%).

@@ -1,0 +1,13 @@
+Use case: character pose set for a 2D game
+Asset type: full-body character poses on plain white, one image per pose
+Attached image 1 is the APPROVED model of this character in the neutral pose. Copy the character EXACTLY: the same
+face, hair, body shape and proportions, clothes, accessories, colours, outline weight and shading style. Change ONLY the
+pose and the facial expression. Each pose must read from its silhouette alone.
+Style: original 2D cartoon art for a comedy diner game, TV-cartoon look. Thick, clean, even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated proportions (big head, big hands, big expressive eyes and mouth); a strong, readable silhouette. Funny for adults: dry, deadpan comedy, never cute, never babyish. It is an ORIGINAL design and must not resemble any existing cartoon character, show or brand.
+Character: TONY, a retired opera tenor and pizza purist who is offended by pineapple. About 65, a huge barrel chest on short legs, slicked-back black hair grey at the temples, a big proud chin, bushy eyebrows. A black tuxedo waistcoat over a white shirt with rolled sleeves, a burgundy cravat, a checked napkin already tucked into his collar, shiny black shoes. Loud and operatic: every complaint is a performance.
+Make 2 separate images:
+- New picture 1: TALKING: mid-sentence, mouth open, one hand raised beside the face gesturing as they order, eyebrows up. Save as art-source/cast/tony/talking.png (1024 x 1536).
+- New picture 2: WAITING: patiently waiting, weight on one leg, glancing up and to the side, fingers drumming on the other arm or checking a wristwatch. Save as art-source/cast/tony/waiting.png (1024 x 1536).
+Framing: ONE character, full body from the top of the head to the shoes, standing, facing the viewer and turned very slightly toward the viewer's right. The figure fills about 88% of the image height, centred, with a clear margin all round; nothing is cropped (hands, hat and feet all inside the frame). Plain pure white background, no floor, no cast shadow, no border, no text other than what the character description asks for, no other objects except what the character holds.
+Also save the prompt as art-source/cast/tony/talking-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the paths of the generated files.

@@ -1,0 +1,9 @@
+# Jitters — Eating lunch
+
+Use case: identity-preserve. Asset: one full-body 2D comedy diner game character pose, 1024 x 1536 portrait.
+Image 1 is the APPROVED neutral model of JITTERS. Copy the character EXACTLY: same face, spiky brown hair silhouette, wiry body proportions, big head and hands, huge eyes, stubble, rumpled cream office shirt with rolled sleeves and blue pocket pen, crooked red/yellow striped tie, brown trousers and shoes, mismatched purple/yellow polka-dot and green/cream striped socks, one untied yellow shoelace. Same colours, thick clean even black outlines, flat colours with one hard-edged cel-shadow tone per colour. Original TV-cartoon design, dry adult comedy, never cute or babyish. Change ONLY pose and facial expression, and remove coffee cups.
+Pose EATING LUNCH: sitting upright on an invisible seat, frontal view exactly like model. Happy satisfied face with big grin and wide twitchy eyes, hair standing up. One hand holds a plain SILVER EMPTY DINNER FORK with dark outline up near chin, about to take a bite. Other forearm rests horizontally flat across the front of body at waist height on invisible table edge. Keep small vibrating motion lines.
+Framing: same 1024x1536 canvas, scale and central position as model. Head exactly same size and same height as reference, hair top around y85 and chin around y505. Hips bend at seat about 56% down canvas (y860). Below hips thighs project toward viewer in seated foreshortening, knees bent and lower legs hanging down, shoes near bottom around y1435, all visible. Preserve reference proportions and centered body.
+Background pure white. NO food anywhere, nothing on fork, no plate, no table, no chair, NO coffee cups, no drinks. No floor, cast shadow, border, text or other objects. Only prop is the single empty fork.
+
+Generated with the built-in image_gen tool.

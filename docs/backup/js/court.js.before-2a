@@ -1,0 +1,83 @@
+/** Ben's Food Court - the court screen, as a STAND-IN (page-1): a flat card of the open restaurants.
+ *
+ *  page-2 replaces this file with the real court (spec 6.2: the storefronts on the court picture, crowds, the
+ *  moments) and must keep the hooks below, which the rest of the page calls (docs/api/page.md "The court"):
+ *    BB.court.show()        open the court: after Play on the main menu, after a shift's results, and after
+ *                           Food Court from a restaurant (BB.game has already saved the shift and left)
+ *    BB.court.enter(id)     enter a storefront: BB.game.enter(id) does the rest (spec 6.3)
+ *    BB.court.pause()       the court's Pause (card courtPause); BB.court.resume() comes back to the court
+ *    BB.court.stops()       the card items of the stand-in (ui.js SCREENS.court); page-2 may drop it
+ *    BB.court.picker()      the tutorial picker's items (ui.js SCREENS.tutorials): open, built, in U order,
+ *                           grouped into parts when more than four
+ *    BB.court.help()        the court's Help words (BB.courtRules.help)
+ *  The stand-in says the pending news (R.news) in the card's own speech and marks it seen; page-2 plays the
+ *  moments instead (the shutter, the gold sign, the celebration) and says court.return when the goal's key changes
+ *  (kept in `lastGoalKey` here so a session starts with one reminder).
+ */
+(function () {
+  'use strict';
+  const R = () => BB.courtRules, C = () => window.BBCourt;
+  const state = () => BB.save.court();
+  const built = id => BB.packs.has(id);
+  let lastGoalKey = null;
+
+  const savedIds = () => BB.save.shift.savedIds();
+
+  /** The court is on: nothing of a restaurant is drawn or heard. */
+  function arrive() {
+    BB.stage.usePack(null);
+    BB.world.goTo(null);
+    BB.audio.use(null);
+    return BB.stage.setScene('court');
+  }
+
+  /** Open the court. The pending moments are said as plain sentences and marked seen (the stand-in). */
+  async function show() {
+    await arrive();
+    const st = state(), news = R().news(C(), st);
+    news.forEach(n => R().seen(C(), st, n));
+    if (news.length) BB.save.saveCourt();
+    const goal = R().nextGoal(C(), st);
+    const changed = goal.key !== lastGoalKey;
+    lastGoalKey = goal.key;
+    BB.ui.openCard('court', { news: news.map(n => n.words), goal: changed ? goal.words : '' });
+  }
+  function enter(id) {
+    if (!built(id)) return;
+    BB.game.enter(id);
+  }
+  function pause() { BB.ui.openCard('courtPause'); }
+  function resume() { BB.ui.openCard('court', { news: [], goal: '' }); }
+
+  /** The stand-in's card items: each open shop (not built: shown, never entered), parts as groups when the rules
+   *  group them (more than four open), then Pause. */
+  function stops() {
+    const st = state(), saved = savedIds();
+    const shop = s => {
+      const r = R().restaurant(C(), s.pack);
+      return { id: s.id, label: r.short, icon: '🏪', say: s.label + (built(s.pack) ? '' : ', not built yet'), off: !built(s.pack),
+        value: R().words.stars(R().level(C(), st, s.pack)), action: () => enter(s.pack) };
+    };
+    const items = R().stops(C(), st, { saved }).map(s => (s.kind === 'part'
+      ? { id: s.id, label: s.label.split('.')[0], say: s.label, items: s.stops.map(shop) }
+      : shop(s)));
+    items.push({ id: 'pause', label: 'Pause', icon: '⏸️', action: pause });
+    return items;
+  }
+  /** The tutorial picker's items: one per open, built restaurant in U order; parts when more than four. */
+  function picker() {
+    const st = state();
+    const open = R().openShops(C(), st).filter(r => built(r.pack));
+    const item = r => ({ id: 'tut:' + r.pack, label: r.short, icon: '🎓', say: r.short + ' tutorial', action: () => BB.game.enter(r.pack, { tutorial: true }) });
+    if (open.length <= 4) return open.map(item);
+    return R().parts(C(), st).map(p => {
+      const shops = p.shops.filter(r => built(r.pack));
+      if (!shops.length) return null;
+      if (shops.length === 1) return item(shops[0]);
+      return { id: 'part:' + p.arm, label: p.name, say: p.name + '. ' + shops.map(r => r.short).join(', ') + '.', items: shops.map(item) };
+    }).filter(Boolean);
+  }
+  const help = () => R().help(C(), state(), { saved: savedIds() });
+
+  BB.court = { show, enter, pause, resume, stops, picker, help, get goalKey() { return lastGoalKey; } };
+})();

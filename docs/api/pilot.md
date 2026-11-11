@@ -1,0 +1,424 @@
+# Building a restaurant end to end: the pilot, for phase 2b (integrate, 2026-11-09)
+
+Phase 2a built the Pizza Parlor on the engine as the pilot and wired it into the page. It now plays from the court
+like the Burger Bar: the main menu over the out-of-focus court, Play, the storefront scan, the counter, shifts, the
+tutorial, the event, results and back. This file is the recipe for the five restaurants of phase 2b (smoothie, cafe,
+sushi, burrito, icecream), with the pizza as the worked example: what already exists, who writes what, the exact
+`index.html` lines, the commands that check a pack, the frames to read, and the traps the pilot hit.
+
+**Since integrate-2b (2026-11-10) this is the lasting guide for all seven restaurants: section 8 has each one's facts
+and the checks that cover it.** Read first, in this order: `docs/FOODCOURT-BUILD.md` (sections 0, 2, 4, 5, 9 and 10 above all), your restaurant's
+section of the proposal (`BENS-FOOD-COURT`), `DESIGN.md`, then the hub rulebooks `ACCESSIBILITY.md` and
+`GRAPHICS-QUALITY.md` (they outrank the spec). Then the docs your lane names below.
+
+## 1. What already exists for each of the five (do not make it again)
+
+| What | Where | Notes |
+|---|---|---|
+| Backdrops | `packs/<id>/art/backdrops/*.webp` + `packs/<id>/art/manifest.js` (`BBArt.<id>`) | built by `tools/build_art.py` from `art-source/backdrops/<id>-<name>.png`; the manifests are already loaded by `index.html`'s cast block |
+| Counter pictures | `art-source/backdrops/<id>-counter.png` | redrawn 2026-11-09 to match the court picture, painted queue of three in the middle distance |
+| Cooking sounds | `packs/<id>/sound/*.wav`, listed in `packs/shared/sound/sounds.js` (`BBSounds`) | smoothie blender, blenderStop, pour; cafe dip, fryer, hiss, pour; sushi knife, mat; burrito burst, press, wrap; icecream mixer, mixerStop, scoop. A station names them in `sounds` |
+| The cast | `packs/cast/cast.js` (`BBCast`), `packs/cast/art/cast/<id>/` | every local and Mitch's uniform `mitch-<id>` exist; `BBCast.drawn` says who has every pose |
+| Lines that work anywhere | `packs/cast/script.js` | greet, smalltalk, goodbye and mentions for the eleven cast people (`docs/api/cast-script.md`) |
+| The court | `packs/court/court.js` (`BBCourt`), `packs/court/script.js` | the restaurant's name, scan name, arm, slot, unlock, storefront boxes and crowd spots; it is greyed out on the court until its `pack.js` loads (and until it unlocks) |
+| Tool props | `packs/shared/art/props/` | `peel` `fryerBasket` `blenderSwitch` `scoop` `espressoLever` `grillPress` `spatula`: a cook station names one in `tool` |
+
+## 2. Who writes what, in order
+
+| Step | Agent | Owns (edits only these) | Hands over |
+|---|---|---|---|
+| 1 | **content-<id>** (pack) | `packs/<id>/pack.js` | `docs/api/packs/<id>.md`: the pack in words; its section 10 lists every look, set, flourish and cook (the food agent's contract) and section 12 every script moment and who must say it |
+| 2 | **content-<id>** (script) | `packs/<id>/script.js`, then `format: 3` in `pack.js` | `docs/api/packs/<id>-script.md` |
+| 3 | **food-<id>** | `js/food/<id>.js`; may extend `js/food/kit.js` (never rewrite it) and improve `tools/food-frames.cjs` | its looks, sets (measured lines), counter camera and FIT lines in its report |
+| 4 | **integrate** (or the coordinator) | the `index.html` lines, `tests/dom-play.cjs` runs, any page seam | the page-level checks and frames |
+
+The pilot's files, for size: `packs/pizza/pack.js` 307 lines, `packs/pizza/script.js` 463 lines (371 lines of
+script), `js/food/pizza.js` 940 lines; docs `docs/api/packs/pizza.md`, `pizza-script.md`, `docs/api/food.md`.
+The worked examples to copy from:
+
+| You write | Copy the shape of | Read |
+|---|---|---|
+| `pack.js` | `packs/pizza/pack.js` (slots, picks, an auto flourish, a cook step with a tool, a side, a cameo, an event with a giant) | `docs/api/pack-format.md`, `line.md`, `shift.md`, `packs/pizza.md`, `packs/diner.md` |
+| `script.js` | `packs/pizza/script.js` (`<moment>.<n>` ids, one varying blank per line, a delivery note on every line) | `docs/api/script.md`, `cast-script.md`, `packs/pizza-script.md` |
+| `js/food/<id>.js` | `js/food/pizza.js` (layouts, a cook in a picture, a counter `arrange`) | `docs/api/world.md` 3-4, `docs/api/food.md` (all of it) |
+
+## 3. The exact `index.html` lines
+
+In the world block, after the restaurants already there:
+
+```html
+<script src="js/food/diner.js"></script>
+<script src="js/food/pizza.js"></script>
+<script src="js/food/<id>.js"></script>
+```
+
+In the restaurants block, after the pizza's two lines:
+
+```html
+<script src="packs/pizza/pack.js"></script>
+<script src="packs/pizza/script.js"></script>
+<script src="packs/<id>/pack.js"></script>
+<script src="packs/<id>/script.js"></script>
+```
+
+- **Nothing else.** The art manifest is already in the cast block; `BB.packs` finds the pack; the court un-greys the
+  storefront (once it is open); stage, world and audio follow the active pack.
+- **No voice manifest line** until the voice pass writes `packs/<id>/voice/manifest.js`: a script whose file is not
+  there is a console error in a browser. The voice pass adds the line with the file. No restaurant has one today: the
+  diner's old recordings (made in voices the user rejected, or for lines that have since changed) were moved out on
+  2026-11-10 to `archives/games/2026-11-10/BENSFOODCOURT-removed/packs/diner/voice`, and its line left `index.html`.
+  `tests/voices.test.cjs` checks that `index.html` names a voice manifest exactly where the file exists.
+- **When**: `pack.js` and `script.js` as soon as the pack passes the schema (until its food module exists the page
+  borrows the diner's food for it, so it still plays); the food line when `js/food/<id>.js` loads in Node. From then
+  on the page, the court and every jsdom run load your files. Until they are wired, the first jsdom run, "the page
+  boots", fails with "packs/<id>/pack.js is on disk but not on the page": that is the reminder, and every other run is
+  unaffected. Whoever owns `index.html` in your phase adds the lines (spec section 10); ask under Requests.
+
+## 4. Checking a restaurant: the commands (from the game folder)
+
+```
+# 1. The pack: schema, script well-formed, every moment covered (each prints [] when right)
+node -e "const B=require('./tests/bot.cjs'),SC=require('./js/core/script.js'),R=B.restaurants().find(r=>r.id==='<id>');console.log(B.schema.validate(R.pack),SC.check(R.pack,R.script),SC.coverage(R.pack,R.script))"
+# 2. Presses per recipe and level, Simple and Timed (level-1 items at most 14, any order at most 28)
+node -e "console.table(require('./tests/bot.cjs').pressReport('<id>'))"
+# 3. The Node suite for your restaurant, then the whole suite (every test green, 0 skipped, 0 todo)
+BB_PACKS=<id> node --test "tests/*.test.cjs"
+node --test "tests/*.test.cjs"
+# 4. The food alone (the first test lists every look still missing a builder)
+BB_PACKS=<id> node --test "tests/food.test.cjs"
+node tools/food-frames.cjs <id> art-source/review/food-<id> guides
+# 5. The page, once index.html loads it (jsdom: no browser)
+JSDOM=<jsdom> node tests/dom-play.cjs "the page boots"
+JSDOM=<jsdom> node tests/dom-play.cjs --pack <id>
+JSDOM=<jsdom> node tests/dom-play.cjs
+# 6. Review frames of the page at your restaurant, composed the way bb.css lays them out
+JSDOM=<jsdom> node tools/review-frames.cjs art-source/review/<id>-frames --pack <id> counter tut timed motion
+python tools/review_compose.py art-source/review/<id>-frames --guides
+```
+
+`<jsdom>` is `C:/Users/ass/AppData/Local/Temp/claude/4e617c7b76a8b4f0/5068fa2a-ce07-4cfd-8b07-d3a624e474b5/scratchpad/harness/node_modules/jsdom`.
+
+- **Step 1** with the pizza prints `[] [] []`; step 2 gives 13 presses for every pizza, 5 for the knots.
+- **`--pack <id>`** plays every run that names no restaurant at yours: the first visit and its tutorial, a shift with
+  Pause, Settings, Food Court and back, leaving by Main Menu, Timed with the 5 s Enter hold and with Take It Off held
+  across a stage boundary, one switch, the page clock falling behind, level 5, eight customers at level 4, the
+  event (seeded with `court: { here: {...} }`), Motion Full, the counter at 16:9, 16:10, 4:3 and 21:9, the court
+  runs. Then give your restaurant its own named runs in `RUNS`, copying the pizza's block (`pack: '<id>'`), and put
+  it on the whole chain (`chain: ['diner', 'pizza', '<id>']`) once it is open at the start or seeded open.
+- **Time**: the full set (39 runs: 25 that name no restaurant, 2 the Burger Bar's, 12 the Pizza Parlor's) took 32
+  minutes with frames rendering alongside; one run takes 1 s (the court) to 3 min (level 5). `--pack <id>` (the 25
+  at your restaurant) about 20 minutes. With `BB_PACKS=<id>` the Node suite skips one diner-only test (its manifest).
+- **Frames**: the `counter` session runs at every window shape (Mitch, an order, the review, the reaction, the
+  receipt, Kai, three items, the giant); `tut` goes through the first-visit offer into the tutorial and stops at
+  every station; `timed` shows the tool and gauge; `motion` the wheel and a squirt. Read every sheet.
+
+## 5. Lessons and traps from the pilot
+
+### 5.1 Working so that a cut-off costs nothing
+
+Page-1 and food-pizza each lost a whole run to a usage limit, and both were stopped once more by the coordinator to
+add decision 4 (the low counter). Every run that continued them had to read half-finished files first. So:
+
+- **Leave the files working at every step.** Back up first (`docs/backup/<path>.before`, then `.before-2a`, `-2b`...;
+  never overwrite one). Make each edit one that still loads and keeps the suite green; run `node --test` after each
+  file, not at the end. A file left half-edited breaks every other lane's tests.
+- **Write as you go**: the `docs/api` note and the report's facts while working, not after (content-cast's first run
+  was cut off before it wrote `docs/api/cast-script.md`, so the next run had to work out what the files held).
+- **Never start over.** Read what is on disk, find where it stopped (the backups show what changed), and finish it.
+- **Keep scratch out of the game folder** (the session scratchpad) and the review frames under `art-source/review/`.
+
+### 5.2 The pack
+
+- **Toppings are one Add or Skip step each, not a repeat pick** (pizza-pack): gross-outs, dislikes and "plain" all
+  need ingredients; a repeat needs at least one pick; seven values would page behind More….
+- **A pick gross-out only on a pick of three values or fewer** (with Swap It, at most four answers); schema refuses
+  the rest. The pizza puts all three on Add steps.
+- **A cameo** (another restaurant's local at level 4, the pizza's Breeze) brings his whole line set in the pack that
+  brings him.
+- **The theme** keeps 3:1 between the highlight (#ffd400) and `panelTop`, `panelBottom`, `pageBg`, `board`,
+  `boardGlow` (now a Node test in `tests/pack.test.cjs`). The Burger Bar's old light panel was 1.1:1; its theme and
+  bb.css now use #626c75 / #3f464c.
+
+### 5.3 The script
+
+- Pick complaints that read for every value: "for the {slot}, I said {want}", "The ticket says {slot}: {want}" (a None
+  value reads "for the sauce, I said none", never "I said none sauce").
+- One varying blank per line; never start a line with one (it fills in lower case). `{name}` (and `{goal}`) need no
+  `each`, but the voice pass records a `{name}` line once per name it can take (2b-seams: script.md 5), so keep them
+  few.
+- `order.gag` is 8 s or less (12-20 words); a local says it at home, and whoever orders the event's finale says theirs.
+- Each visiting regular needs three of their own `react.3`, `react.2` and `react.1` in your pack; the cast file
+  covers greet, smalltalk and goodbye.
+
+### 5.4 The food module
+
+`docs/api/food.md` section 7 is the list; the short version: the kit's `stack` piles parts (lay toppings on one
+surface); decorations on top float at a low camera (follow the surface, end at the food's edge); bounding boxes are
+not surfaces (`k.surfaceOf`, `k.onSurface`); no 3D slab over a painted surface; DataTexture colours need
+`colorSpace = SRGBColorSpace`; cap giants per set (`giantMax`, and in your cook's `show`); draw small things up;
+neighbouring cook stages must differ at the cook view's size, by colour and by mark; white on white needs a cue.
+
+**The counter (decision 4)**: `line: 0.80` and `surface { y, back }` for every restaurant; build only what lies flat
+on the counter top (nothing above the line: the page draws the register, bell and sign; the painted queue stays
+clear); the whole order left of the picture's own painted queue (`anchors.maxScreenX`, from `BBArt.<id>.counter`;
+section 7) and right of the Pause sign at every window shape (copy the pizza's `counter.arrange`, which solves the
+camera for the window, to `anchors.lineY`); colours from the court picture's storefront and the counter picture's
+painted returns. 21:9 now shows more counter top than its old 24-pixel strip (section 7).
+
+### 5.5 The page and the driver (what integrate found wiring the pizza)
+
+- **Pinned runs and `here`**: the event, level-4 and level-5 runs seeded the diner by name, so `--pack pizza` played
+  them at level 1 and the event never came. Seeds now say `here`.
+- **Dislike lines** were found by the diner's plain clip id (`sal/dislike.1`); a pack's ids are
+  `tony/pizza:order.dislike.1`. The driver now matches both. Name your dislike lines `order.dislike.<n>`.
+- **Timed in the driver** took the food off raw nearly every time (a 3% chance on each look at the clock); it now
+  plans a timing mistake once per cook step, and `mistakes: 0` must give three stars. Timed at the pizza does.
+- **Motion Full** checks squirts only where the pack has squeeze bottles, and a flourish where it has auto steps (the
+  pizza's dough toss: three a shift).
+- **More… pages and repeat picks** (DONE, content-icecream 2b): `dom-play.cjs` `leafOf()`/`pathOf()` step into More…
+  rows and pick a repeat to its count; `review-frames.cjs` `choose()` steps into the rows too (integrate-2b).
+- **A restaurant shut at the start** (DONE, content-smoothie 2b): `courtRecord()` (and `review-frames.cjs`) seeds the
+  run's own restaurant open with everything that unlocks before it; keep those lines (page.md 8).
+- **CPU load**: runs are timed, not counted, so a busy machine only makes them slower, and the page's Auto Scan guard
+  restarts a stalled one-switch scan. Integrate ran two full sets, the 25 runs at the pizza and the review frames at
+  the same time with no failure.
+
+## 6. The pilot against spec 9
+
+| Check | Pilot | How |
+|---|---|---|
+| Every pack validates | pass | `pack.test.cjs` (diner, pizza, the ladder fixture) |
+| At most 4 answers on every line screen | pass | `pack.test.cjs`, `line.test.cjs` |
+| Every recipe at every level makes 3 stars, Simple and Timed | pass | `pack.test.cjs`; the page too: Timed at the pizza with no mistakes gives 3 stars |
+| Press budget | pass | pizza 13 (knots 5), diner 13-14; worst orders 26 and 28 |
+| The judge counts every mistake kind | pass | `judge.test.cjs` |
+| Tickets list everything | pass | `pack.test.cjs` |
+| No `js/core` file names an id | pass | `line.test.cjs`, `pack.test.cjs` |
+| Court rules (unlocks, stars never down, the event, one celebration, a left shift resumes and counts once) | pass | `court.test.cjs`, `shift.test.cjs`; resume and count-once also in the page (`pauses`, `leave`) |
+| Moment coverage for every speaker | pass | `script.test.cjs` (diner, pizza, cast, court) |
+| Food builders resolve every look | pass | `food.test.cjs` (no TODO left) |
+| No two speakers at a restaurant sound the same | pass | `cast.test.cjs`, `voices.test.cjs` |
+| The same recipes take the same presses for every customer | pass | `pack.test.cjs` |
+| jsdom: the whole chain | pass | main menu, How to Play, Settings, Play, the Burger Bar and the Pizza Parlor, a shift each, back to the court |
+| jsdom: Pause in a restaurant and on the court | pass | `pauses`, `leave`, `courtPause` runs |
+| jsdom: Settings keeps the hub rows | pass | every Settings visit checks the 17 rows |
+| jsdom: the first-visit tutorial card | pass | diner and pizza |
+| jsdom: an unlock and a five-star event, seeded | pass | the Grand Opening on the court; an unlock earned by a pizza shift; the event and gold sign at both |
+| jsdom: one-switch Auto Scan | pass | diner, pizza, the parts of the U, the clock-lag run (each at both) |
+| jsdom: 5 s Enter hold in an arrival, Pause stays, Timed clock runs after | pass | diner and pizza |
+| jsdom: Take It Off held 3 s across a stage boundary | pass | diner (Take It Off) and pizza (Pull It Out) |
+| jsdom: every card opens at -1 | pass | every two-switch run |
+| jsdom: the court has at most 5 stops a level | pass | every run on the court |
+| Review frames: counter, stations, cooking, the court and its moments | pass, one open finding | `art-source/review/integrate-{pizza,diner,court}/`, `integrate-food-pizza/`, read by integrate; the pizza's third queue person (section 7) |
+
+## 7. Open for phase 2b and 3
+
+- **Each counter picture's own layout (SETTLED by 2b-seams, 2026-11-09).** All seven counter pictures are measured.
+  The numbers live WITH THE ART: `art-source/backdrops/<picture>.layout.json` beside each picture
+  (`counter.layout.json` is the diner's, `<id>-counter.layout.json` the others'), and `tools/build_art.py` copies them
+  into the pack's art manifest as `BBArt.<id>.counter`:
+
+  ```js
+  BBArt.pizza.counter = { queue: [0.526, 0.751], heads: 0.407, feet: 0.742, eyes: 0.47, horizon: 0.47,   // queue moved left (phase 3)
+                          sign: [0.346, 0.047, 0.653, 0.127] }   // fractions of the 1536 x 1024 picture
+  ```
+
+  `queue` is the painted queue's left and right edge (what the people hold included), `heads` the top of the highest
+  head, `feet` the lowest foot, `eyes` the painted adults' eye line, `horizon` where the page puts the served
+  customer's eyes (held to spec 5.2's 0.45-0.48), `sign` the blank sign board's face (null: the sushi bar has none).
+  `tests/counter.test.cjs` checks every pack's. **A food agent does not measure the counter picture again**; read
+  `BBArt.<id>.counter` (all seven are in `docs/api/reports/2b-seams.md`). If your picture is redrawn, measure it
+  again in its `.layout.json` and run `tools/build_art.py`.
+  - **The page keeps everything it draws at the counter clear of the box** `[queue[0], heads, queue[1], feet]`: the
+    answer column (one column, two columns or a row, by what fits), Mitch, the receipt, the bubbles, the corner
+    count, the register, the bell, the Back in 5 sign (`js/stage.js` `layout()`; page.md 7).
+  - **The food module keeps the order left of the queue:** world.js hands `counter.arrange(n, items, anchors)` the
+    picture's numbers, `anchors.queue` ([x0, x1] of the picture) and `anchors.maxScreenX` (where `queue[0]` lands on
+    this window, as a fraction of its width, less a small gap), and clamps `anchors.maxX` from it the way `minScreenX`
+    sets `minX`; `anchors.lineY` is the counter line on this window (solve any camera of your own to it). Keep the
+    whole order between `anchors.minScreenX` and `anchors.maxScreenX` (the pizza's `arrange` is the worked example;
+    the diner's default side-by-side gets it from `maxX`). Never hard-code 52%. The "counter at" runs of
+    `tests/dom-play.cjs` (`--pack <id>`) check the order, the column, Mitch, the receipt, the props and the bubbles
+    against your picture's box at the four window shapes; `tools/review_compose.py --guides` draws the box (cyan).
+  - **`tools/food-frames.cjs`** (DONE by food-cafe, 2b: it reads `BBArt.<id>.counter` and anchors 21:9 as the page
+    does; the notes below are what it once lacked). It used to measure against the old shared box (52-76% across) and draw the counter
+    picture centred at 21:9 (world.js anchors the counter only when asked: `BB.world.useAnchor(true)`, which the page's
+    stage.js does, so food-frames' 3D still meets its picture). Until a food agent changes it (it is the food agents'
+    tool): `globalThis.BBArt = { [packId]: require('../packs/<id>/art/manifest.js') }` before world.js loads,
+    `COUNTER.queue` from its `counter`, `BB.world.useAnchor(true)`, and the backdrop drawn at `BB.world.anchor('counter')`
+    (background-position-y) on a wide window. Meanwhile trust the page's "counter at" runs over its "reaches the queue"
+    and 21:9 lines.
+  - **Build nothing above the line** (decision 4): the counter set lies flat on the counter top; the page draws the
+    register, the bell and the signs.
+- **21:9 counter (DONE by 2b-seams)**: the counter picture is anchored lower on a window wider than 16:9
+  (`BB.world.anchor('counter')`; bb.css `--counter-bg-y`): its line stays where 16:9 has it (85.6%) as long as the
+  picture's painted queue keeps its heads 31% down the window. The diner shows 104 px of counter top at 21:9 (it was
+  24 px), the pizza 52 px (its queue is tall); world.js solves the counter's lens, `counterLine()` and `onScreen()` to
+  the anchor, and stage.js lays the page out from them.
+- **Shared code** (the coordinator's): `shared/choice-scan.js` `arm()` should re-arm when a timer wakes early (the
+  page works round it). Long narration under Auto Scan is DONE in the game's own files (2b-seams): a card's long
+  words (How to Play, the first-visit offer, the event card, a confirm, the results, Help, Ticket) hold the card's
+  automatic scan until they have been heard (page.md 5).
+- **`js/core` (DONE by 2b-seams)**: `SC.varsFor` lists `of: 'size'` and `of: 'flavour'` picks; a line with `{name}` or
+  `{goal}` is recorded once per value, its clip id ending in the words' key (`mitch/pizza:nearly.1.golden.tony`), and
+  `SC.everyClip` lists every one (script.md 5); the stale comment in `js/core/court.js` is gone. `{name}` lines still
+  multiply the voice pass's clips (one per customer, event or restaurant): keep them few.
+- **Voices**: every restaurant is text to speech until the voice pass, which also adds the voice manifest lines
+  (none today: the diner's old takes were moved out 2026-11-10; the voice pass records everything again).
+
+## 8. All seven restaurants (integrate-2b, 2026-11-10)
+
+Phase 2b built the other five on the pilot's recipe. All seven now play end to end from the court; each has its pack
+and script (`format: 3`), its 3D food module and its lines on `index.html` (sections 2-3). Docs per restaurant:
+`docs/api/packs/<id>.md` (section 10: the food contract; 12: every script moment), `packs/<id>-script.md`, and its
+section of `docs/api/food.md` (pizza 8-9, cafe 10, smoothie 11, burrito 12, sushi 13, icecream 14). The lanes' reports
+are `docs/api/reports/2b-*.md`.
+
+### 8.1 Who, where, what
+
+| Pack | Name (court arm, opens) | Stations: backdrop, Timed tool | Cooking | Locals (tutorial customer first), cameo | Event |
+|---|---|---|---|---|---|
+| `diner` | Ben's Burger Bar (top, at the start) | grill (spatula), board, fryer (fryerBasket), drinks | patty, fried | Marge's tutorial; Dale, Oakes | The Burger Eating Contest |
+| `pizza` | Ben's Pizza Parlor (top, at the start) | prep, oven (peel), cut, knotBasket | bake | Tony, Pam; cameo Breeze | The Pizza Party |
+| `cafe` | Ben's Cafe (top, at the start) | coffeeBar (espressoLever), dough, fryer (fryerBasket), glaze | pour (Simple: by itself), fry | Jitters, Priya; cameo Grandpa Walt | The Morning Rush |
+| `smoothie` | Ben's Smoothie Shack (left; all open at 3 stars) | prep, blender (blenderSwitch), bowlBar | blend | Breeze, Brock; cameo Tony | The Beach Volleyball Tournament |
+| `burrito` | Ben's Burritos (left; all open at 4 stars) | prep, griddle (grillPress), chips | toast | Rita, Inferno; cameo Chef Hiro | The Burrito Challenge |
+| `sushi` | Ben's Sushi (right; all open at 5 stars) | prep, mat (a drawn Stop Rolling button), board, soup | roll (Simple: by itself) | Dennis, Chef Hiro; cameo Inferno | The Sushi Boat |
+| `icecream` | Ben's Ice Cream Emporium (right; all open at 5 stars) | scoop (scoop), toppings, shake (blenderSwitch) | size, shake | Grandpa Walt, Little Lulu; cameo Brock | The Kitchen Sink |
+
+Visitors at level 4 everywhere: Reginald, Kai and that restaurant's cameo. The regulars (Marge, Gus, Bev, Vernon, Sal,
+and Tasha or Oakes where a pack has them) recur at every restaurant with lines about its food.
+
+### 8.2 The counter and the food (decision 4)
+
+Every counter set is `line: 0.80` with a `surface { y, back }`, lies flat on the counter top, and keeps the order left
+of its picture's painted queue (`BBArt.<id>.counter`, 2b-seams):
+
+| Pack | Painted queue x0-x1 | Heads | Counter `surface` | Kitchen lines (measured) | Counter fit (food-frames) |
+|---|---|---|---|---|---|
+| diner | 0.513-0.770 | 0.450 | world.md 3.6 | grill, board, fryer, drinks (phase 1) | the "counter at" runs |
+| pizza | 0.526-0.751 (was 0.513-0.845) | 0.407 | food.md 8 | prep, oven, cut | the "counter at" runs |
+| cafe | 0.599-0.822 | 0.550 | y 0.92, back -0.25 | coffee 0.611, donuts 0.596 | 39/39 |
+| smoothie | 0.570-0.802 | 0.494 | y 0.92, back -0.2 | prep 0.623, blender 0.652 | 31/31 |
+| burrito | 0.564-0.835 | 0.462 | y 0.92, back -0.2 | prep 0.625, griddle 0.744 | 36/36 |
+| sushi | 0.545-0.735 (was 0.659-0.878) | 0.373 | y 0.92, back -0.2 | prep 0.628, roll 0.620 | 37/37 |
+| icecream | 0.550-0.798 | 0.508 | y 0.92, back -0.2 | scoop 0.622, toppings 0.648 | 35/35 |
+
+- A child at the counter is drawn at the cast's scale but no smaller than 0.71 (stage.js `CHILD_MIN`): Little Lulu
+  (0.66) stands on a step there, so her head and shoulders clear the counter line; on the court she keeps her size.
+- (Phase 3 art-polish moved both queues left: the pizza's ends at 75.1%, the sushi's at 73.5%, and Mitch stands on screen in every pose at every shape there; the rest of this note is history.) The pizza's and the sushi's painted queues reached 84.5% and 87.8% across: at 4:3 Mitch spoke from off the right
+  edge there (page.md 7). The sushi's tall queue leaves a thin counter top at 21:9 (one roll 364 x 54 px).
+  Integrate-2b's frames (`placed.mitch.at`, "Mitch with the customer there") found him off the right edge in more
+  places: at 4:3 the pizza, the Cafe, the Burritos and the sushi; at 16:9 the sushi too (its bubble speaks from the
+  edge). Everywhere else he stands at the right, over the register's back. Allowed by page.md 7; phase 3 may want
+  him seen.
+- The name on the blank sign board (page.md 7.2) shows at 4:3 everywhere but the sushi bar (no board) and at 16:9 at
+  the Cafe, the Smoothie Shack and the Emporium (the other boards are cut at the top there). At 4:3 the Emporium's
+  long name is hidden while the answer column covers its right end (the review, three items, the giant): the board
+  shows blank then, as designed.
+
+### 8.3 What the page does for every restaurant (settled in 2b)
+
+- **A cook that Simple does by itself** (`stageSets.<set>.simple: 'auto'`: the Cafe's pour, the sushi mat) is never
+  asked in Simple, and the tutorial is always Simple, so the page explains it as it cooks: `tutorial.<station>` and
+  `tutorial.cook.<station>`, once each, before the cook plays (game.js playout). Write those lines for Simple ("the
+  machine stops at the ticket's strength by itself; in Timed, Stop the Pour is yours"). The sushi's Simple roll-up is
+  drawn on the prep table's own mat (sushi.js prep `finish`); the scene does not move to the mat station.
+- **An auto step's own sound**: `{ kind: 'auto', id: 'burst', show: 'burritoBurst', sound: 'burst' }` plays that
+  sound instead of the station's `auto` hook (pack-format.md 7; audio.md 5.2).
+- **Sauce bottles** squirt `diner:squirt` at any restaurant (`ingredients.<id>.sauce`).
+- **The Timed tool** is the station's `tool` prop (the scoop, the blender switch, the grill press, the espresso lever,
+  the fryer basket, the peel, the spatula); a station with none (the sushi mat) gets a drawn button.
+- **The Timed gauge** sits at a fixed place (bb.css `#gauge`, left 42%, top 53vh). The cafe and smoothie food lanes
+  lowered tall food under it; a Large coffee cup's far rim and the blender jug's lid still pass behind it. Placing it
+  from the food's on-screen box is open for phase 3 (it needs a browser's measure).
+
+### 8.4 Checking all seven
+
+```
+# 1. every pack: each prints [] [] []
+for id in diner pizza cafe smoothie burrito sushi icecream; do node -e "...step 1 of section 4 with '$id'..."; done
+# 2. presses (level 1 at most 14, any order at most 28)
+node -e "console.table(require('./tests/bot.cjs').pressReport('<id>'))"
+# 3. Node: 0 fail, 0 skip, 0 todo (BB_PACKS=diner skips only the diner-only manifest test)
+node --test "tests/*.test.cjs"
+# 4. jsdom: everything (about 100 runs; split it, section 4 Time): the default set plays the runs that name no
+#    restaurant at the Burger Bar, then each restaurant's named runs; the counter at four shapes per restaurant:
+JSDOM=<jsdom> node tests/dom-play.cjs "the counter at" --pack <id>
+#    and the court with all seven: "the whole chain, all seven open", "every crowd tier", "the grand celebration",
+#    "the parts of the U", each Grand Opening ("its Grand Opening"; the Burritos' is earned by a Smoothie Shack shift)
+# 5. frames: each restaurant's counter at 16:9 and 4:3, Normal and Extra Large text; the court with all seven
+JSDOM=<jsdom> node tools/review-frames.cjs art-source/review/<out> --pack <id> --aspects 16:9,4:3 counter counterxl
+JSDOM=<jsdom> node tools/review-frames.cjs art-source/review/<out> seven tiers moments parts closed
+python tools/review_compose.py art-source/review/<out> --guides
+# 6. the voice pass's list (every restaurant and the court; script.md 5)
+node tools/voice-clips.cjs all <out.json>
+```
+
+**Time.** The default set is 97 runs (index 0-96 of `RUNS`); with the counter at four shapes plus Extra Large for
+the four restaurants without named counter runs (`--pack smoothie|burrito|sushi|icecream`, runs 13-17) it is 117,
+about 102 minutes of run time (1 s for a court run to 4.5 min for the all-seven chain; level 5 3 min). Up to ten
+batches side by side on this 16-core PC (with review frames rendering) took 16 minutes, no flake. Words filter by one substring only, so
+to split exactly, require the table: `const { run, RUNS } = require('./tests/dom-play.cjs')` and play `RUNS[i]`
+the way `main()` does (`--pack` fills `o.pack` only for runs that name none). An agent must not end its turn while a
+batch runs: the batches die with it (integrate-2b's first pass lost its jsdom set that way).
+
+### 8.5 Results (integrate-2b, 2026-11-10)
+
+- **Node**: 317/317 pass, 0 skip, 0 todo. Pilot step 1 prints `[] [] []` for all seven packs. Presses: level 1 at
+  most 14 everywhere (the report has each restaurant's).
+- **jsdom**: 135/135 runs reached their end with no script error and no warning but three.js's own: the 97 of the
+  default set (the page boots with all seven; the whole chain, all seven open (21 orders; each good shift's results name
+  its new star (the Smoothie Shack's averaged under 2.0, so none); back to the court, its three parts); every crowd tier (7, 14, 42, 71 people); the
+  grand celebration once (22 cheers, at most 3 pops a second); the parts of the U, two switches and one; the pointer;
+  How to Play and the long words; every restaurant's tutorial, Timed with its tool, the tool held across a stage
+  boundary, one switch, level 4, the event and its gold sign, Motion Full; the four Grand Openings in unlock order
+  (the Smoothie Shack earned by a Pizza Parlor shift, the Burritos by a Smoothie Shack shift, Sushi and the Emporium
+  seeded); Little Lulu at 16:10 and 21:9), plus the counter at four shapes and Extra Large at the four shut at start (20), and
+  runs 3-5 (Pause, the Settings tour, Food Court mid-shift, leaving by Main Menu, the 5 s Enter hold) at the other six (18).
+- **Frames** (read by integrate-2b): `art-source/review/2b-integrate-seven/` (all seven open: menu, How to Play
+  Normal and Extra Large, court, right arm, the Emporium lit; 16:9 and 4:3) and `2b-integrate-<id>/` (each
+  restaurant's counter, 16:9 and 4:3, ten moments each). Every painted queue is clear of the column, the receipt,
+  the bubbles, the register and the food in all fourteen; the food lies on the counter top left of the queue; no
+  storefront is greyed with all seven open; the names sit on their signs (8.2). Findings: Mitch off the right edge
+  (8.2); on the court at 4:3 the Smoothie Shack's and the Emporium's name plates are a few px wider than their sign
+  boards (the composer's note; still read whole). Nothing needed a fix.
+
+## 9. Opening the game from VS Code (finish, 2026-11-10)
+
+`index.html` loads the hub's shared scripts by relative path (`../../../shared/*.js`, the favicons from
+`../../../images/`), so the page must be opened from a server whose root is the `bennyshub` folder or a folder above
+it. Opened from the game folder alone, those paths fall outside the root and the scanner and voice manager never load.
+
+**Steps (Live Server, recommended):**
+
+1. In VS Code, File > Open Folder... and open `Benny's PC Hub` (the folder that holds `bennyshub`), or `bennyshub`
+   itself.
+2. Install the **Live Server** extension (Ritwick Dey) once, if it is not there.
+3. In the Explorer, right-click `bennyshub/apps/games/BENSFOODCOURT/index.html` > **Open with Live Server**.
+4. The game opens at `http://127.0.0.1:5500/bennyshub/apps/games/BENSFOODCOURT/index.html` (with `Benny's PC Hub`
+   open) or `http://127.0.0.1:5500/apps/games/BENSFOODCOURT/index.html` (with `bennyshub` open). The port can differ;
+   Live Server shows it in the status bar.
+
+**Without an extension** (VS Code's terminal, Python 3 is installed):
+
+```
+cd "bennyshub"
+python -m http.server 8080 --bind 127.0.0.1
+```
+
+then open `http://127.0.0.1:8080/apps/games/BENSFOODCOURT/index.html`. Stop it with Ctrl+C.
+
+**Inside the running hub** the same page is `http://127.0.0.1:<hub port>/apps/games/BENSFOODCOURT/index.html` (the
+hub's own server serves `bennyshub`; the game is in no catalog, so it is reached by that address only).
+
+**Notes.**
+- Saves and settings live in the browser's `localStorage` for that address: Live Server on 5500, Python on 8080 and the
+  hub each keep their own progress and their own copy of the hub settings.
+- Live Server reloads the page when a file in the folder changes; that restarts the game at the main menu (a shift in
+  progress was saved when the page closed).
+- Exit Game, outside the hub, goes to `bennyshub/index.html` (the hub's page).
+- **file://** (double-clicking `index.html`): read from the code, not tried in a browser. Every script, picture and
+  sound is a plain `<script>`, `<img>` or `Audio` element and the game makes no `fetch`, so it would mostly run, but the
+  hub's Speaker Mode voices start a Web Worker, which browsers block on file://, and the page's origin is then `null`,
+  so its saves and hub settings are kept apart from the served copies. Use a server.

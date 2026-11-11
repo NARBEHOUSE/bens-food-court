@@ -1,0 +1,294 @@
+# Ben's Burger Bar, the pack in words (content-diner: diner-pack, 2026-11-08)
+
+`packs/diner/pack.js` (pack version 3) on the ladder, in spec 8's format. It is the first restaurant and **the template
+the other content agents copy**: every field below is in the file in this order, with a comment. The format is
+`docs/api/pack-format.md`; the line `docs/api/line.md`; the script `docs/api/script.md`; sounds `docs/api/audio.md`;
+the food `docs/api/world.md`. Before this pass the pack was the Burger Bar's own format (orderStyles, unlocks,
+milestones, personas): it is at `docs/backup/packs/diner/pack.js.before` and, frozen for the diner-specific tests,
+`tests/packs/diner-golden/`.
+
+**Check it** (from the game folder):
+
+```
+BB_PACKS=diner node --test "tests/*.test.cjs"
+node -e "console.table(require('./tests/bot.cjs').pressReport('diner'))"
+node -e "const b=require('./tests/bot.cjs'); console.log(b.schema.validate(b.merge(require('./packs/diner/pack.js'))))"
+```
+
+## 1. At a glance
+
+| | |
+|---|---|
+| id, name | `diner`, "Ben's Burger Bar" (court: "Burger Bar", bottom arm, slot 2, open at the start) |
+| version | 3 (was 2: a saved shift from before the ladder is dropped; coins stay) |
+| format | 3: the script covers every moment for every speaker (diner-script, 2026-11-08; section 12 and `diner-script.md`) |
+| manager | `{ id: 'mitch', art: 'mitch-burger' }`: red diner shirt and paper hat |
+| backdrops | `counter` (every pack's) and, by station, `grill`, `board`, `fryer`, `drinks` |
+| courses | `['main', 'side', 'drink']`: a two-item order is a burger with a side or a drink, listed in that order |
+| levels | `{}`: the engine's ladder unchanged (section 5) |
+| help | one paragraph (section 13) |
+| theme | all 24 tokens, today's colours; they are bb.css's defaults (section 14) |
+| dropped | `orderStyles`, `grossRate`, `grossMax`, `recipes.*.unlock` and `.milestone`, `backdrops`, `poses` (the cast's default map is the same), `dailySpecialBonus`, and every persona field in `regulars` and `manager` (name, art, who, voice, tts, twin, short, exact, newest, tipScale, threeStarScale: now `packs/cast/cast.js`, merged by `BB.cast.merge`) |
+
+## 2. The line: stations and steps
+
+Every screen has at most 4 answers, plus Ticket and Pause. Station order in a recipe is the line's order.
+
+| Station | backdrop | Steps, in order | redo | tool | sounds |
+|---|---|---|---|---|---|
+| `grill` "Grill" | `grill` | Add `patty` (max 3) → Cook `patty` (stage set `patty`) | "Redo the Grill" | `spatula` | `{ cook: 'sizzle', done: 'flip' }` |
+| `board` "Board" | `board` | builds on `plate`, `base: 'bun'`, `cap: 'bun'` (the buns go on by themselves); Add, one each: cheese, bacon, lettuce, tomato, pickles, onion, ketchup, mustard, mayo | "Redo the Toppings" | | (add: plop; sauces squirt, by `ingredients[ing].sauce`) |
+| `fryer` "Fryer" | `fryer` | Pick `from: ['fries', 'rings']` → Cook (what the pick picked, set `fried`) → Add `salt` | "Redo the Fryer" | `fryerBasket` | `{ cook: 'fryer', add: 'salt' }` |
+| `drinks` "Drinks" | `drinks` | builds on `cup`; Pick `of: 'size'` (Small, Medium, Large) → Add `ice` → Pick `of: 'flavour'` (the recipe's drink pick) | "Redo the Drink" | | `{ done: 'fountain' }` |
+
+What the player hears (words.js, Simple; Timed changes only the cook step):
+
+- Grill: "Grill. Add a patty?" Add / Skip; then "Add a second patty?" Add / Done ("Done, one patty"), up to a third.
+  Cook: "How done?" Rare / Medium / Medium Well / Well Done. Timed: "Take it off when it is right.", one button
+  **Take It Off** (said "Take it off. Medium").
+- Board: "Board. Cheese." Add / Skip ("Add cheese", "Skip cheese"), then "Bacon." and so on. A bad one adds Swap It
+  ("Add the green cheese").
+- Fryer: "Fryer. Fries and Onion Rings?" Fries / Onion Rings (words.js joins a `from` pick with "and"; asked of its
+  owner as "or"). Cook: "How crispy?" Golden / Crispy / Extra Crispy. Timed: "Lift the basket when it is right.",
+  button **Lift the Basket**. Then "Salt." Add / Skip.
+- Drinks: "Drinks. What size?" Small / Medium / Large. "Ice." Add / Skip. "Which one?" Cola / Lemon-Lime / Orange Soda,
+  or Lemonade / Iced Tea.
+- Review: "Here it is." Ring It Up, the redo words, or Redo… (a row) when there are more than three.
+
+## 3. Cooking: the stage sets
+
+| set | stages (first .. last) | Simple `choose` | ask | stop | speed |
+|---|---|---|---|---|---|
+| `patty` | raw, rare, medium, mediumWell, well, charred | Rare, Medium, Medium Well, Well Done | "How done?" | "Take It Off" | pack `cookSpeeds` 12 / 8 / 5 s, `wantedScale` 2 |
+| `fried` | raw, golden, crispy, extraCrispy, burnt | Golden, Crispy, Extra Crispy | "How crispy?" | "Lift the Basket" | the same |
+
+Stage names: Raw, Rare, Medium, Medium Well, Well Done, Charred, Golden, Crispy, Extra Crispy, Burnt. Charred and
+Burnt are Timed's last stages (food left on stops there, one mistake), never gross-outs. The speeds are exactly the
+spec's minimum; no set uses `simple: 'auto'`.
+
+## 4. Recipes
+
+`level` is the only gate (a level-n shift offers every recipe of level n or below). Prices are tips' base: price ×
+(0.6 + 0.2 × stars). Ticket wording is as written (change 0, the normal picks).
+
+| id | Name | level | course | stations | price | As written (the ticket) | Can change |
+|---|---|---|---|---|---|---|---|
+| `hamburger` | Hamburger | 1 | main | grill, board | 6 | one patty, medium, with lettuce, tomato, pickles and ketchup | doneness; holds lettuce, tomato, pickles, ketchup; adds onion, mustard, mayo |
+| `cheeseburger` | Cheeseburger | 1 | main | grill, board | 7 | one patty, medium, with cheese, lettuce, tomato, pickles and ketchup | as the hamburger |
+| `baconCheeseburger` | Bacon Cheeseburger | 2 | main | grill, board | 9 | one patty, medium, with cheese, bacon, lettuce, tomato, onion and ketchup | holds lettuce, tomato, onion, ketchup; adds pickles, mustard, mayo |
+| `doubleCheeseburger` | Double Cheeseburger | 2 | main | grill, board | 10 | two patties, medium, with cheese, lettuce, pickles, onion, ketchup and mustard | holds lettuce, pickles, onion, ketchup, mustard; adds tomato, mayo |
+| `fries` | Fries | 2 | side | fryer | 3 | Fries: golden, with salt | fry (golden, crispy; extra crispy at level 5); holds salt |
+| `onionRings` | Onion Rings | 2 | side | fryer | 4 | Onion Rings: golden, with salt | as fries |
+| `fountain` | Fountain Drink (named by its drink) | 3 | drink | drinks | 2 | "Medium cola: with ice." | size; cola, lemon-lime or orange soda; holds ice |
+| `lemonade` | Lemonade or Iced Tea (named by its drink) | 3 | drink | drinks | 3 | "Medium lemonade: with ice." | size; lemonade or iced tea; holds ice |
+| `tower` | The Diner Tower (rare) | 4 | main | grill, board | 14 | three patties, medium, with cheese, bacon, lettuce, tomato, pickles, onion, ketchup, mustard and mayo | doneness; holds lettuce, tomato, pickles, onion or a sauce |
+| `teamStack` | The Team Stack | `'event'` | main | grill, board | 20 | three patties, medium (the finale sets well done), with cheese, pickles, onion, ketchup and mustard; `look: { giant: true }` | the event's finale only |
+
+Picks: `doneness` (rare, medium, mediumWell, well; normal medium), `fry` (golden, crispy; fancy adds extraCrispy;
+normal golden), `cupSize` (small, medium, large; normal medium), `soda` (cola, lemonLime, orangeSoda; normal cola),
+`tea` (lemonade, icedTea; normal lemonade). The diner uses the Burger Bar's own picks (`from`, `of: 'size'`,
+`of: 'flavour'`, `item.size`, `nameFrom: 'flavour'`), no slots; new packs use slots (pizza is the worked example).
+
+**Combos** (level 3 up): an order is one item, or two at the level's `more` odds, of different courses: a burger with
+fries, onion rings or a drink, or a side with a drink; never two burgers, except Gus's two of one thing. Listed main,
+side, drink. Order Size "One Item" makes every order one item.
+
+## 5. The ladder
+
+`levels: {}`: the engine's numbers (pack-format.md 12) are the Burger Bar's.
+
+| Level | On offer | Items | Gross-outs | Extras |
+|---|---|---|---|---|
+| 1 | hamburger, cheeseburger | 1; at most 2 optional toppings kept; change 0.2 | none | |
+| 2 | + bacon cheeseburger, double cheeseburger, fries, onion rings | 1; longer tickets; change 0.3 | none | |
+| 3 | + fountain drink, lemonade or iced tea | 1 or 2 (35% two); combos | 0.3 an order, at most 2 a shift, never the first | |
+| 4 | + the Diner Tower | as 3, change 0.4 | as 3 | one ridiculous order at 50% a shift; one visitor (Reginald or Kai), never first |
+| 5 | the same | as 4, change 0.5, fancy picks (extra crispy) | 0.35 an order, at most 2 | ridiculous orders at 60%, `bunInside` too |
+
+## 6. Ridiculous orders (level 4 and 5)
+
+The customer says `order.odd.<id>` instead of the order; the ticket is plain and complete (made with change 0, the
+customer's dislikes still held). At most one a shift, never the first order or the visitor's. Anyone but a visitor.
+
+| id | level | recipe | the change | The ticket | Presses |
+|---|---|---|---|---|---|
+| `fivePatties` | 4 | `tower` | none: "five patties" is said, the line makes three | The Diner Tower: three patties, medium, with cheese, bacon, lettuce, tomato, pickles, onion, ketchup, mustard and mayo | 14 |
+| `nothingGreen` | 4 | `baconCheeseburger` | holds lettuce, pickles; adds mustard, mayo | Bacon Cheeseburger: one patty, medium, with cheese, bacon, tomato, onion, ketchup, mustard and mayo | 13 |
+| `bunInside` | 5 | `cheeseburger` | none: the bun on the inside is said, never made (spec 2.3; the proposal's third) | Cheeseburger: one patty, medium, with cheese, lettuce, tomato, pickles and ketchup | 13 |
+
+## 7. The five-star event: The Burger Eating Contest
+
+```js
+events: { five: { name: 'The Burger Eating Contest', customers: ['gus', 'sal', 'dale', 'vernon', 'marge', 'oakes'],
+  finale: { customer: 'bev', items: [{ recipe: 'teamStack', set: { doneness: 'well' } }] } } }
+```
+
+- Shift Length orders at level-4 complexity (level 4's recipes, items [1, 2], gross-outs), no visitors, no odd orders.
+- The contestants order in rounds (everyone once before anyone twice). Coach Bev is the finale only: she orders for
+  her team, who are spoken of, never shown (her `order.gag` "for the team" lines, diner-script's).
+- The finale ticket: "The Team Stack: three patties, well done, with cheese, pickles, onion, ketchup and mustard." It
+  is drawn giant (1.6 times, capped at 1.2 on the board by the set's `giantMax`) and adds no choices: 14 presses.
+- If Bev isn't drawn, the first drawn regular (Marge) orders it. Mitch: `event.intro`, `event.celebrate`, `event.again`.
+
+## 8. Who comes in, and what they order
+
+Persona fields (name, pictures, voice, traits) are the cast's. Only drawn people come in (`BBCast.drawn`).
+
+| id | role | likes (weight; others 0.5, rare 0.1) | also | The Burger Bar's design |
+|---|---|---|---|---|
+| `marge` | regular | cheeseburger 3, hamburger 1 | `usual`: cheeseburger, medium (always, at every level; she says `order.usual`) | "The usual, hon" |
+| `gus` | regular | cheeseburger 2, bacon cheeseburger 2, hamburger 1 | cast `twin`: from level 3 always two of one thing (`order.twin`); tipScale 1.25 | "One for now, one for the road" |
+| `bev` | regular | double 3, bacon 2, Tower 1 | `favourite`: double cheeseburger, +2 tip (`react.favourite`); the event's finale | double, protein |
+| `vernon` | regular | cheeseburger 3, hamburger 2, double 1 | cast `exact` (strays at change 0.5 or more), threeStarScale 1.5 | very exact orders |
+| `sal` | regular | bacon 3, double 2, cheeseburger 1, Tower 1 | `dislikes: ['lettuce']` (held on every burger; `order.dislike`); `favourite`: bacon cheeseburger, +2 | never lettuce |
+| `dale` | regular | onion rings 4, cheeseburger 1 | `always: ['onionRings']` (from level 2), `set: { fry: 'extraCrispy' }`, `favourite`: onion rings, +2 | the onion-ring guy, extra crispy |
+| `oakes` | regular | lemonade 3, hamburger 1 | `set: { tea: 'lemonade' }`, `dislikes: ['onion']` (held on the bacon, double and Tower; never added). He can still order Onion Rings at weight 0.5: the rings are the recipe's item, not a part, and `O.canOrder` looks only at parts (asked of orders.js's owner) | lemonade, hates onions |
+| `reginald` | visitor, level 4 | cheeseburger 1 | cast `newest`: always the Diner Tower (the newest recipe on offer at 4 and 5), plus a side or drink as the level allows | the critic |
+| `kai` | visitor, level 4 | hamburger 2, cheeseburger 2 | cast `short` (one item); `set: { cupSize: 'small' }` | a small burger, a small drink |
+
+New against the old pack (from DESIGN.md's cast table, no presses added): Dale's extra crispy, Oakes's lemonade, Kai's
+small cup. Gone from the Burger Bar (spec 5.4): Priya (the Cafe's), Tasha (Smoothie Shack and Ice Cream Emporium).
+Marge keeps a one-item usual: a two-item usual (cheeseburger and iced tea) would set her item count, which only the
+level may do (spec 0.6). The tutorial customer and the first-drawn stand-in is Marge (first in the list).
+
+## 9. Gross-outs (from level 3; all on the board's Add steps)
+
+| id | on | label (`say`) | fx (kit) |
+|---|---|---|---|
+| `mouldy` | cheese | "the green cheese" | tint #86b83c, stink |
+| `wilted` | lettuce | "the brown lettuce" | tint #7a5a2a, droop, stink |
+| `charred` | bacon | "the burnt bacon" | tint #2a1a12, smoke |
+| `hair` | lettuce, tomato, pickles, onion, cheese | "{name} with a hair on it" | hair |
+| `fly` | lettuce, tomato, pickles, onion, cheese, bacon | "{name} with a fly on it" | fly (the page plays `buzz`) |
+
+Each needs Mitch's `gross.<id>` and the customers' `complain.gross.<id>` (written). None sits on the fryer or drinks;
+a burnt patty or fries is Timed's last stage. Unchanged from the Burger Bar.
+
+## 10. Every look used (all from `js/food/diner.js`'s table in docs/api/world.md)
+
+| ingredient | look.shape | fields | drawn |
+|---|---|---|---|
+| `patty` | `patty` | (ramp by stage) | a patty, a grill mark per stage, char flecks when charred |
+| `bun` | `bun` | colour #e0a456 | bottom bun; the top (layer top) a seeded dome |
+| `cheese` | `slice` | colour #ffc21f | a draped slice, one on each patty (`each: 'patty'`) |
+| `bacon` | `strips` | colour #b4442a, fat #f2c4a8 | two strips |
+| `lettuce` | `leaf` | colour #5cbf3a | a ruffled leaf |
+| `tomato` | `disc` | colour #e23b2a, inner #ff7a5c | two slices |
+| `pickles` | `chips` | colour #6f9f2c | four chips |
+| `onion` | `rings` | colour #f3ecdc | two raw rings |
+| `ketchup`, `mustard`, `mayo` | `sauce` | colour, cap (#c8231a/#a51a13, #f2c21b/#d6a30c, #f8f3e3/#ffffff) | a squeeze bottle, then a bead (`sauce: true`) |
+| `plate` | `plate` | | the blue-rimmed plate (the board builds on it) |
+| `fries` | `fries` | colour #f2c14e | fries, raw to burnt; a paper boat on their own (layout `boat`) |
+| `rings` | `onionRings` | colour #d99a3a | battered rings, raw to burnt (boat) |
+| `salt` | `sprinkle` | colour #ffffff | grains over the food; waits in a shaker |
+| `cup` | `cup` | (`sizes: 'cup'`) | a paper cup by `made.size` (layout `cup`) |
+| `ice` | `ice` | | cubes; waits in a scoop |
+| `cola`, `lemonLime`, `orangeSoda`, `lemonade`, `icedTea` | `drink` | colour #4a2412, #d9f2a0, #ff8a1c, #fff07a, #9a5a1e | poured from the fountain into the cup |
+| recipe `teamStack` | `look: { giant: true }` | | the whole burger 1.6 times bigger |
+
+Sets: `counter` (fixed camera), `grill` (cook `grill`), `board`, `fryer` (cook `fryer`), `drinks` (its `pick` hook
+drops the cup, then pours). No auto steps, no slot looks, no Requests for new looks.
+
+## 11. Sounds
+
+Station hooks (audio.md 5.2): grill `cook: 'sizzle'` (the patties go on the heat), `done: 'flip'`; fryer `cook:
+'fryer'`, `add: 'salt'` (its only Add); drinks `done: 'fountain'` (the drink is its last step; timing: section 18).
+Defaults elsewhere: every other Add plays `plop`, each Timed stage `tick`; the board's sauces `squirt`. The page plays
+`swoosh` (Skip), `toss` (Swap It), `buzz` (fly), `ding`, `kaching`, `stars`, `ew` as before. All in `packs/diner/sound`
+or `packs/shared/sound`.
+
+## 12. The script (packs/diner/script.js)
+
+This pass changed only what the format forces: `plainIds: true` (every diner clip keeps today's id, e.g.
+`vernon/extra.1.pickles`, `mitch/cook`), and Mitch's line `cook` moved from moment `tutorial.cook` to
+`tutorial.cook.grill`. All 145 lines keep their text and id. `SC.check` on the merged script: no problems.
+
+diner-script (the same day) wrote the rest: 179 new lines (324 in all), every moment covered for every speaker who
+comes here, `format: 3` on the pack, and `BB_PACKS=diner node --test "tests/script.test.cjs"` passes. The script in
+words (who has what, the conventions the other packs copy, what the page does with each moment, the clip list for
+the voice pass) is `docs/api/packs/diner-script.md`. Bev's "for the team" is her `order.gag` (see section 18).
+
+## 13. Help
+
+"Follow the ticket: add what is on it and skip what is not. At the grill, add one patty for each on the ticket, then
+choose how done. At the board, the toppings and sauces come down the line one at a time, and the buns go on by
+themselves. From two stars, the fryer makes fries and onion rings: pick which, choose how crispy, then salt them or
+skip the salt. From three stars, a burger can come with a side or a drink; at the drinks station, pick the cup size,
+add ice or skip it, then pick the drink. If something looks nasty, choose Swap It for a fresh one. With Timed cooking,
+take the food off when it reaches what the ticket says. At the end, check the order, redo anything that is wrong,
+then ring it up."
+
+## 14. Theme (spec 5.6): today's colours, bb.css's defaults
+
+| token | value | where (bb.css / stage.js today) |
+|---|---|---|
+| pageBg | #3a2418 | page, fade, loading |
+| panelTop, panelBottom, panelLip | #c9d1d8, #8d969e, #4d545a | the line's control panel and its lip |
+| plateTop, plateBottom | #f2f4f6, #b9c2c9 | the dial plates |
+| mark | #6b3a22 | a plate's stage marks |
+| labelBg | rgba(27,18,14,.86) | prop labels |
+| ticketAccent, ticketNow, perforation | #8a2a20, #fff2a8, #c9c1b0 | the ticket's name, current line, torn edge |
+| hudBg, gaugeBg | rgba(27,18,14,.75), rgba(27,18,14,.86) | HUD, Timed gauge |
+| star | #f0a500 | stars |
+| boardGlow, woodInset, cardValue, board, wood | #2f4a3f, #5e3b20, #ffe27a, #23382f, #8a5a32 | the menu boards |
+| logoTop, logoMain | #ffd36b, #ff6b4a | the logo |
+| wheelInk, wheelSteel, wheelDark | #1b120e, #d6dce1, #9aa4ad | the ticket wheel |
+
+Contrast, measured: the highlight (#ffd400) is 10:1 on pageBg and well over 3:1 on the boards, but only about 1.1:1 on
+panelTop and 2.1:1 on panelBottom, where today's Burger Bar relies on the highlight's thickness, glow and lift. A new
+palette should keep its panel darker or lighter than that, not copy it.
+
+## 15. The tutorial
+
+Marge; one Bacon Cheeseburger, medium, no onions: "Bacon Cheeseburger: one patty, medium, with cheese, bacon,
+lettuce, tomato and ketchup." The cheese comes down mouldy (`gross: { item: 0, ing: 'cheese', event: 'mouldy' }`).
+Always Simple; Mitch warns before each mistake. 13 presses done right, plus one Swap It.
+
+## 16. Press counts (`pressReport('diner')`, Serve included; Simple and Timed alike, the same at every level)
+
+| recipe | levels | presses |
+|---|---|---|
+| hamburger, cheeseburger | 1-5 | 13 (grill 3: Add, Done, a stage; board 9; Serve) |
+| baconCheeseburger | 2-5 | 13 |
+| doubleCheeseburger | 2-5 | 14 (grill 4: Add, Add, Done, a stage) |
+| fries, onionRings | 2-5 | 4 (pick, stage, salt, Serve) |
+| fountain, lemonade | 3-5 | 4 (size, ice, drink, Serve) |
+| tower | 4-5 | 14 |
+| teamStack (event) | event | 14 |
+
+Whole orders (bots, 25 shifts a level, both modes): level 1 at most 13; level 2 at most 14; levels 3-5 at most 27
+(Gus's two doubles: 13 + 13 + Serve); the event 28 (two doubles and a Swap It). The ceiling is 28: two three-patty
+burgers and one Swap It. Budget (spec 4.3): level 1 ≤ 14, any order ≤ 28.
+
+## 17. What changed for the player (against the live Burger Bar)
+
+- Orders follow the restaurant's stars, not the old Orders setting: at 1 star one hamburger or cheeseburger with at
+  most two optional toppings; the bacon and double cheeseburgers, fries and onion rings at 2; combos with drinks at 3;
+  the Tower at 4. (The live game offered every burger from the start, never the fryer or drinks, and up to two items.)
+- Gross-outs start at 3 stars (they came from the first shift); ridiculous orders and visitors at 4; the Burger Eating
+  Contest when the fifth star is due.
+- The grill's question is "How done?" (was "Cook the patty. How done?") and Timed's prompt "Take it off when it is
+  right." (was "The patty is cooking. Take it off when it is right."): every stage set now names its words.
+- Dale, Professor Oakes, Reginald and Kai come in once their pictures are drawn; Priya and Tasha no longer come here.
+- Unchanged: every recipe, ingredient, look, ticket word, price, gross-out, the tutorial, and every line and clip id.
+
+## 18. For the page (page-1)
+
+Read the merged pack only (`BB.cast.merge(BBCast, BBPacks.diner)`): `poses`, the manager's name and voice and every
+customer's name, art and voice come from the cast; Mitch's pictures are `packs/cast/art/cast/mitch-burger/`. Create
+shifts with `level` (and `drawn`): there are no `orderStyles` now, so a shift without a level falls back to one
+plain item. Each scene's picture is its station's `backdrop` (`pack.backdrops` is gone). Draw the Timed tools by name
+(`spatula`, `fryerBasket`, both in `packs/shared/art/props`; a drawn button when there is no prop), apply `theme`, read `help` for Pause > Help, and play
+station sounds by hook. The drinks station's `done` (the fountain) belongs with the pour, which the drinks set starts
+on the flavour pick (`onApply`); `phaseDone` comes in the same batch of events. `order.gag` is required only of locals
+at home, but Coach Bev's "for the team" is hers: say a customer's own `order.gag` line after the order whenever they
+have one (at least on the event's finale), or her team is never mentioned.
+
+## 19. Copying this for another restaurant
+
+Keep the order of fields and their comments. Change: id, version 1, name, help, theme (your palette; check contrast),
+courses, stage sets (with ask and stop, at least 12/8/5 s and ×2), ingredients and looks (only your food module's),
+slots and picks, stations (backdrop, redo words, tool, sounds), recipes (level, course, price), `levels` only where you
+differ, gross-outs (Add steps or picks of ≤ 3 values), `manager.art`, regulars (spec 5.4, ids only plus what they
+order), `oddOrders`, `events.five` (a giant `level: 'event'` recipe if the brief has one), `tutorial`. Leave out
+`format` until the script is complete. Then run the checks at the top and report `pressReport`.

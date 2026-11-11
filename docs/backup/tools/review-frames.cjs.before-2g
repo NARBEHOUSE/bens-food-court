@@ -1,0 +1,530 @@
+'use strict';
+/* Ben's Food Court - review frames of a restaurant without a browser (dev-only; browsers are off-limits on this PC).
+ *
+ * Plays the real page in jsdom (as tests/dom-play.cjs does: main menu, Play, the storefront, a shift), stops at the
+ * moments worth looking at, and at each one saves:
+ *   <out>/<session>-<nn>-<moment>.3d.png   the real three.js scene drawn on the CPU by NARBE Racer's
+ *                                          tools/node_render.cjs (magenta where nothing is drawn)
+ *   <out>/<session>-<nn>-<moment>.json     what the 2D stage shows: the window's size, the backdrop, the poses, the
+ *                                          props, the controls, the ticket, the bubble, the receipt, and the counter's
+ *                                          layout as stage.js worked it out (BB.stage.placed)
+ * Then:  python tools/review_compose.py <out>   lays the 2D stage over each frame the way css/bb.css does.
+ *
+ *   JSDOM=<dir>/node_modules/jsdom node tools/review-frames.cjs <out dir> [--pack <id>] [--aspects <list>] [sessions]
+ *
+ *   --pack <id>       the restaurant (default diner); its pack, art and food module must be loaded by index.html
+ *   --aspects <list>  window shapes for the counter session (default 16:9,16:10,4:3,21:9)
+ *   sessions          counter (the counter at every shape: Mitch, an order, the order on the counter, the reaction,
+ *                     Mitch with the customer there, the receipt and bell, then Kai, the child, ordering and at the
+ *                     review), counterxl (the same at Extra Large text), tut (the tutorial at
+ *                     16:9, from the first-visit offer: the counter and every station), timed (the Timed tool and
+ *                     gauge), motion (Full motion: the wheel coming round and turning, a sauce mid-squirt);
+ *                     the court (no 3D): menu (the main menu over the out-of-focus court, 16:9 and 4:3), howto (How
+ *                     to Play at Normal and Extra Large text, 16:9 and 4:3), settings (Settings over the court), court
+ *                     (in focus just after Play, a storefront highlighted, Extra Large text), tiers (popularity 0, 3,
+ *                     7 and 10 at every restaurant), moments (a Grand Opening, a gold sign and the celebration, each
+ *                     midway), parts (the parts of the U), closed (the start: three open, four greyed out).
+ *                     Default: all of them.
+ */
+const path = require('path'), fs = require('fs');
+const jsdom = require(process.env.JSDOM || 'jsdom');
+const { JSDOM, VirtualConsole } = jsdom;
+const GAME = path.join(__dirname, '..');
+const HUB = path.join(GAME, '..', '..', '..');
+const NR = require(path.join(HUB, 'apps', 'games', 'NARBEKART', 'tools', 'node_render.cjs'));
+const ORIGIN = 'http://hub.local/';
+const L = require(path.join(GAME, 'js/core/line.js'));
+const COURT = require(path.join(GAME, 'packs/court/court.js'));
+const RULES = require(path.join(GAME, 'js/core/court.js'));
+
+const argv = process.argv.slice(2);
+const opt = name => { const i = argv.indexOf(name); return i >= 0 ? argv.splice(i, 2)[1] : null; };
+const PACK = opt('--pack') || 'diner';
+const SHAPES = { '16:9': [1280, 720], '16:10': [1280, 800], '4:3': [1024, 768], '21:9': [1680, 720] };
+const ASPECTS = (opt('--aspects') || '16:9,16:10,4:3,21:9').split(',').map(s => s.trim()).filter(s => SHAPES[s]);
+const OUT = path.resolve(argv[0] || path.join(GAME, 'art-source', 'review', 'frames'));
+const ONLY = argv.slice(1);
+fs.mkdirSync(OUT, { recursive: true });
+if (!fs.existsSync(path.join(GAME, 'packs', PACK, 'pack.js'))) { console.log('no pack ' + PACK); process.exit(1); }
+
+class HubFiles extends jsdom.ResourceLoader {
+  fetch(url, options) {
+    if (!url.startsWith(ORIGIN)) return super.fetch(url, options);
+    const file = path.join(HUB, decodeURIComponent(url.slice(ORIGIN.length).split('?')[0]));
+    const p = new Promise((resolve, reject) => fs.readFile(file, (err, buf) => (err ? reject(err) : resolve(buf))));
+    p.abort = () => {};
+    return p;
+  }
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/** One page in jsdom at a window size, from the main menu. settings: bb-settings data; court: bb-court entries. */
+async function session(name, size, settings, plan) {
+  if (ONLY.length && !ONLY.includes(name.split('@')[0])) return;
+  console.log(name + ' (' + size.join('x') + ')');
+  const [W, H] = size;
+  const renders = { last: null };
+  const vc = new VirtualConsole();
+  vc.on('error', (...a) => console.log('  console.error:', a.map(x => (x && x.stack) || String(x)).join(' ').slice(0, 400)));
+  const state = RULES.create(COURT);
+  // A restaurant closed at the start (the smoothie shack, ...) is seeded open, its Grand Opening seen, so the court
+  // offers it (food-smoothie, 2026-11-09; as dom-play.cjs courtRecord() does).
+  if (state.restaurants[PACK] && !state.restaurants[PACK].opened) Object.assign(state.restaurants[PACK], { opened: true, grandOpeningSeen: true });
+  if (state.restaurants[PACK]) Object.assign(state.restaurants[PACK], { tutorialDone: true }, settings.court || {});
+  Object.keys(settings.courtAll || {}).forEach(id => { if (state.restaurants[id]) Object.assign(state.restaurants[id], settings.courtAll[id]); });
+  const dom = new JSDOM(fs.readFileSync(path.join(GAME, 'index.html'), 'utf8'), {
+    url: ORIGIN + 'apps/games/BENSFOODCOURT/index.html', runScripts: 'dangerously', resources: new HubFiles(), pretendToBeVisual: true, virtualConsole: vc,
+    beforeParse(w) {
+      Object.defineProperty(w, 'innerWidth', { configurable: true, get: () => W });
+      Object.defineProperty(w, 'innerHeight', { configurable: true, get: () => H });
+      w.localStorage.setItem('bb-settings', JSON.stringify({ v: 3, kind: 'settings', pack: null, packVersion: null,
+        data: Object.assign({ motion: 'reduced', shiftLength: 3 }, settings.data) }));
+      w.localStorage.setItem('bb-court', JSON.stringify(RULES.record(RULES.normalize(COURT, state))));
+      let current = null;
+      w.SpeechSynthesisUtterance = function (t) { this.text = t; };
+      // Speech lasts long enough to catch a character mid-line.
+      w.speechSynthesis = { speaking: false, pending: false, getVoices: () => [{ name: 'Fake', lang: 'en-US', default: true }],
+        speak(u) { current = u; setTimeout(() => u.onstart && u.onstart(), 2); setTimeout(() => { if (current === u) { current = null; u.onend && u.onend(); } }, 40 + String(u.text).length * 9); },
+        cancel() { const u = current; current = null; if (u && u.onerror) u.onerror({ error: 'interrupted' }); }, addEventListener() {}, removeEventListener() {} };
+      w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+      w.HTMLMediaElement.prototype.play = function () { setTimeout(() => this.onended && this.onended(), 60); return Promise.resolve(); };
+      w.HTMLMediaElement.prototype.pause = function () {};
+      w.HTMLCanvasElement.prototype.getContext = function () { return new Proxy({}, { get: () => () => ({ addColorStop() {} }) }); };
+      class FakeRenderer {
+        constructor() { this.domElement = w.document.createElement('canvas'); }
+        setPixelRatio() {} setSize() {} setClearColor() {}
+        render(scene, camera) { renders.last = { scene, camera }; }
+      }
+      let T;
+      Object.defineProperty(w, 'THREE', { configurable: true, get: () => T, set: v => {
+        T = v; if (v && typeof v === 'object') Object.defineProperty(v, 'WebGLRenderer', { configurable: true, get: () => FakeRenderer, set: () => {} });
+      } });
+    },
+  });
+  const w = dom.window;
+  for (let i = 0; i < 200 && !(w.BB && w.BB.ui && w.BB.ui.__dbg().card === 'title'); i++) await sleep(50);
+  const dbg = () => w.BB.ui.__dbg();
+  // builtAs: stand-ins (a copy of the diner under their id) for restaurants whose pack is not on the page yet, so the
+  // court draws them open and scans them (they are never played here).
+  (settings.builtAs || []).forEach(id => { if (!w.BBPacks[id]) w.BBPacks[id] = Object.assign({}, w.BBPacks.diner, { id }); });
+  if (settings.builtAs) w.BB.court.refresh();
+  async function press(code) {
+    const ev = t => new w.KeyboardEvent(t, { code, key: code === 'Space' ? ' ' : 'Enter', bubbles: true, cancelable: true });
+    w.document.body.dispatchEvent(ev('keydown')); await sleep(30); w.document.body.dispatchEvent(ev('keyup')); await sleep(320);
+  }
+  async function choose(id) {
+    // With five or more open the court scans the parts of the U first: step into the part that holds the storefront
+    // (as dom-play.cjs toShop() does; food-burrito, 2026-11-09).
+    if (/^shop:/.test(id) && w.BB.court && w.BB.court.stops) {
+      for (let k = 0; k < 50 && !(dbg().active && dbg().ctx === 'court'); k++) await sleep(20);
+      const pack = id.slice(5), part = !dbg().items.includes(id) && w.BB.court.stops().find(s => s.kind === 'part' && (s.stops || []).some(x => x.pack === pack));
+      if (part && !(await choose(part.id))) return false;
+    }
+    for (let k = 0; k < 60; k++) {
+      const d = dbg();
+      if (d.active && d.id === id) { await press('Enter'); return true; }
+      if (!d.items.includes(id)) { await sleep(40); continue; }
+      await press('Space');
+    }
+    console.log('  could not choose ' + id + ' ' + JSON.stringify(dbg()));
+    return false;
+  }
+  const settle = async () => { for (let k = 0; k < 600 && (w.BB.game.busy || !dbg().active); k++) await sleep(20); };
+  const pack = () => w.BB.game.pack();
+  /** Main menu, Play, the storefront; past the event card (a normal shift). */
+  async function enter() {
+    await choose('play');
+    for (let k = 0; k < 600 && !(dbg().ctx === 'court' && w.BB.court.mode === 'scan'); k++) await sleep(20);
+    await choose('shop:' + PACK);
+    for (let k = 0; k < 100 && !w.BB.game.shift() && dbg().card !== 'event'; k++) await sleep(20);
+    if (dbg().card === 'event') await choose('shift');
+  }
+  /** These customers come in, in this order (a wrap of BB.shift.next): who is drawn and visits here. */
+  function queue(ids) {
+    const next = w.BB.shift.next;
+    w.BB.shift.next = (p, s) => {
+      if (s && !s.order && !s.done && ids[s.n] && p.regulars.some(c => c.id === ids[s.n])) s.queue[s.n] = ids[s.n];
+      return next(p, s);
+    };
+  }
+  let n = 0;
+  async function shot(moment, o) {
+    await sleep((o && o.wait) || 120);
+    const r = renders.last;
+    const doc = w.document, $ = id => doc.getElementById(id);
+    const vis = id => $(id).classList.contains('on');
+    const stem = name + '-' + String(++n).padStart(2, '0') + '-' + moment;
+    if (r) {
+      // The review renderer cannot run the outline shader: hide the outline shells, draw the rest. It also
+      // draws a whole shape even when only part is drawn (a sauce being squirted), so those get a cut copy.
+      const hidden = [], cut = [];
+      r.scene.traverse(x => {
+        if (x.isMesh && x.material && x.material.isShaderMaterial && x.visible) { x.visible = false; hidden.push(x); }
+        else if (x.isMesh && x.geometry.index && x.geometry.drawRange.count < x.geometry.index.count) {
+          const g = x.geometry.clone(), c = Math.max(0, x.geometry.drawRange.count);
+          g.setIndex(Array.from(x.geometry.index.array.slice(0, c)));
+          cut.push([x, x.geometry]);
+          x.geometry = g;
+        }
+      });
+      r.camera.aspect = W / H; r.camera.updateProjectionMatrix();
+      const img = NR.render(w.THREE, r.scene, r.camera, W, H, { ss: 2, sky: ['#ff00ff', '#ff00ff', '#ff00ff'] });
+      hidden.forEach(x => { x.visible = true; });
+      cut.forEach(([x, g]) => { x.geometry = g; });
+      NR.writePNG(path.join(OUT, stem + '.3d.png'), img);
+    }
+    const src = el => (el && el.getAttribute('src')) || null;
+    const bg = ($('backdrop').style.backgroundImage.match(/url\("?([^")]+)"?\)/) || [])[1] || null;
+    const st = {
+      size: [W, H], pack: PACK, scene: doc.body.dataset.scene, place: doc.body.dataset.place, text: doc.body.dataset.text,
+      theme: (w.BB.game.pack() && w.BB.game.pack().theme) || null,
+      backdrop: bg,
+      customer: vis('customer') ? src($('customer')) : null,
+      cs: parseFloat($('customer').style.getPropertyValue('--cs')) || 1,
+      mitch: vis('mitch') ? src($('mitch')) : null,
+      props: { back5: src($('back5').querySelector('img')), register: vis('register') ? src($('register').querySelector('img')) : null,
+        bell: vis('bell') ? src($('bell').querySelector('img')) : null,
+        registerLabel: $('register').querySelector('.lb').textContent, bellLabel: $('bell').querySelector('.lb').textContent },
+      placed: w.BB.stage.placed,
+      controls: [...doc.querySelectorAll('#controls .ctl')].map(el => ({ id: el.dataset.id, kind: el.className.replace('ctl ', '').split(' ')[0],
+        cls: el.className, label: (el.querySelector('.lb') || el).textContent.trim(), img: src(el.querySelector('img')),
+        marks: el.querySelectorAll('.marks i').length, lit: el.classList.contains('lit') })),
+      bare: $('controls').classList.contains('bare'),
+      // The ticket: the customer's name, then each item as its lines (name, then what goes on); '> ' marks the item
+      // being made, ' | ' splits an item's lines.
+      ticket: $('ticket').style.display === 'none' || !$('ticket').querySelector('.who') ? null
+        : [$('ticket').querySelector('.who').textContent].concat([...$('ticket').querySelectorAll('li')].map(li => (li.classList.contains('now') ? '> ' : '') +
+          [...li.children].map(c => c.textContent).join(' | '))),
+      ticketMany: $('ticket').classList.contains('many'),
+      bubble: vis('bubble') ? { kind: $('bubble').className.replace(/\bon\b|\btall\b/g, '').trim(), name: $('bubble').querySelector('b').textContent, text: $('bubble').querySelector('span').textContent } : null,
+      receipt: vis('receipt') ? { name: ($('receipt').querySelector('h2') || {}).textContent || '', stars: $('receipt').querySelectorAll('.stars span:not(.off)').length,
+        lines: [...$('receipt').querySelectorAll('li, p')].map(x => x.textContent), tip: ($('receipt').querySelector('.tip') || {}).textContent || '' } : null,
+      gauge: $('gauge').classList.contains('on') ? [...$('gauge').querySelectorAll('span')].map(s => ({ t: s.textContent, now: s.classList.contains('now'), want: s.classList.contains('want') })) : null,
+      lit: dbg().id, hud: $('hud').textContent,
+      // The ticket wheel as stage.js places it, for the review picture's size.
+      wheel: doc.body.dataset.place === 'kitchen' ? w.BB.stage.wheelGeometry(W, H, doc.body.dataset.text, w.BB.stage.wheelTheta) : null,
+      // Where the 3D counter's back edge is (BB.world) and what the counter holds, as the window shows it.
+      counterLine: w.BB.world.counterLine ? w.BB.world.counterLine() : null,
+    };
+    fs.writeFileSync(path.join(OUT, stem + '.json'), JSON.stringify(st, null, 1));
+    console.log('  ' + stem + ': ' + st.scene + (st.customer ? ' ' + path.basename(path.dirname(st.customer)) + '/' + path.basename(st.customer) : '') +
+      (st.mitch ? ' mitch ' + path.basename(st.mitch) : '') + ' controls ' + st.controls.map(c => c.label).join('|'));
+  }
+  /** A court frame (no 3D): BB.court.scene(), the card over it if any, Mitch and his bubble, the Pause sign, the scan. */
+  function overlay() {
+    const ov = w.document.getElementById('overlay');
+    if (!ov.classList.contains('on')) return null;
+    const c = ov.querySelector('.card'), t = (sel, el) => ((el || c).querySelector(sel) || {}).textContent || '';
+    return { name: dbg().card, cls: c.className, logo: !!c.querySelector('.logo'), title: t('h1'), sub: t('.sub'), body: t('.howto'), news: t('.news'),
+      cols2: !!c.querySelector('.menu.cols2'),
+      items: [...c.querySelectorAll('.menu > .item')].map(el => ({ icon: t('.ic', el), label: t('.lb', el), value: el.querySelector('.val') ? t('.val', el) : null,
+        off: el.classList.contains('off'), lit: el.classList.contains('lit'), braked: el.classList.contains('braked') })),
+      hint: t('.hint') };
+  }
+  async function courtShot(moment, o) {
+    await sleep((o && o.wait) || 150);
+    const doc = w.document, $ = id => doc.getElementById(id), d = dbg();
+    const stem = name + '-' + String(++n).padStart(2, '0') + '-' + moment;
+    const b = $('bubble');
+    const st = {
+      kind: 'court', size: [W, H], text: doc.body.dataset.text, motion: doc.body.dataset.motion, theme: doc.body.dataset.theme, place: doc.body.dataset.place,
+      courtMode: doc.body.dataset.courtMode, court: w.BB.court.scene(), card: overlay(),
+      mitch: $('mitch').classList.contains('on') ? { src: $('mitch').getAttribute('src'), side: doc.body.dataset.mitchSide || 'right' } : null,
+      bubble: b.classList.contains('on') ? { kind: b.className.replace(/on|tall/g, '').trim(), name: b.querySelector('b').textContent, text: b.querySelector('span').textContent } : null,
+      back5: $('back5').querySelector('img') ? $('back5').querySelector('img').getAttribute('src') : null,
+      lit: d.id, litBraked: !!doc.querySelector('.lit.braked'), depth: d.depth, backStop: d.backStop, items: d.items, ctx: d.ctx,
+    };
+    fs.writeFileSync(path.join(OUT, stem + '.json'), JSON.stringify(st, null, 1));
+    console.log('  ' + stem + ': ' + (st.card ? 'card ' + st.card.name : 'court ' + st.courtMode) + (st.lit ? ' lit ' + st.lit : '') + ' people ' + st.court.people.length +
+      (st.bubble ? ' bubble ' + st.bubble.kind : '') + (st.court.say ? ' say' : ''));
+  }
+  async function tap(code) {
+    const ev = t => new w.KeyboardEvent(t, { code, key: code === 'Space' ? ' ' : 'Enter', bubbles: true, cancelable: true });
+    w.document.body.dispatchEvent(ev('keydown')); await sleep(30); w.document.body.dispatchEvent(ev('keyup')); await sleep(320);
+  }
+  /** The storefront scan is live on the court. */
+  async function live() { for (let k = 0; k < 3000 && !(dbg().ctx === 'court' && w.BB.court.mode === 'scan' && dbg().active); k++) await sleep(20); }
+  /** Light a stop without choosing it. */
+  async function light(id) { for (let k = 0; k < 20 && dbg().id !== id; k++) await tap('Space'); }
+  async function until(fn, ms) { for (let k = 0; k < (ms || 8000) / 15 && !fn(); k++) await sleep(15); return !!fn(); }
+  try { await plan({ w, dbg, choose, settle, shot, sleep, enter, queue, pack, courtShot, tap, live, light, until }); }
+  catch (e) { console.log('  session failed: ' + (e && e.stack || e)); }
+  dom.window.close();
+}
+
+/** Answer the step the right way (swapping a bad ingredient). */
+function right(w, q) {
+  const s = w.BB.game.shift(), P = w.BB.game.pack(), o = s.order, want = L.expected(P, o.items[q.item], q.station, q.step);
+  if (q.kind === 'add') return q.gross ? 'swap' : q.have < want ? 'add' : 'skip';
+  if (q.kind === 'cook') return q.timed ? 'takeOff' : 'cook:' + want;
+  if (q.gross) return 'swap';
+  if (q.repeat) {
+    const left = L.remaining(want || [], q.picked || []);
+    const leaves = q.options.flatMap(x => x.row || [x]);
+    return left.length ? leaves.find(x => x.value === left[0]).id : 'done';
+  }
+  return q.options.flatMap(x => x.row || [x]).find(x => x.value === want).id;
+}
+/** Recipes as written (every pick's normal value), made right through the page's own line: [made()]. */
+function madeOf(w, P, rids) {
+  const val = v => (v && typeof v === 'object' && v.pick ? ((P.picks || {})[v.pick] || {}).normal || ((P.picks || {})[v.pick] || { values: [] }).values[0]
+    || (P.slots && P.slots[v.pick] ? P.slots[v.pick].values[0].id : undefined) : v);
+  const specs = rids.map(rid => {
+    const it = P.recipes[rid].item || {}, spec = { recipe: rid, ing: val(it.ing), parts: [], holds: [], adds: [] };
+    if (it.size) spec.size = val(it.size);
+    if (it.done) spec.done = val(it.done);
+    (it.parts || []).filter(p => p.opt !== 'out').forEach(p => { const q = { ing: val(p.ing) }; if (p.done) q.done = val(p.done); if (p.ing && typeof p.ing === 'object') q.flavour = true; if (q.ing) spec.parts.push(q); });
+    if (it.slots) {
+      spec.picks = {};
+      Object.keys(it.slots).forEach(slot => { const v = it.slots[slot]; spec.picks[slot] = typeof v === 'string' || Array.isArray(v) ? v : v.count ? Array.from({ length: v.count[0] || 1 }, () => val({ pick: v.pick })) : val(v); });
+    }
+    return spec;
+  });
+  const LN = w.BB.line, set = { cooking: 'simple' };
+  const o = LN.create(P, { customer: { id: 'x', name: 'X' }, items: specs }, { settings: set });
+  for (let guard = 0; guard < 300; guard++) {
+    const q = LN.question(P, o, set);
+    if (!q || q.kind === 'review') break;
+    const want = LN.expected(P, o.items[q.item], q.station, q.step), leaves = (q.options || []).flatMap(x => x.row || [x]);
+    let id;
+    if (q.kind === 'add') id = q.have < want ? 'add' : 'skip';
+    else if (q.kind === 'cook') id = want === null || want === undefined ? q.options[0].id : 'cook:' + want;
+    else if (q.repeat) { const left = LN.remaining(want || [], q.picked || []); id = left.length ? leaves.find(x => x.value === left[0]).id : 'done'; }
+    else id = (leaves.find(x => x.value === want) || leaves.find(x => x.value !== undefined)).id;
+    LN.answer(P, o, id, set);
+  }
+  return o.items.map((_, i) => LN.made(P, o, i));
+}
+/** Wait until the bubble is up for this speaker kind ('customer', 'mitch'), at the counter. */
+async function bubbleUp(w, kind, sleep, ms) {
+  for (let k = 0; k < (ms || 4000) / 15; k++) {
+    const b = w.document.getElementById('bubble');
+    if (b.classList.contains('on') && b.classList.contains(kind) && w.document.body.dataset.place === 'counter') return true;
+    await sleep(15);
+  }
+  return false;
+}
+
+(async () => {
+  // The counter at every window shape (spec 5.2): Mitch's uniform joke, a regular ordering, the order on the counter
+  // at the review, the reaction, the receipt and the bell; then Kai (scale 0.74) ordering and at the review. counterxl:
+  // the same at Extra Large text (2b-seams: the page keeps clear of each picture's painted queue, legibility first).
+  for (const [kind, text] of [['counter', 'normal'], ['counterxl', 'xlarge']]) for (const a of ASPECTS) {
+    await session(kind + '@' + a.replace(':', 'x'), SHAPES[a], { data: { shiftLength: 3, textSize: text } }, async ({ w, choose, settle, shot, sleep, enter, queue }) => {
+      queue(['gus', 'kai']);
+      /** Play the line (the right answers) until the page is on this screen. */
+      const playTo = async want => {
+        for (let guard = 0; guard < 200; guard++) {
+          await settle();
+          const s = w.BB.game.shift(), screen = w.BB.game.screen;
+          if (!s || screen === want) return !!s;
+          const q = screen === 'line' ? w.BB.shift.question(w.BB.game.pack(), s) : null;
+          if (q && q.kind !== 'review') await choose(right(w, q)); else await sleep(30);
+        }
+        return false;
+      };
+      await enter();
+      if (await bubbleUp(w, 'mitch', sleep, 3000)) await shot('mitch', { wait: 0 });
+      if (await bubbleUp(w, 'customer', sleep, 6000)) await shot('order', { wait: 0 });
+      if (!(await playTo('review'))) return;
+      await shot('review');
+      await choose('serve');
+      if (await bubbleUp(w, 'customer', sleep, 4000)) {
+        await shot('reaction', { wait: 0 });
+        // Mitch with a customer at the counter (his after-a-reaction joke): right of the painted queue, or off the edge.
+        // The game's own lines wait while the picture is taken (its bubble and Mitch calls are held a moment).
+        const cust = w.document.getElementById('customer').classList.contains('on');
+        if (cust) {
+          const S = w.BB.stage, bub = S.bubble, mit = S.mitch;
+          S.bubble = () => {}; S.mitch = () => {};
+          mit('thumbsUp'); bub('mitch', 'Mitch', 'Three stars. I am framing the receipt. Then I am framing the frame.');
+          await shot('mitch-with-customer', { wait: 60 });
+          S.bubble = bub; S.mitch = mit;
+          bub(null); mit(null);
+        }
+      }
+      if (!(await playTo('receipt'))) return;
+      await shot('receipt');
+      await choose('next');
+      if (await bubbleUp(w, 'customer', sleep, 6000)) await shot('kai-order', { wait: 0 });
+      if (!(await playTo('review'))) return;
+      await shot('kai-review');
+      // The counter's widest orders at this shape, for an adult: a main, a side and a drink side by side (an event
+      // order's most), then the event's giant item.
+      const P = w.BB.game.pack(), byCourse = {};
+      Object.keys(P.recipes).forEach(rid => { const R = P.recipes[rid]; if (R.level !== 'event' && R.course && !byCourse[R.course]) byCourse[R.course] = rid; });
+      const three = (P.courses || Object.keys(byCourse)).map(c => byCourse[c]).filter(Boolean).slice(0, 3);
+      const giant = Object.keys(P.recipes).filter(rid => P.recipes[rid].level === 'event');
+      w.BB.stage.customer('bev', 'waiting');
+      if (three.length > 1) { w.BB.world.showCounter(madeOf(w, P, three)); await shot('three-items'); }
+      if (giant.length) { w.BB.world.showCounter(madeOf(w, P, giant.slice(0, 1))); await shot('giant'); }
+    });
+  }
+  // The tutorial at 16:9: Mitch, an order being taken, the ticket in the kitchen, each station's first step, the
+  // dial, the gross-out, the review, the reaction, the receipt.
+  await session('tut', SHAPES['16:9'], { data: {}, court: { tutorialDone: false } }, async ({ w, dbg, choose, settle, shot, sleep, live }) => {
+    // The tutorial is offered on a restaurant's first visit (there is no tutorial picker).
+    await choose('play');
+    await live();
+    await choose('shop:' + PACK);
+    for (let k = 0; k < 300 && dbg().card !== 'tutorialOffer'; k++) await sleep(20);
+    await choose('tutorial');
+    if (await bubbleUp(w, 'mitch', sleep, 3000)) await shot('mitch-intro', { wait: 0 });
+    if (await bubbleUp(w, 'customer', sleep, 5000)) await shot('order', { wait: 0 });
+    for (let k = 0; k < 600 && !(w.document.getElementById('bubble').classList.contains('mitch') && w.document.body.dataset.place === 'kitchen'); k++) await sleep(15);
+    await shot('ticket-mitch', { wait: 10 });
+    const seen = new Set();
+    for (let guard = 0; guard < 120; guard++) {
+      await settle();
+      const s = w.BB.game.shift();
+      if (!s) break;
+      const screen = w.BB.game.screen;
+      if (screen === 'receipt') { await shot('receipt'); break; }
+      const q = w.BB.shift.question(w.BB.game.pack(), s);
+      if (!q) { await sleep(30); continue; }
+      const tag = screen === 'review' ? 'review' : q.kind === 'cook' ? 'dial-' + q.station : q.gross ? 'gross' : q.station;
+      if (tag && !seen.has(tag)) { seen.add(tag); await shot(tag); }
+      if (screen === 'review') {
+        await choose('serve');
+        if (await bubbleUp(w, 'customer', sleep, 4000)) await shot('reaction', { wait: 0 });
+        continue;
+      }
+      await choose(right(w, q));
+    }
+  });
+  // Timed cooking: the station's tool and the gauge, a few seconds in.
+  await session('timed', SHAPES['16:9'], { data: { cooking: 'timed', speed: 'normal', shiftLength: 3 } }, async ({ w, choose, settle, shot, sleep, enter }) => {
+    await enter();
+    for (let guard = 0; guard < 80; guard++) {
+      await settle();
+      const s = w.BB.game.shift(), q = s && w.BB.shift.question(w.BB.game.pack(), s);
+      if (!q) { await sleep(50); continue; }
+      if (q.kind === 'cook' && q.timed) { await sleep(5600); await shot('timed-' + q.station); break; }
+      if (w.BB.game.screen === 'line') await choose(right(w, q)); else await sleep(30);
+    }
+  });
+  // Full motion: the wheel bringing a new ticket round, the wheel turned by Ticket, a sauce mid-squirt.
+  await session('motion', SHAPES['16:9'], { data: { motion: 'full', shiftLength: 3 } }, async ({ w, choose, settle, shot, sleep, enter }) => {
+    await enter();
+    const mid = (lo, hi) => w.BB.stage.wheelTheta > lo && w.BB.stage.wheelTheta < hi;
+    for (let k = 0; k < 6000 && !mid(-1.9, -0.9); k++) await sleep(2);
+    await shot('wheel-in', { wait: 0 });
+    let turned = false, squirted = false;
+    for (let guard = 0; guard < 80 && !squirted; guard++) {
+      await settle();
+      const s = w.BB.game.shift(), P = w.BB.game.pack(), q = s && w.BB.shift.question(P, s);
+      if (!q || w.BB.game.screen !== 'line') { if (w.BB.game.screen === 'review') await choose('serve'); else await sleep(50); continue; }
+      if (!turned) {
+        turned = true;
+        await choose('ticket');
+        for (let k = 0; k < 3000 && !mid(-4.2, -2.2); k++) await sleep(2);
+        await shot('wheel-turn', { wait: 0 });
+        await sleep(1600);
+        continue;
+      }
+      if (q.kind === 'add' && P.ingredients[q.ing] && P.ingredients[q.ing].sauce) {
+        // Added even when the order holds it: it is the squirt we want to see, part way along.
+        const scene = () => w.BB.world.__scene().scene;
+        const growing = () => { let f = 0; scene().traverse(o => { if (o.userData && o.userData.sauce && o.userData.sauce.geo !== undefined) { const g = o.userData.sauce.geo; if (g.index && g.drawRange.count > 0 && g.drawRange.count < g.index.count) f = g.drawRange.count / g.index.count; } }); return f; };
+        await choose('add');
+        for (let k = 0; k < 3000 && !(growing() > 0.4); k++) await sleep(2);
+        await shot('squirt', { wait: 0 });
+        squirted = true;
+        continue;
+      }
+      await choose(right(w, q));
+    }
+  });
+  // ── the court (spec 6.1, 6.2): no 3D; the composer draws BB.court.scene() ─────────────────────────────────────
+  const ALL = COURT.restaurants.map(r => r.pack), OTHERS = ALL.filter(id => id !== 'diner');
+  const every = extra => Object.fromEntries(ALL.map(id => [id, Object.assign({ opened: true, grandOpeningSeen: true, tutorialDone: true }, extra)]));
+  const lively = { pizza: { popularity: 4, stars: 3 }, diner: { popularity: 6, stars: 4 }, cafe: { popularity: 2, stars: 2 } };
+  // The main menu over the out-of-focus court.
+  for (const a of ['16:9', '4:3']) {
+    await session('menu@' + a.replace(':', 'x'), SHAPES[a], { data: {}, builtAs: ['pizza', 'cafe'], courtAll: lively }, async ({ courtShot }) => { await courtShot('main-menu', { wait: 400 }); });
+  }
+  // How to Play at Normal and Extra Large text (it must fit at 16:9 and 4:3).
+  for (const [a, t] of [['16:9', 'normal'], ['16:9', 'xlarge'], ['4:3', 'xlarge'], ['4:3', 'normal']]) {
+    await session('howto@' + a.replace(':', 'x') + '-' + t, SHAPES[a], { data: { textSize: t }, builtAs: ['pizza', 'cafe'], courtAll: lively }, async ({ choose, dbg, sleep, courtShot }) => {
+      await choose('howto');
+      for (let k = 0; k < 100 && dbg().card !== 'howto'; k++) await sleep(20);
+      await courtShot('how-to-play', { wait: 300 });
+    });
+  }
+  // Settings over the court, from the main menu.
+  await session('settings@16x9', SHAPES['16:9'], { data: {}, builtAs: ['pizza', 'cafe'], courtAll: lively }, async ({ choose, dbg, sleep, courtShot }) => {
+    await choose('settings');
+    for (let k = 0; k < 100 && dbg().card !== 'settings'; k++) await sleep(20);
+    await courtShot('settings', { wait: 300 });
+  });
+  // The court in focus just after Play, then a storefront highlighted, then the Pause sign; at other shapes and sizes.
+  for (const [tag, size, data] of [['16x9', SHAPES['16:9'], {}], ['4x3', SHAPES['4:3'], {}], ['21x9', SHAPES['21:9'], {}], ['16x9-xlarge', SHAPES['16:9'], { textSize: 'xlarge' }],
+    ['16x9-full', SHAPES['16:9'], { motion: 'full' }]]) {
+    await session('court@' + tag, size, { data, builtAs: ['pizza', 'cafe'], courtAll: lively }, async ({ choose, courtShot, live, light }) => {
+      await choose('play');
+      await live();
+      await courtShot('in-focus', { wait: 300 });
+      await light('shop:diner');
+      await courtShot('burger-bar-lit');
+      if (tag === '16x9') { await light('shop:pizza'); await courtShot('pizza-lit'); await light('pause'); await courtShot('pause-lit'); }
+    });
+  }
+  // The crowd by popularity: every restaurant open at popularity 0, 3, 7 and 10.
+  for (const p of [0, 3, 7, 10]) {
+    const stars = p >= 5 ? 4 : p >= 3 ? 3 : p >= 1 ? 2 : 1;
+    await session('tiers@16x9-p' + p, SHAPES['16:9'], { data: {}, builtAs: OTHERS, courtAll: every({ popularity: p, stars }) }, async ({ choose, courtShot, live }) => {
+      await choose('play');
+      await live();
+      await courtShot('popularity-' + p, { wait: 600 });
+    });
+  }
+  await session('tiers@4x3-p10', SHAPES['4:3'], { data: {}, builtAs: OTHERS, courtAll: every({ popularity: 10, stars: 4 }) }, async ({ choose, courtShot, live }) => {
+    await choose('play'); await live(); await courtShot('popularity-10', { wait: 600 });
+  });
+  // The moments, each midway (Motion Full).
+  await session('moments@16x9-open', SHAPES['16:9'], { data: { motion: 'full' }, builtAs: OTHERS,
+    courtAll: { pizza: { popularity: 3, stars: 3 }, diner: { popularity: 3, stars: 3 }, cafe: { popularity: 3, stars: 3 } } }, async ({ w, choose, courtShot, live, until }) => {
+    await choose('play');
+    if (await until(() => (w.BB.court.scene().stores.find(s => s.pack === 'smoothie') || {}).rolling)) await courtShot('shutter-rolling', { wait: 500 });
+    if (await until(() => w.document.getElementById('bubble').classList.contains('pa'), 9000)) await courtShot('announcer', { wait: 100 });
+    if (await until(() => w.document.getElementById('bubble').classList.contains('mitch'), 15000)) await courtShot('mitch', { wait: 100 });
+    await live();
+    await courtShot('after-banner', { wait: 300 });
+  });
+  await session('moments@16x9-gold', SHAPES['16:9'], { data: { motion: 'full' }, builtAs: ['pizza', 'cafe'],
+    courtAll: { diner: { popularity: 8, stars: 5, gold: true, goldSeen: false } } }, async ({ w, choose, courtShot, live, until }) => {
+    await choose('play');
+    if (await until(() => (w.BB.court.scene().stores.find(s => s.pack === 'diner') || {}).drop)) await courtShot('sign-dropping', { wait: 250 });
+    if (await until(() => w.document.getElementById('bubble').classList.contains('pa'), 9000)) await courtShot('announcer', { wait: 100 });
+    if (await until(() => w.document.getElementById('bubble').classList.contains('mitch'), 15000)) await courtShot('mitch', { wait: 100 });
+    await live();
+    await courtShot('after-gold', { wait: 300 });
+  });
+  await session('moments@16x9-celebrate', SHAPES['16:9'], { data: { motion: 'full' }, builtAs: OTHERS, courtAll: every({ popularity: 10, stars: 5, gold: true, goldSeen: true }) },
+    async ({ w, choose, courtShot, live, until }) => {
+      await choose('play');
+      if (await until(() => w.BB.court.state().lineup > 0 && w.BB.court.scene().fx.some(f => f.kind === 'burst'))) await courtShot('fireworks', { wait: 450 });
+      if (await until(() => !!w.BB.court.scene().say, 9000)) await courtShot('cheer', { wait: 100 });
+      if (await until(() => /promoted/.test(w.document.getElementById('mitch').getAttribute('src') || ''), 60000)) await courtShot('promoted', { wait: 200 });
+      await live();
+      await courtShot('after', { wait: 300 });
+    });
+  // The parts of the U (five or more open): a part lit (its storefronts lift), inside the top part, its Back stop.
+  await session('parts@16x9', SHAPES['16:9'], { data: {}, builtAs: OTHERS, courtAll: every({ popularity: 5, stars: 4 }) }, async ({ dbg, choose, courtShot, live, light, tap }) => {
+    await choose('play');
+    await live();
+    await light('part:left'); await courtShot('left-lit');
+    await light('part:top'); await courtShot('top-lit');
+    await tap('Enter'); await courtShot('in-top');
+    for (let k = 0; k < 6 && !dbg().backStop; k++) await tap('Space');
+    await courtShot('back-stop');
+  });
+  // The start: three open and four greyed out, shutters down; and the development state (packs not loaded: greyed).
+  await session('closed@16x9', SHAPES['16:9'], { data: {}, builtAs: ['pizza', 'cafe'] }, async ({ choose, courtShot, live }) => {
+    await choose('play'); await live(); await courtShot('start', { wait: 300 });
+  });
+  await session('closed@16x9-unbuilt', SHAPES['16:9'], { data: {} }, async ({ choose, courtShot, live }) => {
+    await choose('play'); await live(); await courtShot('packs-not-loaded', { wait: 300 });
+  });
+  console.log('frames in ' + OUT);
+})();

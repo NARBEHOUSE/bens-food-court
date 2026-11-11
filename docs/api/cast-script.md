@@ -1,0 +1,133 @@
+# The cast script and the court script (phase 2a, lane content-cast, 2026-11-08)
+
+What `packs/cast/script.js` (`BBScripts.cast`) and `packs/court/script.js` (`BBScripts.court`) hold, for the
+content agents (what they still write for these people), the page agent (how the court's lines play) and the final
+voice pass. The line format, moments, blanks and merging are `docs/api/script.md`; this page is what was settled on
+top of it. Both files say `format: 3`. Checks: `node --test "tests/script.test.cjs"` runs `SC.checkCast` with
+BBCourt's seven pack ids, `SC.checkCourt` and `SC.courtCoverage`.
+
+## 1. `packs/cast/script.js`: lines that work at any restaurant (430 lines)
+
+Five moments only: `greet`, `smalltalk`, `complain`, `goodbye`, `mention`. Every line plays at all seven restaurants, so:
+
+- **`greet`, `smalltalk` and `goodbye` name no food and nothing of one restaurant's.** Meal words (lunch, breakfast)
+  are fine. Sal's hot dogs are his cart's, not a restaurant's; Oakes's onion paper is "a certain bulb".
+- **A `mention` names the restaurant it is ABOUT, never the one it is said in**, so it may name that restaurant's food
+  ("Two larges at {about}, one for the road"). `about` is the pack id. `{about}` is filled with BBCourt's `said`
+  ("the Smoothie Shack", "Ben's Burritos", "Ben's Sushi", "the Cafe"), so every line keeps it mid-sentence and never
+  puts 's after it.
+- `greet` is one short breath (at most 15 words): the order sentence follows it straight away (spec 0.6, about two
+  sentences for greeting plus order).
+- `smalltalk` is about their own lives, never the food being made.
+- `goodbye` is true after three stars or one.
+- **`complain`** (voicecut, 2026-11-10): said when a served order has a mistake that is not a gross-out, before Mitch
+  reads what the mistake was (`mistake.*`, the pack's). It names no food and no kind of mistake (it is true for a
+  missing topping, an extra one, a wrong pick, the wrong stage or a wrong count, at any restaurant), and it is short.
+  The joke is on the speaker, never the player. **Everyone who comes to a counter has 8 to 10 here, locals too**
+  (their only lines in this file): one recording per person, said at every restaurant they visit. Each person's best
+  old per-food complaint jokes were kept as food-free lines (Sal's "What am I, talkin' to the pigeons here?", Vernon's
+  "Noticing is my cardio", Kai's "I don't make typos. I'm ten. I don't type.", Bev's FUMBLE). 187 lines: marge 9, gus 9,
+  bev 9, vernon 10, sal 9, dale 8, oakes 9, reginald 9, kai 9, tony 9, pam 8, breeze 8, jitters 8, walt 9, priya 8,
+  brock 8, tasha 8, inferno 8, rita 8, hiro 8, dennis 8, lulu 8.
+
+**Who has what** (ids `<moment>.c<n>`, unique per speaker; clip ids `<speaker>/cast:<id>`):
+
+| who | greet | smalltalk | goodbye | mention: about |
+|---|---|---|---|---|
+| marge, gus | 6 | 7 | 6 | all seven |
+| bev, vernon, sal | 6 | 6 | 6 | all seven |
+| dale | 4 | 5 | 4 | all seven |
+| priya | 5 | 5 | 4 | all seven |
+| oakes | 4 | 5 | 4 | burrito, pizza, diner, cafe, icecream |
+| tasha | 4 | 5 | 4 | smoothie, pizza, diner, icecream |
+| reginald, kai | 4 | 5 | 4 | all seven |
+
+Locals (tony, pam, breeze, brock, jitters, hiro, dennis, inferno, rita, lulu, walt) have only `complain` here: their
+other lines live in their own pack. A pack that brings another restaurant's local in as a level-4 cameo writes that visitor's
+lines in its own script.
+
+**Mentions are true to the proposal's "Regulars across the court" table:** what each person orders there (Marge's
+plain cheese, Gus's two of everything, Bev counting jalapeños, Vernon's "I will know", Sal refusing at the Smoothie
+Shack then ordering), and for the others their gag: Dale hears every restaurant's machines (the Cafe's hissing espresso
+machine, the sushi conveyor), Oakes finds a new reason against onions at every menu with them (pico does not count) and
+relief at the two without, Reginald reviews what is newest (the crowned coffee bean is in the Cafe's counter art, the
+fire extinguisher by the hottest sauce in the Burritos'), Kai cuts Reginald's reviews to the point. Two lines can never
+play as spec 5.4 stands: Dale's about the diner (he only visits the diner) and Priya's about the Cafe. They are there
+for the day either of them visits a second restaurant.
+
+**What pack scripts still write for these eleven people** (`SC.coverage` at `format: 3`):
+
+- `react.3`, `react.2` and `react.1`: three of each speaker's own per restaurant they visit (the variety minimum is
+  3 and a 'customer' fallback does not count towards it). `greet`, `smalltalk` and `goodbye` already meet it from
+  here; a pack may add more of its own for colour.
+- `react.gross`, `complain.gross.*`: the pack's 'customer' fallback covers anyone, own lines are optional. A
+  `complain.gross.*` line has no blanks (voicecut): it may name the gross-out's own food in plain words ("a hair in the
+  beans"), since that never varies.
+- `complain` lives here for everyone (8 each); a pack keeps two 'customer' fallbacks for it.
+- `order.usual` (marge), `order.twin` (gus, where the level allows two), `order.dislike` (sal where lettuce exists,
+  oakes where onions exist), `react.favourite` (anyone with a `favourite`), `visitor.arrive` (reginald, kai),
+  `order.odd.<id>` for whoever can draw that odd order.
+- `mention` is cast-only: a mention in a pack script fails `SC.check`.
+
+**Playing a mention** (the page): `SC.pickMention(pack, script, who, { here, open, said }, used, rnd)`, `said` from
+BBCourt (`{ <pack>: restaurant.said }`); only another open restaurant; at most once a shift (the page counts). A good
+slot is after `smalltalk` on a later order, in the same silence rules as every character line.
+
+## 2. `packs/court/script.js`: the court's lines (68 lines)
+
+Ids are `<moment>.<n>` without the `court.` prefix (`return.1`, `open.1`, `cheer.1`); clip ids
+`mitch/court:return.1`, `pa/court:open.1`, `marge/court:cheer.1`.
+
+| moment | who | lines | blank |
+|---|---|---|---|
+| `court.return` | mitch | 8 | `{goal}` |
+| `court.unlock` | mitch | 4 | `{name}` |
+| `court.goldSign` | mitch | 4 | `{name}` |
+| `court.celebrate` | mitch | 3 | |
+| `court.promoted` | mitch | 3 | |
+| `court.announce.open` | pa | 4 | `{name}` |
+| `court.announce.gold` | pa | 4 | `{name}` |
+| `court.chatter` | customers on the floor (crowd-cast) | 15 | moved from the shoppers 2026-11-10; chatter.2 dropped |
+| `court.cheer` | every customer in the cast: 22, one each | 22 | |
+
+**Blanks.** `{goal}` is `BB.courtRules.nextGoal().goal`: a lower-case clause with no full stop ("get all three to
+three stars and the Smoothie Shack opens", "get all seven fully busy"), so every line puts it mid-sentence ("Next up:
+{goal}.", "My headset says {goal}. It isn't plugged in."). `court.return` is never said when `goal` is '' (all seven
+at five stars and fully busy). `{name}` is the restaurant's full name from `news().name` ("Ben's Smoothie Shack"),
+never `said` or `short`.
+
+**Play order on returning to the court** (spec 6.2, court-rules.md "news"):
+
+1. Each `news()` item, marking it `seen()`: a gold sign plays `pa` `court.announce.gold` then Mitch `court.goldSign`;
+   a grand opening plays `pa` `court.announce.open` then Mitch `court.unlock`; the celebration plays one `court.cheer`
+   from every drawn regular (the locals have one too: use them when drawn), then Mitch `court.celebrate`, then
+   `court.promoted` as the `promoted` pose shows (the `[peels tape]` tag is dropped for TTS and captions).
+2. Mitch `court.return` when the goal `key` changed (and once per session).
+3. The court prompt, then the scan.
+
+`court.chatter` is captions only, never spoken, never over the highlighted storefront. Every chatter line is true at
+any point in the game: it names only the three restaurants open from the start (and the people who are always
+around: Sal, Vernon, Tony, Marge, Bev, Gus, Mitch, the scooter guard) or nobody, and never the player.
+
+## 3. Delivery notes, for the final voice pass
+
+- Every line has a `delivery`. `[sigh]`, `[whistle]`, `[sings]`, `[peels tape]` tags stay for the recording and are
+  dropped for text to speech and captions (`SC.clean`).
+- **Coach Bev:** her notes say firm, never loud (DESIGN.md's voice test: loud words made every clone shout and
+  distort). `tools/voices.json` has `calm: true` for her, so the model gets her lines with full stops and lower case;
+  captions keep the caps and the "!". The same goes for Sal (gruff, never loud) and Brock.
+- **Marge:** `tools/voices.json` respells "hon" as "hun" for the model (a comma before it was heard as "Aunt");
+  the lines keep "hon" for captions.
+- Gus's and Sal's spellings (drivin', evenin', ain't, nothin') are the diner script's established ones; the humour
+  is pigeons, Delores and the doctor, never the accent.
+- No note asks for rasp or gravel (those read as distortion in round 1).
+
+## 4. Review changes in 2a (the earlier run wrote both files; this pass reviewed every line)
+
+- `priya/greet.c4`: "your rash" became "anybody's rash" (the joke must never land on the player).
+- `priya/mention.c4`: breakfast at the Burger Bar became dinner there at seven in the morning (the diner serves no
+  breakfast; her quirk is meals at the wrong hour, not up for discussion).
+- `sal/greet.c3`: "Don't answer. I'm starvin'." became "Me, I'm starvin'. That's how I'm doin'." (nothing snaps at
+  the player).
+- Delivery notes only (no words changed): Bev's 26 "booming" notes became "firm, like a coach, ..."; Sal's two "loud"
+  became "gruff"; Dale's "gravelly" and Brock's "loud" went.

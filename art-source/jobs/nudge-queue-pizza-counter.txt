@@ -1,0 +1,6 @@
+Use case: edit an existing 2D cartoon background painting for a game (the attached image).
+Task: move ONLY the tall tourist with grey hair in the light-blue shirt and khaki shorts holding up an unfolded mall map (the LAST person in the queue, now about 69% to 76.6% across) about 35 pixels to the LEFT, so the right edge of his map and hands is at about 74% across; he may stand a little behind the woman with the shopping bags and overlap her a little. Keep this person exactly the same (same look, size, pose, outfit and floor line) and keep EVERYTHING ELSE in the picture exactly as it is: the same size (1536 x 1024), framing, perspective, colours, outlines, lighting, the other people, the furniture, the plants and every stall. Do not move, crop, zoom, re-frame, restyle or re-colour anything else.
+Where the person used to stand, paint in what is behind them so it continues naturally: the tiled floor and the smoothie stall with its stools behind him.
+Nobody stands anywhere right of 74.5% across, and nobody new is added.
+Style: exactly the picture's own style. No text. No border.
+Save the edited picture as art-source/backdrops/candidates/pizza-counter-nudge.png (1536 x 1024). Reply with the saved path. If saving into the project fails, reply with the path of the generated file.

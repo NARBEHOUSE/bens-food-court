@@ -1,0 +1,286 @@
+/** Every restaurant pack (packs/<id>/pack.js; BB_PACKS=<id,...> for some), and the test packs:
+ *  each passes the schema, every screen fits the five-choice limit, every recipe at every level can
+ *  be made for 3 stars in both cooking modes, the press budget holds (spec 4.3), the same recipes
+ *  take the same presses for every customer, tickets list everything, whole shifts play at every
+ *  level, and no rules module names anything a pack names. */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const fs = require('fs');
+const path = require('path');
+const { G, golden, diner, testPizza, merge, restaurants, LEVELS, O, L, S, W, C, schema, right, random, play, run, pressesFor, itemAt, recipesAt } = require('./bot.cjs');
+const ladder = merge(require('./fixtures/ladder-pizza.js'));
+
+/** Spec 4.3's press budget, Serve included: a level-1 item in Simple takes no more than the
+ *  Burger Bar's (13-14), and no order at any level more than 28. */
+const BUDGET = { levelOne: 14, order: 28 };
+/** The subjects: every restaurant pack, plus the ladder fixture (a whole restaurant in tests). */
+const SUBJECTS = restaurants().concat([{ id: 'fixture:ladderPizza', pack: ladder, raw: require('./fixtures/ladder-pizza.js'), fixture: true }]);
+const SEEDS = 12;
+
+/* ── the schema ────────────────────────────────────────────────────────── */
+test('the test packs pass the schema (merged with the cast)', () => {
+  assert.deepStrictEqual(schema.validate(golden), []);
+  assert.deepStrictEqual(schema.validate(diner), []);
+  assert.deepStrictEqual(schema.validate(testPizza), []);
+  assert.deepStrictEqual(schema.validate(ladder), []);
+});
+
+test('the schema catches a broken Burger Bar', () => {
+  const broken = JSON.parse(JSON.stringify(golden));
+  broken.stations.board.steps.push({ kind: 'add', ing: 'anchovy' });
+  broken.recipes.hamburger.stations = ['grill'];
+  broken.stageSets.patty.choose.push('charred');
+  broken.gross.push({ id: 'x', on: ['plate'], say: 'x' });
+  const errs = schema.validate(broken).join('\n');
+  assert.match(errs, /unknown ingredient anchovy/);
+  assert.match(errs, /lettuce is not made by grill/);
+  assert.match(errs, /more than 4 doneness choices/);
+  assert.match(errs, /plate is never offered on an Add step/);
+});
+
+test('the schema catches a broken restaurant: ids, words, speeds, slots, gross-outs, people, the ladder, odd orders, the event', () => {
+  const b = JSON.parse(JSON.stringify(require('./fixtures/ladder-pizza.js')));
+  b.stations['pre-p'] = b.stations.prep;                                  // an id with a dash
+  b.stations.review = { name: 'Review', backdrop: 'prep', redo: 'Again', steps: [{ kind: 'add', ing: 'basil' }] };
+  delete b.stageSets.bake.stop;                                           // a stage set without its words
+  b.stageSets.warm.speed = { verySlow: 10, slow: 8, normal: 5 };          // faster than the Burger Bar
+  b.stageSets.warm.wantedScale = 1.5;
+  b.slots.sauce.values.push({ id: 'pesto', name: 'Pesto' });              // four values: a gross-out there needs five answers
+  b.slots.cut.say = 'cut';                                                // say without {value}
+  b.gross.push({ id: 'burnt', step: 'cook', on: ['pizza'], say: 'burnt' });
+  b.gross.push({ id: 'dipBug', step: 'pick', slot: 'dips', on: ['ranch'], say: '{name} with a bug in it' });
+  b.recipes.margherita.item.slots.crust = 'stuffed';                      // not a crust
+  delete b.recipes.pepperoni.item.slots.cut;                              // the line picks a cut, the ticket must say it
+  b.recipes.knots.item.slots.dips = { pick: 'dip', count: [1, 5] };       // past the repeat's max
+  b.recipes.chicago.item.parts.push({ ing: 'garlic' }, { ing: 'garlic' }); // four cloves, max 3
+  b.recipes.margherita.level = 7;
+  b.regulars.push({ id: 'nobody', likes: [['margherita', 1]] });           // not in the cast
+  b.regulars.find(r => r.id === 'reginald').visitor = { level: 3 };
+  b.regulars.find(r => r.id === 'tony').usual = [{ recipe: 'pepperoni', set: { crust: 'thin' } }];   // he dislikes pepperoni
+  b.levels = { 1: { items: [1, 2] }, 2: { grossRate: 0.2 }, 3: { odd: 0.5, wobble: 1 } };
+  b.oddOrders.push({ id: 'justCrust', recipe: 'party' }, { id: 'bad', recipe: 'pepperoni', adds: ['ketchup'], say: 'order.odd.other' });
+  b.events.five.finale.items = [1, 2, 3, 4].map(() => ({ recipe: 'knots' }));
+  b.events.five.items = [1, 4];
+  b.theme.sparkle = '#fff';
+  b.manager = { id: 'gus', art: 'gus' };
+  const errs = schema.validate(merge(b)).join('\n');
+  for (const want of [/pre-p.*letters, digits and _ only/, /review is taken/, /bake: needs its words: stop/, /warm: cooks faster than the Burger Bar: verySlow/,
+    /warm: the ticket's stage must last at least 2/, /cut: say must have \{value\}/, /never on cooking or a flourish/, /never on a repeat pick \(dips\)/,
+    /sauce has 4 values: with Swap It that is over 4 answers/, /stuffed is not a crust/, /pepperoni: its line picks cut \(cutter\), so item.slots must name it/,
+    /dips: count must be \[lo, hi\] within 1 to 3/, /4 garlic but its Add step takes at most 3/, /level is 1 to 5, or 'event'/, /nobody: is not in the cast/,
+    /reginald: visitor is \{ level: 4 \}/, /tony: never takes pepperoni, but pepperoni always comes with it/, /levels.1: levels 1 and 2 are one item/,
+    /levels.2: no gross-outs below level 3/, /levels.3: unknown setting wobble/, /levels.3: ridiculous orders start at level 4/, /oddOrders\[3\]: id twice/,
+    /an odd order is a normal recipe, not an event one/, /adds ketchup, which no Add step/, /unknown ingredient ketchup|adds ketchup/, /say names its moment: order.odd.bad/,
+    /finale: has 1 to 3 items/, /events.five: items is \[lo, hi\] within 1 to 3/, /unknown token sparkle/, /gus is not the cast's manager/]) {
+    assert.match(errs, want);
+  }
+});
+
+/* ── every restaurant ──────────────────────────────────────────────────── */
+/** The engine's own vocabulary, which the rules may say even when a pack also uses the word as an id
+ *  (a station called line, a slot called base, a value called six): step kinds and answers, phases,
+ *  layers, settings values, number words, words.js's order-part ids, the court's crowd tiers. A pack
+ *  id that is any other word must never be quoted in js/core. */
+const FORMAT_WORDS = new Set(('add cook pick auto size flavour in out on event more done swap skip serve redo takeOff line review served ' +
+  'base cap top bottom counter customer manager simple timed verySlow slow normal stars one usual fancy hintsJokes hints off voices ' +
+  'captions standard contrast full reduced large xlarge low no two three four five six seven eight nine ten eleven twelve and plain ' +
+  'withJust another all quiet shortQueue outTheDoor').split(' '));
+
+test('no js/core file names an ingredient, station, recipe, slot, value, gross-out, odd order or pack of any restaurant', () => {
+  const ids = new Set();
+  for (const p of [golden, testPizza, ladder].concat(restaurants().filter(x => x.pack).map(x => x.pack))) {
+    ids.add(p.id);
+    [p.ingredients, p.stations, p.recipes, p.slots || {}, p.picks || {}].forEach(m => Object.keys(m || {}).forEach(k => ids.add(k)));
+    Object.values(p.slots || {}).forEach(sl => (sl.values || []).forEach(v => ids.add(v.id)));
+    (p.gross || []).forEach(g => ids.add(g.id));
+    (p.oddOrders || []).forEach(t => ids.add(t.id));
+  }
+  const dir = path.join(G, 'js', 'core');
+  for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.js'))) {
+    const src = fs.readFileSync(path.join(dir, f), 'utf8');
+    for (const id of ids) {
+      if (FORMAT_WORDS.has(id)) continue;
+      for (const qt of ["'", '"', '`']) assert.ok(!src.includes(qt + id + qt), f + ' names ' + id);
+    }
+  }
+});
+
+/** Every question of one order, answered the right way, in one cooking mode. */
+function walk(pack, items, cooking) {
+  const settings = { cooking, speed: 'normal' };
+  const o = L.create(pack, { customer: { id: 'x', name: 'X', }, items: JSON.parse(JSON.stringify(items)) }, { settings });
+  return Object.assign(run(pack, o, settings), { o });
+}
+/** The items a level can bring: each recipe on offer, drawn SEEDS ways; the event's recipes and
+ *  finale, the odd orders and the tutorial, as written. */
+function itemsOf(pack) {
+  const out = [];
+  for (const level of LEVELS) for (const recipe of recipesAt(pack, level)) for (let seed = 1; seed <= SEEDS; seed++) out.push({ level, items: [itemAt(pack, recipe, level, seed)] });
+  for (const recipe of recipesAt(pack, 'event')) out.push({ level: 'event', items: [itemAt(pack, recipe, 4, 1)] });
+  const s = { rng: 1 };
+  (pack.oddOrders || []).forEach(t => out.push({ level: 'odd ' + t.id, items: [O.fixed(pack, s, t)] }));
+  if (pack.events && pack.events.five) out.push({ level: 'finale', items: pack.events.five.finale.items.map(t => O.fixed(pack, s, t)) });
+  if (pack.tutorial) out.push({ level: 'tutorial', items: pack.tutorial.items.map(t => O.fixed(pack, s, t)) });
+  return out;
+}
+
+for (const R0 of SUBJECTS) {
+  const name = R0.id;
+  const ok = t => { if (R0.error) { assert.fail(name + ' does not load: ' + R0.error); } return true; };
+
+  test(name + ': loads, and passes the schema', () => {
+    ok();
+    assert.deepStrictEqual(schema.validate(R0.pack), []);
+  });
+
+  test(name + ': a finished restaurant names its people only by id (who they are is the cast\'s) and gates recipes only by level', t => {
+    ok();
+    if (R0.raw.orderStyles) { t.skip('still on the Burger Bar\'s old format (orderStyles)'); return; }
+    for (const r of R0.raw.regulars || []) {
+      const persona = Object.keys(r).filter(k => C.PERSONA.includes(k));
+      assert.deepStrictEqual(persona, [], r.id + ' carries persona fields; they come from packs/cast/cast.js');
+    }
+    assert.deepStrictEqual(Object.keys(R0.raw.manager || {}).sort(), ['art', 'id'], 'manager is { id, art }');
+    for (const [rid, X] of Object.entries(R0.raw.recipes)) assert.ok(X.unlock === undefined && X.milestone === undefined, rid + ': unlock and milestone are gone; use level');
+  });
+
+  test(name + ': every screen has at most four answers, and every recipe at every level comes out at 3 stars, Simple and Timed', () => {
+    ok();
+    const pack = R0.pack;
+    for (const { level, items } of itemsOf(pack)) {
+      for (const cooking of ['simple', 'timed']) {
+        const r = walk(pack, items, cooking);
+        for (const q of r.seen) {
+          assert.ok(q.options.length <= L.MAX_ANSWERS, name + ' ' + level + ' ' + q.kind + ' offers ' + q.options.length);
+          const rows = x => x.forEach(o => { if (o.row) { assert.ok(o.row.length <= L.ROW, 'a row of ' + o.row.length); rows(o.row); } });
+          rows(q.options);
+        }
+        const S0 = require('./bot.cjs').J.score(pack, r.o);
+        assert.strictEqual(S0.stars, 3, name + ' ' + level + ' ' + items.map(i => i.recipe) + ' (' + cooking + '): ' + JSON.stringify(S0.mistakes));
+      }
+    }
+  });
+
+  test(name + ': the press budget: a level-1 item in Simple takes at most ' + BUDGET.levelOne + ' presses, and no order at any level more than ' + BUDGET.order, t => {
+    ok();
+    const pack = R0.pack;
+    const over = [];
+    for (const recipe of recipesAt(pack, 1)) {
+      let most = 0;
+      for (let seed = 1; seed <= 40; seed++) most = Math.max(most, pressesFor(pack, [itemAt(pack, recipe, 1, seed)], 'simple'));
+      if (most > BUDGET.levelOne) over.push(recipe + ' at level 1 takes ' + most);
+    }
+    const worst = {};
+    const note = (k, n, what) => { if (!worst[k] || worst[k].n < n) worst[k] = { n, what }; if (n > BUDGET.order) over.push(k + ': ' + what + ' takes ' + n); };
+    for (const cooking of ['simple', 'timed']) {
+      for (const level of LEVELS) {
+        for (let seed = 1; seed <= 25; seed++) {
+          const s = S.create(pack, { seed, level, settings: { shiftLength: 8, cooking, speed: 'normal' } });
+          while (!s.done) { const p = play(pack, s, (q, o) => right(pack, o, q)); note('level ' + level, p.presses, p.result.recipes.join(' + ')); }
+        }
+      }
+      if (pack.events && pack.events.five) {
+        for (let seed = 1; seed <= 25; seed++) {
+          const s = S.create(pack, { seed, level: 4, event: 'five', settings: { shiftLength: 5, cooking, speed: 'normal' } });
+          while (!s.done) { const p = play(pack, s, (q, o) => right(pack, o, q)); note('the event', p.presses, p.result.recipes.join(' + ')); }
+        }
+      }
+    }
+    t.diagnostic(name + ' most presses: ' + Object.entries(worst).map(([k, v]) => k + ' ' + v.n + ' (' + v.what + ')').join('; '));
+    assert.deepStrictEqual(over, []);
+  });
+
+  test(name + ': the same recipes take the same presses for every customer', () => {
+    ok();
+    const pack = R0.pack;
+    const problems = [];
+    for (const level of LEVELS) {
+      const style = S.styleFor(pack, { level, settings: {} });
+      for (const recipe of recipesAt(pack, level)) {
+        // Anyone at all: every way the recipe can come at this level, as written or strayed as far as anyone strays.
+        let lo = Infinity, hi = 0;
+        for (const change of [0, style.change, 0.5, 1]) {
+          for (let seed = 1; seed <= 30; seed++) {
+            const n = pressesFor(pack, [O.resolve(pack, recipe, { rng: require('./bot.cjs').R.seed(seed) }, { style, change })], 'simple');
+            lo = Math.min(lo, n); hi = Math.max(hi, n);
+          }
+        }
+        for (const Cu of pack.regulars) {
+          if (!O.canOrder(pack, [recipe], Cu.dislikes).includes(recipe)) continue;
+          const usual = (Cu.usual || []).find(u => u.recipe === recipe);
+          for (let seed = 1; seed <= 15; seed++) {
+            const ctx = { style, set: Object.assign({}, Cu.set, Cu.wants, usual ? usual.set : {}), dislikes: Cu.dislikes, exact: Cu.exact };
+            if (usual && seed > 1) break;
+            if (usual) ctx.change = 0;
+            const n = pressesFor(pack, [O.resolve(pack, recipe, { rng: require('./bot.cjs').R.seed(seed) }, ctx)], 'simple');
+            if (n < lo || n > hi) problems.push(Cu.id + ': ' + recipe + ' at level ' + level + ' takes ' + n + ', anyone else ' + lo + '-' + hi);
+          }
+        }
+      }
+    }
+    assert.deepStrictEqual([...new Set(problems)], []);
+  });
+
+  test(name + ': every ticket lists everything that goes on, in the line\'s order, and never "no X"', () => {
+    ok();
+    const pack = R0.pack;
+    for (const { level, items } of itemsOf(pack)) {
+      for (const spec of items) {
+        const item = { spec, answers: {} };
+        const sp = W.spelled(pack, spec), where = name + ' ' + level + ' ' + JSON.stringify(sp.bits);
+        let at = 0;
+        const find = words => {
+          const k = sp.bits.findIndex((b, j) => j >= at && b.includes(words));
+          assert.ok(k >= 0, JSON.stringify(words) + ' not in line order: ' + where);
+          at = k;
+        };
+        for (const { sid, n, step } of W.lineSteps(pack, spec)) {
+          const want = L.expected(pack, item, sid, n);
+          if (step.kind === 'add') {
+            const I = pack.ingredients[step.ing];
+            if (!want) continue;
+            if (I.stages) find(W.number(spec.parts.filter(p => p.ing === step.ing).length) + ' ');
+            else find((step.max || 1) > 1 ? W.number(want) + ' ' + W.lower(want === 1 ? W.name(pack, step.ing) : W.plural(pack, step.ing)) : W.lower(W.name(pack, step.ing)));
+          } else if (step.kind === 'cook' && !step.ing && want) find(W.lower(W.stage(pack, want)));
+          else if (step.kind === 'pick' && step.slot !== undefined && want !== null) find(step.repeat ? W.repeatSay(pack, step.slot, want) : W.valueSay(pack, step.slot, want));
+        }
+        assert.ok(!/\bno [a-z]/i.test(W.ticket(pack, { items: [spec] })), 'a ticket never says "no X": ' + where);
+      }
+    }
+  });
+
+  test(name + ': whole shifts play at every level, both cooking modes and both Order Sizes, the event and the tutorial too', () => {
+    ok();
+    const pack = R0.pack;
+    const plans = [];
+    for (const level of LEVELS) for (const orders of ['stars', 'one']) plans.push({ level, settings: { orders } });
+    if (pack.events && pack.events.five) plans.push({ level: 4, event: 'five', settings: {} });
+    let n = 0;
+    for (const plan of plans) {
+      for (let seed = 1; seed <= 8; seed++) {
+        const settings = Object.assign({ cooking: seed % 2 ? 'timed' : 'simple', speed: 'normal', shiftLength: [3, 5, 8][seed % 3] }, plan.settings);
+        const s = S.create(pack, { seed, level: plan.level, event: plan.event, settings });
+        const bot = seed % 4 < 2 ? random(s) : (q, o) => right(pack, o, q);
+        while (!s.done) {
+          const p = play(pack, s, bot);
+          assert.ok(p.result.stars >= 1 && p.result.stars <= 3);
+          assert.deepStrictEqual(p.warnings, []);
+          if (seed % 4 >= 2) assert.strictEqual(p.result.stars, 3, name + ' ' + JSON.stringify(plan) + ' seed ' + seed + ': ' + JSON.stringify(p.result.mistakes));
+          n += 1;
+        }
+        const r = S.results(s);
+        assert.strictEqual(r.orders, settings.shiftLength);
+        assert.strictEqual(r.event, plan.event || null);
+      }
+    }
+    assert.ok(n > 50);
+    if (pack.tutorial) {
+      const s = S.create(pack, { seed: 1, tutorial: true });
+      const p = play(pack, s, (q, o) => right(pack, o, q));
+      assert.strictEqual(p.result.stars, 3);
+      assert.strictEqual(p.result.swaps, pack.tutorial.gross ? 1 : 0);
+      assert.strictEqual(s.n, 1);
+    }
+  });
+}

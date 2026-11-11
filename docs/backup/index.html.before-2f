@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ben's Food Court</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../../../shared/scan-status-badge.css">
+<link rel="stylesheet" href="css/bb.css">
+<link rel="icon" type="image/png" sizes="32x32" href="../../../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../../../images/favicon-16.png">
+</head>
+<body data-scene="court" data-place="court" data-pack="" data-motion="full" data-text="normal">
+<!-- One page: the main menu, the court and every restaurant (docs/api/page.md). Inside a restaurant (DESIGN.md):
+     a 2D cartoon stage, 3D food, and every choice on a real object. Layers, back to front: backdrop, the court (the
+     picture with its storefronts, board and crowd: js/court.js), customer, the 3D canvas (the counter hides the
+     customer's legs), Mitch, the real objects, the line's controls. -->
+<div id="stage">
+  <div id="backdrop"></div>
+  <div id="court"><div id="courtCam"></div></div>
+  <img id="customer" alt="" aria-hidden="true">
+  <div id="canvasWrap"></div>
+  <img id="mitch" alt="" aria-hidden="true">
+  <div id="wheel" class="prop"></div>
+  <div id="back5" class="prop pick"><img alt="" aria-hidden="true"><span class="lb">Pause</span></div>
+  <div id="register" class="prop"><img alt="" aria-hidden="true"><span class="lb">Ring It Up</span></div>
+  <div id="bell" class="prop"><img alt="" aria-hidden="true"><span class="lb">Next Customer</span></div>
+  <div id="gauge" aria-hidden="true"></div>
+  <div id="controls"></div>
+  <div id="receipt" aria-live="polite"></div>
+  <div id="hud" aria-hidden="true"></div>
+  <div id="bubble" aria-live="polite"><b></b><span></span></div>
+</div>
+<div id="scanFrame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div id="choiceStatus"></div>
+<div id="overlay"></div>
+<div id="fade"></div>
+<div id="holdRing" aria-hidden="true"><i></i><span>Keep holding to pause</span></div>
+<div id="loading">Opening the food court…</div>
+
+<!-- Hub shared modules first, in the hub's order (ACCESSIBILITY.md §5). -->
+<script src="../../../shared/safe-audio.js" onerror="console.warn('safe-audio.js missing')"></script>
+<script src="../../../shared/platform.js"></script>
+<script src="../../../shared/graphics-quality.js"></script>
+<script src="../../../shared/scan-status-badge.js"></script>
+<script src="../../../shared/choice-scan.js"></script>
+<script src="../../../shared/voice-manager.js" onerror="console.warn('voice-manager.js missing')"></script>
+<script src="../../../shared/communication-channel.js"></script>
+<script src="../../../shared/communication-speech.js"></script>
+<script src="../../../shared/ios-audio-fix.js" onerror="console.warn('ios-audio-fix.js missing')"></script>
+<script src="../../../shared/scan-manager.js" onerror="console.warn('scan-manager.js missing')"></script>
+<script src="../../../shared/choice-scan-adapter.js"></script>
+
+<script src="js/vendor/three.min.js"></script>
+<!-- world: the 3D food's kit and registry (BB.food), then each restaurant's food module; js/world.js draws them. -->
+<script src="js/food/kit.js"></script>
+<script src="js/food/diner.js"></script>
+<!-- /world -->
+<!-- The rules: pure, no DOM - the same files the Node tests run. -->
+<script src="js/core/rng.js"></script>
+<script src="js/core/orders.js"></script>
+<script src="js/core/line.js"></script>
+<script src="js/core/judge.js"></script>
+<script src="js/core/words.js"></script>
+<!-- core: the cast merged into a restaurant (BB.cast, before script.js, which reads its roles) and the pack checks (BB.schema) (docs/api/shift.md). -->
+<script src="js/core/cast.js"></script>
+<script src="js/core/schema.js"></script>
+<!-- /core -->
+<script src="js/core/script.js"></script>
+<script src="js/core/shift.js"></script>
+<script src="js/core/progress.js"></script>
+<script src="js/core/savefmt.js"></script>
+<script src="js/core/court.js"></script>
+<!-- The court as data (BBCourt) and its lines (BBScripts.court): before js/save.js, which reads the court's save. -->
+<script src="packs/court/court.js"></script>
+<script src="packs/court/script.js" onerror="console.warn('no court script')"></script>
+<!-- The restaurants: each one's data, its lines, what has been drawn and what has been recorded (docs/api/page.md
+     says the exact lines a new restaurant adds). A restaurant BBCourt lists but no pack loads is "not built yet". -->
+<script src="packs/diner/pack.js"></script>
+<script src="packs/diner/script.js"></script>
+<script src="packs/diner/art/manifest.js" onerror="console.warn('no diner art manifest')"></script>
+<script src="packs/diner/voice/manifest.js" onerror="console.warn('no voice manifest yet: every line uses text to speech')"></script>
+<!-- audio: the sound index (BBSounds), written by tools/make-sounds.cjs; js/audio.js preloads only what it lists. -->
+<script src="packs/shared/sound/sounds.js" onerror="console.warn('no sound index: run node tools/make-sounds.cjs')"></script>
+<!-- /audio -->
+<!-- cast: everyone in the court (BBCast) and the art manifests tools/build_art.py writes (docs/api/cast.md). -->
+<script src="packs/cast/cast.js"></script>
+<script src="packs/cast/art/manifest.js" onerror="console.warn('no cast art manifest: run tools/build_art.py')"></script>
+<script src="packs/shared/art/manifest.js" onerror="console.warn('no shared art manifest: run tools/build_art.py')"></script>
+<script src="packs/court/art/manifest.js" onerror="console.warn('no court art manifest: run tools/build_art.py')"></script>
+<script src="packs/smoothie/art/manifest.js" onerror="console.warn('no smoothie art manifest')"></script>
+<script src="packs/burrito/art/manifest.js" onerror="console.warn('no burrito art manifest')"></script>
+<script src="packs/pizza/art/manifest.js" onerror="console.warn('no pizza art manifest')"></script>
+<script src="packs/cafe/art/manifest.js" onerror="console.warn('no cafe art manifest')"></script>
+<script src="packs/icecream/art/manifest.js" onerror="console.warn('no icecream art manifest')"></script>
+<script src="packs/sushi/art/manifest.js" onerror="console.warn('no sushi art manifest')"></script>
+<!-- /cast -->
+<!-- The cast's lines that work at any restaurant (BBScripts.cast), merged into every restaurant's script. -->
+<script src="packs/cast/script.js" onerror="console.warn('no cast script')"></script>
+<!-- The show: saves, sound and voices, the 3D frame, the 2D stage, the pack registry, the scan and cards, the court, the game. -->
+<script src="js/save.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/stage.js"></script>
+<script src="js/packs.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/court.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

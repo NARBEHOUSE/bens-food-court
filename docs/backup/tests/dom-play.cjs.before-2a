@@ -1,0 +1,397 @@
+'use strict';
+/* Ben's Food Court - whole shifts played through the real page, headless, by switch presses.
+ *
+ * Loads index.html in jsdom (a Node DOM: no browser, no rendering, no GPU - safe on this PC)
+ * with the hub's real shared scanner, voice manager and input guard. Only speech, media,
+ * canvas and three.js's WebGL renderer are faked. A driver presses Space and Enter
+ * (keydown/keyup, like a switch interface), or waits for Auto Scan and presses Enter, and
+ * plays the whole chain: main menu, the court, a storefront, the first-visit card, the
+ * tutorial, shifts to the results board, Pause, Settings, Food Court and back (the shift
+ * resumes), the five-star event, the 5 s Enter hold, the Timed hold across a stage boundary.
+ * Any script error fails the run; every card must open at -1.
+ *
+ * jsdom is not a hub dependency. Install it anywhere and point at it:
+ *   npm i jsdom@24 --prefix <dir>   then   JSDOM=<dir>/node_modules/jsdom node tests/dom-play.cjs [run words]
+ * Options (docs/api/page.md): --pack <id> runs the shift runs at another loaded restaurant.
+ */
+const path = require('path'), fs = require('fs');
+const jsdom = require(process.env.JSDOM || 'jsdom');
+const { JSDOM, VirtualConsole } = jsdom;
+const GAME = path.join(__dirname, '..');
+const HUB = path.join(GAME, '..', '..', '..');
+const ORIGIN = 'http://hub.local/';
+const L = require(path.join(GAME, 'js/core/line.js'));
+const CAST = require(path.join(GAME, 'packs/cast/cast.js'));
+const CASTM = require(path.join(GAME, 'js/core/cast.js'));
+const COURT = require(path.join(GAME, 'packs/court/court.js'));
+const RULES = require(path.join(GAME, 'js/core/court.js'));
+const packOf = id => CASTM.merge(CAST, require(path.join(GAME, 'packs/' + id + '/pack.js')));
+/** The Settings card's rows, in order (spec 6.4); Cooking Speed is off (unscanned) with Simple cooking. */
+const SETTINGS_ROWS = ['tts', 'voice', 'cooking', 'speed', 'shiftLength', 'orders', 'manager', 'characterVoices', 'theme', 'motion', 'textSize',
+  'graphics-quality', 'autoScan', 'scanSpeed', 'sfx', 'reset', 'back'];
+
+class HubFiles extends jsdom.ResourceLoader {
+  fetch(url, options) {
+    if (!url.startsWith(ORIGIN)) return super.fetch(url, options);
+    const file = path.join(HUB, decodeURIComponent(url.slice(ORIGIN.length).split('?')[0]));
+    const p = new Promise((resolve, reject) => fs.readFile(file, (err, buf) => (err ? reject(err) : resolve(buf))));
+    p.abort = () => {};
+    return p;
+  }
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function fakeContext() {
+  const grad = { addColorStop() {} };
+  const target = { canvas: null, createLinearGradient: () => grad, createRadialGradient: () => grad, measureText: t => ({ width: String(t).length * 8 }),
+    getImageData: (x, y, w, h) => ({ data: new Uint8ClampedArray(Math.max(1, w * h * 4)), width: w, height: h }) };
+  return new Proxy(target, { get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
+}
+
+function stub(w, errors, renders) {
+  w.addEventListener('error', e => errors.push('window error: ' + (e.error && e.error.stack || e.message)));
+  w.addEventListener('unhandledrejection', e => errors.push('unhandled rejection: ' + (e.reason && e.reason.stack || e.reason)));
+  let current = null;
+  w.SpeechSynthesisUtterance = function (text) { this.text = text; };
+  w.speechSynthesis = {
+    speaking: false, pending: false,
+    getVoices: () => [{ name: 'Fake English', lang: 'en-US', default: true }],
+    speak(u) {
+      this.speaking = true; current = u;
+      setTimeout(() => { if (current === u && u.onstart) u.onstart(); }, 2);
+      setTimeout(() => { if (current !== u) return; current = null; this.speaking = false; if (u.onend) u.onend(); }, 6 + String(u.text).length / 4);
+    },
+    cancel() { const u = current; current = null; this.speaking = false; if (u && u.onerror) u.onerror({ error: 'interrupted' }); },
+    addEventListener() {}, removeEventListener() {},
+  };
+  w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+  // A recording "plays" and ends a moment later.
+  w.HTMLMediaElement.prototype.play = function () { setTimeout(() => { if (this.onended) this.onended(); }, 20); return Promise.resolve(); };
+  w.HTMLMediaElement.prototype.pause = function () {};
+  w.HTMLMediaElement.prototype.load = function () {};
+  w.Element.prototype.animate = function () { return { finished: Promise.resolve(), cancel() {}, finish() {} }; };
+  w.HTMLCanvasElement.prototype.getContext = function () { const c = fakeContext(); c.canvas = this; return c; };
+  // three.js arrives as window.THREE (an empty object it then fills in): its WebGLRenderer slot is
+  // taken first by a renderer that only records what it would draw, so three.js's own is never used.
+  class FakeRenderer {
+    constructor() { this.domElement = w.document.createElement('canvas'); this.outputColorSpace = ''; }
+    setPixelRatio() {} setSize() {} setClearColor() {}
+    render(scene, camera) { renders.n += 1; renders.last = { scene, camera }; }
+  }
+  let T;
+  Object.defineProperty(w, 'THREE', { configurable: true, get: () => T, set: v => {
+    T = v;
+    if (v && typeof v === 'object') Object.defineProperty(v, 'WebGLRenderer', { configurable: true, enumerable: true, get: () => FakeRenderer, set: () => {} });
+  } });
+}
+
+/** The bb-court record to seed: a new court, with opts.court's fields laid over each restaurant's entry
+ *  ({ diner: { popularity: 7, stars: 4 } }). The run's own restaurant has had its first visit unless the run
+ *  tests the offer (opts.offer). */
+function courtRecord(opts) {
+  const state = RULES.create(COURT);
+  const seed = opts.court || {};
+  Object.keys(seed).forEach(id => { if (state.restaurants[id]) Object.assign(state.restaurants[id], seed[id]); });
+  if (!opts.offer && state.restaurants[opts.pack]) state.restaurants[opts.pack].tutorialDone = true;
+  return RULES.record(RULES.normalize(COURT, state));
+}
+
+async function run(label, opts) {
+  opts = Object.assign({ pack: 'diner' }, opts);
+  const pack = packOf(opts.pack);
+  const errors = [], warns = [], renders = { n: 0 }, trace = [];
+  const vc = new VirtualConsole();
+  vc.on('jsdomError', e => { if (!/Not implemented: (navigation|window\.scrollTo|HTMLMediaElement)|Could not load img|Could not load script: "[^"]*(voice\/manifest|\/script)\.js"/.test(e.message)) errors.push('jsdom: ' + e.message); });
+  vc.on('error', (...a) => errors.push('console.error: ' + a.map(String).join(' ')));
+  vc.on('warn', (...a) => warns.push(a.map(String).join(' ')));
+  const dom = new JSDOM(fs.readFileSync(path.join(GAME, 'index.html'), 'utf8'), {
+    url: ORIGIN + 'apps/games/BENSFOODCOURT/index.html', runScripts: 'dangerously', resources: new HubFiles(), pretendToBeVisual: true, virtualConsole: vc,
+    beforeParse(w) {
+      w.localStorage.setItem('bb-settings', JSON.stringify({ v: 3, kind: 'settings', pack: null, packVersion: null,
+        data: Object.assign({ motion: 'reduced', shiftLength: 3 }, opts.settings) }));
+      w.localStorage.setItem('bb-court', JSON.stringify(courtRecord(opts)));
+      w.localStorage.setItem('narbe-scan-settings', JSON.stringify(opts.scan || {}));
+      if (opts.storage) Object.keys(opts.storage).forEach(k => w.localStorage.setItem(k, opts.storage[k]));
+      stub(w, errors, renders);
+    },
+  });
+  const w = dom.window;
+  for (let i = 0; i < 200 && !(w.BB && w.BB.ui && w.BB.ui.__dbg && w.BB.ui.__dbg().card === 'title'); i++) await sleep(50);
+  if (!w.BB || !w.BB.ui || w.BB.ui.__dbg().card !== 'title') { dom.window.close(); throw new Error(label + ': never reached the title. ' + errors.join('\n')); }
+  const auto = !!(opts.scan && opts.scan.autoScan);
+  const timed = !!(opts.settings && opts.settings.cooking === 'timed');
+  const stats = { presses: 0, orders: 0, stars: [], mistakesMade: 0, pauses: 0, redos: 0, gross: 0, warns: 0, resumed: 0, cards: 0 };
+  // Every card must open at -1 (spec 0.8). Checked on two-switch runs: a one-switch scan moves by itself.
+  const seen = { card: '', cards: [] };
+  const dbg = () => {
+    const d = w.BB.ui.__dbg();
+    if (d.card !== seen.card) {
+      seen.card = d.card;
+      if (d.card) {
+        stats.cards += 1; seen.cards.push(d.card);
+        if (!auto && d.index !== -1) errors.push('card ' + d.card + ' opened with item ' + d.index + ' (' + d.id + ') highlighted, not -1');
+        if (d.card === 'court' && d.items.length > 5) errors.push('the court offers ' + d.items.length + ' stops: at most 5');
+      }
+    }
+    trace.push([Date.now(), d.ctx, d.card, d.id, w.BB.game.screen, w.BB.game.busy]);
+    if (trace.length > 60) trace.shift();
+    return d;
+  };
+  async function press(code, hold) {
+    const ev = type => new w.KeyboardEvent(type, { code, key: code === 'Space' ? ' ' : 'Enter', bubbles: true, cancelable: true });
+    w.document.body.dispatchEvent(ev('keydown'));
+    await sleep(hold || 30);
+    w.document.body.dispatchEvent(ev('keyup'));
+    // Longer than the hub's input-sensitivity quiet window: a faster tap is (rightly) rejected.
+    await sleep(320);
+  }
+  /** Two switches: Space steps to `id`, Enter chooses. One switch: wait for the scan, then Enter. */
+  async function choose(id) {
+    for (let k = 0; k < (auto ? 900 : 60); k++) {
+      const d = dbg();
+      if (d.active && d.id === id) { await press('Enter'); stats.presses += 1; return true; }
+      if (!d.items.includes(id) && id !== 'narbe:row-back') { await sleep(30); if (!dbg().items.includes(id)) return false; continue; }
+      if (auto) await sleep(20); else { await press('Space'); stats.presses += 1; }
+    }
+    return false;
+  }
+  const settle = async () => { for (let k = 0; k < 600 && (w.BB.game.busy || !dbg().active); k++) await sleep(20); };
+  const fail = (what, more) => { throw new Error(label + ': ' + what + ' ' + JSON.stringify(more || dbg()) + '\n  trace: ' + JSON.stringify(trace.slice(-12))); };
+  const must = async (id, card) => {
+    await settle();
+    if (!(await choose(id))) fail('could not reach ' + id + ' on');
+    await sleep(80);
+    if (card && dbg().card !== card) fail(id + ' led to ' + dbg().card + ', not ' + card);
+  };
+  /** The Settings card has the 17 rows in order, the hub rows among them (spec 6.4). */
+  function checkSettings() {
+    const have = dbg().items, want = SETTINGS_ROWS.filter(id => id !== 'speed' || timed);
+    if (have.join(',') !== want.join(',')) errors.push('Settings rows are ' + have.join(',') + ', expected ' + want.join(','));
+  }
+  /** From the main menu into the restaurant: Play, the storefront, then the first-visit card or the event card. */
+  async function enter() {
+    await must('play', 'court');
+    await must('shop:' + opts.pack, null);
+    await settle();
+    if (dbg().card === 'tutorialOffer') { if (!opts.offer) errors.push('the first-visit card came back after tutorialDone'); await must(opts.tutorial === 'offer' ? 'tutorial' : 'skip', null); }
+    else if (opts.offer) errors.push('no first-visit card on a first visit');
+    await settle();
+    if (dbg().card === 'event') { if (!opts.event) errors.push('the event card came up with the event not due'); await must(opts.event ? 'event' : 'shift', null); }
+    else if (opts.event) errors.push('no event card with the event due');
+  }
+  // watchWheel: count the squirts (a sauce's Add with its bottle on the line) and the moments the ticket
+  // wheel is turned away from the front, and pick Ticket once in the kitchen and once at the counter.
+  const watch = { squirts: 0, turning: 0, ticketKitchen: 0, ticketCounter: 0 };
+  let watcher = null;
+  if (opts.watchWheel) {
+    const outcome = w.BB.world.outcome;
+    w.BB.world.outcome = (e, made, o) => {
+      const sc = w.BB.world.__scene().scene, inc = sc && sc.getObjectByName('incoming');
+      if (e && e.type === 'added' && inc && pack.ingredients[e.ing] && pack.ingredients[e.ing].sauce && inc.userData.bottle) watch.squirts += 1;
+      return outcome(e, made, o);
+    };
+    watcher = setInterval(() => { if (Math.abs(w.BB.stage.wheelTheta) > 0.01) watch.turning += 1; }, 15);
+  }
+  // Who came in, and the lines said when an order leaves off something a customer never takes (Sal: lettuce).
+  const heardFrom = { customers: new Set(), dislikes: 0, dislikers: 0, moments: new Set() };
+  const say = w.BB.audio.say;
+  w.BB.audio.say = o => {
+    if (o && o.who && o.who !== pack.manager.id) heardFrom.customers.add(o.who);
+    if (o && o.clip && /\/dislike\.\d+$/.test(o.clip)) heardFrom.dislikes += 1;
+    return say(o);
+  };
+  let rnd = opts.seed || 1;
+  const rand = () => { rnd = (rnd * 16807) % 2147483647; return rnd / 2147483647; };
+
+  if (opts.tour) {
+    await must('settings', 'settings');
+    checkSettings();
+    for (const id of ['cooking', 'cooking', 'orders', 'orders', 'manager', 'manager', 'manager', 'characterVoices', 'characterVoices', 'characterVoices', 'textSize', 'textSize', 'textSize', 'theme', 'theme']) await must(id, 'settings');
+    await must('back', 'title');
+  }
+  if (opts.tutorial === 'picker') { await must('tutorial', 'tutorials'); await must('tut:' + opts.pack, null); }
+  else await enter();
+  let resumed = false, held = false, holdTaken = false, clockRan = false;
+  const start = Date.now();
+  while (Date.now() - start < (opts.timeout || 240000)) {
+    await settle();
+    const d = dbg();
+    if (d.ctx === 'card') {
+      if (d.card === 'results') break;
+      if (d.card === 'pause') { await must('continue', null); continue; }
+      if (d.card === 'court') { await must('shop:' + opts.pack, null); stats.resumed += 1; continue; }
+      if (d.card === 'event') { await must('shift', null); continue; }
+      fail('stuck on card ' + d.card);
+    }
+    const s = w.BB.game.shift();
+    if (!s) { await sleep(50); continue; }
+    const screen = w.BB.game.screen;
+    // Keyed by the order's place in the shift: a shift restored from its save is the same order, said once.
+    if (s.order && !(heardFrom.orders = heardFrom.orders || new Set()).has(s.n + ':' + s.order.ticket.customer.id)) {
+      heardFrom.orders.add(s.n + ':' + s.order.ticket.customer.id);
+      const C = pack.regulars.find(c => c.id === s.order.ticket.customer.id);
+      if (C && (C.dislikes || []).some(x => s.order.items.some(it => (it.spec.holds || []).includes(x)))) heardFrom.dislikers += 1;
+    }
+    // A 5 s Enter hold during an arrival opens Pause, which stays until Continue; the clock runs afterwards.
+    if (opts.holdPause && !held && screen === 'arrive' && s.n === 0 && w.document.getElementById('bubble').classList.contains('on')) {
+      held = true;
+      await press('Enter', 5400);
+      await sleep(100);
+      if (dbg().card !== 'pause') fail('a 5 s Enter hold during the arrival did not open Pause');
+      await sleep(1500);
+      if (dbg().card !== 'pause' || !w.BB.game.paused) fail('Pause did not stay open');
+      stats.pauses += 1;
+      await must('continue', null);
+      continue;
+    }
+    if (screen === 'receipt') {
+      const r = s.results[s.results.length - 1];
+      if (r && stats.stars.length < s.results.length) { stats.stars.push(r.stars); stats.orders += 1; if (r.grossServed) stats.gross += 1; }
+      if (opts.pauses && !resumed && s.n === 1) {
+        // Pause, Settings (the 17 rows), back, Food Court (confirm), the court, the storefront: the shift resumes.
+        resumed = true;
+        const seed = s.seed;
+        await must('pause', 'pause');
+        stats.pauses += 1;
+        await must('settings', 'settings');
+        checkSettings();
+        await must('back', 'pause');
+        await must('court', 'confirm');
+        await must('yes', 'court');
+        if (w.BB.game.shift()) errors.push('the shift was still in hand on the court');
+        await must('shop:' + opts.pack, null);
+        await settle();
+        const back = w.BB.game.shift();
+        if (!back || back.seed !== seed || back.n !== 2) errors.push('the saved shift did not resume where it was: ' + JSON.stringify(back && { seed: back.seed, n: back.n }));
+        stats.resumed += 1;
+        continue;
+      }
+      if (rand() < 0.15) await must('again', null);
+      await must('next', null);
+      continue;
+    }
+    if (screen === 'review') {
+      if (opts.watchWheel && !watch.ticketCounter) { await must('ticket', null); watch.ticketCounter += 1; continue; }
+      const q = w.BB.shift.question(pack, s);
+      if (opts.redo && rand() < 0.2 && stats.redos < 3) {
+        const redo = q.options.find(x => x.id.startsWith('redo:'));
+        if (redo) { stats.redos += 1; await must(redo.id, null); continue; }
+      }
+      await must('serve', null);
+      continue;
+    }
+    if (screen === 'line') {
+      const q = w.BB.shift.question(pack, s);
+      if (!q || q.kind === 'review') { await sleep(30); continue; }
+      if (opts.watchWheel && !watch.ticketKitchen) { await must('ticket', null); watch.ticketKitchen += 1; await sleep(1800); continue; }
+      const o = s.order, want = L.expected(pack, o.items[q.item], q.station, q.step);
+      let id;
+      if (q.kind === 'add') id = q.gross && rand() < 0.75 ? 'swap' : q.have < want ? 'add' : 'skip';
+      else if (q.kind === 'cook' && q.timed) {
+        const set = pack.stageSets[q.set], dur = L.stageSeconds(pack, set, s.settings) * (q.stage === want ? L.wantedScaleOf(pack, set) : 1);
+        if (opts.holdTakeOff && !holdTaken) {
+          // Hold Take It Off 3 s across a stage boundary: the stage at keydown is taken (spec 0.7).
+          await settle();
+          if (!(await choose('takeOff')) ) fail('could not highlight takeOff');
+          // choose() pressed Enter at once; it took the food off at the stage shown then. Check that and the clock on the next cook step.
+          holdTaken = 'pressed';
+          continue;
+        }
+        if (!clockRan && o.timer) { const t0 = o.timer.t; await sleep(600); if (o.timer && o.timer.t > t0) clockRan = true; }
+        if (q.stage !== want && rand() < 0.97) { await sleep(60); continue; }
+        id = 'takeOff';
+      }
+      else if (q.kind === 'cook') id = 'cook:' + want;
+      else id = q.options.flatMap(x => x.row || [x]).find(x => x.value === want).id;
+      // Sometimes a mistake, like a real player (the tutorial warns instead of applying it).
+      if (rand() < (opts.mistakes ?? 0.08) && q.options.length > 1) { id = q.options.map(x => x.id).find(x => x !== id && !x.startsWith('more')) || id; stats.mistakesMade += 1; }
+      const before = JSON.stringify(o.items.map(it => it.answers));
+      if (!(await choose(id))) fail('could not choose ' + id + ' at', { q: q.kind, ing: q.ing, d: dbg() });
+      await sleep(30);
+      await settle();
+      if (s.tutorial && JSON.stringify(o.items.map(it => it.answers)) === before && !['swap'].includes(id)) stats.warns += 1;
+      continue;
+    }
+    await sleep(40);
+  }
+  const final = dbg(), done = final.card === 'results';
+  Object.assign(stats, { customers: [...heardFrom.customers].sort().join(' '), cardsSeen: [...new Set(seen.cards)].join(' ') });
+  if (heardFrom.dislikers) {
+    stats.dislikeLines = heardFrom.dislikes;
+    if (heardFrom.dislikes < heardFrom.dislikers) errors.push(heardFrom.dislikers + ' orders left off a dislike, but only ' + heardFrom.dislikes + ' dislike lines were said');
+  }
+  if (opts.holdPause) { if (!held) errors.push('never held Enter during an arrival'); if (timed && !clockRan) errors.push('the Timed clock never ran after Pause'); }
+  if (opts.pauses && !resumed) errors.push('never left the shift mid-way');
+  if (watcher) {
+    clearInterval(watcher);
+    Object.assign(stats, { squirts: watch.squirts, wheelTurning: watch.turning });
+    if (!watch.squirts) errors.push('no sauce was squirted on');
+    if (!watch.turning) errors.push('the ticket wheel never turned');
+    if (Math.abs(w.BB.stage.wheelTheta) > 1e-9) errors.push('the ticket wheel stopped off the front: ' + w.BB.stage.wheelTheta);
+  }
+  // The court after the shift: counted once, and never down.
+  const court = w.BB.save.court().restaurants[opts.pack];
+  if (done) {
+    const before = (opts.court && opts.court[opts.pack]) || {};
+    const tutorial = !!opts.tutorial;
+    if (!tutorial && court.shifts !== 1) errors.push('the shift counted ' + court.shifts + ' times, not once');
+    if (tutorial && court.shifts !== 0) errors.push('a tutorial counted as a shift');
+    if (court.stars < (before.stars || 1) || court.popularity < (before.popularity || 0)) errors.push('stars or popularity went down');
+    if (!court.tutorialDone) errors.push('tutorialDone is not set after the visit');
+    if (opts.event && opts.expectGold) {
+      if (!court.gold || court.stars !== 5) errors.push('a good event shift did not give the fifth star and the gold sign: ' + JSON.stringify(court));
+      const words = w.document.querySelector('.card .news');
+      if (!words || !/gold sign/.test(words.textContent)) errors.push('the results card did not say the gold sign');
+    }
+    const title = w.document.querySelector('.card h1');
+    stats.result = (title ? title.textContent : '') + ' | ' + final.items.join(' ');
+    const expectItems = tutorial ? 'again,court,exit' : 'again,court,exit';
+    if (final.items.join(',') !== expectItems) errors.push('the results card offers ' + final.items.join(',') + ', expected ' + expectItems);
+  }
+  Object.assign(stats, { court: { stars: court.stars, popularity: court.popularity, shifts: court.shifts, gold: court.gold } });
+  // Every scene drew the 3D food at least once.
+  if (renders.n < 10) errors.push('the 3D food barely rendered (' + renders.n + ' frames)');
+  if (opts.verbose) console.log('   trace:', JSON.stringify(trace.slice(-20)));
+  dom.window.close();
+  return { label, done, errors, warns, stats, final, secs: ((Date.now() - start) / 1000).toFixed(1) };
+}
+
+/** The runs. Seeded progress: a restaurant's bb-court entry ({ popularity, stars } -> its level). */
+const RUNS = [
+  ['the first visit: the offer card, then the tutorial, two switches', { offer: true, tutorial: 'offer', seed: 3, mistakes: 0.35 }],
+  ['the tutorial from the main menu picker, two switches', { tutorial: 'picker', seed: 4, mistakes: 0.2 }],
+  ['a 3-customer shift, two switches, settings tour, pause, Food Court mid-shift and resume', { seed: 5, tour: true, pauses: true, redo: true }],
+  ['a 3-customer shift, Timed cooking, two switches, a 5 s Enter hold during the arrival', { seed: 9, settings: { cooking: 'timed', speed: 'normal' }, holdPause: true, mistakes: 0 }],
+  ['a 3-customer shift, Timed, holding Take It Off across a stage boundary', { seed: 10, settings: { cooking: 'timed', speed: 'normal' }, holdTakeOff: true, mistakes: 0 }],
+  ['a 3-customer shift, one switch (Auto Scan 1 s)', { seed: 11, scan: { autoScan: true, scanSpeedIndex: 0 } }],
+  ['level 5 orders, five customers, captions only, Mitch off', { seed: 13, court: { diner: { popularity: 10, stars: 5, gold: true, goldSeen: true } }, settings: { shiftLength: 5, characterVoices: 'captions', manager: 'off' } }],
+  // Eight customers at level 4: everyone once before anyone twice, a visitor, a ridiculous order now and then.
+  ['eight customers at level 4, the whole cast, two switches', { seed: 17, court: { diner: { popularity: 5, stars: 4 } }, settings: { shiftLength: 8 }, timeout: 600000 }],
+  ['the five-star event with seeded progress (popularity 7, four stars): the gold sign', { seed: 19, event: true, expectGold: true, mistakes: 0, court: { diner: { popularity: 7, stars: 4 } } }],
+  // Full motion: the ticket wheel turns, the bottles squirt, everything slides (the others run Reduced, for speed).
+  ['a 3-customer shift with Motion Full (the wheel turns, the sauces are squirted)', { seed: 7, settings: { motion: 'full' }, watchWheel: true }],
+];
+
+async function main() {
+  const args = process.argv.slice(2);
+  const pi = args.indexOf('--pack');
+  const packId = pi >= 0 ? args.splice(pi, 2)[1] : null;
+  let failed = 0;
+  // node tests/dom-play.cjs [words]: only the runs whose name has those words.
+  const only = args.join(' ');
+  for (const [label, opts] of RUNS.filter(([label]) => !only || label.includes(only))) {
+    const o = Object.assign({}, opts, packId ? { pack: packId } : {});
+    let r;
+    try { r = await run(label, o); } catch (e) { failed++; console.log('FAIL', label, '\n ', e.message.slice(0, 2500)); continue; }
+    const ok = r.done && !r.errors.length;
+    if (!ok) failed++;
+    console.log((ok ? 'ok  ' : 'FAIL') + ' ' + label + ' - ' + r.secs + 's, ' + JSON.stringify(r.stats) + (r.done ? '' : ', NOT FINISHED ' + JSON.stringify(r.final)));
+    r.errors.slice(0, 8).forEach(e => console.log('   ' + e.split('\n').slice(0, 5).join('\n   ')));
+    r.warns.filter(x => !/manifest|missing|no court script|no cast script/.test(x)).slice(0, 4).forEach(x => console.log('   warn: ' + x));
+  }
+  console.log(failed ? failed + ' run(s) failed' : 'every run reached the results board with no script errors');
+  process.exit(failed ? 1 : 0);
+}
+
+module.exports = { run, RUNS };
+if (require.main === module) main();

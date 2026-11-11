@@ -1,0 +1,313 @@
+# The 3D food: the frame, the registry, the kit (world lane, 2026-11-08)
+
+What a food agent needs to draw a restaurant, and what the page agent calls from game.js. Code: `js/world.js` (the
+frame), `js/food/kit.js` (the registry `BB.food` and the kit `k`), `js/food/diner.js` (the worked example).
+Tests: `tests/food.test.cjs`. Spec: FOODCOURT-BUILD.md 5.2 and 6.5.
+
+## 1. Files and load order
+
+index.html, right after `js/vendor/three.min.js`, in the marked block:
+
+```html
+<!-- world: ... -->
+<script src="js/food/kit.js"></script>      <!-- BB.food: the registry, the kit, the kit's own module -->
+<script src="js/food/diner.js"></script>    <!-- each restaurant's food module, one line each -->
+<!-- /world -->
+```
+
+A food module loads before the packs and the core; it registers a factory and touches nothing else until a pack
+uses it. **Food agents: ask the page agent to add your `js/food/<pack>.js` line to that block** (index.html is
+the page's). Every module file is UMD like js/core, so Node loads it: copy diner.js's first five and last two lines.
+
+## 2. The world, as game.js calls it (page lane, phase 2)
+
+| Call | What it does |
+|---|---|
+| `BB.world.init()` | renderer, scene, camera; builds the active pack's sets (the diner until `usePack`) |
+| `BB.world.usePack(pack)` (alias `use`) | the restaurant whose food is drawn; frees the old sets, builds the new ones, keeps the current scene |
+| `BB.world.goTo(name)` | a station id, a backdrop name, `'counter'`, or `null` (the court: no 3D). stage.setScene already calls it |
+| `BB.world.showStep(q, made)` | what a station shows for a step: `q` = `BB.shift.question()`, `made` = `BB.line.made(pack, order, q.item)`. Returns a Promise (the slide-in) |
+| `BB.world.outcome(e, made, opts)` | one playout event from `BB.shift.answer()`, `made` = the item after it. Resolves when it has played. `opts.onApply()` is called as the food goes on (play its sound then); `opts.ms` = Simple cooking's length (1800, Timed 700) |
+| `BB.world.cookStage(e)` | the Timed clock's `stage` event (or a stage index): the food on the heat shows that stage |
+| `BB.world.showCounter(list)` | the review: `list` = `[made()]`, one per item; placed again when the window changes shape |
+| `BB.world.serveOut()` | the order slides to the customer, who takes it: the counter is clear afterwards (Promise) |
+| `BB.world.counterLine()` | where the counter top's back edge meets the picture on this window: `{ line, y, px }` (`y` a fraction of the window's height). The page places the served customer, the bubbles and the counter props from it (page-1, 2026-11-09; docs/api/page.md 7). `surfaceLine(name)` is the same for any solved set; null for a fixed camera |
+| `BB.world.onScreen(fx, fy)` | where a point of the backdrop picture (fractions of it) lands on this window under CSS `cover`: `{ x, y }` |
+| `BB.world.colourOf(ing, k)`, `marksOf(ing, k)` | the dial plate's swatch and mark count for stage index k |
+| `BB.world.graphics` | the NarbeGraphics handle (`openGame('bensfoodcourt')`) for the `graphics-quality` row: `label()`, `cycle()`, `setChoice()`; null without the hub module |
+| `BB.world.at`, `.set`, `.pack` | the name goTo was given; the set on show; the pack |
+
+`outcome` understands `added, skipped, swapped, picked, cooked, phaseDone, auto`; every other event resolves at once.
+What happens: an Add of something that cooks drops onto the heat; any other Add goes on the item (the module's line
+handler, e.g. the squirt); Skip slides it away; Swap tosses it; a pick of something that cooks drops into the
+basket; any other pick re-draws the item with a little bounce (or the set's own `pick` hook); `cooked` runs the
+cook's flourish when the heat is on show; `phaseDone` drops a `builds.cap` (the top bun) on; `auto` plays the
+module's flourish named by `e.show`.
+
+**Kept until game.js switches over** (they work exactly as before): `showGrill(ing, n, stage)`,
+`dropOnGrill(ing, n)`, `cookGrill(stage, ms)`, `grillStage(stage)`, `showBoard(parts, incoming)`,
+`lineOutcome(kind, { onSquirt })`, `showCounter`, `serveOut`, `colourOf`, `__scene()`. dom-play.cjs reads the
+object named `'incoming'` and its `userData.bottle`; review-frames.cjs reads `userData.sauce.geo`: both kept.
+
+## 3. A food module
+
+```js
+BB.food.register('<pack>', k => ({
+  uses: ['diner'],                 // optional: borrow another module's shapes, sets, cooks (searched after yours)
+  shapes:   { <look.shape>: (part, o) => ({ g, h }) },
+  sets:     { <backdrop name>: { cam, line, surface, build, cook?, pick?, finish?, auto?, x?, picture? } },
+  layouts:  { <name>: (made, o) => ({ g, h, ... }) },
+  layoutOf: made => '<layout name>' | null,          // null: 'stack'
+  cooks:    { <name>: { show(c, s), add?(c, s), run?(c, s), stage?(c, s) } },
+  lines:    { <apply>: { incoming?(part, c), add?(c), skip?(c), swap?(c) } },
+  applies:  { <look.shape>: '<apply>' },             // which line handler a shape uses; look.apply wins
+  autos:    { <show>: (c, e, made) => Promise },     // flourishes of auto steps
+  fx:       { <fx key>: (g, value, box, c) => {} },  // gross-out fx beyond the kit's
+  ramps:    { <look.shape>: [colour by stage] },     // the dial plates' swatches (world.colourOf)
+  counter:  { arrange(n, list, anchors) -> [{ p, s }] | null },
+}));
+```
+
+Every section is optional. Lookups go: your module, then what it `uses`, then `'kit'`. **A pack with no module yet
+borrows the diner's**, so it still draws something; tests/food.test.cjs marks it TODO until `js/food/<pack>.js`
+exists, then holds it to every check. The pack id is the module id (or `pack.world.module`; schema ignores `world`).
+
+**Rules** (tests/food.test.cjs checks each):
+- Deterministic: no `Math.random`. Use `k.rand(seed)` with a seed from the part (`part.ing + ':' + part.n`).
+- Bodies are `k.toon()` (MeshToon) or `k.basic()`/MeshBasic. Only ink hulls (`k.ink`, `k.inkThin`, `k.inkInstanced`)
+  use a ShaderMaterial; the review renderer hides those. Sprites are invisible in review frames: use meshes.
+- Many small pieces (seeds, sprinkles, rice, ice) go in one `k.scatter`/`k.heap` (InstancedMesh), not a mesh each.
+- A partly drawn thing (a pour, a bead) uses `geometry.setDrawRange` on an indexed geometry, or a rebuild.
+- Never build at load time and never capture the pack in the factory: call `k.pack()` when you build.
+
+### 3.1 Shapes: one builder per `look.shape`
+
+`(part, o) => ({ g, h })`. `g` is a `THREE.Group` standing on y = 0, centred on x = z = 0; `h` (>= 0) is where the
+next part stacks. `part = { ing, done?, layer?, flavour?, gross?, n, look?, slot?, pick? }`: `n` is its place in the
+stack (seed rotations with it); a slot value comes with its own `look`. Read the look with `k.lookFor(part)` (never
+`pack.ingredients[...]` directly: a slot value has no ingredient). `o`:
+
+| o | |
+|---|---|
+| `stage` | a stage index to draw (the cook view and the dial); without it, `k.stageIndex(part, o)` reads `part.done` |
+| `item` | the whole `made()` (a cup reads `o.item.size`) |
+| `below()`, `base` | the box of what is under it (stack coordinates) and the height it sits at: toppings land on it |
+| `growing` | a bead being squirted: give it its own geometry copy |
+| `giant` | the item's giant scale (the world already scales the item; read it only to change detail) |
+| `where` | `'line'`, `'counter'` |
+
+Gross-out fx are added by the kit after your builder runs: don't add them yourself.
+
+### 3.2 Sets: one per backdrop name, cameras solved to the surface line
+
+```js
+grill: {
+  x: -12,                                   // optional; sets are spaced 12 apart when left out
+  cam: { pos: [x, y, z], at: [x, y, z], fov },   // set-local; the look of the food (keep food low, left of centre)
+  line: 0.64,                               // where the backdrop's painted surface starts, fraction down the picture
+  surface: { y: 0.5, back: -0.3 },          // your 3D work surface's top and back edge (z): what goes on the line
+  build(g, k) { /* furniture into g */ return anchors; },
+  cook: 'grill',                            // a key of cooks: this set has food on the heat
+},
+```
+
+World.js shifts the camera's lens vertically (a view offset, so the food's look never changes) until
+`surface.back` lands on `line` **for the window's own shape**: the backdrop is drawn with `cover`, so on a 16:9
+screen a 64% line is at 66.6% of the screen, on 4:3 at 64%. `line: null` fixes the camera to the screen instead
+(the counters: see below). **Measure your pictures**: the generated ones miss the prompt's line by up to 2%. The
+diner's, measured from art-source/backdrops (the row where the wall's ink line ends):
+
+| backdrop | 5.2 table | measured, used |
+|---|---|---|
+| grill | 65 | 64.0 |
+| board | 62 | 64.0 |
+| fryer (diner-fryer) | 65 | 65.7 (the fryer's back rim) |
+| drinks (diner-drinks) | 62 | 63.2 (the red counter) |
+| counter (every restaurant) | 78 | 80 (revised 2026-11-09, see below) |
+
+**Counters (REVISED 2026-11-09, spec 5.2; this replaces the phase-1 rule below it).** The user found the Burger
+Bar's counter too high: it covered the painted queue and pushed the served customer far up the screen. Every counter
+set is now solved to its picture like a station: `line: 0.80` (one value for every restaurant) and `surface: { y:
+<counter top>, back: <its back edge z> }`, so the counter top's back edge lands at 80% of the picture (about 85.5% of
+a 16:9 screen). The page reads that line's screen position from `BB.world` and places the served customer (hips at
+the counter, eyes near the painted horizon), the bubble and the counter props from it; the order on the counter sits
+on the counter top, fully on screen.
+
+*Superseded phase-1 rule, kept for the record:* the customer was placed by CSS the same way in every restaurant (88vh
+tall, feet at 91vh) and the 3D counter hid their legs, so the diner's counter top started at 54.7% of the screen with
+`line: null` and `cam: { pos: [0, 1.75, 3.6], at: [0, 1.05, -0.4], fov: 42 }`, top at y 0.92.
+
+**Anchors** (`build()` returns them; set-local Vector3s and numbers):
+
+| anchor | for |
+|---|---|
+| `stack` | where the item stands (line sets) |
+| `incoming` | where an Add's ingredient waits; it slides in from 1.4 to the right |
+| `surface` | the work surface's y (a line handler's `rest` sits on it) |
+| `vesselScale` [x, y, z], `contentScale` | shrink the vessel (the board's plate) or the food on it (the counter) |
+| `giantMax` | cap a giant item on this line set (the board: 1.2) |
+| `spots`, `row`, `back`, `front`, `minX`, `maxX`, `minScreenX` | counters: one item's spot; the depth more items sit at; keep every item between `back` (the top's back edge: an item's far side never behind it) and `front` (its near side never past it; on a window that cuts the counter top off, world.js uses the nearest depth still on screen instead), and between `minX`..`maxX` (`minScreenX`, a fraction of the window's width, works `minX` out for each window: the diner's 0.14 keeps clear of the Pause sign). An item too deep or too wide for that is drawn smaller until it fits (page-1, 2026-11-09) |
+| `vesselScale` on a counter | the counter's plates a size smaller (the diner's 0.85), next to `contentScale` for the food on them |
+| anything else | your cook's (`slots` for the grill, `basket`, `oil` for the fryer, `tap` for the drinks) |
+
+Set hooks (optional): `pick(c, e, made)` a pick on this set (the drinks: a size drops the cup in, a drink pours),
+`finish(c, e, made)` the phase is done, `auto(c, e, made)` a flourish here. Each returns a Promise.
+
+### 3.3 Assembly from made()
+
+`made()` (docs/api/line.md 3) is `{ recipe, ing, size?, done?, parts: [{ ing, done?, layer?, flavour?, gross? }],
+gross, picks, counts, auto }`. The world draws an item with `k.item(made, o)`: your `layoutOf(made)` names the
+layout (default `'stack'`), the layout builds it, then a giant item is scaled up.
+
+`k.sequence(made, o)` -> `{ vessel, body, parts }` puts it in line order for you:
+- **vessel**: `made.ing` when a station of the recipe `builds.on` it (the plate, the cup);
+- **body**: otherwise `made.ing` itself, at `made.done` (the fries);
+- **parts**: `made.parts` in order, with every **slot pick that has a look** (`pack.slots.<slot>.values[].look`)
+  inserted where its step falls in the line (crust, sauce, then cheese), a repeat as one part per pick in pick order
+  (two vanilla scoops are two parts); a pick's gross-out (`made.gross` `{ slot, value, event }`) is kept on its part.
+  `o.hide: ['top']` leaves the cap off.
+
+The kit's `stack` layout stacks vessel, body, parts. Write your own when food goes *in* or *round* something: the
+diner's `cup` (the drink fills the cup, ice floats, a straw once poured; `o.level` 0..1 and `setLevel(t)` for the
+pour) and `boat` (fried food in a paper boat). Read `made.picks`, `made.counts` (repeats) and `made.auto` (flourishes
+that ran: draw the burrito wrapped once `wrap` is in it). A layout returns `{ g, h }`, plus `stack` (the group a
+bead lands on) when it has one; `giantDone: true` if it scaled itself.
+
+### 3.4 Cooking visuals, per stage
+
+`set.cook` names a `cooks` entry. The world keeps the state `s = { ing, n, stage, cooking, timed, set, made }`:
+
+| hook | when | must |
+|---|---|---|
+| `show(c, s)` | every redraw (c.F is already empty) | draw `n` of `ing` (or `made`, for a whole item) at stage index `s.stage`; `s.cooking` true while Timed cooks it |
+| `add(c, s)` | an Add of it, or a pick of what cooks | `c.redraw({ ing, n })`, then animate the newest in; resolve |
+| `run(c, s)` | Simple's answer (`s.stage`, `s.ms`) | a flourish that ends showing `s.stage` |
+| `stage(c, s)` | each Timed stage | default `c.redraw({ stage })` |
+
+`c = { k, F (the food group), fx (a layer redraws leave alone: steam), anchors, state, redraw(s) }`. The cook view is
+used for a cook step, an Add of an ingredient with `stages`, and a pick whose values cook; a cook step that names
+its own set (`stages`, `q.set`) gets it in `s.set`. **Doneness must show as a colour and a mark** (DESIGN.md); a
+`look.ramp` (array by stage, or `{ stageName: colour }`) or your module's `ramps` gives the dial its swatches.
+
+### 3.5 The line: incoming and outcomes (add, skip, swap, pick, auto)
+
+On an Add the world puts the ingredient on the `incoming` anchor (`k.food(part)`, gross fx and all) and slides it
+in; Add arcs it onto the item, Skip slides it right, Swap tosses it. A shape can wait and go on its own way:
+`applies: { sauce: 'squirt' }` (or `look.apply: 'squirt'` in the pack) picks `lines.squirt`:
+`incoming(part, c) -> { g, h, rest? }` (`rest`: stand on the surface, this high) and `add(c)` / `skip(c)` /
+`swap(c)` -> Promise. The kit has `squirt` (a squeeze bottle, then a bead across the food) and `shake` (a shaker,
+then grains); the diner adds `scoop` (ice). A pick with a gross-out (spec 4.6) puts **the bad value** on the line
+with its fx; picking it puts it on like an Add, Swap tosses it. `c` for lines and hooks:
+
+`{ k, F, fx, anchors, made, item (its build), inc (the waiting group), part, stack, onApply, top() (where food
+lands, in F), toF(obj, v), showItem(made, layoutOpts) -> build, drop(g, dy, ms), pop(g) }`. Call `c.onApply()` as
+the food goes on. After an Add or a pick the world redraws the item from the new `made`, so animate, don't rebuild.
+
+### 3.6 The counter
+
+`showCounter(list)` builds each item with its layout (`where: 'counter'`) and places it with your
+`counter.arrange(n, list, anchors)` -> `[{ p: Vector3, s: scale }]`, or, when that returns null, side by side
+across `minX..maxX` in ticket order, each as wide as it is, shrunk together only if they don't fit. Every item is
+then kept on the counter top for this window (page-1, 2026-11-09): its far side at or in front of `back`, its near
+side short of `front` or of the nearest depth the window still shows (a 21:9 window shows only the top's back
+strip), inside the span (`minScreenX` works `minX` out per window), and drawn smaller only when it would not fit.
+`arrange` gets those anchors. A new window shape places the order again. The diner's one item sits at
+(-0.52, 0.92, 0.28): its far side at the back edge, right of the customer's face (a child's too).
+
+### 3.7 Giant
+
+An item is giant when its recipe has `giant` or `look.giant`, or its body, a part or a picked value has a
+`look.giant`: `true` draws it 1.6 times bigger, a number that much. On the counter it is kept on the counter; a line
+set may cap it (`giantMax`). It never adds choices.
+
+### 3.8 Gross-out fx (`pack.gross[].fx`)
+
+The kit applies them to any built part: `tint: colour` and `droop: true` change the food; `stink: true|colour`
+(three wavy lines rising), `smoke: true|colour` (puffs rising), `hair: true|colour` (across the top), `fly: true`
+(circling; sitting on top with Motion Reduced) and `spots: colour | { colour, n }` (mould, bruises, freezer burn)
+are placed from the food's own box, so they sit on top of anything. Add your own keys in `fx` (`wink`, `burst`,
+`as` ...): `(g, value, box, c)`; mark what you add with `k.fxPart(obj)` so boxes ignore it, and keep it at or above
+`box.max.y`. They are meshes, so the review frames show them.
+
+### 3.9 Low and Reduced
+
+- **Low** (Graphics Quality Low, `k.low()`): world.js caps the canvas (NarbeGraphics) and, on a change, rebuilds
+  what is on show. Thin decoration only: `k.thin(n, min)` (counts: seeds, grains, sprinkles, bubbles) and
+  `k.seg(n)` (radial segments). **Never thin a cue**: doneness marks, char, a gross-out, the pieces that show an
+  ingredient is there (ice: at least 4 cubes).
+- **Reduced** (`k.reduced()`): `k.tween(ms, fn)` calls `fn(1)` at once and `k.wait()` resolves at once, so write
+  every animation with them and it resolves by itself. Things that keep moving use `k.spin(obj, kind, opts)`
+  (`rise`, `orbit`, `bubble`, `bob`, `spinY`; `opts.until` ms): they sit still where you placed them, so place them
+  where they should rest (on top of the food).
+
+The scene is drawn only when something changed or moves (tweens, spinners on show).
+
+## 4. The kit `k`
+
+| | |
+|---|---|
+| materials | `toon(colour, opts)` and `basic(colour, opts)` (cached: never change or dispose them); `own(mat)` (freed with the food: clones); `keep(geo)` (shared, never freed); `ink(geo, mat, noOutline)`, `inkThin`, `inkInstanced(geo, mat, matrices, { outline: false | 'thin' })`; `SHINE` |
+| geometry | `cyl(r, h, seg)`, `lathe([[x, y]...], seg, scale)`, `noise(a, j)`, `rand(seed)`, `hash(str)`, `matrix(p, rot, s)`, `piece(name)` (grain cube chunk ball stick chip seed shred sprinkle leaf), `sample(surface, n, seed)` (disc rect dome ring torus box), `boxOf(obj)` |
+| shared builders | `scatter(piece, mat, points, opts)`, `heap(piece, mat, { n, r, h, seed })`, `fill(profile, level, colour)`, `pour({ F, from, to(t), colour, ms, onLevel, onApply })`, `blenderJar({ base, lid, h, r })` (`inner.profile` for a fill), `bottle(part)`, `bead(part, o)` (`look.path`: zigzag spiral drizzle), `growBead`, `squirt(F, inc, stack, onApply)`, `shaker(part)`, `shake(c)`, `puff(colour, alpha)` |
+| colour | `mix(a, b, t)`, `ramp(look, stage, list)`, `marks(look, stage)` |
+| pack | `pack()`, `lookOf(id)`, `lookFor(part)`, `slotLook(slot, value)`, `stageList(ing, set)`, `stageIndex(part, o)` |
+| building | `food(part, o)` (shape + fx), `stack(parts, o)`, `sequence(made, o)`, `item(made, o)`, `giant(made)`, `gross(g, eventId)`, `fxPart(obj)`, `find(section, name)`, `module(id)` |
+| surfaces | `surfaceOf(g, minUp)` (the upward-facing vertices of a built food's meshes, taken once) and `onSurface(S, n, seed, lift)` (n seeded points on it, lifted a hair): for flecks, glaze and toppings that land on lumpy food, where a bounding box's top would float (food-pizza, 2026-11-09; docs/api/food.md 7) |
+| detail, motion | `low()`, `detail()`, `thin(n, min)`, `seg(n)`, `reduced()`, `ease(t)`, `tween(ms, fn)`, `wait(ms)`, `spin(obj, kind, opts)`, `dirty()` |
+
+The kit's own module (`'kit'`) has the shapes `disc` (also any unknown look), `blob`, `scatter` (look: piece,
+colour, colours, count, size), `heap` (piece, colour, count, r, h), `fill`, `bead` (look: colour, cap, path), `jar`;
+the `stack` layout; lines `squirt`, `shake`; the `pop` flourish; and every fx in 3.8.
+
+## 5. The worked example: js/food/diner.js
+
+- **Shapes**: the burger's moved verbatim (the diner draws the same, frame for frame), plus salt, the cup, ice,
+  drinks. `sauce` is the kit's bead.
+- **Sets**: counter (solved to line 0.80, revised 2026-11-09 by page-1: surface `{ y: 0.92, back: -0.3 }`, camera
+  `pos [0, 1.18, 4.2] at [0, 1.02, -0.3] fov 42`, 0.26 above the top so a burger reads from the side and an order
+  never shrinks at 21:9; a steel top, a chrome nosing, a cherry-red panel with chrome bands as the court picture
+  draws the Burger Bar; anchors `spots [(-0.52, 0.92, 0.28)]`, `row 0.28`, `contentScale 0.9`, `vesselScale 0.85`,
+  `back -0.28`, `front 1.28`, `minX -1.45`, `maxX -0.04`, `minScreenX 0.14`), grill (cook `grill`: up to 3 in `slots`), board (`stack`, `incoming`, the plate
+  at 0.8, giants capped at 1.2), fryer (cook `fryer`: the oil well at the back with the wire `basket`, the
+  paper-boat landing in front, a shallower camera so both fit), drinks (`tap`; its `pick` hook drops the cup in, then
+  pours the drink).
+- **Cooks**: `grill` (drop, sizzle-hop-flip, steam), `fryer` (drop into the basket, dunk and bubble, brown by stage,
+  lift and shake).
+- **Lines**: sauces squirt (kit), salt shakes (kit), ice is scooped (`scoop`).
+- **Layouts**: `cup` (made.ing's look is `cup`), `boat` (body `fries` or `onionRings`); everything else `stack`.
+- **Ramps**: patty raw to charred; fries and rings raw to burnt.
+
+### Looks the diner module provides (content-diner uses only these, or files a Request)
+
+<!-- diner-looks -->
+| look.shape | draws | look fields |
+|---|---|---|
+| `bun` | bottom bun (crumb face); `layer: 'top'` the seeded dome | colour |
+| `patty` | a patty, one grill mark per stage, char flecks when charred | (colour by stage: ramp) |
+| `slice` | a draped square slice (cheese) | colour |
+| `strips` | two wavy strips with a fat stripe (bacon) | colour, fat |
+| `leaf` | a ruffled leaf (lettuce) | colour |
+| `disc` | two round slices with a lighter face (tomato) | colour, inner |
+| `chips` | four chips (pickles) | colour, inner |
+| `rings` | two raw rings (onion) | colour |
+| `sauce` | a squeeze-bottle bead across the food; waits in its bottle | colour, cap, path, beadScale, bottleScale |
+| `plate` | the diner's blue-rimmed plate (a vessel) | |
+| `fries` | 22 fries, raw to burnt by stage; in a paper boat on their own | (ramp) |
+| `onionRings` | five battered rings, raw to burnt by stage | (ramp) |
+| `sprinkle` | salt: fine grains over the food under it; waits in a shaker | colour, count, shakerScale |
+| `cup` | a paper cup, small/medium/large by `made.size`; the drink and ice go in it | |
+| `ice` | ice cubes (in the cup: a cupful, or floating on the drink); waits in a scoop | |
+| `drink` | the drink filling the cup, poured from the fountain; a straw once full | colour |
+<!-- /diner-looks -->
+
+Any look may also say `giant` (3.7), `ramp` and `marks` (3.4), `apply` (3.5).
+
+## 6. Testing and looking
+
+- `node --test "tests/food.test.cjs"` (and `BB_PACKS=<id>`): every look resolves; every builder at every stage
+  (h >= 0, ink only on hulls, deterministic); every set builds and its lens lands on the line at 16:9, 16:10, 4:3 and
+  21:9; every recipe assembles at every step of its line (walked by line.js) and on the counter; the cook visuals
+  draw every stage; every fx exists and sits on the food; the kit's sequence, giant, Low, Reduced and shared builders.
+- Frames: `JSDOM=<jsdom> node tools/review-frames.cjs <out> [tut]`, then `python tools/review_compose.py <out>`;
+  they show the diner's grill, board and counter. For your own sets, drive `BB.world` in jsdom the same way
+  (usePack, goTo, showStep, outcome, showCounter) and render `BB.world.__scene()` with NARBEKART's node_render.cjs.

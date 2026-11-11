@@ -1,0 +1,7 @@
+Use case: game prop for a 2D game
+Asset type: one object on plain white, 1024 x 1024
+Attached image 1 is this game's spatula prop. Match its drawing style exactly: the same outline weight, the same flat colours with one hard-edged shadow tone, the same chunky proportions and the same plain white background. Draw only the new object, not the spatula.
+Object: An ice-cream scoop: a polished chrome scoop with a curved thumb lever and a thick pastel-pink rubber handle, pointing up and to the right at a 45 degree angle, a little curl of vanilla ice cream in the bowl.
+Style: original 2D cartoon prop for a comedy diner game, matching a TV-cartoon look: thick, clean, even black outlines; flat bright colours with one hard-edged cel-shadow tone; chunky, slightly exaggerated shapes. ONE object, centred, filling about 80% of the image, nothing cropped. Plain pure white background, no floor, no cast shadow, no border, no other objects. Original: no real brand or logo.
+Save as art-source/props/scoop.png (1024 x 1024) and the prompt as art-source/props/scoop-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

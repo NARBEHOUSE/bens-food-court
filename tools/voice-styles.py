@@ -1,0 +1,274 @@
+"""Ben's Burger Bar - the voice quality test, round 2: new voices to choose from, in several styles each.
+
+  C:/VoiceStudio/venv/Scripts/python.exe tools/voice-styles.py [characters...] [--reclone characters...]
+      --reclone: for characters already on the page, take again any test line more than 15% off its voice's pitch.
+
+Round 1 (voice-source/quality-test/round1/; the picks are voice-source/burger-bar-voice-picks.json) approved Mitch
+and sent Marge, Gus, Coach Bev and Vernon back for new voices, with notes; Sal is new. For each character in
+tools/voice-styles.json:
+  1. Every style (a "Describe a voice" description) is designed with several seeds, saying the character's sample.
+     Each candidate gets the speech check, its pitch and pace, and its clarity (Voice Studio's SQUIM score, about
+     1 = distorted .. 4.5 = clean; round 1's voices called distorted averaged 2.0 and 2.1, Mitch's approved one 3.7).
+  2. The best two of each style (heard right, a pitch near the character's, then the clearest) are kept in
+     voice-source/design2/<character>/<style>-s<seed>.wav, with a report of every candidate. Descriptions that ask
+     for loudness (loud, brash, barks orders, cheering) make the model shout, far too high: say "low-pitched".
+  3. Each kept voice says the character's test line the way the game records lines: cloned from that candidate,
+     with no delivery note (the designed voice carries the manner); a second take if the first is unclear or more
+     than 15% off the voice's own pitch, keeping the nearest.
+  4. voice-source/quality-test/clips.js lists them for the listening page, voice-source/quality-test/index.html.
+Nothing here changes the game's voices. The voice picked for a character becomes its Voice Studio voice (bb-<id>)
+afterwards, and that character's lines are recorded again.
+
+2026-11-10: every existing voice was removed (the user: new voices will be made later, from scratch). The whole
+voice-source/ folder, the listening page and both rounds included, is in archives/games/2026-11-10/BENSFOODCOURT-removed/voice-source.
+Without the listening page this stops with a message (nothing in the game or the Node tests uses this tool).
+"""
+import json
+import re
+import shutil
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from voices import CFG, GAME, STEPS, TAKES_DIR, Worker, checks, clarity, export, measure, respell  # noqa: E402
+
+SPEC = json.loads((GAME / 'tools' / 'voice-styles.json').read_text(encoding='utf-8'))
+DESIGN = GAME / 'voice-source' / 'design2'
+DEST = GAME / 'voice-source' / 'quality-test'
+PICKS1 = GAME / 'voice-source' / 'burger-bar-voice-picks.json'
+SEEDS = [1, 2, 3, 4]
+KEEP = 2             # voices kept per style
+CLEAR = 3.0          # a cloned line under this gets a second take
+TAG = re.compile(r'\[[^\]]*\]\s*')
+
+
+def allowed(text):
+    """Word differences a take may have and still count as heard right: one on a long line."""
+    return 1 if len(checks.words(text)) > 8 else 0
+
+
+# Sounds more than words: the speech checker spells them its own way ("Ay." comes back as "I", "Hi" or "Aye"),
+# so a difference made only of these is not a word said wrong.
+INTERJECTIONS = {'ay', 'aye', 'ayy', 'eh', 'ugh', 'yo', 'mm', 'mmm', 'hm', 'hmm', 'huh', 'oh', 'ah', 'uh', 'i', 'hi', 'hey', 'a'}
+DIFF = re.compile(r"^\w+: '(.*)' -> '(.*)'$")
+
+
+def real_diffs(diffs, text):
+    sounds = {w for w in checks.words(text) if w in INTERJECTIONS}
+    out = []
+    for d in diffs:
+        m = DIFF.match(d)
+        ref, hyp = (m.group(1).split(), m.group(2).split()) if m else (None, None)
+        if m and ref and all(w in sounds for w in ref) and all(w in INTERJECTIONS for w in hyp):
+            continue
+        out.append(d)
+    return out
+
+
+def check(wav, text, work, pitch_too=True):
+    said, diffs, pitch, secs, rate = measure(wav, text, work, pitch_too=pitch_too)
+    return {'heard': said, 'diffs': real_diffs(diffs, text), 'pitch': round(pitch), 'seconds': round(secs, 2),
+            'rate': round(rate, 2), 'clarity': clarity(work / Path(wav).name)}
+
+
+def in_range(C, pitch, slack=0.1):
+    lo, hi = C['pitch']
+    return lo * (1 - slack) <= pitch <= hi * (1 + slack)
+
+
+def design_style(w, name, C, style, folder, work):
+    rows = []
+    for seed in range(1, int(C.get('seeds', len(SEEDS))) + 1):
+        wav = folder / f"{style['id']}-s{seed}.wav"
+        if not wav.exists():
+            ans = w.render({'id': f"{name}-{style['id']}-{seed}", 'text': f"({style['describe']}){C['sample']}",
+                            'out': str(wav), 'seed': seed, 'steps': STEPS, 'cfg': CFG, 'retry': True})
+            if not ans.get('ok'):
+                print(f"  {name} {style['id']} seed {seed}: FAILED {ans.get('error')}", flush=True)
+                continue
+        r = check(wav, C['sample'], work)
+        lo, hi = C['pitch']
+        rlo, rhi = C['rate']
+        r.update({'id': f"{style['id']}-s{seed}", 'style': style['id'], 'seed': seed, 'wav': wav.name,
+                  'fits': int(lo <= r['pitch'] <= hi) + int(rlo <= r['rate'] <= rhi)})
+        rows.append(r)
+        print(f"  {name} {style['id']} seed {seed}: clarity {r['clarity']:.2f}, {r['pitch']} Hz, {r['rate']} words/s, "
+              f"{len(r['diffs'])} word differences", flush=True)
+    # Heard right first; then a pitch near the character's (far off is usually the wrong age or a shout); then clarity,
+    # with a little for the pace. Eye dialect ("standin'", "gimme") can cost a word or two for every candidate alike.
+    ok = allowed(C['sample'])
+    rows.sort(key=lambda r: (len(r['diffs']) > ok, not in_range(C, r['pitch']), -(r['clarity'] + 0.15 * r['fits'])))
+    return rows
+
+
+def keep(C, rows):
+    """The best two of a style, leaving out a candidate whose pitch is far from the character's while one of the style
+    is near it (Sal's first designs shouted their way up to 300 Hz)."""
+    near = [r for r in rows if in_range(C, r['pitch'])]
+    return (near or rows)[:KEEP]
+
+
+def model_text(name, C):
+    """The words the voice model is given for the test line: the recorder's own respellings (tools/voices.json:
+    Marge's "hun", Coach Bev's calm punctuation), so the test sounds like the game will."""
+    return C.get('say') or respell(name, C['line'])
+
+
+def drifted(cand, take):
+    """A take more than 15% off its voice's own pitch sounds like someone else (or someone shouting)."""
+    return bool(cand['pitch']) and abs(take['pitch'] - cand['pitch']) > 0.15 * cand['pitch']
+
+
+def take_line(w, name, cand, folder, work, text, old=None):
+    """The test line in this candidate's voice, as the game records lines: cloned from the candidate, no note, up to
+    four takes (as tools/voices.py record does), stopping at one heard right, clear and near the voice's own pitch;
+    else the nearest. old: the take already on the page, kept in the running when its words are still the same."""
+    takes = [old] if old else []
+    lines = folder / 'lines'     # not work/: the speech check writes its 16 kHz copy there under the same name
+    lines.mkdir(exist_ok=True)
+    rank = lambda t: (len(t['diffs']) > allowed(text), drifted(cand, t),  # noqa: E731
+                      abs(t['pitch'] - cand['pitch']) if drifted(cand, t) else 0, -t['clarity'])
+    for seed in (s for s in (1, 2, 3, 4) if not old or s != old['seed']):
+        if takes:
+            best = sorted(takes, key=rank)[0]
+            if len(best['diffs']) <= allowed(text) and not drifted(cand, best) and best['clarity'] >= CLEAR:
+                break
+        wav = lines / f"{cand['id']}-line-s{seed}.wav"
+        ans = w.render({'id': f"{name}-{cand['id']}-line-{seed}", 'text': text, 'out': str(wav), 'seed': seed,
+                        'steps': STEPS, 'cfg': CFG, 'reference': str(folder / cand['wav']), 'retry': True})
+        if not ans.get('ok'):
+            print(f"  {name} {cand['id']} line seed {seed}: FAILED {ans.get('error')}", flush=True)
+            continue
+        r = check(wav, TAG.sub('', text), work)
+        r.update({'wav': wav, 'seed': seed})
+        takes.append(r)
+    return sorted(takes, key=rank)[0] if takes else None
+
+
+def clone_line(w, name, C, cand, folder, work):
+    return take_line(w, name, cand, folder, work, model_text(name, C))
+
+
+def reclone(w, name, C, v, cand, folder, work, out):
+    """A test line already on the page that drifted from its voice's pitch, is unclear, or whose words changed:
+    take it again. (The first round-2 run picked line takes before the pitch check existed.)"""
+    text = model_text(name, C)
+    old = None
+    if v['text'] == text:
+        old = {'diffs': v['diffs'], 'pitch': v['pitch'], 'clarity': v['clarity'], 'seed': v['settings']['line_seed'],
+               'heard': v['heard'], 'rate': v['rate'], 'wav': None}
+    was = v['pitch']
+    best = take_line(w, name, cand, folder, work, text, old)
+    if best and best['wav']:
+        export(best['wav'], out / f"{v['id']}.mp3")
+        v.update({'heard': best['heard'], 'diffs': best['diffs'], 'clarity': best['clarity'], 'pitch': best['pitch'],
+                  'rate': best['rate'], 'text': text})
+        v['settings']['line_seed'] = best['seed']
+    if best:
+        print(f"  {name} {v['id']}: voice {cand['pitch']} Hz; line was {was} Hz, now {best['pitch']} Hz "
+              f"(seed {best['seed']}, clarity {best['clarity']:.2f})", flush=True)
+
+
+def needs_retake(name, C, v, cand):
+    return drifted(cand, v) or v['clarity'] < CLEAR or v['text'] != model_text(name, C)
+
+
+def main(args):
+    # voice-styles.py [characters...] [--reclone characters...]: design these from scratch; re-take the drifted
+    # test lines of those already on the page.
+    if not (DEST / 'index.html').exists():
+        sys.exit(f'No listening page at {DEST / "index.html"}: voice-source/ was archived on 2026-11-10 (all voices '
+                 f'removed; new ones are made from scratch) to archives/games/2026-11-10/BENSFOODCOURT-removed/voice-source. Copy its '
+                 f'quality-test/index.html back (or make a new page) before running another voice test.')
+    names, again = (args[:args.index('--reclone')], args[args.index('--reclone') + 1:]) if '--reclone' in args else (args, [])
+    names = names if (names or again) else [k for k in SPEC if not k.startswith('_')]
+    data_file = DEST / 'clips.json'
+    data = json.loads(data_file.read_text(encoding='utf-8')) if data_file.exists() else {}
+    data = data if data.get('_round') == 2 else {'_round': 2}
+    TAKES_DIR.mkdir(parents=True, exist_ok=True)
+    w = Worker()
+    t0 = time.time()
+    try:
+        for name in again:
+            C, folder = SPEC[name], DESIGN / name
+            work = folder / 'work'
+            work.mkdir(parents=True, exist_ok=True)
+            design = {c['id']: c for c in json.loads((folder / 'report.json').read_text(encoding='utf-8'))['candidates']}
+            for v in data[name]['variants']:
+                if needs_retake(name, C, v, design[v['id']]):
+                    reclone(w, name, C, v, design[v['id']], folder, work, DEST / name)
+            said = model_text(name, C)
+            data[name]['say'] = said if said != C['line'] else ''
+            shutil.rmtree(work, ignore_errors=True)
+            shutil.rmtree(folder / 'lines', ignore_errors=True)
+            write(data)
+            print(f'{name}: drifted, unclear or reworded lines taken again ({time.time() - t0:.0f} s so far)', flush=True)
+        for name in names:
+            C = SPEC[name]
+            folder = DESIGN / name
+            work = folder / 'work'
+            work.mkdir(parents=True, exist_ok=True)
+            out = DEST / name
+            out.mkdir(parents=True, exist_ok=True)
+            report, variants = [], []
+            for style in C['styles']:
+                rows = design_style(w, name, C, style, folder, work)
+                report += rows
+                for k, cand in enumerate(keep(C, rows)):
+                    best = clone_line(w, name, C, cand, folder, work)
+                    if not best:
+                        continue
+                    export(best['wav'], out / f"{cand['id']}.mp3")
+                    export(folder / cand['wav'], out / f"{cand['id']}-sample.mp3")
+                    variants.append({
+                        'id': cand['id'], 'group': style['label'], 'style': style['id'],
+                        'label': f"{style['label']} · voice {k + 1}", 'what': style['describe'],
+                        'file': f"{name}/{cand['id']}.mp3", 'sample': f"{name}/{cand['id']}-sample.mp3",
+                        'settings': {'design_seed': cand['seed'], 'line_seed': best['seed'], 'steps': STEPS, 'cfg': CFG,
+                                     'mode': 'clone'},
+                        'text': model_text(name, C),
+                        'heard': best['heard'], 'diffs': best['diffs'], 'clarity': best['clarity'],
+                        'pitch': best['pitch'], 'rate': best['rate'],
+                        'voice': {k2: cand[k2] for k2 in ('heard', 'diffs', 'clarity', 'pitch', 'rate')}})
+                    print(f"  {name} {cand['id']} says the line: clarity {best['clarity']:.2f}, {best['pitch']} Hz, "
+                          f"{best['rate']} words/s, heard '{best['heard']}'", flush=True)
+            # Keep only the candidates on the page; the report still lists every one that was made.
+            kept = {v['id'] for v in variants}
+            for r in report:
+                if r['id'] not in kept:
+                    (folder / r['wav']).unlink(missing_ok=True)
+            (folder / 'report.json').write_text(json.dumps({'sample': C['sample'], 'styles': C['styles'], 'kept': sorted(kept),
+                                                            'candidates': report}, indent=1), encoding='utf-8')
+            shutil.rmtree(work, ignore_errors=True)
+            shutil.rmtree(folder / 'lines', ignore_errors=True)
+            said = model_text(name, C)
+            data[name] = {'id': name, 'name': C['name'], 'clip': C['clip'], 'line': C['line'], 'say': said if said != C['line'] else '',
+                          'asked': C['asked'], 'sampleLine': C['sample'], 'groups': [s['label'] for s in C['styles']],
+                          'portrait': f'../../packs/cast/art/cast/{name}/neutral.webp', 'variants': variants}
+            write(data)
+            print(f'{name}: {len(variants)} voices on the page ({time.time() - t0:.0f} s so far)', flush=True)
+    finally:
+        w.close()
+
+
+def write(data):
+    order = [k for k in SPEC if k in data]
+    for k in order:
+        for v in data[k]['variants']:
+            v['diffs'] = real_diffs(v['diffs'], v['text'])
+    approved = []
+    try:
+        for v in json.loads(PICKS1.read_text(encoding='utf-8'))['voices']:
+            if v.get('best'):
+                approved.append({'id': v['id'], 'name': v['name'], 'pick': v['best']['label']})
+    except FileNotFoundError:
+        pass
+    out = {'round': 2, 'made': time.strftime('%Y-%m-%d %H:%M'), 'approved': approved, 'voices': [data[k] for k in order]}
+    (DEST / 'clips.json').write_text(json.dumps(data, indent=1), encoding='utf-8')
+    (DEST / 'clips.js').write_text('/* Built by tools/voice-styles.py for index.html (round 2). */\nwindow.VOICE_TEST = ' +
+                                   json.dumps(out, indent=1) + ';\n', encoding='utf-8')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

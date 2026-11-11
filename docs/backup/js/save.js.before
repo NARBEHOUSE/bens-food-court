@@ -1,0 +1,64 @@
+/** Ben's Burger Bar - settings, progress and the shift in progress, in localStorage
+ *  (DESIGN.md "Saves"), through js/core/savefmt.js.
+ *
+ *  Auto Scan, Scan Speed, the voice and Text to Speech belong to the Hub's shared managers
+ *  and follow the player into every game, so they are not kept here. Storage can be
+ *  missing or full (private windows); every call copes.
+ */
+(function () {
+  'use strict';
+  const F = BB.savefmt, pack = BBPacks.diner;
+
+  function read(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function write(key, value) { try { localStorage.setItem(key, value); return true; } catch (e) { return false; } }
+  function remove(key) { try { localStorage.removeItem(key); } catch (e) { /* storage blocked */ } }
+
+  /* ── settings ── */
+  const SKEY = F.key('settings', pack);
+  const got = F.read('settings', read(SKEY), pack);
+  const locked = !got.ok && got.keep;          // a save from a newer game: read as defaults, never written over
+  let settings = got.ok ? got.data : Object.assign({}, F.DEFAULT_SETTINGS);
+  const listeners = [];
+  function storeSettings() {
+    if (locked || !F.canWrite('settings', read(SKEY))) return;
+    write(SKEY, JSON.stringify(F.wrap('settings', pack, settings)));
+  }
+
+  /* ── progress: coins, best orders, whether the tutorial has been offered ── */
+  const PKEY = F.key('progress', pack);
+  const pg = F.read('progress', read(PKEY), pack);
+  let progress = pg.ok ? Object.assign(BB.progress.create(pack), pg.data) : BB.progress.create(pack);
+  function storeProgress() {
+    if (!F.canWrite('progress', read(PKEY))) return;
+    write(PKEY, JSON.stringify(F.wrap('progress', pack, progress)));
+  }
+
+  /* ── the shift in progress ── */
+  const HKEY = F.key('shift', pack);
+
+  BB.save = {
+    get: k => (settings[k] === undefined ? F.DEFAULT_SETTINGS[k] : settings[k]),
+    set(k, v) {
+      settings[k] = v; storeSettings();
+      listeners.forEach(fn => { try { fn(k, v); } catch (e) { console.error(e); } });
+    },
+    all: () => Object.assign({}, settings),
+    onChange(fn) { listeners.push(fn); },
+    progress: () => progress,
+    saveProgress: storeProgress,
+    /** Reset Progress: coins, best orders and the tutorial offer go; settings stay. */
+    resetProgress() { progress = BB.progress.create(pack); storeProgress(); remove(HKEY); },
+    shift: {
+      load() {
+        const r = F.read('shift', read(HKEY), pack);
+        return r.ok ? r.data : null;
+      },
+      save(s) {
+        if (!s || s.tutorial) return;
+        if (!F.canWrite('shift', read(HKEY))) return;
+        write(HKEY, JSON.stringify(F.wrap('shift', pack, s)));
+      },
+      clear() { remove(HKEY); },
+    },
+  };
+})();

@@ -1,0 +1,10 @@
+Use case: an edit of two existing pictures of a 2D game character
+Attached images 1 and 2 are KAI, a ten-year-old food reviewer, in two poses. Attached image 3 is REGINALD, the critic
+he copies. Redraw images 1 and 2 EXACTLY as they are (the same pose, expression, hands, framing, size, position on the
+canvas, outline weight, colours and shading), changing ONLY two things:
+1. His glasses become rectangular glasses with thick dark frames (not round).
+2. His scarf takes the stripe pattern of Reginald's scarf in image 3: wide cream stripes between plum and gold stripes.
+Plain pure white background. No text.
+Save the redrawn image 1 as art-source/cast/kai/delighted.png and the redrawn image 2 as art-source/cast/kai/annoyed.png
+(1024 x 1536 each), replacing the old ones.
+Reply with the saved paths. If saving into the project fails, reply with the paths of the generated files.

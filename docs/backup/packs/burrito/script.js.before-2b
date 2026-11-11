@@ -1,0 +1,425 @@
+/** Ben's Burritos - every line about this restaurant's food (FOODCOURT-BUILD.md 5.5; docs/api/script.md is the
+ *  format; docs/api/packs/burrito.md section 12 says who must have what; docs/api/packs/burrito-script.md is this file
+ *  in words, for the agents after it).
+ *
+ *  What is here: Mitch's lines in his burrito uniform (the shift, the tutorial at every station, every warning, every
+ *  gross-out, the Timed heads-up, the one-liners, the Burrito Challenge), the 'customer' fallbacks for every F moment,
+ *  the locals' full sets (Inferno, Rita), the cameo's (Chef Hiro, Ben's Sushi's master, here as a level-4 visitor to
+ *  judge the roll), and every regular's and visitor's lines about the food here (reactions, favourites, dislikes, odd
+ *  orders, complaints). greet, smalltalk and goodbye for everyone who is not a local or the cameo come from
+ *  packs/cast/script.js and are merged in; the few here for them are restaurant-flavoured extras.
+ *
+ *  A line is { id, who, moment, text, each?, delivery }. Ids are <moment>.<n>, unique per speaker (the cast script
+ *  uses .c<n>). Clip ids: <speaker>/burrito:<id>[.<value>]. `each` names the one blank whose value changes the words:
+ *  {ing} on Add moments, {want} on stage and pick moments ("for the {slot}, I said {want}", never "{want} {slot}": a
+ *  None reads "for the hot sauce, I said none"), {value} on the two pick gross-outs ("{value} beans", "{value} salsa").
+ *  No line starts with a lower-cased blank. [sigh]-style tags are kept for the recording and dropped for text to
+ *  speech and captions. delivery: for the final voice pass (Coach Bev's and Sal's say firm or gruff, never loud).
+ *
+ *  Tone (spec 0.5, DESIGN.md "Writing tone"): adult and dry; the joke is on the customer, the food or Mitch, never
+ *  the player; nothing about speed or skill; nobody hurries anyone; PG; the humour is personality (Inferno's pride in
+ *  heat, Rita's appetite and her job site, Hiro's exacting calm), never accent or background. Customer rules (spec
+ *  0.6): a gag is one line of 8 seconds or less over a normal order; "one of everything" and "every sauce" are said,
+ *  never made.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBScripts = root.BBScripts || {}).burrito = data;
+})(typeof window === 'undefined' ? globalThis : window, { format: 3, lines: [
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     MITCH, in the red bandana, the green apron and the hot-sauce-stained badge
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* ── the shift ─────────────────────────────────────────────────────────────────────────────────────────────── */
+  { id: 'shift.start.1', who: 'mitch', moment: 'shift.start', text: "Doors are open. The griddle's hot, the tortillas are warm, and the fire extinguisher is right where I left it.", delivery: 'upbeat, patting the extinguisher' },
+  { id: 'shift.start.2', who: 'mitch', moment: 'shift.start', text: 'Burrito shift, go. Rule one: nobody touches the four-chili bottle. Rule two: see rule one.', delivery: 'brisk, firm about the rules' },
+  { id: 'shift.start.3', who: 'mitch', moment: 'shift.start', text: "We're open! Bandana on. I look like a pirate who runs a salsa bar. A very safe pirate.", delivery: 'cheerful, then a little proud' },
+  { id: 'shift.start.4', who: 'mitch', moment: 'shift.start', text: "Shift's on. Style, rice, beans, protein, toppings, sauce, griddle. I wrote it on my hand. In hot sauce. That was a mistake.", delivery: 'counting along, then wincing at his hand' },
+  { id: 'shift.start.5', who: 'mitch', moment: 'shift.start', text: "Doors open. If you see smoke, it's either the griddle or Inferno's ears. Check the ears first.", delivery: 'matter-of-fact' },
+  { id: 'shift.end.1', who: 'mitch', moment: 'shift.end', text: "That's the shift. Griddle's off, extinguisher's full, and I still have both eyebrows. Good day.", delivery: 'relieved, counting the wins' },
+  { id: 'shift.end.2', who: 'mitch', moment: 'shift.end', text: "Doors are locked. There's guacamole on my tie. The tie had a big day too.", delivery: 'tired, fond of the tie' },
+  { id: 'shift.end.3', who: 'mitch', moment: 'shift.end', text: "Shift over. I didn't wrap a single burrito myself, and I'm exhausted. That's leadership.", delivery: 'proud, a little sheepish' },
+  { id: 'shift.end.4', who: 'mitch', moment: 'shift.end', text: "Closing time. I'm taking the bandana home. It smells like lime now. I've decided that's a good thing.", delivery: 'content, sniffing the bandana' },
+
+  /* ── the uniform: the first shift here in a session ────────────────────────────────────────────────────────── */
+  { id: 'uniform.1', who: 'mitch', moment: 'uniform', text: "Yes, it's a bandana. Corporate says it's festive. I say it keeps the salsa out of my hair. We're both right.", delivery: 'pre-empting the question, deadpan' },
+  { id: 'uniform.2', who: 'mitch', moment: 'uniform', text: 'Hot sauce got on my badge and ate half the tape. For one glorious second it said MANAGER. Then I found more tape.', delivery: 'wistful, then deflating' },
+  { id: 'uniform.3', who: 'mitch', moment: 'uniform', text: 'Green apron, red bandana, and the tie stays on. I look like a traffic light that works lunch.', delivery: 'deadpan, looking down at himself' },
+
+  /* ── gross-outs, said as the bad one arrives (brown: an Add, {ing}; hair and fly: picks, {value}) ─────────── */
+  { id: 'gross.brown.1', who: 'mitch', moment: 'gross.brown', each: 'ing', text: 'Whoa. That {ing} is brown. Guacamole has one job, and the job is green. Swap it.', delivery: 'alarmed, certain' },
+  { id: 'gross.brown.2', who: 'mitch', moment: 'gross.brown', each: 'ing', text: "That {ing} has gone brown. It's older than my apron. Swap it out.", delivery: 'grossed out, peering at it' },
+  { id: 'gross.brown.3', who: 'mitch', moment: 'gross.brown', each: 'ing', text: 'Nope. Brown {ing}. An avocado only does that when it has given up. Swap it.', delivery: 'squeamish, backing away' },
+  { id: 'gross.hair.1', who: 'mitch', moment: 'gross.hair', each: 'value', text: "There's a hair in the {value} beans. The beans didn't grow it. Swap them.", delivery: 'flat, disgusted' },
+  { id: 'gross.hair.2', who: 'mitch', moment: 'gross.hair', each: 'value', text: "Whoa. Those {value} beans came with a hair. We don't charge extra for hair, because we don't serve it. Swap them.", delivery: 'alarmed, then reasoning it out' },
+  { id: 'gross.hair.3', who: 'mitch', moment: 'gross.hair', each: 'value', text: "Hair in the {value} beans. I'm checking my bandana. My bandana is innocent. Swap them.", delivery: 'suspicious, patting his head' },
+  { id: 'gross.fly.1', who: 'mitch', moment: 'gross.fly', each: 'value', text: "There's a fly in the {value} salsa. He's doing the backstroke. Swap it.", delivery: 'sharp, then flat' },
+  { id: 'gross.fly.2', who: 'mitch', moment: 'gross.fly', each: 'value', text: 'Fly in the {value} salsa! He thinks it is a hot tub. Swap it before he invites friends.', delivery: 'alarmed, then a grumble' },
+  { id: 'gross.fly.3', who: 'mitch', moment: 'gross.fly', each: 'value', text: "That {value} salsa has a fly in it. He's not a topping. He's barely a fly. Swap it.", delivery: 'resigned, muttering' },
+
+  /* ── Timed: one stage before the ticket's ──────────────────────────────────────────────────────────────────── */
+  { id: 'nearly.1', who: 'mitch', moment: 'nearly', each: 'want', text: "Almost {want}. That's the one on the ticket.", delivery: 'quick, a little nervous' },
+  { id: 'nearly.2', who: 'mitch', moment: 'nearly', each: 'want', text: 'Heads up. Nearly {want}. The press is listening.', delivery: 'quick, eyeing the press' },
+
+  /* ── Mitch: the mistake, read after the customer's complaint (voicecut, 2026-11-10): one line per value, his voice only ── */
+  { id: 'mistake.extra.1', who: 'mitch', moment: 'mistake.extra', each: 'ings', text: 'The ticket said no {ings}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.unasked.1', who: 'mitch', moment: 'mistake.unasked', each: 'ings', text: 'Nobody ordered {ings}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.missing.1', who: 'mitch', moment: 'mistake.missing', each: 'ing', text: 'The ticket said {ing}. That got left off.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.done.1', who: 'mitch', moment: 'mistake.done', each: 'want', text: 'The ticket said {want}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.pick.1', who: 'mitch', moment: 'mistake.pick', each: 'wanted', text: 'The ticket said {wanted}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.more.1', who: 'mitch', moment: 'mistake.more', text: "There's more. It's on the receipt, wrapped up tight.", delivery: 'resigned, dry' },
+
+  /* ── one-liners after a customer's reaction (Hints and Jokes only) ─────────────────────────────────────────── */
+  { id: 'after.3.1', who: 'mitch', moment: 'after.3', text: "Another happy customer. I'm putting it on my résumé, under things I stood near.", delivery: 'pleased with himself' },
+  { id: 'after.3.2', who: 'mitch', moment: 'after.3', text: "Look at that. Lunch that did everything right. I'd like to thank my bandana.", delivery: 'warm, an acceptance speech' },
+  { id: 'after.3.3', who: 'mitch', moment: 'after.3', text: "Perfect. I'll tell Corporate. Corporate is the cactus in the sombrero. He's a great listener.", delivery: 'confiding, fond of the cactus' },
+  { id: 'after.1.1', who: 'mitch', moment: 'after.1', text: 'That lunch is going to think about what it did.', delivery: 'stern, at the food' },
+  { id: 'after.1.2', who: 'mitch', moment: 'after.1', text: "I'm going to go stand by the fire extinguisher. No reason. I just feel safer there.", delivery: 'quiet, already moving' },
+  { id: 'after.1.3', who: 'mitch', moment: 'after.1', text: 'Well. Lunch tried. Lunch always tries.', delivery: 'consoling, at the food' },
+  { id: 'after.gross.1', who: 'mitch', moment: 'after.gross', text: "I'm putting a sign on that pan. It just says no.", delivery: 'grim, decisive' },
+  { id: 'after.gross.2', who: 'mitch', moment: 'after.gross', text: "That's going on the wall of things we don't talk about. The wall is my locker.", delivery: 'resigned, confiding' },
+
+  /* ── the tutorial: Rita's chicken burrito with guacamole, and chips and salsa; the guacamole comes down brown ── */
+  { id: 'tutorial.intro.1', who: 'mitch', moment: 'tutorial.intro', text: "First day at Ben's Burritos? Great. I'm Mitch, assistant manager. One order together, start to finish, nice and easy.", delivery: 'friendly, welcoming' },
+  { id: 'tutorial.intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Welcome to Ben's Burritos. I'm Mitch. Yes, the bandana is on purpose. Let's make one order together.", delivery: 'friendly, heading off the bandana question' },
+  { id: 'tutorial.ticket.1', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. Rita's burrito and her chips. Pick Ticket any time and it reads itself again.", delivery: 'clear, pointing up' },
+  { id: 'tutorial.ticket.2', who: 'mitch', moment: 'tutorial.ticket', text: 'There is the ticket on the wheel. Everything Rita wants, in order. Lose track? Pick Ticket.', delivery: 'clear, helpful' },
+  { id: 'tutorial.prep.1', who: 'mitch', moment: 'tutorial.prep', text: 'This is the burrito line. Pick the style, then the rice, the beans and the protein. Then the toppings come to you one at a time. On the ticket, Add. Not on the ticket, Skip. Last, the hot sauce.', delivery: 'teaching, steady' },
+  { id: 'tutorial.prep.2', who: 'mitch', moment: 'tutorial.prep', text: "It all goes in order: style, rice, beans, protein, the toppings, then the hot sauce. When it's all in, the burrito wraps itself. I've watched it a hundred times. Still magic.", delivery: 'teaching, a little awed' },
+  { id: 'tutorial.griddle.1', who: 'mitch', moment: 'tutorial.griddle', text: 'The griddle. The burrito goes on, the press comes down, and it toasts. That press weighs more than me. I checked.', delivery: 'teaching, eyeing the press' },
+  { id: 'tutorial.griddle.2', who: 'mitch', moment: 'tutorial.griddle', text: "This is the griddle. Burritos and tacos get toasted here. Bowls don't. Bowls are above all this.", delivery: 'teaching, a little grand' },
+  { id: 'tutorial.cook.griddle.1', who: 'mitch', moment: 'tutorial.cook.griddle', text: "How toasted? Rita said toasted, so pick Toasted. In Timed cooking you'd watch it and Lift the Press yourself. Today, just pick.", delivery: 'teaching, clear' },
+  { id: 'tutorial.cook.griddle.2', who: 'mitch', moment: 'tutorial.cook.griddle', text: "Lightly toasted, toasted or extra crispy. The ticket says toasted. The press does the toasting. I do the supervising. It's a partnership.", delivery: 'teaching, pleased with the partnership' },
+  { id: 'tutorial.chips.1', who: 'mitch', moment: 'tutorial.chips', text: 'The chip basket. Pick the salsa, then Add or Skip the guacamole and the lime. Rita wants red salsa, with lime.', delivery: 'teaching, brisk' },
+  { id: 'tutorial.chips.2', who: 'mitch', moment: 'tutorial.chips', text: "Chips and salsa. Salsa first, then the guacamole, then the lime. The ticket says red salsa, with lime. Guacamole isn't on it, so that's a Skip.", delivery: 'teaching, reading the ticket' },
+  { id: 'tutorial.gross.1', who: 'mitch', moment: 'tutorial.gross', text: 'When something comes down the line looking wrong, like that guacamole, pick Swap It and a fresh one comes down.', delivery: 'teaching, a grimace at the guacamole' },
+  { id: 'tutorial.gross.2', who: 'mitch', moment: 'tutorial.gross', text: 'See that? Brown guacamole. Swap It brings a fresh green one. Skip sends it away, and Rita still wants guacamole. So: Swap It.', delivery: 'teaching, firm on the last two words' },
+  { id: 'tutorial.review.1', who: 'mitch', moment: 'tutorial.review', text: "Here's the order. Something wrong? Redo it now. All good? Ring it up.", delivery: 'teaching, clear' },
+  { id: 'tutorial.review.2', who: 'mitch', moment: 'tutorial.review', text: "And there it is. Have a look. Wrong, redo it. Right, ring it up. Rita's eyeing it like a beam she's about to lift.", delivery: 'teaching, a glance at Rita' },
+  { id: 'tutorial.serve.1', who: 'mitch', moment: 'tutorial.serve', text: "That's the job. If something's wrong, the customer tells you. Rita tells you, and her whole crew hears it. Ready for a real shift?", delivery: 'wrapping up, encouraging' },
+  { id: 'tutorial.serve.2', who: 'mitch', moment: 'tutorial.serve', text: "One order, done. Every order goes down the same line. The people ordering them don't. Ready for a real shift?", delivery: 'wrapping up, dry' },
+
+  /* ── tutorial warnings, before a mistake lands (she = Rita) ────────────────────────────────────────────────── */
+  { id: 'tutorial.warn.extra.1', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ing', text: 'Hold on. No {ing} on this one. Check the ticket.', delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.extra.2', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ing', text: "Wait. She said no {ing}. That's the wrong one.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.unasked.1', who: 'mitch', moment: 'tutorial.warn.unasked', each: 'ing', text: "Wait. The ticket doesn't say {ing}. If it's not on the ticket, it's a Skip.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.unasked.2', who: 'mitch', moment: 'tutorial.warn.unasked', each: 'ing', text: 'Hold on. No {ing} on her ticket. Skip it.', delivery: 'quick, light' },
+  { id: 'tutorial.warn.missing.1', who: 'mitch', moment: 'tutorial.warn.missing', each: 'ing', text: "Hang on. The ticket says {ing}. That one's an Add.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.missing.2', who: 'mitch', moment: 'tutorial.warn.missing', each: 'ing', text: "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.", delivery: 'quick, a wary glance at Rita' },
+  { id: 'tutorial.warn.done.1', who: 'mitch', moment: 'tutorial.warn.done', each: 'want', text: 'Not quite. She said {want}.', delivery: 'gentle correction' },
+  { id: 'tutorial.warn.done.2', who: 'mitch', moment: 'tutorial.warn.done', each: 'want', text: "Check the ticket: {want}. That's the one.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.pick.1', who: 'mitch', moment: 'tutorial.warn.pick', each: 'wanted', text: 'Hang on. The ticket says {wanted}.', delivery: 'gentle correction' },
+  { id: 'tutorial.warn.pick.2', who: 'mitch', moment: 'tutorial.warn.pick', each: 'wanted', text: 'Not that one. She wanted {wanted}.', delivery: 'gentle correction, reading it off' },
+  { id: 'tutorial.warn.gross.1', who: 'mitch', moment: 'tutorial.warn.gross', each: 'ing', text: "Whoa. Not that {ing}. That one's a Swap It.", delivery: 'alarmed, firm' },
+  { id: 'tutorial.warn.gross.2', who: 'mitch', moment: 'tutorial.warn.gross', text: "Nope. We don't serve that. Pick Swap It, and a good one comes down.", delivery: 'firm, helpful' },
+  { id: 'tutorial.warn.grossSkip.1', who: 'mitch', moment: 'tutorial.warn.grossSkip', each: 'ing', text: 'She does want {ing}. Just a fresher one. Swap it.', delivery: 'gentle correction' },
+  { id: 'tutorial.warn.grossSkip.2', who: 'mitch', moment: 'tutorial.warn.grossSkip', text: "Don't skip it. The ticket wants one. Swap It gets you a good one.", delivery: 'gentle correction' },
+
+  /* ── the five-star event: The Burrito Challenge ({name} is the event's name) ───────────────────────────────── */
+  { id: 'event.intro.1', who: 'mitch', moment: 'event.intro', text: "It's {name}! Inferno versus the biggest burrito ever rolled, with every sauce on the wall. A crowd's gathering, and they're hungry too. His order comes last.", delivery: 'excited, a little overwhelmed' },
+  { id: 'event.intro.2', who: 'mitch', moment: 'event.intro', text: 'Here we go: {name}. Half the court came to watch Inferno. The other half came for lunch. The giant one is last. I put the extinguisher by the door.', delivery: 'brave, then practical' },
+  { id: 'event.celebrate.1', who: 'mitch', moment: 'event.celebrate', text: "{name}: done! Inferno finished the whole thing. Smoke out of both ears. That's how he says thank you. The gold sign's going up!", delivery: 'joyful, a little awed' },
+  { id: 'event.celebrate.2', who: 'mitch', moment: 'event.celebrate', text: "That's {name} in the books, and a gold sign over the door. Inferno wants a photo with it. And with the fire extinguisher.", delivery: 'triumphant, then amused' },
+  { id: 'event.again.1', who: 'mitch', moment: 'event.again', text: "{name} didn't quite come together. Inferno says it was a good warm-up. He's already asking for a rematch.", delivery: 'consoling, hopeful' },
+  { id: 'event.again.2', who: 'mitch', moment: 'event.again', text: "Okay. {name} fell a little short. The crowd's still here and the griddle's still hot. We'll run it again.", delivery: 'rueful, then upbeat' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     EVERY CUSTOMER: the pack's fallback for anyone with fewer than two lines of their own (neutral voice)
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'react.3.1', who: 'customer', moment: 'react.3', text: "That's it. That's exactly what I ordered. I'm eating it before it changes its mind.", delivery: 'pleased, sincere' },
+  { id: 'react.3.2', who: 'customer', moment: 'react.3', text: 'Perfect. Every layer right where it should be.', delivery: 'satisfied' },
+  { id: 'react.3.3', who: 'customer', moment: 'react.3', text: 'Look at that. A lunch that read its own ticket.', delivery: 'impressed, dry' },
+  { id: 'react.2.1', who: 'customer', moment: 'react.2', text: "Close. Not quite what I pictured, but it's lunch, and I'm hungry.", delivery: 'mild, accepting' },
+  { id: 'react.2.2', who: 'customer', moment: 'react.2', text: "It's fine. Mostly fine. Fine-ish.", delivery: 'flat, losing confidence each time' },
+  { id: 'react.2.3', who: 'customer', moment: 'react.2', text: 'Nearly. One thing in here went its own way.', delivery: 'dry' },
+  { id: 'react.1.1', who: 'customer', moment: 'react.1', text: "This isn't what I ordered. This is somebody else's lunch.", delivery: 'unimpressed' },
+  { id: 'react.1.2', who: 'customer', moment: 'react.1', text: 'Huh. I recognise some of this. Not enough of it.', delivery: 'deadpan' },
+  { id: 'react.1.3', who: 'customer', moment: 'react.1', text: 'I ordered lunch. I got a mystery.', delivery: 'puzzled, dry' },
+  { id: 'react.gross.1', who: 'customer', moment: 'react.gross', text: 'Oh. Oh, no. Something in here was not on the menu.', delivery: 'disgusted, a slow horror' },
+  { id: 'react.gross.2', who: 'customer', moment: 'react.gross', text: "Nope. That's not a topping. That's a situation.", delivery: 'gagging, firm' },
+  // A complaint that names no food (voicecut): everyone has their own in packs/cast/script.js; these stand in for anyone short.
+  { id: 'complain.1', who: 'customer', moment: 'complain', text: "That's not what I ordered.", delivery: 'mildly put out' },
+  { id: 'complain.2', who: 'customer', moment: 'complain', text: "Hm. This isn't quite what I asked for.", delivery: 'polite, disappointed' },
+  { id: 'complain.gross.brown.1', who: 'customer', moment: 'complain.gross.brown', text: "This guacamole is brown. Guacamole's supposed to be green. That's the whole idea.", delivery: 'disgusted' },
+  { id: 'complain.gross.brown.2', who: 'customer', moment: 'complain.gross.brown', text: "Brown guacamole. I'm not eating anything older than my shoes.", delivery: 'dry, revolted' },
+  { id: 'complain.gross.hair.1', who: 'customer', moment: 'complain.gross.hair', text: "There's a hair in the beans. I don't know whose it is, and I'd like to keep it that way.", delivery: 'disgusted, measured' },
+  { id: 'complain.gross.hair.2', who: 'customer', moment: 'complain.gross.hair', text: 'A hair. In the beans. People will hear about this.', delivery: 'disgusted, quiet' },
+  { id: 'complain.gross.fly.1', who: 'customer', moment: 'complain.gross.fly', text: "There's a fly in my salsa. He's having a better lunch than I am.", delivery: 'disgusted, watching it' },
+  { id: 'complain.gross.fly.2', who: 'customer', moment: 'complain.gross.fly', text: 'A fly. In the salsa. Still swimming.', delivery: 'flat, disgusted' },
+  // Ridiculous orders (level 4 and 5): said instead of the order sentence; the ticket is plain and complete.
+  { id: 'order.odd.doubleWrap.1', who: 'customer', moment: 'order.odd.doubleWrap', text: 'An Everything Burrito, wrapped inside another burrito. Belt and suspenders.', delivery: 'matter-of-fact, as if normal' },
+  { id: 'order.odd.doubleWrap.2', who: 'customer', moment: 'order.odd.doubleWrap', text: 'Can you wrap the Everything Burrito in a second burrito? I like a backup.', delivery: 'calm, reasonable' },
+  { id: 'order.odd.noAvocado.1', who: 'customer', moment: 'order.odd.noAvocado', text: "A veggie bowl with guacamole. But no avocado. I'm allergic. I just love the idea of guacamole.", delivery: 'earnest' },
+  { id: 'order.odd.noAvocado.2', who: 'customer', moment: 'order.odd.noAvocado', text: "Veggie bowl, guacamole, hold the avocado. I'll know if there's avocado.", delivery: 'firm, suspicious' },
+  { id: 'order.odd.hottest.1', who: 'customer', moment: 'order.odd.hottest', text: "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's a choice.", delivery: 'brave, voice wobbling' },
+  { id: 'order.odd.hottest.2', who: 'customer', moment: 'order.odd.hottest', text: "Chicken burrito. Your hottest sauce. I've told my family I love them. I'm ready.", delivery: 'grave, determined' },
+  { id: 'order.odd.fireAlarm.1', who: 'customer', moment: 'order.odd.fireAlarm', text: 'A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.', delivery: 'intense, pointing at the alarm' },
+  { id: 'order.odd.fireAlarm.2', who: 'customer', moment: 'order.odd.fireAlarm', text: 'Fire Burrito. Toast it until the smoke detector files a complaint.', delivery: 'fierce, grinning' },
+  { id: 'order.odd.justTortilla.1', who: 'customer', moment: 'order.odd.justTortilla', text: "Just the tortilla, please. Lightly toasted. I'm on a cleanse.", delivery: 'calm, certain' },
+  { id: 'order.odd.justTortilla.2', who: 'customer', moment: 'order.odd.justTortilla', text: 'A bean and cheese burrito. No beans, no cheese. Just the hug.', delivery: 'serene' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     INFERNO, the restaurant's own: the hot-sauce fanatic. Flame hair, sunglasses, smoke from his ears, his own
+     bottle in a holster. Proud and intense about heat as other people are about sport; the joke is his pride and the
+     food's failure to frighten him, never anyone else.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'greet.1', who: 'inferno', moment: 'greet', text: "Inferno. You've heard of me. Your fire extinguisher has definitely heard of me.", delivery: 'intense, proud' },
+  { id: 'greet.2', who: 'inferno', moment: 'greet', text: "Afternoon. I'm here for lunch, and lunch should be nervous.", delivery: 'intense, a slow grin' },
+  { id: 'greet.3', who: 'inferno', moment: 'greet', text: "The smoke? That's just my ears. They get excited near a griddle.", delivery: 'proud, matter-of-fact' },
+  { id: 'greet.4', who: 'inferno', moment: 'greet', text: "Inferno's here. Bring out the hot stuff, then whatever the hot stuff is scared of.", delivery: 'fierce, savouring it' },
+  { id: 'greet.5', who: 'inferno', moment: 'greet', text: "Hey. What's the hottest thing back there? Besides the griddle. I've met the griddle.", delivery: 'intense, leaning in' },
+  { id: 'smalltalk.1', who: 'inferno', moment: 'smalltalk', text: 'I keep a bottle of hot sauce in my holster. For emergencies. Every meal is an emergency.', delivery: 'proud, patting the holster' },
+  { id: 'smalltalk.2', who: 'inferno', moment: 'smalltalk', text: 'My dentist wears oven mitts now. I respect him for it.', delivery: 'intense, nodding' },
+  { id: 'smalltalk.3', who: 'inferno', moment: 'smalltalk', text: "I named my dog Habanero. He's a golden retriever. He has never once lived up to it.", delivery: 'fond, disappointed' },
+  { id: 'smalltalk.4', who: 'inferno', moment: 'smalltalk', text: "My doctor says my blood pressure is impressive. I've chosen to take that as a compliment.", delivery: 'deadpan, proud' },
+  { id: 'smalltalk.5', who: 'inferno', moment: 'smalltalk', text: 'I entered a chili contest last year. Came second. First place was a volcano. I want a recount.', delivery: 'indignant, intense' },
+  { id: 'goodbye.1', who: 'inferno', moment: 'goodbye', text: "I'm off. If you smell smoke, that's me. If you don't, worry.", delivery: 'intense, a nod' },
+  { id: 'goodbye.2', who: 'inferno', moment: 'goodbye', text: 'Later. Going to stand somewhere breezy and let my ears cool down.', delivery: 'relaxed, a rare calm' },
+  { id: 'goodbye.3', who: 'inferno', moment: 'goodbye', text: 'Stay spicy, everybody. Except Mitch. Mitch, stay near the extinguisher.', delivery: 'proud, pointing at Mitch' },
+  { id: 'goodbye.4', who: 'inferno', moment: 'goodbye', text: 'Peace. My eyebrows and I are going to go have a little lie-down.', delivery: 'satisfied, fanning his face' },
+  // The running gag, after the order: 8 seconds or less over a normal ticket. "Every sauce" is said, never made.
+  { id: 'order.gag.1', who: 'inferno', moment: 'order.gag', text: 'And make it hotter. Then hotter than that. Then apologise to it.', delivery: 'intense, building' },
+  { id: 'order.gag.2', who: 'inferno', moment: 'order.gag', text: "If my ears aren't smoking by the second bite, I'm writing to the pepper.", delivery: 'fierce, deadly serious' },
+  { id: 'order.gag.3', who: 'inferno', moment: 'order.gag', text: "Whatever's hotter than hot. If nothing is, invent it. I'm patient.", delivery: 'intense, then oddly calm' },
+  { id: 'order.gag.4', who: 'inferno', moment: 'order.gag', text: 'Not hot. Hot hot. The kind of hot that has its own weather.', delivery: 'proud, savouring each word' },
+  { id: 'order.gag.5', who: 'inferno', moment: 'order.gag', text: "And the four-chili bottle up on the shelf? I'm not asking. I'm just looking at it.", delivery: 'longing, nearly a whisper' },
+  { id: 'order.gag.6', who: 'inferno', moment: 'order.gag', text: "Every sauce on that wall. In one burrito. I've trained my whole life for this lunch.", delivery: 'solemn, a champion before the bout' },
+  { id: 'order.odd.fireAlarm.1', who: 'inferno', moment: 'order.odd.fireAlarm', text: 'Fire Burrito. Hot enough to set off the fire alarm. The one with the little mustache. We have history.', delivery: 'intense, conspiratorial' },
+  { id: 'order.odd.fireAlarm.2', who: 'inferno', moment: 'order.odd.fireAlarm', text: 'Fire Burrito, extra crispy. Toast it until the smoke alarm sings. He knows the words.', delivery: 'fierce, grinning' },
+  { id: 'react.3.1', who: 'inferno', moment: 'react.3', text: 'Ooh. OOH. There it is. My eyebrows just left the building.', delivery: 'intense, delighted' },
+  { id: 'react.3.2', who: 'inferno', moment: 'react.3', text: "The ears are smoking. That's five stars from the ears.", delivery: 'proud, fanning the smoke' },
+  { id: 'react.3.3', who: 'inferno', moment: 'react.3', text: "Perfect. I'm sweating. I'm crying. I've never been happier.", delivery: 'overjoyed, tears and all' },
+  { id: 'react.3.4', who: 'inferno', moment: 'react.3', text: 'That is the one. I can hear colours. Five stars. Six if the colours stop.', delivery: 'dazed, ecstatic' },
+  { id: 'react.2.1', who: 'inferno', moment: 'react.2', text: 'Warm. Pleasant. Like a handshake from a cucumber.', delivery: 'unimpressed, polite' },
+  { id: 'react.2.2', who: 'inferno', moment: 'react.2', text: 'Close. I felt a little heat. Then it left. Like my uncle at a party.', delivery: 'wistful' },
+  { id: 'react.2.3', who: 'inferno', moment: 'react.2', text: 'Not bad. Not what I said, though. My ears are still waiting for something.', delivery: 'patient, a little let down' },
+  { id: 'react.1.1', who: 'inferno', moment: 'react.1', text: "This isn't my order. My order had a pulse.", delivery: 'intense, wounded' },
+  { id: 'react.1.2', who: 'inferno', moment: 'react.1', text: 'No. My ears just filed a complaint. Both of them.', delivery: 'fierce, disappointed' },
+  { id: 'react.1.3', who: 'inferno', moment: 'react.1', text: "Wrong. I've had spicier socks. That's a long story.", delivery: 'deadpan' },
+  { id: 'react.favourite.1', who: 'inferno', moment: 'react.favourite', text: 'The Fire Burrito. Finally, a burrito that fights back.', delivery: 'thrilled, rolling up his sleeves' },
+  { id: 'react.favourite.2', who: 'inferno', moment: 'react.favourite', text: "Fire Burrito, done right. I could weep. I am weeping. It's the jalapeños.", delivery: 'moved, teary' },
+  { id: 'react.gross.1', who: 'inferno', moment: 'react.gross', text: "I've eaten ghost peppers that were less haunted than this.", delivery: 'horrified, intense' },
+  { id: 'react.gross.2', who: 'inferno', moment: 'react.gross', text: "Whoa. I like lunch that bites back. Not lunch that's hiding something.", delivery: 'alarmed' },
+  { id: 'complain.gross.brown.1', who: 'inferno', moment: 'complain.gross.brown', text: 'Brown guacamole? I want my food hot, not old.', delivery: 'disgusted, firm' },
+  { id: 'complain.gross.hair.1', who: 'inferno', moment: 'complain.gross.hair', text: "There's a hair in my beans. It's not even a spicy hair.", delivery: 'appalled, then personally offended' },
+  { id: 'complain.gross.fly.1', who: 'inferno', moment: 'complain.gross.fly', text: 'A fly in my salsa. He came here for the heat. Amateur.', delivery: 'scornful' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     RITA, the restaurant's own: construction worker on her lunch break from the site across the mall. Hard hat,
+     high-vis vest, a red cooler that is only for dessert. Hearty, always hungry, talks in building terms. "One of
+     everything" is said, never made. The tutorial customer.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'greet.1', who: 'rita', moment: 'greet', text: "Hey there! Rita. The hard hat's for work. The appetite's for here.", delivery: 'hearty, cheerful' },
+  { id: 'greet.2', who: 'rita', moment: 'greet', text: "Lunch break! I've been looking forward to this since breakfast. Which was also a burrito.", delivery: 'hearty, honest' },
+  { id: 'greet.3', who: 'rita', moment: 'greet', text: 'Afternoon! Steel toes, hard hat, empty stomach. Ready for inspection.', delivery: 'hearty, a mock salute' },
+  { id: 'greet.4', who: 'rita', moment: 'greet', text: "Rita, from the site across the mall. We build garages. Today I'm building an appetite.", delivery: 'cheerful, proud of the line' },
+  { id: 'greet.5', who: 'rita', moment: 'greet', text: 'Hey! Saw your menu from the scaffolding. Came straight down. Took the stairs. Mostly.', delivery: 'hearty, a little winded' },
+  { id: 'smalltalk.1', who: 'rita', moment: 'smalltalk', text: 'We poured a foundation this morning. Six trucks of concrete. I could eat six trucks. Not of concrete.', delivery: 'hearty, clarifying' },
+  { id: 'smalltalk.2', who: 'rita', moment: 'smalltalk', text: 'The crew calls me the Cement Mixer. Because I never stop turning. Also lunch. Mostly lunch.', delivery: 'proud, laughing' },
+  { id: 'smalltalk.3', who: 'rita', moment: 'smalltalk', text: 'My lunchbox is just for dessert. Lunch is too big for a box. Lunch needs a building.', delivery: 'matter-of-fact' },
+  { id: 'smalltalk.4', who: 'rita', moment: 'smalltalk', text: "I've got a forklift license, a crane license and a burrito punch card. Guess which one I'm proudest of.", delivery: 'proud, holding up the card' },
+  { id: 'smalltalk.5', who: 'rita', moment: 'smalltalk', text: "Our foreman brought donuts for the crew. One box, twelve of us. He's an optimist. I respect it.", delivery: 'hearty, dry' },
+  { id: 'goodbye.1', who: 'rita', moment: 'goodbye', text: "Back to the site. That wall won't build itself. I've asked it nicely.", delivery: 'hearty, rolling her shoulders' },
+  { id: 'goodbye.2', who: 'rita', moment: 'goodbye', text: 'Thanks! Clocking back in. Letting the tool belt out a notch first.', delivery: 'satisfied, patting her stomach' },
+  { id: 'goodbye.3', who: 'rita', moment: 'goodbye', text: "See ya! If you hear jackhammers, that's us. If you hear singing, that's me after this lunch.", delivery: 'cheerful' },
+  { id: 'goodbye.4', who: 'rita', moment: 'goodbye', text: "Great lunch. I'll tell the crew. They'll all come tomorrow. Brace yourselves.", delivery: 'hearty, a wink' },
+  // The running gag, after the order: "one of everything" is said; the ticket is one normal order.
+  { id: 'order.gag.1', who: 'rita', moment: 'order.gag', text: "Actually, make it one of everything. Kidding. Unless that's allowed. Then not kidding.", delivery: 'hopeful, then sheepish' },
+  { id: 'order.gag.2', who: 'rita', moment: 'order.gag', text: "And one of everything. Not in it. Next to it. I'll make room.", delivery: 'hearty, completely serious' },
+  { id: 'order.gag.3', who: 'rita', moment: 'order.gag', text: "Oh, and one of everything. It's a big job today. Mostly the eating part.", delivery: 'cheerful' },
+  { id: 'order.gag.4', who: 'rita', moment: 'order.gag', text: 'I asked my foreman for one of everything once. He handed me a toolbox.', delivery: 'dry, rueful' },
+  { id: 'order.gag.5', who: 'rita', moment: 'order.gag', text: "One of everything. I'm not saying make it. I'm saying I'd eat it.", delivery: 'hearty, honest' },
+  { id: 'order.odd.doubleWrap.1', who: 'rita', moment: 'order.odd.doubleWrap', text: 'An Everything Burrito, wrapped in another burrito. Reinforced. Like a good beam.', delivery: 'serious, approving' },
+  { id: 'order.odd.noAvocado.1', who: 'rita', moment: 'order.odd.noAvocado', text: "Veggie bowl. Guacamole, no avocado. I'm allergic. I just want to feel included.", delivery: 'hopeful' },
+  { id: 'order.odd.hottest.1', who: 'rita', moment: 'order.odd.hottest', text: "Chicken burrito, the hottest sauce you've got. I've got a hard hat on. I'm protected. Mostly.", delivery: 'bravado, then doubt' },
+  { id: 'order.odd.justTortilla.1', who: 'rita', moment: 'order.odd.justTortilla', text: 'Just the tortilla, please. Lightly toasted. I had a big breakfast. Three burritos.', delivery: 'casual' },
+  { id: 'react.3.1', who: 'rita', moment: 'react.3', text: 'Now that is load-bearing. You could build a house on this.', delivery: 'hearty, impressed' },
+  { id: 'react.3.2', who: 'rita', moment: 'react.3', text: "Solid. Level. Plumb. That's five stars from the site inspector.", delivery: 'approving, as if checking a level' },
+  { id: 'react.3.3', who: 'rita', moment: 'react.3', text: "That's up to code! Every layer where it belongs!", delivery: 'delighted' },
+  { id: 'react.3.4', who: 'rita', moment: 'react.3', text: "Oh, that's good. That's hard-hat-off good.", delivery: 'hearty, taking the hat off' },
+  { id: 'react.2.1', who: 'rita', moment: 'react.2', text: 'Close. Like a shelf that leans a little. Still holds stuff.', delivery: 'easygoing' },
+  { id: 'react.2.2', who: 'rita', moment: 'react.2', text: 'Pretty good. A couple of loose screws.', delivery: 'fair, assessing' },
+  { id: 'react.2.3', who: 'rita', moment: 'react.2', text: "It's fine. I've eaten lunch off a bag of cement. This beats that. Barely.", delivery: 'dry' },
+  { id: 'react.1.1', who: 'rita', moment: 'react.1', text: "That's not my order. That's a demolition job.", delivery: 'dismayed' },
+  { id: 'react.1.2', who: 'rita', moment: 'react.1', text: "Whoa. This one needs a building permit, and it's not getting one.", delivery: 'stern, half joking' },
+  { id: 'react.1.3', who: 'rita', moment: 'react.1', text: "Nope. I'm calling the site supervisor. Oh, wait. That's me. I'm disappointed.", delivery: 'dry, deflating' },
+  { id: 'react.favourite.1', who: 'rita', moment: 'react.favourite', text: 'The Everything Burrito! One of everything, inside one thing! Somebody finally listened!', delivery: 'overjoyed' },
+  { id: 'react.favourite.2', who: 'rita', moment: 'react.favourite', text: "Everything in it, rolled up tight. That's not a burrito, that's a structure. I love a structure.", delivery: 'reverent' },
+  { id: 'react.gross.1', who: 'rita', moment: 'react.gross', text: "Whoa. I've seen some things on a job site. Not in my lunch.", delivery: 'disgusted, stepping back' },
+  { id: 'react.gross.2', who: 'rita', moment: 'react.gross', text: "Nope! Hard hat on. That's a hazard.", delivery: 'alarmed, pulling the hat down' },
+  { id: 'complain.gross.brown.1', who: 'rita', moment: 'complain.gross.brown', text: "Brown guacamole. That's been sitting out longer than our coffee pot.", delivery: 'disgusted' },
+  { id: 'complain.gross.hair.1', who: 'rita', moment: 'complain.gross.hair', text: "There's a hair in the beans. I wear a hard hat so this doesn't happen.", delivery: 'indignant' },
+  { id: 'complain.gross.fly.1', who: 'rita', moment: 'complain.gross.fly', text: 'A fly in the salsa. On a job site, that stops work.', delivery: 'firm' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     CHEF HIRO, the cameo: Ben's Sushi's stern master, here as a level-4 visitor to judge the roll. Calm, low and
+     exacting; quietly funny. He always orders a burrito (the pack's `always`), so his lines may talk about the roll.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'visitor.arrive.1', who: 'hiro', moment: 'visitor.arrive', text: 'I am Hiro. I heard there is rolling here. I have come to see it.', delivery: 'calm, grave' },
+  { id: 'visitor.arrive.2', who: 'hiro', moment: 'visitor.arrive', text: 'Good afternoon. My apprentice says a burrito is a very large sushi roll. I have come to settle it.', delivery: 'calm, open-minded' },
+  { id: 'visitor.arrive.3', who: 'hiro', moment: 'visitor.arrive', text: 'For forty years I have rolled rice. Today, I watch someone roll beans.', delivery: 'quiet, intent' },
+  { id: 'greet.1', who: 'hiro', moment: 'greet', text: 'Good afternoon. Do not mind me. I am only watching. Everyone minds me.', delivery: 'calm, a small smile' },
+  { id: 'greet.2', who: 'hiro', moment: 'greet', text: 'Hello. At my bar, I am the chef. Here, I am a customer. Strange.', delivery: 'calm, a little lost' },
+  { id: 'greet.3', who: 'hiro', moment: 'greet', text: 'Good day. I have been told to relax. I am relaxing. Precisely.', delivery: 'calm, rigidly relaxed' },
+  { id: 'greet.4', who: 'hiro', moment: 'greet', text: 'Hello. Your tortillas are very large. I approve of large ambitions.', delivery: 'calm, appraising' },
+  { id: 'smalltalk.1', who: 'hiro', moment: 'smalltalk', text: 'At my bar, one roll is eight pieces. Here, one roll is one lunch. A different philosophy.', delivery: 'thoughtful' },
+  { id: 'smalltalk.2', who: 'hiro', moment: 'smalltalk', text: 'My apprentice asked if he could put cheese in a roll. I asked him to clean the rice cooker. For a month.', delivery: 'calm, stern' },
+  { id: 'smalltalk.3', who: 'hiro', moment: 'smalltalk', text: 'I sharpen my knife every morning. Today I left it at home. I feel like half a chef.', delivery: 'calm, faintly unsettled' },
+  { id: 'smalltalk.4', who: 'hiro', moment: 'smalltalk', text: 'I do not take days off. This is not a day off. This is research.', delivery: 'calm, firm' },
+  { id: 'goodbye.1', who: 'hiro', moment: 'goodbye', text: 'Thank you. I will think about this roll for a long time. Possibly too long.', delivery: 'calm, sincere' },
+  { id: 'goodbye.2', who: 'hiro', moment: 'goodbye', text: 'Good. Now I must go and tell my rice about this. It will be jealous.', delivery: 'quiet, dry' },
+  { id: 'goodbye.3', who: 'hiro', moment: 'goodbye', text: 'I bow to the tortilla. Not to the cactus. The cactus knows what it did.', delivery: 'calm, a glance at the cactus' },
+  { id: 'react.3.1', who: 'hiro', moment: 'react.3', text: 'The roll is tight. The ends are tucked. [pause] I have nothing to correct. This is very rare.', delivery: 'calm, quietly astonished' },
+  { id: 'react.3.2', who: 'hiro', moment: 'react.3', text: 'Good. Very good. My apprentice will hear about this. Often.', delivery: 'calm, satisfied' },
+  { id: 'react.3.3', who: 'hiro', moment: 'react.3', text: 'A clean roll. I would put this on my counter. Far from the fish. But on my counter.', delivery: 'calm, approving' },
+  { id: 'react.2.1', who: 'hiro', moment: 'react.2', text: 'Close. The heart of it is good. One thing has wandered.', delivery: 'calm, gentle' },
+  { id: 'react.2.2', who: 'hiro', moment: 'react.2', text: 'Almost. In my kitchen, almost is where we begin again.', delivery: 'calm, firm' },
+  { id: 'react.2.3', who: 'hiro', moment: 'react.2', text: 'Not wrong. Not right. A roll in the middle of a sentence.', delivery: 'calm, considering' },
+  { id: 'react.1.1', who: 'hiro', moment: 'react.1', text: 'No. This is not the order. I will sit quietly with my disappointment. It is a good listener.', delivery: 'calm, grave' },
+  { id: 'react.1.2', who: 'hiro', moment: 'react.1', text: 'This roll has forgotten who it was.', delivery: 'quiet, sorrowful' },
+  { id: 'react.1.3', who: 'hiro', moment: 'react.1', text: 'In forty years I have thrown away many rolls. Never one this confident.', delivery: 'calm, dry' },
+  { id: 'react.gross.1', who: 'hiro', moment: 'react.gross', text: '[pause] I will not eat this. I will not look at this. I am already not looking.', delivery: 'calm, very still' },
+  { id: 'complain.gross.brown.1', who: 'hiro', moment: 'complain.gross.brown', text: 'This guacamole is brown. At my bar we would hold a small ceremony. Then throw it away.', delivery: 'calm, solemn' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     THE REGULARS: what they say about the food here (greet, smalltalk and goodbye come from the cast script)
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Marge: warm, unhurried; her usual is the bean and cheese ──────────────────────────────────────────────── */
+  { id: 'greet.1', who: 'marge', moment: 'greet', text: 'Hi, hon. Smells like lunch and lime in here. My two favourite smells.', delivery: 'warm, breathing it in' },
+  { id: 'order.usual.1', who: 'marge', moment: 'order.usual', text: 'The usual, hon.', delivery: 'warm, expecting it to be known' },
+  { id: 'order.usual.2', who: 'marge', moment: 'order.usual', text: 'My usual, hon. Bean and cheese. Simple, like a good Sunday.', delivery: 'warm, content' },
+  { id: 'order.odd.doubleWrap.1', who: 'marge', moment: 'order.odd.doubleWrap', text: 'An Everything Burrito wrapped in another burrito, hon. Like two cardigans. You can never be too cosy.', delivery: 'warm, sincere' },
+  { id: 'order.odd.noAvocado.1', who: 'marge', moment: 'order.odd.noAvocado', text: "A veggie bowl, hon, with guacamole. No avocado, though. Doctor's orders. He didn't say why.", delivery: 'warm, unbothered' },
+  { id: 'order.odd.hottest.1', who: 'marge', moment: 'order.odd.hottest', text: "Chicken burrito, hon, and your hottest sauce. I'm feeling wild. Don't tell my sister.", delivery: 'warm, mischievous' },
+  { id: 'order.odd.justTortilla.1', who: 'marge', moment: 'order.odd.justTortilla', text: "Just the tortilla, hon. Lightly toasted. I've got a potluck later, and I'm pacing myself.", delivery: 'warm, practical' },
+  { id: 'react.3.1', who: 'marge', moment: 'react.3', text: "Oh, that's lovely, hon. Just how I like it. Snug as a quilt.", delivery: 'warm, touched' },
+  { id: 'react.3.2', who: 'marge', moment: 'react.3', text: "Now that's right, hon. I'm telling the girls at bingo. They'll pretend they're not jealous.", delivery: 'warm, pleased' },
+  { id: 'react.3.3', who: 'marge', moment: 'react.3', text: 'Perfect, sweetie. Thirty years on a school bus, and this is the first thing that went exactly to plan.', delivery: 'warm, delighted' },
+  { id: 'react.2.1', who: 'marge', moment: 'react.2', text: "It's fine, hon. Like a bus with one squeaky seat. You still get where you're going.", delivery: 'warm, forgiving' },
+  { id: 'react.2.2', who: 'marge', moment: 'react.2', text: 'Close, sweetie. Close counts in horseshoes, and I play a lot of horseshoes.', delivery: 'warm, wry' },
+  { id: 'react.2.3', who: 'marge', moment: 'react.2', text: "It'll do, hon. I've eaten worse at the church potluck. Brenda brings a casserole.", delivery: 'warm, conspiratorial' },
+  { id: 'react.1.1', who: 'marge', moment: 'react.1', text: "Oh, hon. This isn't mine. I don't know whose it is, but they're going to be upset too.", delivery: 'gently dismayed' },
+  { id: 'react.1.2', who: 'marge', moment: 'react.1', text: "Oh, sweetie. I'll eat it. I'll just be very quiet about it.", delivery: 'warm, pointed' },
+  { id: 'react.1.3', who: 'marge', moment: 'react.1', text: 'Hon, I drove the same route for thirty years. I know a wrong turn. This is a wrong turn.', delivery: 'warm, firm' },
+  { id: 'react.gross.1', who: 'marge', moment: 'react.gross', text: "Oh, my stars. Hon. There's something in here, and it isn't lunch.", delivery: 'a hand to the chest' },
+
+  /* ── Gus: the trucker; two of one thing (his twin), Delores is the truck ───────────────────────────────────── */
+  { id: 'greet.1', who: 'gus', moment: 'greet', text: 'Howdy, buddy. Smelled that griddle from the loading dock. Delores is double-parked.', delivery: 'an easy drawl' },
+  { id: 'order.twin.1', who: 'gus', moment: 'order.twin', text: 'Make it two, buddy. One for now, one for the road.', delivery: 'a warm drawl' },
+  { id: 'order.twin.2', who: 'gus', moment: 'order.twin', text: "Two of 'em. Delores don't eat, but she likes the company.", delivery: 'a fond drawl' },
+  { id: 'order.odd.doubleWrap.1', who: 'gus', moment: 'order.odd.doubleWrap', text: 'An Everything Burrito wrapped in another burrito, buddy. Like a spare tyre. Always carry a spare.', delivery: 'an easy drawl' },
+  { id: 'order.odd.hottest.1', who: 'gus', moment: 'order.odd.hottest', text: "Chicken burrito, hottest sauce you got. Delores wants to see me sweat.", delivery: 'a sheepish drawl' },
+  { id: 'react.3.1', who: 'gus', moment: 'react.3', text: "Now that's worth the detour. And I don't take detours.", delivery: 'a satisfied drawl' },
+  { id: 'react.3.2', who: 'gus', moment: 'react.3', text: "Mm-hm. That's road food done right. Holds together at sixty miles an hour.", delivery: 'an approving drawl' },
+  { id: 'react.3.3', who: 'gus', moment: 'react.3', text: "Buddy, that's beautiful. I'd drive all night for that. Did, in fact.", delivery: 'a reverent drawl' },
+  { id: 'react.2.1', who: 'gus', moment: 'react.2', text: "It'll do, buddy. Like a radio station that comes in mostly clear.", delivery: 'an easygoing drawl' },
+  { id: 'react.2.2', who: 'gus', moment: 'react.2', text: "Not bad. Little off. Like a mud flap hangin' crooked.", delivery: 'an amused drawl' },
+  { id: 'react.2.3', who: 'gus', moment: 'react.2', text: "Close. Delores has made closer parkin' jobs, but not many.", delivery: 'a cheerful drawl' },
+  { id: 'react.1.1', who: 'gus', moment: 'react.1', text: "Well. I ate a gas-station burrito in Arizona once. This one's losin' to it.", delivery: 'a deadpan drawl' },
+  { id: 'react.1.2', who: 'gus', moment: 'react.1', text: "Buddy, this ain't my order. I'll eat it anyhow. Delores won't speak to me tonight.", delivery: 'a resigned drawl' },
+  { id: 'react.1.3', who: 'gus', moment: 'react.1', text: "That ain't what I asked for. That's somebody else's lunch, and they're out there hungry.", delivery: 'slow, sorrowful' },
+  { id: 'react.gross.1', who: 'gus', moment: 'react.gross', text: "Oh, buddy. No. That's goin' in the logbook, and I don't even keep a logbook.", delivery: 'a low groan' },
+
+  /* ── Coach Bev: a coach, firm; the steak burrito is her favourite and she counts its jalapeños out loud ────── */
+  { id: 'greet.1', who: 'bev', moment: 'greet', text: "Coach Bev! Lunch is a TEAM SPORT! Today I'm the WHOLE TEAM!", delivery: 'firm, like a coach, pumped' },
+  { id: 'order.odd.doubleWrap.1', who: 'bev', moment: 'order.odd.doubleWrap', text: 'An Everything Burrito, wrapped TWICE! Double coverage! Nothing gets through!', delivery: 'firm, like a coach, drawing up the play' },
+  { id: 'order.odd.hottest.1', who: 'bev', moment: 'order.odd.hottest', text: "Chicken burrito! Hottest sauce you've got! I'm training my TEARS! They need DISCIPLINE!", delivery: 'firm, like a coach, steely' },
+  { id: 'react.favourite.1', who: 'bev', moment: 'react.favourite', text: 'Jalapeños! ONE! TWO! THREE! FOUR! FIVE! SIX! FULL SQUAD! Everybody SHOWED UP!', delivery: 'firm, like a coach, counting each one' },
+  { id: 'react.favourite.2', who: 'bev', moment: 'react.favourite', text: "Steak burrito! Let's count 'em! One, two, three, four, five, six jalapeños! That's a ROSTER!", delivery: 'firm, like a coach, counting with delight' },
+  { id: 'react.favourite.3', who: 'bev', moment: 'react.favourite', text: 'SIX jalapeños! I counted TWICE! Once out loud and once LOUDER!', delivery: 'firm, like a coach, triumphant' },
+  { id: 'react.3.1', who: 'bev', moment: 'react.3', text: "THAT is execution! Textbook! It's going on the CLIPBOARD!", delivery: 'firm, like a coach, triumphant' },
+  { id: 'react.3.2', who: 'bev', moment: 'react.3', text: 'Perfect play! Every player in POSITION! Nobody offside!', delivery: 'firm, like a coach, proud' },
+  { id: 'react.3.3', who: 'bev', moment: 'react.3', text: "YES! That's how we DRILL IT! Again tomorrow! Same TIME!", delivery: 'firm, like a coach, ecstatic' },
+  { id: 'react.2.1', who: 'bev', moment: 'react.2', text: "Decent effort! One missed assignment! We'll look at the TAPE!", delivery: 'firm, like a coach, assessing' },
+  { id: 'react.2.2', who: 'bev', moment: 'react.2', text: 'Close! Good hustle, wrong ROUTE!', delivery: 'firm, like a coach, fair' },
+  { id: 'react.2.3', who: 'bev', moment: 'react.2', text: 'Solid! Not championship! Regional at BEST!', delivery: 'firm, like a coach' },
+  { id: 'react.1.1', who: 'bev', moment: 'react.1', text: "That's a FLAG on the play! Ten yards! On LUNCH!", delivery: 'firm, like a coach, outraged' },
+  { id: 'react.1.2', who: 'bev', moment: 'react.1', text: 'Wrong PLAY! Wrong FORMATION! Wrong LUNCH!', delivery: 'firm, like a coach, a verdict' },
+  { id: 'react.1.3', who: 'bev', moment: 'react.1', text: "That's not my order! That's the OTHER team's order!", delivery: 'firm, like a coach, disgusted' },
+  { id: 'react.gross.1', who: 'bev', moment: 'react.gross', text: 'TIMEOUT! TIMEOUT! Something in here did NOT try out for this team!', delivery: 'firm, like a coach, panicked' },
+
+  /* ── Vernon: foppish, fussy, exact; a bowl, nothing touching. "I will know." ───────────────────────────────── */
+  { id: 'greet.1', who: 'vernon', moment: 'greet', text: "[sigh] Good afternoon. I'll have something with boundaries.", delivery: 'a theatrical sigh, refined' },
+  { id: 'order.odd.noAvocado.1', who: 'vernon', moment: 'order.odd.noAvocado', text: 'A veggie bowl. Guacamole, without the avocado. Kept apart from everything, including itself.', delivery: 'refined, entirely serious' },
+  { id: 'order.odd.justTortilla.1', who: 'vernon', moment: 'order.odd.justTortilla', text: 'Just the tortilla. Lightly toasted. Nothing can touch it if there is nothing.', delivery: 'smug, refined' },
+  { id: 'react.3.1', who: 'vernon', moment: 'react.3', text: "Everything is where it should be. Nothing is where it shouldn't. [pause] Acceptable.", delivery: 'a long pause, then grudging' },
+  { id: 'react.3.2', who: 'vernon', moment: 'react.3', text: 'Everything in its place. I may weep. I will not. But I may.', delivery: 'refined, faintly shaken' },
+  { id: 'react.3.3', who: 'vernon', moment: 'react.3', text: "Correct. I'm writing 'correct' and underlining it. My readers know what that means.", delivery: 'refined, superior' },
+  { id: 'react.2.1', who: 'vernon', moment: 'react.2', text: '[sigh] The beans have met the rice. They were never introduced.', delivery: 'wounded, fussy' },
+  { id: 'react.2.2', who: 'vernon', moment: 'react.2', text: "Competent. My readers expect more adjectives. They won't get them.", delivery: 'haughty, bored' },
+  { id: 'react.2.3', who: 'vernon', moment: 'react.2', text: "Close. Close is a blog post I'll write while frowning.", delivery: 'cool, pointed' },
+  { id: 'react.1.1', who: 'vernon', moment: 'react.1', text: "I've had warmer welcomes from a car alarm.", delivery: 'deeply unimpressed' },
+  { id: 'react.1.2', who: 'vernon', moment: 'react.1', text: 'All eleven of my followers will hear about this. Even Doris, who only reads the headlines.', delivery: 'icy, almost pleased' },
+  { id: 'react.1.3', who: 'vernon', moment: 'react.1', text: "I said I would know. I know. [sigh] It's a burden.", delivery: 'wounded dignity' },
+  { id: 'react.gross.1', who: 'vernon', moment: 'react.gross', text: 'This will be my most-read post ever. I hate that.', delivery: 'grim, quietly thrilled' },
+
+  /* ── Sal: gruff, a bit crude; steak, never lettuce ─────────────────────────────────────────────────────────── */
+  { id: 'greet.1', who: 'sal', moment: 'greet', text: "Ay. Steak, no lettuce. That ain't my order, that's my motto.", delivery: 'gruff' },
+  { id: 'order.dislike.1', who: 'sal', moment: 'order.dislike', text: "And no lettuce. Lettuce in my lunch is a rabbit in a sleepin' bag.", delivery: 'gruff, disgusted' },
+  { id: 'order.dislike.2', who: 'sal', moment: 'order.dislike', text: "No lettuce. Lettuce is for rabbits. I ain't a rabbit. I checked.", delivery: 'gruff, certain' },
+  { id: 'order.dislike.3', who: 'sal', moment: 'order.dislike', text: 'Hold the lettuce. It hides in there. It thinks I won\'t find it. I always find it.', delivery: 'gruff, suspicious' },
+  { id: 'order.odd.hottest.1', who: 'sal', moment: 'order.odd.hottest', text: "Chicken burrito, hottest sauce ya got. My wife says I don't show emotion. Tonight, I show emotion.", delivery: 'gruff, determined' },
+  { id: 'order.odd.noAvocado.1', who: 'sal', moment: 'order.odd.noAvocado', text: "Veggie bowl, guacamole, no avocado. I don't trust avocados. They go bad when you look away.", delivery: 'gruff, suspicious' },
+  { id: 'react.3.1', who: 'sal', moment: 'react.3', text: "Now THAT'S lunch. No lettuce, no nonsense. Beautiful.", delivery: 'gruff, delighted' },
+  { id: 'react.3.2', who: 'sal', moment: 'react.3', text: "That's the one. Better than my hot dogs. Don't tell my hot dogs.", delivery: 'gruff, a glance around' },
+  { id: 'react.3.3', who: 'sal', moment: 'react.3', text: "Ay, that's good. That's the kinda good you don't tell your brother-in-law about.", delivery: 'gruff, sly' },
+  { id: 'react.2.1', who: 'sal', moment: 'react.2', text: "Eh. It's fine. My cart's had worse days. My cart's had worse years.", delivery: 'a gruff shrug' },
+  { id: 'react.2.2', who: 'sal', moment: 'react.2', text: "Close. Not perfect. Like my cousin's parallel parkin'.", delivery: 'gruff, scornful' },
+  { id: 'react.2.3', who: 'sal', moment: 'react.2', text: "It's okay. Not what I said, but I've eaten stranger things on the subway.", delivery: 'gruff, resigned' },
+  { id: 'react.1.1', who: 'sal', moment: 'react.1', text: "What is this? Even the pigeons out front are lookin' away.", delivery: 'gruff, disgusted' },
+  { id: 'react.1.2', who: 'sal', moment: 'react.1', text: 'Ay. I sell hot dogs off a cart in the rain, and this is still the worst thing I seen today.', delivery: 'gruff, appalled' },
+  { id: 'react.1.3', who: 'sal', moment: 'react.1', text: "This ain't my order. This is somebody's science project.", delivery: 'gruff, aggrieved' },
+  { id: 'react.gross.1', who: 'sal', moment: 'react.gross', text: "Oh, that's nasty. And I clean a hot-dog cart for a livin'.", delivery: 'gruff, revolted' },
+
+  /* ── Professor Oakes: food science, nasal and too fast; tacos come with onions, and he has a new reason ───── */
+  { id: 'greet.1', who: 'oakes', moment: 'greet', text: "Good afternoon. I've brought a thermometer. For the sauce. And, frankly, for morale.", delivery: 'nasal, eager' },
+  { id: 'order.dislike.1', who: 'oakes', moment: 'order.dislike', text: "No onions. An onion has layers, and I don't trust anything that's hiding that much.", delivery: 'nasal, too fast, suspicious' },
+  { id: 'order.dislike.2', who: 'oakes', moment: 'order.dislike', text: "No onions. On a taco they roll off at a rate I find personally insulting. I've filmed it.", delivery: 'nasal, brandishing a phone' },
+  { id: 'order.dislike.3', who: 'oakes', moment: 'order.dislike', text: 'No onions. They make people cry. I prefer to cry about data, like a professional.', delivery: 'nasal, righteous' },
+  { id: 'order.odd.doubleWrap.1', who: 'oakes', moment: 'order.odd.doubleWrap', text: "An Everything Burrito inside another burrito. For thermal insulation. I'm running a study.", delivery: 'nasal, eager' },
+  { id: 'order.odd.noAvocado.1', who: 'oakes', moment: 'order.odd.noAvocado', text: "Veggie bowl. Guacamole, no avocado. I'm testing whether the idea of guacamole is still guacamole.", delivery: 'nasal, too fast, fascinated' },
+  { id: 'react.3.1', who: 'oakes', moment: 'react.3', text: 'Excellent! The layer order is textbook. Chapter nine of my textbook. Nobody reads chapter nine.', delivery: 'nasal, thrilled, then deflating' },
+  { id: 'react.3.2', who: 'oakes', moment: 'react.3', text: 'Splendid. I measured it twice. Both measurements are delighted.', delivery: 'nasal, measuring' },
+  { id: 'react.3.3', who: 'oakes', moment: 'react.3', text: 'Perfect! Ninety-five percent confidence it is delicious. Possibly ninety-six.', delivery: 'nasal, too fast' },
+  { id: 'react.2.1', who: 'oakes', moment: 'react.2', text: 'Hm. Statistically close. Emotionally, not close at all.', delivery: 'nasal, grudging' },
+  { id: 'react.2.2', who: 'oakes', moment: 'react.2', text: "Adequate. A B-minus lunch. I'm a generous grader. My students disagree.", delivery: 'nasal, earnest' },
+  { id: 'react.2.3', who: 'oakes', moment: 'react.2', text: 'Close. The hypothesis held up. The results wandered off.', delivery: 'nasal, quick' },
+  { id: 'react.1.1', who: 'oakes', moment: 'react.1', text: "This is not my order. This is an outlier. I'm removing it from my results.", delivery: 'nasal, clinical' },
+  { id: 'react.1.2', who: 'oakes', moment: 'react.1', text: "Fascinating. Wrong in ways I haven't catalogued yet. I'll need a new spreadsheet.", delivery: 'nasal, appalled and delighted' },
+  { id: 'react.1.3', who: 'oakes', moment: 'react.1', text: "No. This fails peer review. I'm the peer.", delivery: 'nasal, firm' },
+  { id: 'react.gross.1', who: 'oakes', moment: 'react.gross', text: 'Oh! Oh, that is a specimen. Nobody move. I need a sample jar and a stronger stomach.', delivery: 'nasal, scientific glee and horror' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     THE VISITORS (level 4): Reginald the critic (the newest on the menu) and Kai, ten
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'visitor.arrive.1', who: 'reginald', moment: 'visitor.arrive', text: "Make way. Reginald. Critic. I've come to review Ben's Burritos, layer by glorious layer.", delivery: 'theatrical, sweeping in' },
+  { id: 'visitor.arrive.2', who: 'reginald', moment: 'visitor.arrive', text: "Ah. I smelled the griddle from the escalator. I'll be reviewing the escalator too. It lacked drama.", delivery: 'grand, nostrils flared' },
+  { id: 'visitor.arrive.3', who: 'reginald', moment: 'visitor.arrive', text: 'Good afternoon. A critic approaches a burrito as one approaches a sealed letter. Carefully, expecting news.', delivery: 'stately' },
+  { id: 'greet.1', who: 'reginald', moment: 'greet', text: 'Good afternoon. The newest thing you make, please. Novelty is my oxygen.', delivery: 'theatrical, resigned to greatness' },
+  { id: 'react.3.1', who: 'reginald', moment: 'react.3', text: "Magnificent. A novel you can hold. A sequel I'll order.", delivery: 'rapturous, sweeping' },
+  { id: 'react.3.2', who: 'reginald', moment: 'react.3', text: 'Sublime. Each layer arrives on cue, like a well-rehearsed chorus.', delivery: 'grand, savouring it' },
+  { id: 'react.3.3', who: 'reginald', moment: 'react.3', text: "Perfection. Four stars, and I don't give four stars. I give three and a long look.", delivery: 'theatrical, grudging on the four' },
+  { id: 'react.2.1', who: 'reginald', moment: 'react.2', text: 'Hm. A promising first act. The second act forgot its lines.', delivery: 'theatrical, relishing it' },
+  { id: 'react.2.2', who: 'reginald', moment: 'react.2', text: "Nearly. I'll call it ambitious. Critics say ambitious when we mean nearly.", delivery: 'grave, pleased with himself' },
+  { id: 'react.2.3', who: 'reginald', moment: 'react.2', text: 'Fine. Three stars. Competent and unbothered, like a well-run car wash.', delivery: 'theatrical, bored' },
+  { id: 'react.1.1', who: 'reginald', moment: 'react.1', text: "Oh, dear. I ordered lunch. I've received a column.", delivery: 'a slow, delighted horror' },
+  { id: 'react.1.2', who: 'reginald', moment: 'react.1', text: 'A tragedy in one tortilla. The critics will weep. I am the critics.', delivery: 'grand, wounded' },
+  { id: 'react.1.3', who: 'reginald', moment: 'react.1', text: "This is not my order. This is someone else's tragedy, and I'm intruding.", delivery: 'theatrical, confiding' },
+  { id: 'react.gross.1', who: 'reginald', moment: 'react.gross', text: "Good heavens. Something in here deserves its own review. A short one. It's just 'no.'", delivery: 'aghast, intrigued' },
+
+  { id: 'visitor.arrive.1', who: 'kai', moment: 'visitor.arrive', text: "Hi. Kai. I'm reviewing Ben's Burritos. Reginald's still outside, describing the paper flags.", delivery: 'bright, very serious' },
+  { id: 'visitor.arrive.2', who: 'kai', moment: 'visitor.arrive', text: 'Hello. I brought my notebook and my appetite. Both are open.', delivery: 'bright, formal' },
+  { id: 'visitor.arrive.3', who: 'kai', moment: 'visitor.arrive', text: "Hi. This is my first burrito review. I've been practising on sandwiches.", delivery: 'bright, very serious' },
+  { id: 'react.3.1', who: 'kai', moment: 'react.3', text: 'Correct. Delicious. Correct again. Ten out of ten.', delivery: 'bright, decisive' },
+  { id: 'react.3.2', who: 'kai', moment: 'react.3', text: "Perfect. That's a smiley face in the notebook. With teeth. I don't usually do teeth.", delivery: 'bright, solemn' },
+  { id: 'react.3.3', who: 'kai', moment: 'react.3', text: 'Yes. Three words: Very. Good. Lunch.', delivery: 'bright, counting the words' },
+  { id: 'react.2.1', who: 'kai', moment: 'react.2', text: "Mostly right. I'm giving it a seven. The other three are on vacation.", delivery: 'bright, serious' },
+  { id: 'react.2.2', who: 'kai', moment: 'react.2', text: "Hm. One thing's wrong. I'm drawing a face that's thinking.", delivery: 'bright, thoughtful' },
+  { id: 'react.2.3', who: 'kai', moment: 'react.2', text: "It's okay. Reginald would write a page. I'll write okay and underline it once.", delivery: 'bright, matter-of-fact' },
+  { id: 'react.1.1', who: 'kai', moment: 'react.1', text: "That's the frowny face. I was saving it for a special occasion.", delivery: 'bright, grave' },
+  { id: 'react.1.2', who: 'kai', moment: 'react.1', text: "This isn't what I ordered. Two words: wrong lunch.", delivery: 'bright, firm' },
+  { id: 'react.1.3', who: 'kai', moment: 'react.1', text: 'Reginald says be fair. Fair: this is not my order. The end.', delivery: 'bright, final' },
+  { id: 'react.gross.1', who: 'kai', moment: 'react.gross', text: "Ew. Okay. New page. The page just says ew.", delivery: 'bright, shaken' },
+] });

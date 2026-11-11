@@ -1,0 +1,19 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Attached image 1 is THIS restaurant's storefront, cut out of the food court picture (attached image 2), seen from above.
+Draw the same restaurant from INSIDE it: its materials, colours, roof and awning, blank sign shape, counter front and
+props must match image 1 exactly, so a player who zooms in from the court recognises it at once.
+Scene: inside Ben's Burritos, a bright orange burrito stall with a clay tile roof, a giant burrito and chili peppers on top, one of the restaurants in a cheerful shopping-mall food court, seen from BEHIND its serving counter,
+looking ACROSS the court: tables, chairs and planters in the middle distance, the round stone plinth, and far away on the other side the sushi bar (navy tiled roof, paper lanterns) and the ice cream parlor (pink and white, swirly roof) exactly as they look in image 2, under the mall's big skylight, eye level about 1.6 m. The stall's own side walls, pillars and roof edge
+frame the view on the left edge, the right edge and across the top, seen from inside (its kitchen is behind the viewer,
+out of sight). The stall's decor: papel picado banners in bright colours across the top, orange wooden side walls, a shelf of hot sauce bottles, a stack of plates, a cactus in a talavera pot, orange stools on the customers' side, a chalk menu with drawings (no words).
+Composition (percent of the image):
+- Left 10% to 55%: keep this area visually quiet (a plain wall of the stall and an empty table far back), because the
+  game draws the current customer standing here, large, on top of the picture.
+- Right 55% to 85%, middle distance: a short queue of three waiting customers, small, SHARP and in focus like everything
+  else: a construction worker with a lunchbox, a woman in a sun hat, a man fanning his mouth after hot sauce. Original, funny designs.
+- Bottom 22%: just the floor (the game draws the counter top here, on top of the picture).
+Hidden funny details, small but findable: a cactus wearing a tiny sombrero hat; a fire extinguisher next to the hottest sauce; a chili pepper with a smoke cloud above it; a pinata shaped like an avocado.
+Everything sharp, nothing blurred. No text anywhere except what the details ask for. No border.
+Save as art-source/backdrops/candidates/burrito-counter.png (1536 x 1024) and the prompt as art-source/backdrops/candidates/burrito-counter-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

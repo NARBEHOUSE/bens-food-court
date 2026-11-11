@@ -1,0 +1,127 @@
+/** Ben's Burger Bar - orders.
+ *
+ *  One generator for every customer. A customer's personality picks WHAT they order; the
+ *  Orders setting alone decides HOW MUCH (DESIGN.md "Customers and cast").
+ *
+ *  An order item ("spec") is a recipe template made concrete:
+ *    { recipe, ing, size?, done?, parts: [{ ing, done?, flavour? }], holds: [ing], adds: [ing], with? }
+ *  with: the only toppings, when a Simple order trims them ("with just lettuce and ketchup").
+ *  The line (line.js) asks the player to make it, the judge (judge.js) checks against it
+ *  and words.js reads it out.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng.js'));
+  else (root.BB = root.BB || {}).orders = factory(root.BB.rng);
+})(typeof window === 'undefined' ? globalThis : window, function (R) {
+  'use strict';
+
+  const clone = o => JSON.parse(JSON.stringify(o));
+
+  /** The values a pick may take. */
+  function pickValues(pack, name, fancy) {
+    const P = pack.picks[name];
+    return ((fancy && P.fancy) || P.values).slice();
+  }
+
+  /** A recipe template -> one concrete item. s carries the rng.
+   *  ctx = { style, set: { pick: value }, dislikes: [ing], maxOptional, exact, change? }
+   *  change 0 gives the recipe exactly as written. */
+  function resolve(pack, recipeId, s, ctx) {
+    ctx = ctx || {};
+    const style = pack.orderStyles[ctx.style || 'usual'];
+    const change = ctx.change !== undefined ? ctx.change : ctx.exact ? Math.max(style.change, 0.5) : style.change;
+    const set = ctx.set || {}, dislikes = ctx.dislikes || [];
+    const chosen = {};
+    const pick = (v) => {
+      if (!v || typeof v !== 'object' || !v.pick) return { value: v, picked: false };
+      const name = v.pick;
+      if (!(name in chosen)) {
+        if (set[name] !== undefined) chosen[name] = set[name];
+        else {
+          const values = pickValues(pack, name, style.fancy);
+          const normal = values.includes(pack.picks[name].normal) ? pack.picks[name].normal : values[0];
+          chosen[name] = R.chance(s, change) ? R.pick(s, values) : normal;
+        }
+      }
+      return { value: chosen[name], picked: true };
+    };
+    const T = pack.recipes[recipeId].item;
+    const spec = { recipe: recipeId, ing: pick(T.ing).value, parts: [], holds: [], adds: [] };
+    if (T.size) spec.size = pick(T.size).value;
+    if (T.done) spec.done = pick(T.done).value;
+    const optional = [];
+    for (const tp of T.parts) {
+      const ingPick = pick(tp.ing);
+      const p = { ing: ingPick.value };
+      if (ingPick.picked) p.flavour = true;
+      if (tp.done) p.done = pick(tp.done).value;
+      if (tp.opt === 'in') {
+        if (dislikes.includes(p.ing) || R.chance(s, change * 0.5)) { if (!spec.holds.includes(p.ing)) spec.holds.push(p.ing); continue; }
+        optional.push(p);
+      } else if (tp.opt === 'out') {
+        if (dislikes.includes(p.ing) || !R.chance(s, change * 0.4)) continue;
+        spec.adds.push(p.ing);
+        optional.push(p);
+      }
+      spec.parts.push(p);
+    }
+    const max = ctx.maxOptional !== undefined ? ctx.maxOptional : style.maxOptional;
+    if (max !== undefined && optional.length > max) {
+      const cut = R.shuffle(s, optional.slice()).slice(max);
+      cut.forEach(p => { spec.parts.splice(spec.parts.indexOf(p), 1); });
+      spec.holds = spec.holds.filter(h => !cut.some(p => p.ing === h));
+      spec.adds = spec.adds.filter(h => !cut.some(p => p.ing === h));
+      spec.with = optional.filter(p => !cut.includes(p)).map(p => p.ing);
+    }
+    return spec;
+  }
+
+  /** Hold some parts of an item (the tutorial's "no onions"). */
+  function hold(spec, ings) {
+    for (const id of ings || []) {
+      const before = spec.parts.length;
+      spec.parts = spec.parts.filter(p => p.ing !== id);
+      if (spec.parts.length < before && !spec.holds.includes(id)) spec.holds.push(id);
+      spec.adds = spec.adds.filter(a => a !== id);
+    }
+    return spec;
+  }
+
+  /** The items a customer orders.
+   *  ctx = { customer, style, recipes: [ids on offer], special, newest } */
+  function order(pack, s, ctx) {
+    const C = ctx.customer, style = pack.orderStyles[ctx.style || 'usual'];
+    const recipes = Object.keys(pack.recipes).filter(r => ctx.recipes.includes(r));
+    let [lo, hi] = style.items;
+    if (C.short) hi = Math.min(hi, 1);
+    lo = Math.min(lo, hi);
+    // Each item past the first comes with style.more's chance (default: even odds).
+    let n = lo;
+    while (n < hi && R.chance(s, style.more === undefined ? 0.5 : style.more)) n += 1;
+    if (C.twin && hi >= 2) n = Math.max(n, 2);
+    const rctx = { style: ctx.style, set: Object.assign({}, C.set, C.wants), dislikes: C.dislikes, exact: C.exact };
+    const make = (r, set, change) => resolve(pack, r, s, Object.assign({}, rctx, { set: Object.assign({}, rctx.set, set), change }));
+
+    // "The usual, hon": the same every time, as written.
+    if (C.usual && C.usual.every(u => recipes.includes(u.recipe))) {
+      return C.usual.slice(0, Math.max(1, hi)).map(u => make(u.recipe, u.set, 0));
+    }
+    const likes = new Map((C.likes || []).filter(([r]) => recipes.includes(r)));
+    const weight = r => (likes.get(r) || (pack.recipes[r].rare ? 0.1 : 0.5)) + (r === ctx.special ? 2 : 0);
+    if (C.twin && n >= 2) {
+      const one = make(R.weighted(s, recipes.map(r => [r, weight(r)])));
+      return [one, clone(one)];
+    }
+    const chosen = [];
+    (C.always || []).forEach(r => { if (recipes.includes(r) && chosen.length < n) chosen.push(r); });
+    if (C.newest && ctx.newest && recipes.includes(ctx.newest) && !chosen.includes(ctx.newest) && chosen.length < n) chosen.push(ctx.newest);
+    while (chosen.length < n) {
+      const left = recipes.filter(r => !chosen.includes(r));
+      if (!left.length) break;
+      chosen.push(R.weighted(s, left.map(r => [r, weight(r)])));
+    }
+    return chosen.map(r => make(r));
+  }
+
+  return { resolve, hold, order, pickValues };
+});

@@ -1,0 +1,301 @@
+# The page: the main menu, the court, a restaurant's shifts, the counter (page-1 and page-2, phase 2a, 2026-11-09)
+
+What `index.html` and `js/{packs,save,stage,ui,court,game,main}.js` do, the hooks the rest of the build calls, how a
+new restaurant is wired in, and the jsdom driver and review frames. Spec: FOODCOURT-BUILD.md 4.2, 5.2, 5.5, 6. The
+court and the main menu over it are section 6 (page-2).
+
+## 1. Modules, in load order (index.html)
+
+| File | Global | What |
+|---|---|---|
+| hub `shared/*` | `NarbeScanManager`, `NarbeChoiceScanAdapter`, `NarbeVoiceManager`, `NarbeGraphics` ... | the hub's scanner, voice, input guard, graphics quality (never edited) |
+| `js/vendor/three.min.js`, `<!-- world -->` | `THREE`, `BB.food` | the kit and each restaurant's food module |
+| `js/core/*`, `<!-- core -->` | `BB.line words orders judge cast schema script shift progress savefmt courtRules` | the rules (pure; the Node tests run the same files) |
+| `packs/court/{court,script}.js` | `BBCourt`, `BBScripts.court` | the court as data, its lines |
+| `packs/<id>/{pack,script}.js`, `art/manifest.js`, `voice/manifest.js` | `BBPacks.<id>`, `BBScripts.<id>`, `BBArt.<id>`, `BBVoice.<id>` | each restaurant |
+| `<!-- audio -->`, `<!-- cast -->` | `BBSounds`, `BBCast`, `BBArt.{cast,shared,court,<pack>}` | sounds, the cast, the art manifests |
+| `packs/cast/script.js` | `BBScripts.cast` | lines that work anywhere |
+| `js/save.js` | `BB.save` | `bb-settings` v3, `bb-court`, `bb-progress:<pack>`, `bb-shift:<pack>` (spec 7) |
+| `js/audio.js`, `js/world.js` | `BB.audio`, `BB.world` | voices and sounds; the 3D frame |
+| `js/stage.js` | `BB.stage` | the 2D stage: backdrop, customer, Mitch, props, wheel, controls, gauge, bubble, receipt, HUD; the counter's layout |
+| `js/packs.js` | `BB.packs` | the restaurants on the page, merged |
+| `js/ui.js` | `BB.ui` | switch input, the scan, the menu boards |
+| `js/court.js` | `BB.court` | the court on its picture, and the main menu over it out of focus (section 6) |
+| `js/game.js` | `BB.game` | a restaurant's shifts |
+| `js/main.js` | | boot: sounds, stage, input, 3D, the graphics hand-off, then `BB.court.menu()` |
+
+Keep the phase-1 blocks (`<!-- world -->`, `<!-- core -->`, `<!-- audio -->`, `<!-- cast -->`) and their order.
+
+## 2. Wiring in a new restaurant (the exact lines)
+
+In the world block, after `js/food/diner.js`:
+
+```html
+<script src="js/food/<id>.js"></script>
+```
+
+In the restaurants block, after the diner's four lines (the art manifests of the six new restaurants are already in
+the cast block, so do not add those again):
+
+```html
+<script src="packs/<id>/pack.js"></script>
+<script src="packs/<id>/script.js"></script>
+<script src="packs/<id>/voice/manifest.js" onerror="console.warn('no <id> voice manifest yet: text to speech')"></script>
+```
+
+Nothing else: `BB.packs` finds `BBPacks.<id>`, the court lists it (`BBCourt.restaurants`), and stage, world and
+audio follow the active pack. A restaurant BBCourt lists whose `pack.js` is not loaded is "not built yet" (a
+development state): the court draws it greyed out and never scans it.
+
+## 3. `BB.packs` (js/packs.js)
+
+`get(id)` -> `{ id, raw, pack, script, art, problems }`, built once: `pack = BB.cast.merge(BBCast, BBPacks[id])`,
+`script = BB.script.merge(pack, BBScripts[id], BBScripts.cast)`, `art = BBArt[id]`, `problems = BB.schema.validate(pack)`
+(warned once; the page still runs). The rest of the page only ever reads merged packs. Also `ids()`, `has(id)`,
+`use(id|null)` (the restaurant the player is in), `active`, `activeId`, `drawn()` (`BBCast.drawn(BBArt.cast)`: who
+may come in, spec 4.5) and `built()` (BBCourt's restaurants whose pack is loaded, in scan order).
+
+## 4. `BB.game` (js/game.js)
+
+| Call | Does |
+|---|---|
+| `enter(id, { tutorial?, again? })` | into a restaurant: `BB.packs.use`, `stage.usePack` (theme under `body[data-pack=<id>]`), `world.usePack`, `audio.use`; then the first-visit card `tutorialOffer` (unless `again`), a saved `bb-shift:<id>` resumed (the ticket read again), a finished-but-uncounted one counted, the `event` card when `BB.courtRules.eventDue`, else `S.create(pack, { level: R.level(...), drawn, settings })` |
+| `offer('tutorial'\|'skip'\|'court')` | the first-visit card: Play and Skip set `tutorialDone` |
+| `startShift({ event? })`, `startTutorial()`, `restart()`, `again()` | a new shift (the event when asked and due); the tutorial (never saved); Restart Shift (the only discard; restarts a tutorial as a tutorial); Another Shift |
+| `leaveToCourt()`, `quit()`, `exitGame()` | every route out saves the shift as it is (spec 4.2), lets go of the pack, stage, food and sounds; then the court, the main menu, the hub |
+| `pause()`, `resume()` | Pause: the clock stops, speech stops, the card opens. Continue restarts the current screen: an interrupted arrival reads the ticket and starts the line |
+| `afterReset()` | after Reset Progress: a shift in hand is dropped, the main menu opens |
+| `help()`, `ticketWords()` | Pause's Help (`pack.help`) and Ticket |
+| `onChoice(ref)` | a scanned choice on the line, the review or the receipt |
+| `inShift()`, `inTutorial()`, `shift()`, `pack()`, `busy`, `screen` (`arrive line review receipt none`), `paused`, `run` | for ui.js and the jsdom checks |
+
+**The run counter** (spec 6.3): `run` goes up in `enter`, `begin` (every shift start), `pause`, `resume` and every
+leave (`leaveToCourt`, `quit`, `afterReset`). Each playout takes `token()` at its start and returns as soon as
+`stale(t)` after any await, so Pause, leaving or a new shift never has an old scene talking under it. `BB.ui.line()`
+never closes a card it did not open: a line that arrives while a card is up is ignored.
+
+**Counting:** a finished shift is claimed once (`S.claim`), then `BB.courtRules.addShift` and `BB.progress.addShift`,
+and `bb-shift` is cleared. The results card says `R.shiftWords` (stars gained, a restaurant opened, the gold sign, the
+celebration); Mitch says `event.celebrate` / `event.again` / `shift.end` before it opens.
+
+**Moments** (docs/api/script.md): `greet`, `visitor.arrive` before a visitor's greet, `order.odd.<id>` instead of the
+order sentence, `order.usual`, `order.dislike`, `order.twin`, a customer's own `order.gag` after the order (locals at
+home, and whoever orders the event's finale: Bev's "for the team"), `smalltalk` or once a shift a `mention` (via
+`SC.pickMention` with BBCourt's `said`), `react.*`, `complain.*` with the judge's mistake as vars, `goodbye`; Mitch's
+`uniform` with the first shift at a restaurant in a session, `shift.start/end`, `event.*` with `{ name }`, every
+`tutorial.*` (essential: said in the game's voice when Character Voices is Off), `gross.<id>`, `nearly` (a caption
+unless recorded), `after.*`. `smalltalk` and `goodbye` are skipped with Character Voices Off; every line plays while
+the scan is suspended.
+
+**The line:** `S.tick(pack, s, dt, BB.ui.heldKeys())` (the clock stands still while a switch is down); pick rows get
+`rowItems` (More… and `more:<n>` pages, entered as rows); the gauge and dial read `q.set`; `auto` events and `cooked`
+with `auto` play through `BB.world.outcome`, every sound inside `onApply` via `BB.audio.station(station, hook)`
+(sauces keep `squirt`); the Timed control is the station's `tool` prop with the stage set's `stop` words (a drawn
+button when there is no picture); the wheel's ticket is `W.spelled().bits`.
+
+## 5. `BB.ui` (js/ui.js): input, the scan, the cards
+
+`line(root, fresh, prompt)` (root `{ key, kind?, items: [{ id, label(), element, ref }], redraw?, onChoice?, onPause?,
+direct? }`), `suspend()`, `openCard(name, opts)`, `closeCard()`, `refreshCard()`, `announce(text)`, `confirm(...)`,
+`openSettings()`, `exitGame()`, `heldKeys()`, `pick(id)` (a click or tap on a choice by its id: the court's
+storefronts, hit on their outlines by js/court.js), `context`, `card`, `__dbg()` (`{ ctx, card, place, index, id,
+depth, backStop, parked, items, active, held, scan }`). A lit element with `data-members` (a part of the court) also
+gives `.litMember` to the `.store[data-pack]` of each member. A card may name a `cls` for its board (`titleCard`,
+`howtoCard`).
+
+**Cards** (every one opens at -1, returns from Back and Cancel included; only rows restore by id). There is no
+tutorial picker and no card of restaurants (spec 6.1, 2026-11-09): the court's storefronts are scanned on its
+picture (section 6).
+
+| card | items |
+|---|---|
+| `title` (the main menu, over the court out of focus; says "Ben's Food Court. Play, How to Play, Settings, or Exit Game.") | `play howto settings exit` |
+| `howto` (How to Play: spec 6.1's text as its body, all of it spoken on open) | `back` (to the main menu) |
+| `courtPause` (the court's Pause) | `continue help settings menu exit` |
+| `tutorialOffer` | `tutorial skip court` |
+| `event` | `event shift court` |
+| `settings` (spec 6.4, in order) | `tts voice cooking speed shiftLength orders manager characterVoices theme motion textSize graphics-quality autoScan scanSpeed sfx reset back` (`speed` is greyed and unscanned with Simple cooking) |
+| `pause` (a restaurant's) | `continue ticket help restart settings court menu exit` |
+| `confirm` | `cancel yes` (Cancel first, the consequence spoken on open) |
+| `results` | `again court exit` ("Start a Shift" after a tutorial) |
+
+**Keys:** choices act on release. Keydown only starts the Space brake (Auto Scan), the 3 s back-scan and the Pause
+ring (from 2 s; Pause at 5 s inside a restaurant, playouts included, and on the court's root once its scan is live;
+that release is swallowed). A key held across a screen change keeps counting toward Pause and keeps the Timed clock
+frozen; its release is ignored. Blur or the hub's input guard clears every key.
+
+**Auto Scan never stops by itself.** The hub's scanner (`shared/choice-scan.js`) arms each step with a timer and a
+due time read from `Date.now()`, and drops a timer that wakes before that due time without arming another; a clock
+that lags its timers (a busy machine) then leaves the highlight where it is until a switch is pressed. ui.js's
+`keepScanning()` (every 200 ms) gives a scan that should be moving (live, not parked, braked, held, waiting for
+speech or suspended, no key down) its clock back after an interval plus 1.5 s without a move, the way a press and
+release would.
+
+## 6. The court and the main menu over it (js/court.js, page-2; spec 6.1, 6.2)
+
+**The layer.** `#court` (in `#stage`, after `#backdrop`) is the court picture's own box, laid out by hand like
+`object-fit: contain` (`layoutBox()`: the numbers exist without a layout engine); `#courtCam` inside it carries the
+camera (the zoom) and the focus. Everything in it is placed in percent of the picture. At the court `#backdrop` is the
+same picture filling the window, blurred and dark: what shows beside (or above and below) the picture. Layers, back
+to front: `.pic` (no picture: a plain floor and `.paints`, the storefronts drawn as their outlines in a colour each),
+`.greys`, `.crowd.back`, `.board`, `.crowd.front`, `.stores` (every `.store` scan box, then every `.lift`, then every
+`.group`), `.parts`, `.fx`, `.say`.
+
+**The picture's drawing aids** (js/court.js, measured from art-source/backdrops/court.png; BBCourt.layout keeps the
+boxes, signs, plinth and spots): `OUTLINE` (each storefront's outline: the greyed copy, the lifted highlight, pointer
+hits), `OPENING` (each counter opening: the shutter and the banner), `FRAME` (the scan frame's box: the outline's
+bounds, the Pizza Parlor's left edge at 23.6% and the Cafe's right at 78.7% so the brackets stay off the Smoothie
+Shack's and Sushi's signs), `BOARD` (the board's foot: the middle of `BBCourt.layout.board`, 1.9% below its bottom
+edge, so 50, 57 today), `LINEUP` (the celebration's two
+rows). A grown-up is `9.3 + 3.3 * y / 100` % of the picture's height tall, feet at y (the picture's perspective,
+measured on the stools); a shopper picture of 520 px is a grown-up (one scale: their own heights kept); a cast
+canvas has its feet at 95.5% and hips at 56%; seated, only head to hips shows, hips on the seat spot.
+
+**What is drawn:**
+- **Storefronts** at BBCourt.layout's boxes: a name plate on the sign board and a star sign under it ("★★★☆☆ 3",
+  plus "Five-star event next", "Shift in progress" (the scan label's words) or "Grand Opening"), all in code at Text
+  Size (`--small`; a plate grows past its
+  board when the words need it). A closed restaurant, one before its Grand Opening and one whose pack is not loaded
+  are greyed (`.grey`: the storefront's outline, desaturated and dimmed; the name stays readable) and never scanned;
+  a closed one has its shutter down with a "Coming Soon" note. The Grand Opening banner hangs across the counter
+  until the first visit. The gold sign: the plate turns gold under the gold sign's star crest.
+- **The progress board** on the plinth: `nextGoal().board`, the sentence in gold chalk, the tallies sharing a line
+  when they fit; `width: clamp(28%, 20 x --small, 50%)`, its foot at `BOARD.base`, growing upward.
+- **The crowd** (`BB.courtRules.crowd`): the restaurant's own drawn customers stand first in its queue (locals, then
+  regulars; neutral, then waiting), shoppers after them, in the seats (head to hips) and strolling the passing lines
+  (slowly, 1.5% of the picture a second, a pause at each end, a small bob; standing at x0, y0 under Reduced). Whose
+  feet are behind the board's foot is drawn behind it; whoever would stand over a sign, or in front of the board and
+  over it, is left out. The highlighted storefront's lifted copy goes over everyone (under every sign).
+- **Out of focus** (the main menu, `#court.soft`): `filter: blur(var(--blur)) brightness(.74) saturate(.9)` on
+  `#courtCam`, `--blur` 1.2% of the picture's height; the crowd keeps strolling. `body[data-court]` is `soft` or
+  `focus` (the card's scrim is lighter over the soft court); `body[data-court-mode]` is court.js's mode (`menu arrive
+  moment scan paused zoom away`): the Back in 5 sign shows at `scan`, `paused` and `zoom`.
+
+**The scan** (root key `court`, `kind: 'court'`): `scanStops()` is `BB.courtRules.stops()` without the shops whose
+pack is not loaded (a part left with one shop is that shop), then `pause` (the Back in 5 sign, `#back5`, its
+`data-id` set to `pause`). Ids `shop:<pack>`, `part:<arm>`, `pause`; labels from `BB.courtRules.label` and the part
+labels ("Left. Burritos, Smoothie Shack."). A part is a row (`ref.row`, entered by ui.js `enterRow` with
+`{ wrap: true, backStop: true }`): ACCESSIBILITY.md section 4 lands a row on its first item and loops it through a
+spoken Back stop, and Back restores the part by identity (the hub rulebook over spec 0.8's "each court part opens at
+-1"; the root and every card do open at -1). The highlight: the scan frame round the store's `FRAME` box (or the
+part's box round its members) plus the storefront lifted out of the picture with a thick halo round its outline
+(`.lift`, made visible by `liftRules()`: CSS made from BBCourt that pairs a lit `.store`, or a `.litMember`, with its
+`.lift` and `.group`; Reduced: the halo without the lift). A click or tap on the court is hit-tested by court.js
+(`hit(x, y)` in percent: inside an outline first, else inside BBCourt's box; in an overlap the store whose box reaches
+lower wins) and goes through `BB.ui.pick('shop:<pack>')`, so it works from any level. Holding Enter 5 s opens the
+court Pause once the scan is live (`onPause`).
+
+**The routes** (`BB.court`):
+
+| call | does |
+|---|---|
+| `menu()` | the main menu: the court out of focus behind the `title` card (boot; Main Menu from the court's Pause, defocusing in 0.6 s; Main Menu from a restaurant: game.js `quit()`; after Reset Progress mid-shift) |
+| `play()` | Play: `show({ focus: true })`: the card closes and the court comes into focus (0.6 s; a cut under Reduced) |
+| `show({ from? })` | back from a restaurant (game.js `leaveToCourt()`, the results' and the first-visit card's Food Court): zooms out of that storefront (a cut under Reduced); then every `news()` moment, marked `seen` and saved after it plays; then Mitch's `court.return` when `nextGoal().key` changed (kept in `goalKey`: each session starts with one); then the prompt and the scan at -1 |
+| `enter(id)` | choose a storefront: zoom in (460 ms; a cut under Reduced), then `BB.game.enter(id)` |
+| `pause()` / `resume()` | the `courtPause` card / back to the scan at -1 ("Food court.") |
+| `help()` | `BB.courtRules.help` (each open restaurant's stars, then the goal): the court Pause's Help |
+| `refresh()` | draw the court again (ui.js after Reset Progress) |
+| `hit(x, y)`, `stops()`, `scene()`, `state()`, `layout()` | for the checks and review frames: the store at a point; the scan's stops; everything drawn, in percent of the picture; `{ mode, moment, soft, zoom, goalKey, walkers, people, lineup, scan }`; the box for this window |
+
+**The prompt** is "Food court." plus each news sentence when Character Voices is Off (nobody announced it) and the
+goal's words when it changed and Mitch will not say it (Assistant Manager or Character Voices Off).
+
+**The moments** (court lines from `SC.court(BBScripts.court)` through `SC.pick`, said with `BB.audio.say`, Mitch in his
+shirt and tie at the bottom corner away from the storefront the moment is about, the announcer's caption along the
+bottom; every line awaited, so no scene cuts one off):
+- **Grand Opening:** `court:shutter` as the shutter rolls up (1.4 s) and the grey copy fades, confetti; the storefront
+  opens, the banner comes in, sparkles; `court:chime`; `court:paChime`; pa `court.announce.open {name}`; Mitch
+  `court.unlock {name}` (`thumbsUp`). Reduced: a cut, no confetti, still sparkles that fade.
+- **Gold sign:** the crest drops onto the sign board (0.55 s) and the plate turns gold; `court:signDrop`; sparkles and
+  `court:sparkle`; `court:paChime`; pa `court.announce.gold`; Mitch `court.goldSign` (`thumbsUp`).
+- **The grand celebration** (once): the crowd steps away and every drawn customer (`BBCast.drawn`) stands in two rows
+  on the open floor, happy; fireworks (each burst small, never over a sign, a new one at most every 350 ms) with pops
+  (`court:pop1-3` in turn, at most 3 a second, only between lines); each says one `court.cheer` (laughing while they
+  do), Mitch `court.celebrate` (`laughing`), then `court.promoted` in the `promoted` pose; a last volley. Reduced:
+  still bursts that fade. With Character Voices Off nobody speaks and the line-up stands a moment.
+- **Chatter:** every 9 to 18 s while the scan is live, a shopper on the floor shows a `court.chatter` caption (never
+  spoken; not with Character Voices Off) for its reading time, never over the highlighted storefront (it goes when
+  the highlight arrives).
+
+**game.js hooks it relies on:** `BB.game.enter(id)`, `leaveToCourt()` -> `BB.court.show({ from })`, `quit()` and
+`afterReset()` -> `BB.court.menu()`.
+
+## 7. The counter (spec 5.2, decision 4)
+
+The counter set is solved like a station (`line: 0.80`, `surface: { y, back }`): its top's back edge lands at 80% of
+the picture (85.5% of a 16:9 window, 82% of 16:10, 80% of 4:3, 96.7% of 21:9). `BB.world.counterLine()` reports
+`{ line, y, px }` for this window; `BB.world.onScreen(fx, fy)` maps any point of the picture (cover). `stage.layout()`
+places everything at the counter from them (on boot, resize and every `setScene('counter')`) and sets CSS variables
+on `body`: `--line`, `--fig-h`, `--fig-top`, `--cust-x`, `--mitch-x`, `--say-x`, `--say-b`, `--mitch-say-r`,
+`--kid-say-x/-b/-w`, `--prop-b`, `--bell-x`. `BB.stage.placed` holds the same numbers.
+
+- **The served customer:** a figure's canvas (768 x 1152, every pose) is sized so the eyes (18% of it) meet the
+  painted horizon (46.5% of the picture) and the hips (56%) the line; centred at 24% of the picture. The 3D counter
+  hides them from the hips down. A child (cast `scale`) is drawn smaller from the canvas's bottom centre, so only
+  head and shoulders show; their bubble sits just above the head, left of the queue.
+- **Mitch** stands behind the counter on the right (88% of the picture), placed the same way.
+- **Bubbles** grow upwards from the painted queue's heads (43% of the picture), beside the speaker's head.
+- **Props** stand on the counter top: the register right, the bell (Next Customer) in front of the customer once the
+  order has gone, the Back in 5 sign far left (its label kept on screen). The receipt comes down right of centre,
+  under the corner count; the line's column sits under the count and above the register.
+- **The order** (world.js): kept between the counter's `back` edge and the nearest depth the window still shows,
+  shrunk only when it would not fit, and placed again on a new window shape; left of the queue. The served order
+  slides to the customer and is taken (the counter is clear for the bell).
+- Nothing the page draws covers the painted queue (52-76% across, 43-77% down the picture) above the line but the
+  customer, at the normal Text Size (a very long line at Extra Large may cover it: legibility first).
+
+## 8. tests/dom-play.cjs
+
+`JSDOM=<jsdom> node tests/dom-play.cjs [words] [--pack <id>]`: each run loads `index.html` in jsdom with the hub's
+real scanner, voice manager and input guard (speech, media, canvas and WebGL faked) and plays by Space and Enter
+from the main menu. Every run fails on any script error and checks every card and the court opens at -1 (two-switch
+runs), that every court level offers at most 5 stops and never a closed restaurant or one whose pack is not loaded, and
+that no tutorial picker opens. Into a restaurant: Play, the court scan (`courtLive`), its storefront (inside its part
+when five or more are open). Options (the `RUNS` table): `pack`, `seed`, `settings` (bb-settings data), `scan`
+(narbe-scan-settings), `court` (bb-court entries per restaurant: `{ diner: { popularity, stars } }`),
+`celebrationSeen`, `builtAs` (stand-ins, a copy of the diner under these ids, so the court has more restaurants to
+scan; never played), `offer` (a first visit), `tutorial` (`'offer'`), `menu` (the main menu's four items and its words,
+How to Play at -1 with spec 6.1's whole text shown and spoken, Settings, all over the court out of focus), `courtPause`
+(the Back in 5 sign, Help, Settings, Exit's confirm, Continue at -1, the 5 s hold, Main Menu over the blurred court),
+`focusCheck` (`'reduced'` | `'full'`: Play's focus pull is a cut / takes 0.6 s), `moments` (`'unlock'` | `'gold'` |
+`'celebrate'`: the moment's sounds and lines in order, its storefront after, once only), `parts` (the root of parts,
+each a row landing on its first storefront with a Back stop after its last; Back comes home to the part), `pointer`
+(clicks: on an outline, in an overlap of boxes, from inside a part, and a real one into the Burger Bar), `backToCourt`
+(Food Court from the results: the court opens at -1), `courtOnly` (no shift), `tour` (Settings and its 17 rows),
+`pauses` (Pause, Settings, Food Court mid-shift (the storefront says "shift in progress"), resume: counted once),
+`redo`, `leave` (Pause, Main Menu keeps the shift and brings back the main menu over the blurred court, Restart Shift
+starts it again, counted once), `keepShift` (a saved shift waits at the restaurant; a tutorial, from the first-visit
+card, must leave it alone), `holdPause` (a 5 s Enter hold that starts in an
+arrival; with `slowSpeech`, lines last as long as a voice would), `holdTakeOff` (Take It Off held 3 s across a stage
+boundary: the stage at keydown is taken), `watchWheel` (Motion Full), `event` + `expectGold`, `mistakes` (default
+0.08), `size` ([w, h]: the window), `queue` (who comes in first), `counter` (at every review: the counter line for the
+window, the customer's eyes and hips, a child's head and shoulders, the order fully on screen, on the counter top,
+left of the queue and off a child's face), `clockLag` (ms: the page's clock falls behind its timers at the first line
+step; the Auto Scan must pick itself up), `timeout`, `storage`, `verbose`. Waits are timed, not counted, and nothing
+is judged while a playout runs, so a slow machine only makes a run slower. The page's timers never fire early by
+`Date.now()` (as in a browser; Node's count from its cached loop time): under CPU load that early wake stopped the
+one-switch scan for good, the run's old flake. A dislike counts only for an order said in full (a ridiculous order
+and "the usual" are said their own way, as game.js does: the old level-4/5 flake).
+
+## 9. tools/review-frames.cjs and tools/review_compose.py
+
+```
+JSDOM=<jsdom> node tools/review-frames.cjs <out> [--pack <id>] [--aspects 16:9,16:10,4:3,21:9] [sessions]
+python tools/review_compose.py <out> [--guides]
+```
+
+Sessions: `counter` at every shape (Mitch, an order, the review, the reaction, the receipt and bell, Kai ordering and
+at the review, three items, the event's giant), `tut` (the tutorial at 16:9, from the first-visit card), `timed` (the
+tool and gauge), `motion` (Full motion: the wheel, a squirt); and the court (no 3D): `menu` (the main menu over the
+court out of focus, 16:9 and 4:3), `howto` (How to Play at Normal and Extra Large text, 16:9 and 4:3), `settings`,
+`court` (in focus just after Play, the Burger Bar lit, the Pizza Parlor lit, the Pause sign lit; 4:3, 21:9, Extra
+Large, Motion Full), `tiers` (every restaurant at popularity 0, 3, 7, 10), `moments` (a Grand Opening, a gold sign and
+the celebration, each midway, Motion Full), `parts` (a part lit, inside the top part, its Back stop), `closed` (the
+start; the packs-not-loaded state). Each frame is `<session>-<nn>-<moment>.json`, plus `.3d.png` (the CPU render) in a
+restaurant; a court frame's JSON is `{ kind: 'court', court: BB.court.scene(), card, mitch, bubble, back5, lit ... }`.
+The composer lays the 2D stage over the 3D as bb.css does, or draws the court layer (the picture, greyed copies, the
+crowd, the board, the signs, the lifted highlight, effects, the blur behind a card) and the card, and writes
+`<frame>.png` and `sheet-<session>.png`. `--guides`: the counter line and the painted queue's box; on the court, the
+storefront boxes, the board's estimate and everyone's box. It prints notes (a plate bigger than its board, the board's
+estimate off, How to Play's text size). The page-2 set is in `art-source/review/page2-frames/`.

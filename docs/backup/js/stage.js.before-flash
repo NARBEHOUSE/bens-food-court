@@ -1,0 +1,777 @@
+/** Ben's Food Court - the 2D stage (DESIGN.md "Look and feel: 2.5D", "No floating UI"; docs/api/page.md).
+ *
+ *  The station's backdrop, the customer (big, behind the counter), Mitch in the restaurant's uniform, the real
+ *  objects the choices live on (the ticket wheel, the "Back in 5" sign, the register, the bell) and the line's
+ *  own controls (enamel push-buttons, the dial's plates, the station's Timed tool, order slips, pick tiles).
+ *  A character never animates: a new pose pops in, with a squash and a bounce on Full motion and a plain cut
+ *  on Reduced. Pictures are only asked for when an art manifest says they exist (docs/api/cast.md):
+ *    cast poses   packs/cast/art/cast/<folder>/<pose>.webp (BBArt.cast.people); a missing pose is the folder's neutral
+ *    Mitch        pack.manager.art once that folder has a neutral, else plain mitch
+ *    props        packs/<pack>/art/props/<name>.webp when BBArt[pack].props has it, else packs/shared/art/props/
+ *    backdrops    packs/<pack>/art/backdrops/<station's backdrop>.webp (BBArt[pack].backdrops); the court picture
+ *                 at the court; a missing backdrop shows the theme colour
+ *  usePack(pack) switches all of it to a restaurant (or null: the court and menus) and writes the pack's theme
+ *  tokens under body[data-pack=<id>] (spec 5.6; High Contrast overrides them).
+ */
+(function () {
+  'use strict';
+  const W = BB.words;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const reduced = () => document.body.dataset.motion === 'reduced';
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
+  let pack = null;                                   // the restaurant on show (merged), or null
+  const castArt = () => ((window.BBArt && BBArt.cast && BBArt.cast.people) || {});
+  const packArt = () => ((pack && window.BBArt && BBArt[pack.id]) || { backdrops: [], props: [] });
+  const sharedProps = () => ((window.BBArt && BBArt.shared && BBArt.shared.props) || []);
+  const courtArt = () => ((window.BBArt && BBArt.court) || { picture: false, props: [] });
+  const people = () => ((window.BBCast && BBCast.people) || {});
+
+  /** Theme tokens (spec 5.6): pack.theme keys -> the custom properties bb.css defines with the diner's values. */
+  const THEME = {
+    pageBg: '--page-bg', panelTop: '--panel-top', panelBottom: '--panel-bottom', panelLip: '--panel-lip',
+    plateTop: '--plate-top', plateBottom: '--plate-bottom', mark: '--mark', labelBg: '--label-bg',
+    ticketAccent: '--ticket-accent', ticketNow: '--ticket-now', perforation: '--perforation', hudBg: '--hud-bg', gaugeBg: '--gauge-bg',
+    star: '--star', boardGlow: '--board-glow', woodInset: '--wood-inset', cardValue: '--card-value', logoTop: '--logo-top', logoMain: '--logo-main',
+    wheelInk: '--wheel-ink', wheelSteel: '--wheel-steel', wheelDark: '--wheel-dark', board: '--board', wood: '--wood',
+  };
+
+  /* ── where the pictures are ─────────────────────────────────────────────── */
+  function castSrc(folder, pose) {
+    const A = castArt()[folder] || [];
+    const p = A.includes(pose) ? pose : A.includes('neutral') ? 'neutral' : null;
+    return p ? 'packs/cast/art/cast/' + folder + '/' + p + '.webp' : null;
+  }
+  /** Mitch's folder here: the restaurant's uniform once its neutral exists, otherwise plain Mitch. */
+  function managerFolder() {
+    const want = pack && pack.manager && pack.manager.art;
+    if (want && (castArt()[want] || []).includes('neutral')) return want;
+    const M = people().mitch;
+    return (M && M.art) || 'mitch';
+  }
+  function propSrc(name) {
+    if (!name) return null;
+    if (pack && (packArt().props || []).includes(name)) return 'packs/' + pack.id + '/art/props/' + name + '.webp';
+    if (sharedProps().includes(name)) return 'packs/shared/art/props/' + name + '.webp';
+    return null;
+  }
+  /** A scene's picture: a station's backdrop (or the counter) in the restaurant; the court picture at the court. */
+  function backdropSrc(name) {
+    if (!pack) return name === 'court' && courtArt().picture ? 'packs/court/art/court.webp' : null;
+    const st = pack.stations && pack.stations[name];
+    const b = name === 'counter' ? 'counter' : (st && st.backdrop) || name;
+    return (packArt().backdrops || []).includes(b) ? 'packs/' + pack.id + '/art/backdrops/' + b + '.webp' : null;
+  }
+
+  /* ── the counter, placed from its line and its own picture (spec 5.2; per picture: 2b-seams, 2026-11-09) ── */
+  // The counter top's back edge meets the picture at its line (BB.world.counterLine(): 80% of the picture, about
+  // 85.5% of a 16:9 window, 80% of a 4:3 one). Each counter picture has its own layout, measured with its art
+  // (BBArt.<pack>.counter, copied by tools/build_art.py from art-source/backdrops/<picture>.layout.json): the painted
+  // queue's box (queue: its left and right edge, heads, feet), the painted adults' eye line and the horizon the served
+  // customer's eyes go on, the blank sign board. PIC is the fallback for a picture with none (phase 2a's shared
+  // numbers). Everything at the counter is placed from them for this window, and NOTHING THE PAGE DRAWS COVERS THE
+  // PAINTED QUEUE'S BOX BUT THE SERVED CUSTOMER (decision 4; docs/api/page.md 7):
+  //   the served customer  just behind the counter's edge: hips at it, eyes on the picture's horizon, never cut off at
+  //                        the top; a child (the cast's scale) keeps the same feet line, so only head and shoulders show
+  //   Mitch                at the customer's spot while nobody is being served; with a customer, right of the queue,
+  //                        partly past the screen edge if he must; where not even half his face would show there, he
+  //                        speaks from just off the right edge (his bubble, named, and his voice)
+  //   the speech bubbles   beside the speaker's head, their foot above the queue's heads
+  //   the answer column    under the corner count: one column, or two, or a row, whichever keeps clear of the queue
+  //   the receipt          right of centre under the corner count, raised (or moved left) clear of the queue
+  //   the props            the register on the right (right of the queue, or below its feet), the bell in front of the
+  //                        customer, the Back in 5 sign far left, on the counter top
+  //   the sign             the restaurant's short name on the picture's blank sign board, when the window shows it
+  // FIG is measured on the cast's 768 x 1152 canvas (eyes at about 18% of its height, hips at about 56%; each pose's
+  // figure above the hips is in BBArt.cast.extent). Where truly nothing fits (Extra Large text on a 4:3 window, say),
+  // legibility wins: the box is covered as little as it can be (placed.column.clear, placed.receipt.clear and
+  // placed.bubble.tall say so).
+  const FIG = { eye: 0.18, hip: 0.56, head: 0.045, w: 768 / 1152, face: [0.38, 0.62] };
+  // The smallest a child is drawn at the counter: shoulders (0.36 of the scaled canvas down) 1.5% of the canvas above
+  // the hips' line, which is the counter line. 0.71.
+  const CHILD_MIN = (1 - FIG.hip + 0.015) / (1 - 0.36);
+  const PIC = { line: 0.80, horizon: 0.465, heads: 0.43, feet: 0.77, queue: [0.52, 0.76], customer: 0.24, bell: 0.43, ratio: 1536 / 1024 };
+  const HORIZON = [0.45, 0.48];                    // spec 5.2: the served customer's eyes at about 45 to 48% of the picture
+  let placed = null, childScale = 1;               // the served customer's cast scale (a child's is below 1)
+  /** The counter picture's own layout (BBArt.<pack>.counter), else PIC's. */
+  function picture() {
+    const C = pack && window.BBArt && BBArt[pack.id] && BBArt[pack.id].counter;
+    const ok = !!(C && Array.isArray(C.queue) && C.queue.length === 2 && typeof C.heads === 'number');
+    const num = (v, d) => (typeof v === 'number' && isFinite(v) ? v : d);
+    return { measured: ok, queue: ok ? C.queue.slice() : PIC.queue.slice(), heads: ok ? C.heads : PIC.heads, feet: ok ? num(C.feet, PIC.feet) : PIC.feet,
+      horizon: Math.max(HORIZON[0], Math.min(HORIZON[1], ok ? num(C.horizon, PIC.horizon) : PIC.horizon)),
+      sign: ok && Array.isArray(C.sign) && C.sign.length === 4 ? C.sign.slice() : null };
+  }
+  /** A point of the counter picture on this window (CSS cover, anchored as world.js anchors the counter). */
+  function cover(fx, fy) {
+    if (BB.world && BB.world.onScreen) return BB.world.onScreen(fx, fy, null, 'counter');
+    const a = (window.innerWidth || 1) / (window.innerHeight || 1), p = PIC.ratio;
+    return { x: a < p ? 0.5 + (fx - 0.5) * p / a : fx, y: a > p ? 0.5 + (fy - 0.5) * a / p : fy };
+  }
+  /** Words' widths for the layout. A browser measures them on a canvas; without one (jsdom, the checks) Arial Black's
+   *  advance widths stand in (measured from the font: within a few % of the real thing). */
+  const AB = (() => {
+    const w = {}, s = 'a67b67c67d67e67f39g67h67i33j33k67l33m100n67o67p67q67r44s61t44u67v61w94x67y61z56A78B78C78D78E72F67G83H83I39J67K83L67M94N83O83P72Q83R78S72T72U83V78W100X78Y78Z72';
+    s.replace(/([A-Za-z])(\d+)/g, (m, c, n) => { w[c] = +n / 100; });
+    return w;
+  })();
+  let ruler;
+  /** font: undefined (Arial Black, the slips', signs' and counts' face) or 'body' (Trebuchet MS bold: the bubbles'). */
+  function textWidth(text, px, font) {
+    if (ruler === undefined) {
+      ruler = null;
+      try {
+        const c = document.createElement('canvas').getContext('2d');
+        c.font = '900 100px "Arial Black"';
+        const t = c.measureText('MMMM').width;
+        if (t > 250 && t < 500) ruler = c;                 // a real canvas (a fake measures nothing worth using)
+      } catch (e) { ruler = null; }
+    }
+    if (ruler) {
+      ruler.font = font === 'body' ? '700 ' + px + 'px "Trebuchet MS", sans-serif' : '900 ' + px + 'px "Arial Black", "Trebuchet MS", sans-serif';
+      return ruler.measureText(String(text)).width;
+    }
+    let em = 0;
+    for (const ch of String(text)) em += AB[ch] !== undefined ? AB[ch] : /\d/.test(ch) ? 0.67 : ch === ' ' ? 0.33 : /[.,'’!:;|]/.test(ch) ? 0.33 : 0.62;
+    return em * px * (font === 'body' ? 0.88 : 1);       // Trebuchet MS bold runs about 0.87 of Arial Black
+  }
+  /** The CSS sizes the counter's layout needs, in px, for this window and Text Size (bb.css's clamp()s). */
+  function sizes(W, H) {
+    const vw = W / 100, vh = H / 100, t = document.body.dataset.text;
+    const lab = { large: [22, 2.8, 42], xlarge: [26, 3.4, 52] }[t] || [18, 2.2, 34];
+    const sml = { large: [17, 1.8, 27], xlarge: [20, 2.2, 32] }[t] || [14, 1.4, 22];
+    const cl = ([a, b, c]) => Math.max(a, Math.min(b * vw, c));
+    return { vw, vh, label: cl(lab), small: cl(sml), m: Math.max(8, 0.8 * vw) };
+  }
+  const overlap = (a, b) => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+  const box = (x0, y0, x1, y1) => ({ x0, y0, x1, y1 });
+  /** Work out the counter's layout for this window and hand it to the CSS (custom properties on body). */
+  function layout() {
+    const W = window.innerWidth || 1280, H = window.innerHeight || 720, Z = sizes(W, H), pic = picture();
+    const L = (BB.world && BB.world.counterLine && BB.world.counterLine()) || { y: cover(0, PIC.line).y };
+    const line = L.y * H, eye = cover(0, pic.horizon).y * H;
+    const h = (line - eye) / (FIG.hip - FIG.eye), top = eye - FIG.eye * h, cw = h * FIG.w;
+    const cx = cover(PIC.customer, 0).x * W, heads = cover(0, pic.heads).y * H;
+    // The painted queue's box on this window (and the room kept round it).
+    const q = box(cover(pic.queue[0], 0).x * W, heads, Math.min(W, cover(pic.queue[1], 0).x * W), cover(0, pic.feet).y * H);
+    const queue = box(q.x0 - Z.m, q.y0 - Z.m, q.x1 + Z.m, q.y1 + Z.m);
+    // A child's head is lower (scaled from the canvas's bottom centre): their bubble sits just above it, left of the
+    // painted queue, its tail pointing down.
+    const cs = childScale, kidHead = top + h * (1 - cs) + FIG.head * h * cs, kidX = Math.max(0.01 * W, cx - 0.1 * W);
+    placed = Object.assign(placed && placed.W === W && placed.H === H ? placed : {}, {
+      W, H, line, eye, h, top, cx, heads: q.y0, sayX: cx + cw * 0.17, sayB: H - (q.y0 - Z.m / 2),
+      kidSayX: kidX, kidSayB: H - (kidHead - 0.02 * H), kidSayW: Math.min(0.34 * W, Math.max(0.24 * W, q.x0 - Z.m - kidX)),
+      propB: Math.max(0, H - line - 0.015 * H), childScale: cs, pic, queue: q, keep: queue, m: Z.m });
+    // The served customer's figure (the widest pose's: Mitch keeps off it) and head (the column and the receipt never
+    // cover it; they may come down over a shoulder).
+    const ct = top + h * (1 - cs);
+    placed.customer = box(cx - cw / 2 + 0.1 * cw, ct + FIG.head * h * cs, cx + cw * 0.41, line);
+    placed.head = box(cx - 0.2 * cw * cs, ct + 0.01 * h * cs, cx + 0.2 * cw * cs, ct + 0.34 * h * cs);
+    placeProps(W, H, Z);
+    placeMitch();
+    placeSign(W, H);
+    const st = document.body.style, px = v => Math.round(v * 10) / 10 + 'px';
+    [['--line', line], ['--fig-h', h], ['--fig-top', top], ['--cust-x', cx], ['--say-x', placed.sayX], ['--say-b', placed.sayB],
+      ['--kid-say-x', placed.kidSayX], ['--kid-say-b', placed.kidSayB], ['--kid-say-w', placed.kidSayW], ['--prop-b', placed.propB],
+      ['--bell-x', placed.bellX], ['--reg-w', placed.register.w]]
+      .forEach(([k, v]) => st.setProperty(k, px(v)));
+    // The counter's backdrop is anchored as world.js anchors it (lower on a window wider than 16:9: page.md 7).
+    const anchor = BB.world && BB.world.anchor ? BB.world.anchor('counter') : 0.5;
+    placed.anchor = anchor;
+    st.setProperty('--counter-bg-y', Math.round(anchor * 1000) / 10 + '%');
+    if (document.body.dataset.place === 'counter') { fitColumn(); fitReceipt(); }
+    return placed;
+  }
+  /** The register, the bell and the Back in 5 sign on the counter top, clear of the painted queue: the register right
+   *  of the queue, or low enough to stand below its feet, whichever lets it be bigger (never under 64 px). */
+  function placeProps(W, H, Z) {
+    const P = placed, k = P.keep, vw = Z.vw, vh = Z.vh;
+    const regMax = Math.min(16 * vw, 28 * vh), regRight = W - 2 * vw, regBottom = H - Math.min(P.propB, 2 * vh), ASPECT = 1.051;
+    const right = Math.max(0, regRight - Math.max(k.x1, 0));                   // room right of the queue
+    const below = Math.max(0, (regBottom - k.y1) / ASPECT);                    // as wide as fits under its feet
+    const w = Math.max(64, Math.min(regMax, Math.max(right, below)));
+    P.register = { w, x0: regRight - w, y0: regBottom - w * ASPECT, x1: regRight, y1: regBottom };
+    // The bell: in front of the customer, its right edge short of the queue.
+    const bw = Math.min(9 * vw, 15 * vh);
+    P.bellX = Math.min(cover(PIC.bell, 0).x * W, k.x0 - bw / 2);
+    P.bell = box(P.bellX - bw / 2, H - P.propB - bw * 0.945, P.bellX + bw / 2, H - P.propB);
+    const sw = Math.min(11 * vw, 17 * vh), sb = Math.max(P.propB, Z.small * 1.9);
+    P.back5 = box(1.5 * vw, H - sb - sw * 0.909, 1.5 * vw + sw, H - sb);
+    placeHud();
+  }
+  /** The corner count's box (top right; its width follows its words). */
+  function placeHud() {
+    const P = placed;
+    if (!P) return;
+    const Z = sizes(P.W, P.H), text = $('hud') ? $('hud').textContent : '';
+    const hw = text ? textWidth(text, Z.small) + 1.6 * Z.small : 0;
+    P.hud = text ? box(P.W - 1.5 * Z.vw - hw, 1.5 * Z.vh, P.W - 1.5 * Z.vw, 1.5 * Z.vh + Z.small * 1.2 + 0.7 * Z.small) : null;
+  }
+  /** Where a figure is across its canvas in a pose, above the counter (BBArt.cast.extent: [x0, x1, top]). */
+  function extentOf(folder, pose) {
+    const E = window.BBArt && BBArt.cast && BBArt.cast.extent;
+    const e = E && E[folder] && (E[folder][pose] || E[folder].neutral);
+    return e && e.length >= 2 ? e : [0.06, 0.91, 0.02];          // unknown: the widest of Mitch's poses
+  }
+  /** Mitch at the counter: at the customer's spot while nobody is being served; with a customer, right of the painted
+   *  queue (his natural spot, 88% across, when that is clear of it), past the screen edge as far as he must, but with
+   *  at least half his face on screen; where that cannot be, he speaks from just off the right edge: his bubble
+   *  (named) and his voice. Placed again when his pose or the customer changes. */
+  function placeMitch() {
+    const P = placed;
+    if (!P) return;
+    const W = P.W, cw = P.h * FIG.w, pose = (shown.mitch || '').split('/')[1] || 'talking';
+    const e = extentOf(managerFolder(), pose);
+    let at = 'customer', x = P.cx;
+    if (shown.customer) {
+      // Right of the painted queue where there is room, but never cut off by the window's edge (the user,
+      // 2026-11-11: "he's cut off on the right"): where a queue reaches far right he stands in front of its last
+      // person while he speaks; the answer column and the props still keep off the queue.
+      const fit = W - 0.01 * W - (e[1] * cw - cw / 2);
+      x = Math.min(Math.max(P.keep.x1 - e[0] * cw + cw / 2, cover(0.88, 0).x * W), fit);
+      at = 'right';
+    }
+    const fig = at === 'off' ? null : box(x - cw / 2 + e[0] * cw, P.top + (e[2] || 0) * P.h, x - cw / 2 + e[1] * cw, P.line);
+    P.mitch = { at, x, fig, pose };
+    P.mx = x;
+    P.mitchSayR = at === 'off' ? 1.5 * W / 100 : W - (x - cw * 0.17);
+    const st = document.body.style;
+    st.setProperty('--mitch-x', Math.round(x * 10) / 10 + 'px');
+    st.setProperty('--mitch-say-r', Math.round(P.mitchSayR * 10) / 10 + 'px');
+    document.body.dataset.mitchAt = at;
+  }
+  /** The restaurant's short name (BBCourt's `short`: Burger Bar, Pizza Parlor), else the pack's name. */
+  function shortName() {
+    if (!pack) return '';
+    const r = window.BBCourt && (BBCourt.restaurants || []).find(x => x.pack === pack.id);
+    return (r && r.short) || pack.name || '';
+  }
+  /** The restaurant's name on the counter picture's blank sign board, as the court's storefront plates carry it: the
+   *  short name, fitted inside the board's face as this window shows it (62% of its height at most, 86% of its
+   *  width), in the pack's ticket accent; left out when the window shows too little of the board (a 16:9 window
+   *  cuts most boards to their bottom edge), or the letters would be under 14 px. */
+  function placeSign(W, H) {
+    const P = placed, el = $('signName'), S = P.pic.sign, name = shortName();
+    P.sign = null;
+    if (!el) return;
+    if (!S || !name) { el.classList.remove('on'); return; }
+    const a = cover(S[0], S[1]), b = cover(S[2], S[3]);
+    const x0 = a.x * W, y0 = a.y * H, x1 = b.x * W, y1 = b.y * H;
+    const vy0 = Math.max(0, y0), vy1 = Math.min(H, y1), vx0 = Math.max(0, x0), vx1 = Math.min(W, x1);
+    const shownH = Math.max(0, vy1 - vy0) / (y1 - y0), shownW = Math.max(0, vx1 - vx0) / (x1 - x0);
+    const fs = Math.min(0.62 * (y1 - y0), 0.86 * (x1 - x0) / Math.max(1, textWidth(name, 100) / 100));
+    const shown = shownH >= 0.85 && shownW >= 0.9 && fs >= 14;
+    const tw = textWidth(name, Math.floor(fs)), cx = (x0 + x1) / 2, cy = (vy0 + vy1) / 2;
+    P.sign = { text: name, x0, y0: vy0, x1, y1: Math.max(vy0, vy1), fs, shown, on: shown, covered: false, part: Math.round(shownH * 100) / 100,
+      face: box(x0, y0, x1, y1), words: box(cx - tw / 2, cy - 0.6 * fs, cx + tw / 2, cy + 0.6 * fs) };
+    el.textContent = name;
+    Object.assign(el.style, { left: x0 + 'px', top: vy0 + 'px', width: (x1 - x0) + 'px', height: Math.max(0, vy1 - vy0) + 'px', fontSize: Math.floor(fs) + 'px' });
+    signCovered();
+  }
+  /** The name is left off while the answer column, the receipt or a speech bubble covers part of its words (a
+   *  half-hidden word reads as a mistake; the board behind is the picture's own blank one). */
+  function signCovered() {
+    const P = placed, el = $('signName');
+    if (!P || !P.sign || !el) return;
+    const S = P.sign, rc = $('receipt'), bb = $('bubble'), m = 4;
+    let say = null;
+    if (bb && bb.classList.contains('on')) {
+      const r = bb.getBoundingClientRect();
+      say = r && r.height > 0 ? box(r.left, r.top, r.right, r.bottom) : P.bubble;
+    }
+    const over = [P.column, rc && rc.classList.contains('on') ? P.receipt : null, say].filter(Boolean)
+      .some(b => overlap(b, box(S.words.x0 - m, S.words.y0 - m, S.words.x1 + m, S.words.y1 + m)));
+    S.covered = over;
+    S.on = S.shown && !over;
+    el.classList.toggle('on', S.on);
+  }
+
+  /* ── the answer column and the receipt at the counter, clear of the painted queue ── */
+  /** Words wrapped greedily into a width: how many lines. */
+  function lineCount(text, px, width, font) {
+    const words = String(text).split(/\s+/).filter(Boolean);
+    let n = words.length ? 1 : 0, cur = 0;
+    const space = textWidth(' ', px, font);
+    for (const wd of words) {
+      const w = textWidth(wd, px, font);
+      if (cur && cur + space + w > width) { n++; cur = w; } else cur += (cur ? space : 0) + w;
+    }
+    return n;
+  }
+  /** The answer column at the counter (controls()): under the corner count, one column; where that would reach the
+   *  painted queue, two columns, or one row above the queue's heads (its slips' words wrapping if they must). The scan
+   *  order stays top to bottom, left to right; every slip keeps 64 px and the Text Size. A browser checks the real
+   *  box and goes on to the next way if the words came out bigger than reckoned. */
+  function fitColumn() {
+    const el = $('controls');
+    if (!el || !placed) return;
+    el.classList.remove('cols2', 'row');
+    el.style.removeProperty('--slip-w');
+    el.style.removeProperty('--col-top');
+    const items = [...el.querySelectorAll('.ctl')];
+    if (document.body.dataset.place !== 'counter' || !items.length) { placed.column = null; signCovered(); return; }
+    const P = placed, Z = sizes(P.W, P.H), vw = Z.vw, vh = Z.vh;
+    const fs = 0.8 * Z.label, padX = 0.7 * fs, padY = 0.4 * fs, B = 8;
+    const minW = Math.min(16 * vw, 26 * vh), minH = Math.max(64, Math.min(8.5 * vh, 7 * vw));
+    const right = P.W - 2.5 * vw, gap = 1.1 * vh, gapX = 1.2 * vw, pv = 1.6 * vh, ph = 1.2 * vw, lip = vh;
+    const labels = items.map(x => (x.querySelector('.lb') || x).textContent.trim());
+    const nat = labels.map(t => Math.max(minW, textWidth(t, fs) + 2 * padX + B));
+    const slipH = (t, w) => Math.max(minH, lineCount(t, fs, w - 2 * padX - B) * fs + 2 * padY + B);
+    const n = items.length, widest = Math.max(...nat);
+    const ways = {
+      one: top => {
+        const h = labels.reduce((s, t) => s + slipH(t, widest), 0) + gap * (n - 1);
+        return box(right - widest - 2 * ph - 8, top, right, top + h + 2 * pv + 8 + lip);
+      },
+      two: top => {
+        if (n < 2) return null;
+        let h = 0;
+        for (let i = 0; i < n; i += 2) h += Math.max(slipH(labels[i], widest), i + 1 < n ? slipH(labels[i + 1], widest) : 0);
+        h += gap * (Math.ceil(n / 2) - 1);
+        return box(right - 2 * widest - gapX - 2 * ph - 8, top, right, top + h + 2 * pv + 8 + lip);
+      },
+      row: top => {
+        if (n < 2) return null;
+        // As wide as the slips are, else squeezed (their words wrapping) into the room right of the customer's head.
+        const room = right - 2 * ph - 8 - (P.head.x1 + P.m), natural = nat.reduce((a, b) => a + b, 0) + gapX * (n - 1);
+        const w = natural <= room ? null : Math.max(64, (room - gapX * (n - 1)) / n);
+        const widths = w ? labels.map(() => w) : nat;
+        const h = Math.max(...labels.map((t, i) => slipH(t, widths[i])));
+        const total = widths.reduce((a, b) => a + b, 0) + gapX * (n - 1);
+        const b = box(right - total - 2 * ph - 8, top, right, top + h + 2 * pv + 8 + lip);
+        b.slip = w;
+        return b;
+      },
+    };
+    const clear = b => b && b.x0 >= 0 && !overlap(b, P.keep) && !overlap(b, P.head);
+    const apply = (mode, b) => {
+      el.classList.toggle('cols2', mode === 'two');
+      el.classList.toggle('row', mode === 'row');
+      if (mode === 'row' && b.slip) el.style.setProperty('--slip-w', Math.floor(b.slip) + 'px');
+      else el.style.removeProperty('--slip-w');
+      el.style.setProperty('--col-top', Math.round(b.y0) + 'px');
+    };
+    // The real box, where there is a layout to measure (a browser); null in jsdom.
+    const real = () => {
+      const r = el.getBoundingClientRect();
+      return r && r.height > 0 ? Object.assign(box(r.left, r.top, r.right, r.bottom + lip), {}) : null;
+    };
+    // Under the corner count; below the restaurant's name on the sign board where that still keeps clear of the queue.
+    const top = 9 * vh, sign = P.sign && P.sign.shown ? P.sign : null;
+    const tops = sign && sign.y1 + P.m > top ? [sign.y1 + P.m, top] : [top];
+    let pick = null, best = null;
+    for (const mode of ['one', 'two', 'row']) {
+      for (const t of tops) {
+        const b = ways[mode](t);
+        if (!b) continue;
+        apply(mode, b);
+        const r = real() || b;
+        r.slip = b.slip;
+        const cost = overlap(r, P.keep) * 4 + overlap(r, P.head) * 4 + (r.x0 < 0 ? -r.x0 * P.H : 0) + (t === top && tops.length > 1 ? 1 : 0);
+        if (!best || cost < best.cost) best = { mode, b: r, cost };
+        if (clear(r)) { pick = { mode, b: r }; break; }
+      }
+      if (pick) break;
+    }
+    if (!pick) pick = best;
+    apply(pick.mode, pick.b);
+    P.column = { mode: pick.mode, x0: pick.b.x0, y0: pick.b.y0, x1: pick.b.x1, y1: pick.b.y1, clear: clear(pick.b), slip: pick.b.slip || null };
+    signCovered();
+  }
+  /** The receipt's height: measured in a browser; reckoned from bb.css (#receipt) without one. */
+  function receiptHeight(el, w, Z) {
+    const r = el.getBoundingClientRect();
+    if (r && r.height > 0) return r.height;
+    const s = Z.small, lab = Z.label, inner = w - 2.4 * s - 6, lh = s * 1.35;
+    const lines = t => Math.max(1, Math.ceil(String(t).length * 0.6 * s / Math.max(1, inner - (el.querySelector('ul') ? 1.1 * s : 0))));
+    const body = [...el.querySelectorAll('li, p')].reduce((a, x) => a + lines(x.textContent) * lh, 0) + 0.8 * s;
+    const tip = el.querySelector('.tip');
+    return 6 + s + lab * 1.4 + lab * 1.8 * 1.35 + body + 3 + 0.9 * s + (tip ? lines(tip.textContent) * lh : lh) + 1.4 * s;
+  }
+  /** The receipt (receipt()): right of centre under the corner count, as before, unless that reaches the painted queue:
+   *  then raised so it ends above the queue's heads (moved left of the corner count if it must), or narrowed into the
+   *  room between the customer's head and the queue; where nothing clears, the place that covers the queue least
+   *  (legibility first). Never over the customer's head, the answer column or the corner count. */
+  function fitReceipt() {
+    const el = $('receipt');
+    if (!el || !placed) return;
+    const off = () => { ['--rcpt-x', '--rcpt-y', '--rcpt-w'].forEach(k => el.style.removeProperty(k)); };
+    if (!el.classList.contains('on') || document.body.dataset.place !== 'counter') { placed.receipt = null; off(); signCovered(); return; }
+    const P = placed, Z = sizes(P.W, P.H), vw = Z.vw, vh = Z.vh, m = P.m;
+    const W0 = Math.min(29 * vw, 50 * vh), minW = Math.max(220, 13 * Z.small);
+    const col = P.column, hud = P.hud, roof = 0.8 * vh, top = 9 * vh;
+    const walls = [P.head, col && box(col.x0 - m, col.y0 - m, col.x1, col.y1), hud && box(hud.x0 - m, hud.y0, hud.x1, hud.y1 + m)].filter(Boolean);
+    const heightAt = w => { el.style.setProperty('--rcpt-w', w + 'px'); return receiptHeight(el, w, Z); };
+    const at = (x, y, w, h) => { const t = Math.max(roof, y); return Object.assign(box(x, t, x + w, t + h), { w }); };
+    const fits = b => b.x0 >= 0 && b.x1 <= P.W && !walls.some(x => overlap(b, x));
+    const h0 = heightAt(W0), x0 = Math.min(50 * vw, (col ? col.x0 - m : P.W - 1.5 * vw) - W0), left = hud ? Math.min(x0, hud.x0 - m - W0) : x0;
+    // Under the corner count; below the restaurant's name on the sign board where there is room.
+    const sign = P.sign && P.sign.shown ? box(P.sign.x0, P.sign.y0, P.sign.x1, P.sign.y1) : null;
+    const tops = sign && sign.y1 + m > top ? [sign.y1 + m, top] : [top];
+    const tries = tops.map(t => at(x0, t, W0, h0)).concat([at(x0, P.keep.y0 - h0, W0, h0), at(left, P.keep.y0 - h0, W0, h0)]);
+    // Between the customer's head and the queue: as wide as that room (never under 13 em), from under the corner count.
+    const bx = P.head.x1 + m, bw = Math.min(W0, P.keep.x0 - bx);
+    if (bw >= minW) { const bh = heightAt(bw); tops.forEach(t => tries.push(at(bx, t, bw, bh))); }
+    // Wider (its words wrap less, so it is shorter), between the customer's head and the column or the corner count,
+    // ending above the queue's heads.
+    const ww = Math.min(1.6 * W0, Math.min(col ? col.x0 - m : P.W, hud ? hud.x0 - m : P.W) - bx);
+    if (ww > W0) { const wh = heightAt(ww); tries.push(at(bx, P.keep.y0 - wh, ww, wh)); }
+    const ok = tries.filter(fits);
+    let b = ok.find(x => !overlap(x, P.keep) && !(sign && overlap(x, sign))) || ok.find(x => !overlap(x, P.keep));
+    if (!b) b = ok.sort((p, q) => overlap(p, P.keep) - overlap(q, P.keep))[0] || tries[0];    // legibility first
+    P.receipt = Object.assign(b, { clear: !overlap(b, P.keep) });
+    el.style.setProperty('--rcpt-x', Math.round(b.x0) + 'px');
+    el.style.setProperty('--rcpt-y', Math.round(b.y0) + 'px');
+    el.style.setProperty('--rcpt-w', Math.round(b.w) + 'px');
+    signCovered();
+  }
+
+  function init() {
+    // The counter picture is drawn anchored lower on a window wider than 16:9 (bb.css --counter-bg-y): the 3D frame
+    // solves the counter to the same anchor.
+    if (BB.world && BB.world.useAnchor) BB.world.useAnchor(true);
+    // The restaurant's name on the counter picture's blank sign board (placeSign): drawn in code over the backdrop.
+    if (!$('signName') && $('backdrop')) {
+      const s = document.createElement('div');
+      s.id = 'signName'; s.setAttribute('aria-hidden', 'true');
+      $('backdrop').insertAdjacentElement('afterend', s);
+    }
+    pointProps();
+    buildWheel();
+    layout();
+    window.addEventListener('resize', () => { layout(); drawWheel(); });
+    // A new text size changes the ticket's width and the counter's column (applied to the page first, so wait a moment).
+    if (BB.save && BB.save.onChange) BB.save.onChange(() => setTimeout(() => { drawWheel(); layout(); }, 0));
+  }
+  /** The real objects' pictures, from the restaurant's own props or the shared ones; none: the label alone. */
+  function pointProps() {
+    [['back5', 'back5'], ['register', 'register'], ['bell', 'bell']].forEach(([id, p]) => {
+      const el = $(id);
+      let img = el.querySelector('img');
+      const src = propSrc(p);
+      if (src) {
+        if (!img) { img = document.createElement('img'); img.alt = ''; img.setAttribute('aria-hidden', 'true'); el.insertBefore(img, el.firstChild); }
+        if (img.getAttribute('src') !== src) img.src = src;
+        el.classList.remove('noart');
+      } else { if (img) img.remove(); el.classList.add('noart'); }
+    });
+  }
+
+  /* ── the restaurant on show, and its theme ──────────────────────────────── */
+  function applyTheme() {
+    let st = $('packTheme');
+    if (!st) { st = document.createElement('style'); st.id = 'packTheme'; document.head.appendChild(st); }
+    if (!pack || !pack.theme) { st.textContent = ''; return; }
+    const lines = Object.keys(THEME).filter(k => pack.theme[k] !== undefined && pack.theme[k] !== null)
+      .map(k => THEME[k] + ': ' + String(pack.theme[k]).replace(/[;{}]/g, '') + ';');
+    // High Contrast keeps the one checked palette: the theme is not applied under it.
+    st.textContent = 'body[data-pack="' + pack.id + '"]:not([data-theme="contrast"]) { ' + lines.join(' ') + ' }';
+  }
+  /** Switch the stage to a restaurant (its merged pack), or to none (null: the court and the menus). */
+  function usePack(p) {
+    pack = p || null;
+    document.body.dataset.pack = pack ? pack.id : '';
+    applyTheme();
+    pointProps();
+    scene = null; sceneName = null;          // the next setScene draws this restaurant's picture, whatever the name
+    shown.customer = null; shown.mitch = null;
+    customer(null); mitch(null); bubble(null); receipt(null); ticket(null); gauge(null); clearControls();
+    show('register', false); show('bell', false);
+  }
+
+  /* ── scenes ─────────────────────────────────────────────────────────────── */
+  let scene = null, sceneName = null;
+  /** Go to a station's set: the backdrop and the 3D camera change together, behind a quick fade.
+   *  Names: a station id, 'counter', or 'court' (no restaurant). */
+  async function setScene(name) {
+    const key = (pack ? pack.id : 'court') + ':' + name;
+    if (scene === key) return;
+    const first = scene === null;
+    scene = key; sceneName = name;
+    const fade = $('fade');
+    if (!first && !reduced()) { fade.classList.add('on'); await wait(170); }
+    document.body.dataset.scene = name;
+    document.body.dataset.place = !pack || name === 'court' ? 'court' : name === 'counter' ? 'counter' : 'kitchen';
+    const src = backdropSrc(name);
+    $('backdrop').style.backgroundImage = src ? 'url("' + src + '")' : '';
+    if (BB.world && BB.world.goTo) BB.world.goTo(pack && name !== 'court' ? name : null);
+    if (name === 'counter') layout();          // this restaurant's counter line
+    drawWheel();
+    if (!first && !reduced()) { await wait(30); fade.classList.remove('on'); await wait(150); }
+    // A ticket that went up while the wheel was out of sight (at the counter) comes round now.
+    if (wheel.pending && wheelShown()) { wheel.pending = null; spinWheel('in'); }
+  }
+
+  /* ── characters ─────────────────────────────────────────────────────────── */
+  const shown = { customer: null, mitch: null };
+  function pop(el) {
+    if (reduced()) return;
+    el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  }
+  /** The customer at the counter in a pose, or nobody (folder null). A child is drawn at the cast's `scale`
+   *  from the bottom centre (bb.css --cs): the same feet line. */
+  function customer(folder, pose) {
+    const el = $('customer');
+    const was = !!shown.customer;
+    if (!folder) { el.classList.remove('on'); shown.customer = null; if (was && shown.mitch) placeMitch(); return; }
+    const src = castSrc(folder, pose);
+    const key = folder + '/' + pose;
+    if (!src) { el.classList.remove('on'); return; }
+    const P = people()[folder] || Object.values(people()).find(x => x && x.art === folder);
+    // At the counter a child is drawn no smaller than CHILD_MIN, so their shoulders clear the counter line (only head
+    // and shoulders show): Little Lulu (cast scale 0.66) stands on a step here, and keeps her own size on the court
+    // (integrate-2b, content-icecream's request).
+    const cs = P && P.scale ? Math.max(P.scale, Math.min(1, CHILD_MIN)) : 1;
+    el.style.setProperty('--cs', String(cs));
+    if (cs !== childScale) { childScale = cs; layout(); }
+    // The pop plays once, when someone new steps up; a change of pose is a plain swap (the user, 2026-11-11: the
+    // customer "pops up twice" walking in, the arrive pose then the talking pose half a second later).
+    if (shown.customer !== key) {
+      const fresh = !was || !shown.customer || shown.customer.split('/')[0] !== folder;
+      el.src = src; shown.customer = key;
+      if (fresh) pop(el);
+    }
+    el.classList.add('on');
+    if (!was && shown.mitch) placeMitch();                // Mitch makes way for the customer (stage.js placeMitch)
+  }
+  /** Mitch in a pose, sliding in; null slides him out. At the counter he stands where placeMitch() says. */
+  function mitch(pose) {
+    const el = $('mitch');
+    if (!pose) { el.classList.remove('on'); shown.mitch = null; return; }
+    const folder = managerFolder();
+    const src = castSrc(folder, pose);
+    if (!src) return;
+    const key = folder + '/' + pose;
+    if (shown.mitch !== key) { el.src = src; shown.mitch = key; }   // a new expression is a plain swap; he slides in once
+    const first = !el.classList.contains('on');
+    placeMitch();
+    if (first) void el.offsetWidth;                       // he slides in from his own side's edge
+    el.classList.add('on');
+  }
+
+  /* ── the ticket wheel ───────────────────────────────────────────────────── */
+  // A diner order wheel seen from the front (DESIGN.md "Where things sit"): a steel ring hung flat from the
+  // ceiling, clips round its edge, in the kitchen's top-left corner and partly off the screen. The order
+  // hangs from the front clip. It turns left to right: a new ticket comes round from the left, and Ticket
+  // turns it once all the way round. The counter has no wheel. Drawn here, not painted, so the words on the
+  // ticket stay sharp at every text size; geometry() is plain numbers, for the Node layout check. Its colours
+  // are the theme's wheel tokens (bb.css).
+  const CLIPS = 8, STEP = Math.PI * 2 / CLIPS, SVG = 'http://www.w3.org/2000/svg';
+  const wheel = { theta: 0, anim: 0, order: null, pending: null };
+  const wheelShown = () => document.body.dataset.place === 'kitchen';
+  function buildWheel() {
+    const el = $('wheel');
+    el.innerHTML = '';
+    ['back', 'front'].forEach(k => { const s = document.createElementNS(SVG, 'svg'); s.setAttribute('class', k); s.setAttribute('aria-hidden', 'true'); el.appendChild(s); });
+    for (let i = 0; i < CLIPS; i++) {
+      const s = document.createElement('div');
+      s.className = 'slot';
+      s.innerHTML = '<i class="clip"></i>' + (i === 0 ? '<div id="ticket" style="display:none"></div>' : '');
+      el.appendChild(s);
+    }
+  }
+  /** Where everything on the wheel is, for a window w x h, a text size and the wheel's turn theta (radians). */
+  function geometry(w, h, text, theta) {
+    const vw = w / 100, vh = h / 100;
+    const tw = Math.min(22 * vw, 40 * vh) * ({ large: 1.12, xlarge: 1.25 }[text] || 1);   // a ticket's width
+    const R = tw * 1.05;                                                                  // the ring, centre to rim
+    const g = { tw, R, ry: R * 0.09, cx: tw / 2 + Math.max(12, 1.4 * vw), cy: 4.5 * vh };
+    g.slots = Array.from({ length: CLIPS }, (_, i) => {
+      const phi = theta + i * STEP, cz = Math.cos(phi);
+      return { phi, cz, x: g.cx + g.R * Math.sin(phi), y: g.cy + g.ry * cz, scale: 1 + 0.08 * (cz - 1),
+        paper: Math.max(0, Math.min(1, (cz - 0.05) / 0.3)), shade: 0.62 + 0.38 * Math.max(0, cz) };
+    });
+    return g;
+  }
+  function drawWheel() {
+    const el = $('wheel');
+    if (!el || !wheelShown()) return;
+    const g = geometry(window.innerWidth, window.innerHeight, document.body.dataset.text, wheel.theta);
+    el.style.setProperty('--tw', g.tw + 'px');
+    el.querySelectorAll('.slot').forEach((s, i) => {
+      const p = g.slots[i], left = (p.x - g.tw / 2).toFixed(1) + 'px', top = p.y.toFixed(1) + 'px';
+      s.style.width = g.tw + 'px';
+      // Square on (the order at rest) is a plain move, so the words are drawn crisp.
+      s.style.transform = p.cz > 0.9999 ? `translate(${left}, ${top})`
+        : `translate(${left}, ${top}) scale(${p.scale.toFixed(3)}) perspective(${Math.round(g.tw * 3.2)}px) rotateY(${p.phi.toFixed(4)}rad)`;
+      s.style.zIndex = String(50 + Math.round(49 * p.cz));
+      s.style.filter = p.cz > 0.995 ? '' : `brightness(${p.shade.toFixed(3)})`;
+      if (i === 0) $('ticket').style.opacity = p.paper.toFixed(3);
+    });
+    // The rod up to the ceiling, the ring, its spokes and the hub: the back half behind the clips, the front half in front.
+    const { cx, cy, R, ry } = g, sw = Math.max(5, R * 0.035);
+    const ink = 'var(--wheel-ink)', steel = 'var(--wheel-steel)', dark = 'var(--wheel-dark)';
+    const w = Math.ceil(cx + R + sw * 2), h = Math.ceil(cy + ry + sw * 2);
+    const arc = (sweep, col, width, dy, extra) => `<path d="M ${cx - R} ${cy + (dy || 0)} A ${R} ${ry} 0 0 ${sweep} ${cx + R} ${cy + (dy || 0)}" fill="none" style="stroke:${col}" stroke-width="${width}" stroke-linecap="round"${extra || ''}/>`;
+    const spoke = (p, col, width) => `<line x1="${cx}" y1="${cy}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" style="stroke:${col}" stroke-width="${width}" stroke-linecap="round"/>`;
+    const spokes = list => list.map(p => spoke(p, ink, sw * 0.5 + 4)).join('') + list.map(p => spoke(p, dark, sw * 0.5)).join('');
+    const back = el.querySelector('svg.back'), front = el.querySelector('svg.front');
+    [back, front].forEach(s => { s.setAttribute('width', w); s.setAttribute('height', h); s.setAttribute('viewBox', `0 0 ${w} ${h}`); });
+    back.innerHTML = `<rect x="${cx - R * 0.025}" y="-20" width="${R * 0.05}" height="${cy + 20}" style="fill:${steel};stroke:${ink}" stroke-width="3"/>` +
+      arc(1, ink, sw + 6) + arc(1, dark, sw) + spokes(g.slots.filter(p => p.cz < 0)) +
+      `<ellipse cx="${cx}" cy="${cy}" rx="${R * 0.075}" ry="${R * 0.045}" style="fill:${steel};stroke:${ink}" stroke-width="3"/>` +
+      spokes(g.slots.filter(p => p.cz >= 0));
+    front.innerHTML = arc(0, ink, sw + 6) + arc(0, steel, sw) + arc(0, '#fff', sw * 0.25, -sw * 0.22, ' stroke-opacity=".75"');
+  }
+  /** Turn the wheel: 'in' brings a new ticket round from the left, 'turn' takes it once all the way round. */
+  function spinWheel(kind) {
+    cancelAnimationFrame(wheel.anim);
+    wheel.anim = 0;
+    if (reduced() || !wheelShown()) { wheel.theta = 0; turning(false); drawWheel(); return; }
+    // A turn starts from wherever the wheel is, so pressing Ticket mid-spin never makes it jump.
+    const from = kind === 'in' ? -3 * STEP : wheel.theta - Math.PI * 2, ms = kind === 'in' ? 1100 : 1600, t0 = performance.now();
+    const ease = kind === 'in'
+      ? t => 1 + 1.9 * Math.pow(t - 1, 3) + 0.9 * Math.pow(t - 1, 2)          // slows, a touch past the front, settles
+      : t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    wheel.theta = from;
+    turning(true);
+    drawWheel();
+    const tick = now => {
+      const t = Math.min(1, (now - t0) / ms);
+      wheel.theta = t < 1 ? from * (1 - ease(t)) : 0;
+      drawWheel();
+      wheel.anim = t < 1 ? requestAnimationFrame(tick) : 0;
+      if (t >= 1) turning(false);
+    };
+    wheel.anim = requestAnimationFrame(tick);
+  }
+  /** While the wheel turns, the scan's corner brackets wait (ui.js): they would chase the order round the back. */
+  const turning = on => document.body.classList.toggle('wheelTurning', !!on);
+  /** The order on the wheel (null takes it down). active: the item being made. spin: a new order comes round,
+   *  the same one turns once (Ticket); a new one that goes up while the wheel is out of sight comes round later. */
+  function ticket(order, active, spin) {
+    const el = $('ticket');
+    if (!el) return;
+    if (!order || !pack) { el.innerHTML = ''; el.style.display = 'none'; wheel.order = null; wheel.pending = null; return; }
+    const fresh = order !== wheel.order;
+    wheel.order = order;
+    el.style.display = '';
+    // Each item spelt out (words.js "the ticket"): the name, then everything after it in the order the line asks
+    // for it (spelled().bits). With more than one item, the one being made is spelt out and the others wait as
+    // their names, so the ticket stays small enough to read.
+    const many = order.items.length > 1;
+    el.innerHTML = '<div class="who">' + esc(order.ticket.customer.name) + '</div><ol>' +
+      order.items.map((it, i) => {
+        const sp = W.spelled(pack, it.spec), open = !many || i === active || active < 0;
+        return '<li' + (i === active && many ? ' class="now"' : '') + '><b>' + esc(sp.head) + '</b>' +
+          (open && sp.bits.length ? '<span class="bits">' + esc(sp.bits.join(', ')) + '</span>' : '') + '</li>';
+      }).join('') + '</ol>';
+    el.classList.toggle('many', many);
+    if (spin && wheelShown()) return spinWheel(fresh ? 'in' : 'turn');
+    if (spin && fresh) wheel.pending = 'in';
+    if (fresh && !spin) { cancelAnimationFrame(wheel.anim); wheel.anim = 0; wheel.theta = 0; turning(false); }
+    drawWheel();
+  }
+  /** The scan's Ticket target: the order on the wheel. */
+  const ticketEl = () => $('ticket');
+
+  /* ── the line's controls ───────────────────────────────────────────────── */
+  /** Draw the answers. list: [{ id, kind, label, icon, cls, marks, swatch, prop }]. -> { id: element }
+   *    btn      an enamel push-button (cls add | skip | swap)
+   *    plate    a dial plate: marks (count) and a swatch colour, for Simple cooking
+   *    tool     the station's Timed control prop (prop: a shared prop name); no picture: a drawn button
+   *    tile     a pick's value (cls more: a More… row; bad: the gross-out's value)
+   *    slip     an order slip (the review's redos; cls ticketSlip: the counter's Ticket) */
+  function controls(list, bare) {
+    const box = $('controls');
+    box.innerHTML = '';
+    box.classList.toggle('bare', !!bare);
+    const out = {};
+    for (const c of list) {
+      const el = document.createElement('div');
+      const kind = c.kind === 'spatula' ? 'tool' : c.kind;
+      el.className = 'ctl ' + kind + (c.cls ? ' ' + c.cls : '');
+      el.dataset.id = c.id;
+      if (kind === 'btn') el.innerHTML = (c.icon ? '<span class="ic">' + c.icon + '</span>' : '') + '<span class="lb">' + esc(c.label) + '</span>';
+      else if (kind === 'plate') {
+        el.innerHTML = '<span class="marks">' + '<i></i>'.repeat(c.marks || 0) + '</span>' +
+          '<span class="sw" style="background:#' + (c.swatch === undefined ? 0x999999 : c.swatch).toString(16).padStart(6, '0') + '"></span><span class="lb">' + esc(c.label) + '</span>';
+      } else if (kind === 'tool') {
+        const src = propSrc(c.kind === 'spatula' ? 'spatula' : c.prop);
+        if (src) el.innerHTML = '<img alt="" src="' + src + '"><span class="lb">' + esc(c.label) + '</span>';
+        else { el.className = 'ctl btn tool' + (c.cls ? ' ' + c.cls : ''); el.innerHTML = '<span class="ic">■</span><span class="lb">' + esc(c.label) + '</span>'; }
+      } else el.innerHTML = (c.icon ? '<span class="ic">' + c.icon + '</span>' : '') + '<span class="lb">' + esc(c.label) + '</span>';
+      box.appendChild(el);
+      out[c.id] = el;
+    }
+    fitColumn();
+    fitReceipt();
+    return out;
+  }
+  const clearControls = () => { $('controls').innerHTML = ''; fitColumn(); };
+
+  /** The real objects that are choices on some screens. */
+  function show(prop, on) { $(prop).classList.toggle('on', !!on); return $(prop); }
+
+  /* ── the Timed gauge ────────────────────────────────────────────────────── */
+  function gauge(stages, s, want) {
+    const g = $('gauge');
+    if (!stages || !pack) { g.classList.remove('on'); g.innerHTML = ''; return; }
+    g.innerHTML = stages.map((st, i) => '<span class="' + (i === s ? 'now ' : '') + (st === want ? 'want' : '') + '">' + esc(W.stage(pack, st)) + '</span>').join('');
+    g.classList.add('on');
+  }
+
+  /* ── speech bubbles, the receipt, the corner count ─────────────────────── */
+  /** A speech bubble. At the counter it grows upwards from above the painted queue's heads (bb.css); one too
+   *  tall for the room above (long words at Extra Large text) hangs from the top of the screen instead. */
+  function bubble(kind, name, text) {
+    const b = $('bubble');
+    if (!text) { b.classList.remove('on'); if (placed) placed.bubble = null; signCovered(); return; }
+    b.className = 'on ' + kind + (kind === 'customer' && childScale < 1 ? ' child' : '');
+    b.querySelector('b').textContent = name;
+    b.querySelector('span').textContent = BB.script.clean(text);
+    b.style.removeProperty('--say-w');
+    if (placed) placed.bubble = null;
+    if (document.body.dataset.place === 'counter' && placed && !b.classList.contains('child')) fitBubble(b, kind, BB.script.clean(text));
+    const r = b.getBoundingClientRect();
+    if (r.height && r.top < 4) b.classList.add('tall');
+    signCovered();                                   // the sign's name is left off while the bubble covers its words
+  }
+  /** A bubble at the counter stands on the painted queue's heads and grows upwards; where the room above them is short
+   *  (a wide window, a tall queue, long words) it grows wider instead (--say-w), towards the side away from its speaker,
+   *  up to the window's edge (over the corner count for the moment it speaks) or, for Mitch on the right, short of the
+   *  served customer's head; so it still ends above the heads. Only where no width is enough does it hang from the top
+   *  of the window (.tall: legibility first). placed.bubble is its box. */
+  function fitBubble(b, kind, text) {
+    const P = placed, Z = sizes(P.W, P.H), vw = Z.vw, vh = Z.vh, lab = Z.label, m = P.m;
+    const fromLeft = kind === 'customer' || (P.mitch && P.mitch.at === 'customer');
+    const foot = P.H - P.sayB, roof = vh, room = foot - roof, w0 = 0.34 * P.W, pad = 1.8 * lab + 8;
+    const hFor = w => 8 + 1.2 * lab + 1.25 * Z.small + lineCount(text, lab, w - pad, 'body') * lab * 1.2;
+    const wordsW = textWidth(text, lab, 'body') + pad + 2;
+    const reach = fromLeft ? P.W - 1.5 * vw - P.sayX
+      : (P.W - P.mitchSayR) - (document.getElementById('customer').classList.contains('on') ? P.head.x1 + m : 1.5 * vw);
+    let w = w0, h = hFor(Math.min(w, wordsW));
+    for (let tryW = w0 + 2 * vw; h > room && tryW <= Math.max(w0, reach); tryW += 2 * vw) { w = tryW; h = hFor(Math.min(w, wordsW)); }
+    if (w > w0) b.style.setProperty('--say-w', Math.floor(w) + 'px');
+    const width = Math.min(w, wordsW), tall = h > room;
+    if (tall) b.classList.add('tall');
+    const y0 = tall ? roof : foot - h, x0 = fromLeft ? P.sayX : P.W - P.mitchSayR - width;
+    P.bubble = { x0, y0, x1: x0 + width, y1: y0 + h, w, tall, from: fromLeft ? 'left' : 'right' };
+  }
+  function receipt(r) {
+    const el = $('receipt');
+    if (!r || !pack) { el.classList.remove('on'); el.innerHTML = ''; fitReceipt(); return; }
+    // Earned ★, unearned ☆, and the number: never colour alone (ACCESSIBILITY.md §9), as on the court and the results.
+    const stars = '<div class="stars">' + [1, 2, 3].map(i => (i > r.stars ? '<span class="off">☆</span>' : '<span>★</span>')).join('') +
+      '<span class="num">' + r.stars + '</span></div>';
+    const lines = r.mistakes.length ? '<ul>' + r.mistakes.map(m => '<li>' + esc(W.mistake(pack, m)) + '</li>').join('') + '</ul>'
+      : '<p>Everything as ordered.</p>';
+    el.innerHTML = '<h2>' + esc(r.name) + '</h2>' + stars + lines + '<div class="tip">Tip: ' + r.tip + ' coins' + (r.favourite ? ' (a favorite!)' : '') + '</div>';
+    el.classList.add('on');
+    fitReceipt();
+  }
+  /** The corner count; at the counter the column and the receipt keep below it. */
+  function hud(text) {
+    $('hud').textContent = text || '';
+    placeHud();
+    if (placed && document.body.dataset.place === 'counter') fitReceipt();
+  }
+
+  BB.stage = { init, usePack, setScene, customer, mitch, ticket, ticketEl, controls, clearControls, show, gauge, bubble, receipt, hud,
+    castSrc, propSrc, backdropSrc, managerFolder, layout,
+    /** The counter's layout for this window, in px (stage.js layout()): for the review frames and the checks. */
+    get placed() { return placed; },
+    get scene() { return sceneName; }, get pack() { return pack; },
+    /** For the Node layout check. */ wheelGeometry: geometry, get wheelTheta() { return wheel.theta; } };
+})();

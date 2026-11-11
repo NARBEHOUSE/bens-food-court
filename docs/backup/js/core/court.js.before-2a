@@ -1,0 +1,587 @@
+/** Ben's Food Court - the court's rules: stars, popularity, unlocks, the five-star event,
+ *  the grand celebration, and what the court screen shows and says about them
+ *  (docs/FOODCOURT-BUILD.md 4.1, 6.2 and 7; the API is docs/api/court-rules.md).
+ *
+ *  Pure, like every js/core file: no DOM, no storage, no clock, no randomness. Every
+ *  function takes the court's data (BBCourt, packs/court/court.js) FIRST and reads every
+ *  restaurant, arm, unlock, threshold and crowd from it, so this file names none of them.
+ *
+ *  The state is the data of the bb-court save (spec 7):
+ *    { restaurants: { <pack>: { popularity, stars, opened, grandOpeningSeen, gold, goldSeen,
+ *                               tutorialDone, shifts } },
+ *      celebrated, celebrationSeen }
+ *  Earned and seen are separate: `opened`, `gold` and `celebrated` are set when earned, and
+ *  the matching `...Seen` flag when the court has played that moment, so a moment is never
+ *  lost to leaving from the results card. Only addShift() and seen() change a state.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else (root.BB = root.BB || {}).courtRules = factory();
+})(typeof window === 'undefined' ? globalThis : window, function () {
+  'use strict';
+
+  const VERSION = 1;          // the bb-court record's version
+  const KEY = 'bb-court';     // its storage key (one for the whole court)
+  const KIND = 'court';
+  const FLAT = 4;             // up to this many open, the court's root lists the shops: with Pause, 5 stops (spec 0.8)
+  const EPS = 1e-9;           // an average of exactly the threshold is good, whatever the float error
+
+  const NUMBERS = 'zero one two three four five six seven eight nine ten eleven twelve'.split(' ');
+  const number = n => NUMBERS[n] || String(n);
+  const starWords = n => number(n) + (n === 1 ? ' star' : ' stars');
+  const cap = s => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+  const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+
+  /** Every entry point checks it was handed BBCourt, so a call with the arguments shifted
+   *  fails loudly instead of quietly answering about nothing. */
+  function need(court) {
+    if (!court || !Array.isArray(court.restaurants) || !court.rules) {
+      throw new TypeError('BB.courtRules: pass the court data (BBCourt) as the first argument');
+    }
+    return court;
+  }
+  const find = (court, id) => court.restaurants.find(r => r.pack === id) || null;
+  const top = court => court.rules.event.gives;         // five stars
+  const busyAt = court => court.rules.popularityMax;    // fully busy
+
+  /** Stars for a popularity: the highest the ladder gives at or below it. Never the event's star. */
+  function starsFor(court, popularity) {
+    need(court);
+    const ladder = court.rules.stars;
+    let s = ladder.length ? ladder[0].stars : 1;
+    for (const t of ladder) if (popularity >= t.popularity && t.stars > s) s = t.stars;
+    return s;
+  }
+
+  function blank(court, r) {
+    return { popularity: 0, stars: starsFor(court, 0), opened: !!r.start, grandOpeningSeen: !!r.start,
+      gold: false, goldSeen: false, tutorialDone: false, shifts: 0 };
+  }
+
+  /** A new court: the start restaurants open, the rest shut, nobody with any progress. */
+  function create(court) {
+    need(court);
+    const restaurants = {};
+    for (const r of court.restaurants) restaurants[r.pack] = blank(court, r);
+    return { restaurants, celebrated: false, celebrationSeen: false };
+  }
+
+  function int(v, lo, hi) {
+    const n = Math.floor(Number(v));
+    return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : lo;
+  }
+
+  /** One restaurant's saved entry, made whole and consistent: every field the right type and
+   *  in range, stars at least what popularity gives, five stars and the gold sign together,
+   *  a start restaurant always open. A sound entry comes back unchanged. */
+  function clean(court, r, v) {
+    const e = blank(court, r);
+    if (!isObj(v)) return e;
+    const five = top(court);
+    e.popularity = int(v.popularity, 0, busyAt(court));
+    const stars = int(v.stars, starsFor(court, 0), five);
+    e.gold = v.gold === true || stars >= five;
+    e.stars = e.gold ? five : Math.max(stars, starsFor(court, e.popularity));
+    e.opened = !!r.start || v.opened === true;
+    e.grandOpeningSeen = !!r.start || (e.opened && v.grandOpeningSeen === true);
+    e.goldSeen = e.gold && v.goldSeen === true;
+    e.tutorialDone = v.tutorialDone === true;
+    e.shifts = int(v.shifts, 0, Number.MAX_SAFE_INTEGER);
+    return e;
+  }
+
+  /** A restaurant's entry to read (a copy): the saved one made whole, or a blank one. */
+  function get(court, state, id) {
+    const r = find(court, id);
+    if (!r) return null;
+    return clean(court, r, state && isObj(state.restaurants) ? state.restaurants[id] : null);
+  }
+  /** A restaurant's entry to change: the stored one, made whole in place (or made and stored). */
+  function entry(court, state, id) {
+    const r = find(court, id);
+    if (!r) return null;
+    if (!isObj(state.restaurants)) state.restaurants = {};
+    const stored = state.restaurants[id];
+    if (!isObj(stored)) return (state.restaurants[id] = blank(court, r));
+    return Object.assign(stored, clean(court, r, stored));
+  }
+
+  // --- Reading one restaurant ------------------------------------------------------------
+
+  /** The court's entry for a pack id (name, short, said, arm, slot, start, unlock), or null. */
+  const restaurant = (court, id) => find(need(court), id);
+  /** The ladder level a normal shift there plays at (spec 4.3): its stars, 1 to 5. */
+  function level(court, state, id) {
+    need(court);
+    const e = get(court, state, id);
+    return e ? e.stars : starsFor(court, 0);
+  }
+  function isOpen(court, state, id) {
+    need(court);
+    const e = get(court, state, id);
+    return !!(e && e.opened);
+  }
+  /** The five-star event is due: open, the star before five, and popular enough (spec 4.1). */
+  function eventDue(court, state, id) {
+    need(court);
+    const e = get(court, state, id), ev = court.rules.event;
+    return !!(e && e.opened && !e.gold && e.stars >= ev.stars && e.stars < ev.gives && e.popularity >= ev.popularity);
+  }
+  const allFive = (court, state) => court.restaurants.every(r => {
+    const e = get(court, state, r.pack);
+    return e.opened && e.stars >= top(court);
+  });
+
+  // --- A finished shift --------------------------------------------------------------------
+
+  /** The shift's order count and average: from `stars` (one 1-3 per order) when it is there,
+   *  otherwise from `orders` and `avgStars`. */
+  function average(results) {
+    const list = Array.isArray(results.stars) ? results.stars.filter(n => typeof n === 'number' && isFinite(n)) : [];
+    if (list.length) return { n: list.length, avg: list.reduce((a, b) => a + b, 0) / list.length };
+    const n = Math.floor(Number(results.orders)) || 0, avg = Number(results.avgStars);
+    return isFinite(avg) && n > 0 ? { n, avg } : { n: 0, avg: 0 };
+  }
+
+  /** Open whatever the unlock rules now allow, in their order; a later one never opens
+   *  before an earlier one. -> the pack ids opened. */
+  function unlock(court, state) {
+    const opened = [];
+    for (const u of court.unlocks) {
+      const e = entry(court, state, u.pack);
+      if (!e || e.opened) continue;
+      const open = court.restaurants.map(r => get(court, state, r.pack)).filter(x => x.opened);
+      if (!open.length || !open.every(x => x.stars >= u.stars)) break;
+      e.opened = true;
+      e.grandOpeningSeen = false;
+      opened.push(u.pack);
+    }
+    return opened;
+  }
+
+  /** Count a finished shift (spec 4.1). Call it once, when a shift finishes; never on leaving.
+   *  results: { pack, level, event: id|null, tutorial, orders, stars: [1-3 per order], avgStars, coins }
+   *  Changes `state` in place and returns
+   *  { good, starsUp, stars, popularity, opened: [ids], gold, celebrate,
+   *    counted, event: 'won'|'failed'|null, eventDue, was: { stars, popularity } }. */
+  function addShift(court, state, id, results) {
+    need(court);
+    if (!isObj(state)) throw new TypeError('BB.courtRules.addShift: pass the court state second');
+    const e = entry(court, state, id);
+    const was = e ? { stars: e.stars, popularity: e.popularity } : { stars: 0, popularity: 0 };
+    const out = { good: false, starsUp: false, stars: was.stars, popularity: was.popularity, opened: [], gold: false,
+      celebrate: false, counted: false, event: null, eventDue: false, was };
+    if (!e || !isObj(results)) return out;                                       // not one of the court's restaurants
+    if (typeof results.pack === 'string' && results.pack && results.pack !== id) return out;  // another restaurant's shift
+    out.eventDue = eventDue(court, state, id);
+    if (!e.opened) return out;                                                   // a shut restaurant never counts
+    if (results.tutorial) { e.tutorialDone = true; return out; }                // tutorials never count
+    const { n, avg } = average(results);
+    if (!n) return out;                                                          // an empty shift is not a shift
+    const due = out.eventDue;
+    e.tutorialDone = true;
+    e.shifts += 1;
+    out.counted = true;
+    out.good = avg >= court.rules.good - EPS;
+    if (out.good) e.popularity = Math.min(busyAt(court), e.popularity + 1);
+    e.stars = Math.max(e.stars, starsFor(court, e.popularity));                 // raised only, never past the event's star
+    if (results.event && due) {
+      out.event = out.good ? 'won' : 'failed';                                   // a failed event stays due
+      if (out.good) { e.stars = top(court); e.gold = true; out.gold = true; e.goldSeen = false; }
+    }
+    out.opened = unlock(court, state);
+    if (!state.celebrated && allFive(court, state)) {
+      state.celebrated = true;
+      state.celebrationSeen = false;
+      out.celebrate = true;
+    }
+    out.starsUp = e.stars > was.stars;
+    out.stars = e.stars;
+    out.popularity = e.popularity;
+    out.eventDue = eventDue(court, state, id);
+    return out;
+  }
+
+  // --- Saving and loading --------------------------------------------------------------------
+
+  /** A copy of `data` made whole and consistent with the rules: every restaurant present and
+   *  clean (see clean()), the unlock order kept, unlocks the rules allow made, and the
+   *  celebration earned when all are at five stars. Restaurants this court does not know are
+   *  kept as saved. Never throws; anything unreadable becomes a new court. */
+  function normalize(court, data) {
+    need(court);
+    const out = create(court);
+    if (!isObj(data)) return out;
+    const src = isObj(data.restaurants) ? data.restaurants : {};
+    for (const id of Object.keys(src)) {
+      if (!find(court, id) && isObj(src[id])) out.restaurants[id] = JSON.parse(JSON.stringify(src[id]));
+    }
+    for (const r of court.restaurants) out.restaurants[r.pack] = clean(court, r, src[r.pack]);
+    let last = -1;
+    court.unlocks.forEach((u, i) => { if (out.restaurants[u.pack] && out.restaurants[u.pack].opened) last = i; });
+    for (let i = 0; i < last; i++) {
+      const e = out.restaurants[court.unlocks[i].pack];
+      if (e && !e.opened) { e.opened = true; e.grandOpeningSeen = false; }
+    }
+    unlock(court, out);
+    out.celebrated = data.celebrated === true || allFive(court, out);
+    out.celebrationSeen = out.celebrated && data.celebrationSeen === true;
+    return out;
+  }
+
+  /** Read a stored court: a JSON string, a bb-court record { v, kind, data }, the bare
+   *  state, or nothing (-> a new court). A record of another kind is ignored. A record from
+   *  a newer game is read as far as it goes; check canWrite() before saving over it.
+   *  opts.progress: { <pack>: that pack's bb-progress data }. A save from before the court
+   *  that already offered the tutorial (tutorialOffered or tutorialDone) carries
+   *  tutorialDone over. */
+  function migrate(court, raw, opts) {
+    need(court);
+    let rec = raw;
+    if (typeof rec === 'string') { try { rec = JSON.parse(rec); } catch (err) { rec = null; } }
+    let data = null;
+    if (isObj(rec)) {
+      if (rec.data !== undefined) { if (rec.kind === undefined || rec.kind === KIND) data = rec.data; }
+      else if (rec.kind === undefined) data = rec;
+    }
+    const out = normalize(court, data);
+    const old = opts && isObj(opts.progress) ? opts.progress : null;
+    if (old) {
+      for (const r of court.restaurants) {
+        const p = old[r.pack];
+        if (isObj(p) && (p.tutorialDone === true || p.tutorialOffered === true)) out.restaurants[r.pack].tutorialDone = true;
+      }
+    }
+    return out;
+  }
+
+  /** The record to store under KEY. */
+  const record = state => ({ v: VERSION, kind: KIND, data: state });
+  /** May a record be written over what is stored? Never over a newer game's save. */
+  function canWrite(stored) {
+    let rec = stored;
+    if (typeof stored === 'string') { try { rec = JSON.parse(stored); } catch (err) { return true; } }
+    return !isObj(rec) || !(rec.v > VERSION);
+  }
+
+  // --- The court screen -----------------------------------------------------------------------
+
+  /** The open restaurants (BBCourt entries) in scan order, round the U. */
+  function openShops(court, state) {
+    need(court);
+    return court.restaurants.filter(r => isOpen(court, state, r.pack));
+  }
+
+  /** The parts of the U that have an open restaurant, in root order, each with its open
+   *  shops in scan order: [{ arm, name, shops: [BBCourt entries] }]. */
+  function parts(court, state) {
+    const open = openShops(court, state);
+    return court.arms.map(a => ({ arm: a.id, name: a.name, shops: open.filter(r => r.arm === a.id) })).filter(p => p.shops.length);
+  }
+
+  /** The court's root scan, without Pause (the page adds Pause: the Back in 5 sign, last; js/court.js).
+   *  Up to FLAT open: the shops. More: the parts, but a part with one open shop is that shop.
+   *  -> [{ kind: 'shop', id: 'shop:<pack>', pack, label }
+   *     | { kind: 'part', id: 'part:<arm>', arm, label, stops: [shop stops] }]
+   *  opts.saved: which packs have a saved shift (an object or array of pack ids, or a function). */
+  function stops(court, state, opts) {
+    need(court);
+    const open = openShops(court, state);
+    const shop = r => ({ kind: 'shop', id: 'shop:' + r.pack, pack: r.pack, label: label(court, state, r.pack, opts) });
+    if (open.length <= FLAT) return open.map(shop);
+    return parts(court, state).map(p => (p.shops.length === 1 ? shop(p.shops[0]) : {
+      kind: 'part', id: 'part:' + p.arm, arm: p.arm,
+      label: p.name + '. ' + p.shops.map(r => r.short).join(', ') + '.',
+      stops: p.shops.map(shop),
+    }));
+  }
+
+  function saved(opts, id) {
+    const s = opts && opts.saved;
+    if (typeof s === 'function') return !!s(id);
+    if (Array.isArray(s)) return s.includes(id);
+    return !!(isObj(s) && s[id]);
+  }
+
+  /** A storefront's scan label (spec 6.2): its scan name and stars, plus "shift in progress"
+   *  (opts.saved) and the event when they are true. */
+  function label(court, state, id, opts) {
+    need(court);
+    const r = find(court, id);
+    if (!r) return '';
+    const bits = [r.short, starWords(get(court, state, id).stars)];
+    if (saved(opts, id)) bits.push('shift in progress');
+    if (eventDue(court, state, id)) bits.push(number(top(court)) + '-star event next');
+    return bits.join(', ');
+  }
+
+  /** Who stands at a storefront (spec 6.2), from BBCourt.crowd by popularity, with the
+   *  spots to draw them on from BBCourt.layout (counts never exceed the spots there).
+   *  -> { tier, popularity, passing, queue, seated,
+   *       spots: { passing: [[x0,y0,x1,y1]], queue: [[x,y]], seats: [[x,y]] } } */
+  function crowd(court, state, id) {
+    need(court);
+    const e = get(court, state, id);
+    const p = e ? e.popularity : 0;
+    const rows = Array.isArray(court.crowd) ? court.crowd : [];
+    const row = rows[Math.max(0, Math.min(p, rows.length - 1))] || {};
+    const at = (court.layout && isObj(court.layout.stores) && court.layout.stores[id]) || {};
+    const list = k => (Array.isArray(at[k]) ? at[k] : []);
+    const count = (v, spots) => (v === 'all' ? spots.length : Math.min(Math.max(0, Math.floor(Number(v)) || 0), spots.length));
+    const passing = count(row.passing, list('passing'));
+    const queue = count(row.queue, list('queue'));
+    const seated = count(row.seated, list('seats'));
+    return { tier: row.tier || null, popularity: p, passing, queue, seated,
+      spots: { passing: list('passing').slice(0, passing), queue: list('queue').slice(0, queue), seats: list('seats').slice(0, seated) } };
+  }
+
+  /** What a storefront shows before any pending moment plays (see news()):
+   *  shutter       down while shut, and on a newly opened one until its Grand Opening moment
+   *  banner        the Grand Opening banner: after that moment, until the first visit
+   *                (the tutorial offer answered, or a shift finished)
+   *  goldSign      the gold sign, once its moment has dropped it on
+   *  tutorialDone  false: entering offers the tutorial first (spec 6.1) */
+  function storefront(court, state, id) {
+    need(court);
+    const r = find(court, id);
+    if (!r) return null;
+    const e = get(court, state, id);
+    const visited = !!e.tutorialDone || e.shifts > 0;
+    return {
+      pack: id, open: !!e.opened, stars: e.stars, popularity: e.popularity,
+      eventDue: eventDue(court, state, id), busy: e.popularity >= busyAt(court),
+      shutter: !e.opened || (!r.start && !e.grandOpeningSeen),
+      banner: !!e.opened && !r.start && !!e.grandOpeningSeen && !visited,
+      goldSign: !!e.gold && !!e.goldSeen,
+      tutorialDone: !!e.tutorialDone,
+      crowd: crowd(court, state, id),
+    };
+  }
+
+  /** The first-visit card was answered: Play the Tutorial and Skip It both set this (spec 6.1). */
+  function setTutorialDone(court, state, id) {
+    need(court);
+    const e = isObj(state) ? entry(court, state, id) : null;
+    if (e) e.tutorialDone = true;
+  }
+
+  /** The court moments earned but not yet played, in the order to play them: gold signs
+   *  (scan order), grand openings (unlock order), then the grand celebration.
+   *  -> [{ kind: 'goldSign'|'grandOpening'|'celebration', pack, name, words }]
+   *  words: one plain sentence, for the court prompt when no character says it. */
+  function news(court, state) {
+    need(court);
+    const out = [];
+    const item = (kind, r, words) => ({ kind, pack: r ? r.pack : null, name: r ? r.name : '', words });
+    for (const r of court.restaurants) {
+      const e = get(court, state, r.pack);
+      if (e.gold && !e.goldSeen) out.push(item('goldSign', r, r.name + ' has ' + starWords(top(court)) + ' and its gold sign.'));
+    }
+    for (const u of court.unlocks) {
+      const r = find(court, u.pack);
+      const e = r && get(court, state, r.pack);
+      if (e && !r.start && e.opened && !e.grandOpeningSeen) out.push(item('grandOpening', r, r.name + ' is open.'));
+    }
+    if (state && state.celebrated && !state.celebrationSeen) {
+      out.push(item('celebration', null, 'All ' + number(court.restaurants.length) + ' restaurants have ' + starWords(top(court)) + '.'));
+    }
+    return out;
+  }
+
+  /** Mark a news() moment as played. */
+  function seen(court, state, item) {
+    need(court);
+    if (!isObj(state) || !isObj(item)) return;
+    if (item.kind === 'celebration') { if (state.celebrated) state.celebrationSeen = true; return; }
+    const e = entry(court, state, item.pack);
+    if (!e) return;
+    if (item.kind === 'goldSign' && e.gold) e.goldSeen = true;
+    if (item.kind === 'grandOpening' && e.opened) e.grandOpeningSeen = true;
+  }
+
+  // --- Words: the goal, Help, results -----------------------------------------------------------
+
+  /** Who still has to get there: "all <n>" when nobody has, the names of one or two, or
+   *  "<n> more". */
+  function who(left, group) {
+    if (left.length === group.length && group.length > 2) return 'all ' + number(group.length);
+    if (left.length <= 2) return left.map(r => r.said).join(' and ');
+    return number(left.length) + ' more';
+  }
+
+  /** The next goal, for the progress board, Mitch's court.return {goal}, the court prompt
+   *  and Help. Stages, in order:
+   *    unlock     a restaurant is still shut: every open one needs its unlock's stars
+   *    fiveStars  all open: every one needs five stars, and the court celebrates
+   *    fullyBusy  all at five stars: every one can still get fully busy
+   *    complete   nothing left (goal is '')
+   *  -> { stage, key, goal, words, name, need, left: [pack ids], count, five, busy, total,
+   *       board: [lines], blanks: { goal, name, count } }
+   *  goal starts lower case with no full stop, to sit inside a line; words is a sentence.
+   *  key changes exactly when the goal does: say court.return only when it has changed. */
+  function nextGoal(court, state) {
+    need(court);
+    const all = court.restaurants, five = top(court), max = busyAt(court), total = all.length;
+    const st = r => get(court, state, r.pack);
+    const open = all.filter(r => st(r).opened);
+    const atFive = all.filter(r => st(r).stars >= five).length;
+    const busy = all.filter(r => st(r).popularity >= max).length;
+    const next = court.unlocks.map(u => ({ u, r: find(court, u.pack) })).find(x => x.r && !st(x.r).opened);
+    const everyone = 'All ' + number(total);
+    let stage, goal = '', name = '', needs = null, left = [];
+    if (next) {
+      stage = 'unlock'; needs = next.u.stars; name = next.r.name;
+      left = open.filter(r => st(r).stars < needs);
+      goal = left.length ? 'get ' + who(left, open) + ' to ' + starWords(needs) + ' and ' + next.r.said + ' opens'
+        : next.r.said + ' opens next';
+    } else if (atFive < total) {
+      stage = 'fiveStars'; needs = five;
+      left = all.filter(r => st(r).stars < five);
+      goal = 'get ' + who(left, all) + ' to ' + starWords(five) + ' and the whole court celebrates';
+    } else if (busy < total) {
+      stage = 'fullyBusy'; needs = max;
+      left = all.filter(r => st(r).popularity < max);
+      goal = 'get ' + who(left, all) + ' fully busy';
+    } else {
+      stage = 'complete';
+    }
+    const words = goal ? cap(goal) + '.' : everyone + ' at ' + starWords(five) + ' and fully busy.';
+    const tallyFive = cap(starWords(five)) + ': ' + atFive + ' of ' + total;
+    const tallyBusy = 'Fully busy: ' + busy + ' of ' + total;
+    const board = stage === 'complete' ? [everyone + ' at ' + starWords(five), everyone + ' fully busy']
+      : stage === 'fullyBusy' ? [everyone + ' at ' + starWords(five), words, tallyBusy]
+        : [words, tallyFive, tallyBusy];
+    const key = [stage, next ? next.r.pack : '', needs === null ? '' : needs, left.map(r => r.pack).join(',')].join(':');
+    return { stage, key, goal, words, name, need: needs, left: left.map(r => r.pack), count: left.length,
+      five: atFive, busy, total, board, blanks: { goal, name, count: left.length } };
+  }
+
+  /** Help's court part (spec 6.2): each open restaurant's stars, then the next goal.
+   *  opts.saved as for stops(). */
+  function help(court, state, opts) {
+    need(court);
+    const said = openShops(court, state).map(r => label(court, state, r.pack, opts) +
+      (get(court, state, r.pack).popularity >= busyAt(court) ? ', fully busy' : '') + '.');
+    said.push(nextGoal(court, state).words);
+    return said.join(' ');
+  }
+
+  /** The results card's court sentences for an addShift() result: the stars gained or the
+   *  gold sign, any restaurant opened, the celebration. -> [sentences] (none for a shift
+   *  that changed nothing). */
+  function shiftWords(court, id, out) {
+    need(court);
+    const r = find(court, id), said = [];
+    if (!r || !isObj(out)) return said;
+    if (out.gold) said.push(r.name + ' has ' + starWords(top(court)) + ' and its gold sign.');
+    else if (out.starsUp) said.push(cap(r.said) + ' is up to ' + starWords(out.stars) + '.');
+    for (const p of out.opened || []) { const o = find(court, p); if (o) said.push(o.name + ' is open.'); }
+    if (out.celebrate) said.push('All ' + number(court.restaurants.length) + ' restaurants have ' + starWords(top(court)) + '.');
+    return said;
+  }
+
+  // --- Checking the data -------------------------------------------------------------------------
+
+  /** Everything wrong with a court's data, as sentences (none when it is sound). The tests
+   *  run it on BBCourt; run them after tuning the layout. */
+  function check(court) {
+    const errs = [];
+    const bad = m => errs.push(m);
+    if (!isObj(court)) return ['the court data is missing'];
+    if (typeof court.version !== 'number') bad('version must be a number');
+    if (typeof court.recordedVoices !== 'boolean') bad('recordedVoices must be true or false');
+    const ID = /^\w+$/;
+    const arms = Array.isArray(court.arms) ? court.arms : [];
+    if (!arms.length) bad('there are no arms');
+    const armIds = [];
+    for (const a of arms) {
+      if (!isObj(a) || !ID.test(a.id || '')) { bad('an arm needs an id'); continue; }
+      if (armIds.includes(a.id)) bad('arm ' + a.id + ' is listed twice');
+      armIds.push(a.id);
+      if (typeof a.name !== 'string' || !a.name) bad('arm ' + a.id + ' needs a name');
+    }
+    const list = Array.isArray(court.restaurants) ? court.restaurants.filter(isObj) : [];
+    if (!list.length) bad('there are no restaurants');
+    const ids = [], slots = [];
+    for (const r of list) {
+      const id = r.pack;
+      if (!ID.test(id || '')) { bad('a restaurant needs a pack id'); continue; }
+      if (ids.includes(id)) bad(id + ' is listed twice');
+      ids.push(id);
+      for (const k of ['name', 'short', 'said']) if (typeof r[k] !== 'string' || !r[k]) bad(id + ' needs ' + k);
+      if (!armIds.includes(r.arm)) bad(id + ' stands on an unknown arm');
+      if (!Number.isInteger(r.slot) || r.slot < 1) bad(id + ' needs a slot from 1');
+      else if (slots.includes(r.arm + ':' + r.slot)) bad(id + ' shares its slot');
+      else slots.push(r.arm + ':' + r.slot);
+      if (typeof r.start !== 'boolean') bad(id + ': start must be true or false');
+      else if (r.start ? r.unlock !== null : !Number.isInteger(r.unlock)) bad(id + (r.start ? ': a start restaurant has unlock null' : ' needs its place in the unlock order'));
+    }
+    if (!list.some(r => r.start === true)) bad('no restaurant is open at the start');
+    const runs = [];
+    for (const r of list) if (runs[runs.length - 1] !== r.arm) runs.push(r.arm);
+    if (new Set(runs).size !== runs.length) bad('an arm is split: the scan order must take each arm in one run');
+    if (runs.join() !== armIds.filter(a => runs.includes(a)).join()) bad('the scan order must take the arms in the order of arms');
+    for (const a of armIds) if (list.filter(r => r.arm === a).length > FLAT) bad('arm ' + a + ' has more than ' + FLAT + ' restaurants');
+    const unlocks = Array.isArray(court.unlocks) ? court.unlocks : [];
+    const later = list.filter(r => r.start === false).sort((x, y) => x.unlock - y.unlock).map(r => r.pack);
+    if (unlocks.map(u => u && u.pack).join() !== later.join()) bad('unlocks must open each later restaurant once, in its unlock order (' + later.join(', ') + ')');
+    const R = isObj(court.rules) ? court.rules : {};
+    if (!(typeof R.good === 'number' && R.good > 0)) bad('rules.good must be a number above 0');
+    if (!(Number.isInteger(R.popularityMax) && R.popularityMax > 0)) bad('rules.popularityMax must be a whole number above 0');
+    const ladder = Array.isArray(R.stars) ? R.stars : [];
+    if (!ladder.length || ladder[0].popularity !== 0) bad('rules.stars must start at popularity 0');
+    ladder.forEach((t, i) => {
+      if (i && !(t.popularity > ladder[i - 1].popularity && t.stars > ladder[i - 1].stars)) bad('rules.stars must rise in popularity and stars');
+    });
+    const ev = isObj(R.event) ? R.event : {};
+    const last = ladder.length ? ladder[ladder.length - 1] : { stars: 0, popularity: 0 };
+    if (ev.stars !== last.stars) bad('the event is due at the last star a normal shift gives');
+    if (ev.gives !== last.stars + 1) bad('the event gives the next star');
+    if (!(ev.popularity >= last.popularity && ev.popularity <= R.popularityMax)) bad('the event popularity must lie between the last star and popularityMax');
+    unlocks.forEach(u => {
+      if (!isObj(u) || !(Number.isInteger(u.stars) && u.stars >= 1 && u.stars <= ev.gives)) bad('each unlock needs stars from 1 to ' + ev.gives);
+    });
+    const crowdRows = Array.isArray(court.crowd) ? court.crowd : [];
+    if (crowdRows.length !== R.popularityMax + 1) bad('crowd needs one row for each popularity from 0 to ' + R.popularityMax);
+    crowdRows.forEach((row, p) => {
+      if (!isObj(row) || typeof row.tier !== 'string' || !row.tier) bad('crowd row ' + p + ' needs a tier');
+      for (const k of ['passing', 'queue', 'seated']) {
+        const v = isObj(row) ? row[k] : null;
+        if (!(v === 'all' || (Number.isInteger(v) && v >= 0))) bad('crowd row ' + p + ': ' + k + ' must be a count or all');
+      }
+    });
+    const most = k => crowdRows.reduce((m, row) => (isObj(row) && Number.isInteger(row[k]) ? Math.max(m, row[k]) : m), 0);
+    const pct = n => typeof n === 'number' && n >= 0 && n <= 100;
+    const isBox = b => Array.isArray(b) && b.length === 4 && b.every(pct) && b[0] < b[2] && b[1] < b[3];
+    const L = isObj(court.layout) ? court.layout : {};
+    if (!isObj(L.picture) || !(L.picture.w > 0 && L.picture.h > 0)) bad('layout.picture needs w and h');
+    if (!isBox(L.board)) bad('layout.board must be [x0, y0, x1, y1] in percent');
+    const owner = {};
+    for (const id of ids) {
+      const s = isObj(L.stores) ? L.stores[id] : null;
+      if (!isObj(s)) { bad('layout.stores.' + id + ' is missing'); continue; }
+      if (!isBox(s.sign)) bad(id + '.sign must be [x0, y0, x1, y1] in percent');
+      if (!isBox(s.store)) bad(id + '.store must be [x0, y0, x1, y1] in percent');
+      if (isBox(s.sign) && isBox(s.store) && !(s.sign[0] >= s.store[0] && s.sign[1] >= s.store[1] && s.sign[2] <= s.store[2] && s.sign[3] <= s.store[3])) bad(id + '.sign must lie inside its store');
+      for (const k of ['queue', 'seats']) {
+        if (!Array.isArray(s[k])) { bad(id + '.' + k + ' must be a list of [x, y]'); continue; }
+        s[k].forEach(p => { if (!(Array.isArray(p) && p.length === 2 && p.every(pct))) bad(id + '.' + k + ' has a spot that is not [x, y] in percent'); });
+      }
+      if (!Array.isArray(s.passing)) bad(id + '.passing must be a list of [x0, y0, x1, y1]');
+      else s.passing.forEach(l => { if (!(Array.isArray(l) && l.length === 4 && l.every(pct))) bad(id + '.passing has a line that is not [x0, y0, x1, y1] in percent'); });
+      if ((s.queue || []).length < most('queue')) bad(id + ' has fewer queue spots than the crowd uses (' + most('queue') + ')');
+      if ((s.passing || []).length < most('passing')) bad(id + ' has fewer passing lines than the crowd uses (' + most('passing') + ')');
+      if ((s.seats || []).length < Math.max(1, most('seated'))) bad(id + ' has fewer seats than the crowd uses (' + Math.max(1, most('seated')) + ')');
+      for (const p of Array.isArray(s.seats) ? s.seats : []) {
+        const k = String(p);
+        if (owner[k]) bad('the seat at ' + k + ' belongs to both ' + owner[k] + ' and ' + id);
+        else owner[k] = id;
+      }
+    }
+    return errs;
+  }
+
+  return { VERSION, KEY, create, migrate, normalize, record, canWrite, addShift, restaurant, level, isOpen,
+    eventDue, starsFor, crowd, openShops, parts, stops, label, storefront, setTutorialDone, news, seen, nextGoal, help,
+    shiftWords, check, words: { number, stars: starWords } };
+});

@@ -1,0 +1,418 @@
+# Ben's Cafe, the pack in words (content-cafe, phase 2b, 2026-11-09)
+
+`packs/cafe/pack.js` (pack version 1). Format: `docs/api/pack-format.md`; the line `docs/api/line.md`; the script
+`docs/api/script.md`; sounds `docs/api/audio.md`; the food `docs/api/world.md` and `docs/api/food.md`. The worked
+example it copies is the pizza (`docs/api/packs/pizza.md`). **food-cafe works from section 10** (every look, set,
+flourish and cook to draw). **The script works from section 12** (every moment and who must say it); the script in
+words is `docs/api/packs/cafe-script.md`.
+
+**Playtest fixes (food-cafe, 2026-11-11)**: the strength is the player's choice now (Simple asks "How strong?" Mild,
+Smooth or Bold; Timed is still Stop the Pour), so the ticket's "smooth" or "bold" is something the player does. The food:
+one open steel pitcher pours every milk (and the hot chocolate's cocoa, and the latte art: the milk's own pour draws the
+one heart), the syrup bottle stands beside the cup and only its stream goes in, a sugar is a torn packet that stays beside
+the cup, whipped cream stays from the Add to the counter, the lid comes in at its own step, the sleeve's heart is now a
+coffee bean. Section 10 says each one.
+
+**Check it** (from the game folder):
+
+```
+node -e "const B=require('./tests/bot.cjs'),SC=require('./js/core/script.js'),R=B.restaurants().find(r=>r.id==='cafe');console.log(B.schema.validate(R.pack),SC.check(R.pack,R.script),SC.coverage(R.pack,R.script))"
+node -e "console.table(require('./tests/bot.cjs').pressReport('cafe'))"
+BB_PACKS=cafe node --test "tests/*.test.cjs"
+```
+
+## 1. At a glance
+
+| | |
+|---|---|
+| id, name | `cafe`, "Ben's Cafe" (court: "Cafe", top arm, slot 3, open at the start) |
+| version | 1 |
+| manager | `{ id: 'mitch', art: 'mitch-cafe' }`: brown barista apron, knitted beanie, headset, a takeaway cup with his name spelled MICH |
+| backdrops | `counter`, and by station `coffee` (coffeeBar) and `donuts` (dough, fryer, glaze). All three exist (`BBArt.cafe`) |
+| courses | `['drink', 'donut']`: a coffee (or a hot chocolate) first, then a donut |
+| levels | `{}`: the engine's ladder unchanged |
+| paging | none: no pick has more than 4 values, so no screen ever shows More… |
+| who | regulars marge gus bev vernon sal and priya (the Cafe's most loyal regular); local jitters; visitors reginald, kai and the cameo walt (Grandpa Walt, the Ice Cream Emporium's) |
+| counter picture | its painted queue is measured in the art manifest, `BBArt.cafe.counter` (tools/build_art.py): queue 59.9-82.2% across, heads 55%, feet 76%, horizon 48% (section 10) |
+
+## 2. The line: stations and steps
+
+| Station | backdrop | Steps, in order | redo | tool | sounds |
+|---|---|---|---|---|---|
+| `coffeeBar` "Coffee Bar" | `coffee` | builds on `cup`. Pick `size` → Pick `drink` → **Cook** `pour` (`want: 'strength'`; drip, latte, cappuccino; Simple: "How strong?" Mild / Smooth / Bold) → Pick `milk` (latte, cappuccino, hot chocolate) → **auto** `art` (show `latteArt`; latte, cappuccino) → Add `cream` (drip) → Add `shot` (drip, latte, cappuccino) → Add `vanilla` → Add `caramel` → Add `sugar`, max 2 (drip) → Add `whip` → **auto** `lid` (show `lidOn`; drip, hot chocolate) | "Redo the Drink" | `espressoLever` | `{ cook: 'pour', done: 'hiss', auto: 'hiss' }` (add: `plop`) |
+| `dough` "Dough Board" | `donuts` | Pick `dough` | "Redo the Dough" | | (a pick: `plop`) |
+| `fryer` "Fryer" | `donuts` | **Cook** `fry` (`want: 'fry'`) | "Fry Again" | `fryerBasket` | `{ cook: 'fryer' }` |
+| `glaze` "Glaze Bar" | `donuts` | Pick `glaze` → **auto** `dunk` (show `glazeDunk`; not with glaze None) → Add `sprinkles` → Add `coconut` → Add `nuts` | "Redo the Glaze" | | `{ auto: 'dip' }` (add: `plop`) |
+
+The parentheses are `when: { slot: 'drink', in: [...] }` (or `glaze`): a step the ticket does not use is passed, never
+judged, never on the ticket. A drink runs the coffee bar; a donut runs dough → fryer → glaze.
+
+What the player hears (words.js; Timed changes only the two cook steps):
+
+- "Coffee Bar. Size: Small, Medium or Large?" → "Drink: Drip, Latte, Cappuccino or Hot Chocolate?" → (Simple: "How
+  strong?" Mild / Smooth / Bold, and the machine pours it; Timed: "Stop the pour when it is right.", one button **Stop
+  the Pour**, said "Stop the pour. Bold"; left on, it stops at Burnt) → "Milk: Whole, Oat or Skim?" (the latte art plays) → "Cream." → "Extra
+  shot." → "Vanilla." → "Caramel." → "Add a sugar?" ("Add a second sugar?", Done after one) → "Whipped cream.". A bad
+  milk: "Oat milk, spoiled." among the milk tiles, plus Swap It.
+- "Dough Board. Dough: Classic, Chocolate or Jelly-Filled?" (a bad one: "Chocolate dough, stale.", plus Swap It).
+- "Fryer. How golden?" Golden / Dark Golden. Timed: "Fryer. Lift the basket when it is right.", one button **Lift the
+  Basket**; left in, it stops at Burnt.
+- "Glaze Bar. Glaze: Sugar, Chocolate, Strawberry or None?" (the donut dunks) → "Sprinkles." → "Coconut." → "Nuts.".
+  A bad one: "Sprinkles with a fly in them."
+- Review: "Here it is." Ring It Up and the redo words; a coffee and a donut have four redo choices, so they go in a
+  Redo… row.
+
+**Changes to the brief (spec 5.3 and the proposal), each for a reason:**
+
+1. **Milk is Whole/Oat/Skim, on the drinks made with milk; a drip coffee takes Cream (an Add) instead of a "None"
+   milk.** Spec 5.3 lists milk Whole/Oat/Skim/None and says "spoiled milk only on a step with 3 or fewer values, else
+   dropped". A latte or a cappuccino without milk is not one, so "None" only ever served the drip; moving the drip's
+   milk to its own Add keeps the milk pick at three values, so spoiled milk stays in the game, on the very step spec
+   4.6 uses as its example ("Oat milk, spoiled"). Black coffee is still a drip with nothing on it, and Marge's "coffee,
+   cream and two sugars" reads as written.
+2. **The pour is for coffee only** (drip, latte, cappuccino): a hot chocolate is not poured from the espresso machine,
+   so it has no Timed step and can't burn.
+3. **The pour's stage is the coffee's strength** (Mild, Smooth, Bold; Burnt last), a `want` slot drawn per order like
+   the pizza's bake; the ticket and the customer say it ("Latte, large cup, bold, oat milk"). **The player chooses it**
+   (playtest 2026-11-11: "it says smooth and bold but I don't think that's an option"): Simple asks "How strong?" with
+   Mild, Smooth and Bold, as the fryer asks "How golden?"; Timed is Stop the Pour, as before. Until then the stage set
+   was `simple: 'auto'` and Simple poured to the ticket by itself, so the ticket named a strength nobody chose. A wrong
+   strength is a `done` mistake: Mitch reads "The ticket said bold." (`mistake.done`), the customer `complain.done`. Two
+   cook steps use `want`, not `done`, so the customer says them in line order.
+4. **Flourishes added, one on every drink and every glazed donut:** latte art after the milk on a latte or a
+   cappuccino (a heart in the foam; Sal's cast line about "no little leaf" now has something to complain about), the
+   lid snapping on at the end of a drip or a hot chocolate, and the dunk into the glaze. None is a choice. (The lid
+   came after the first `--pack cafe` run: a 3-customer shift of drip coffees had no flourish at all, and the driver's
+   Motion Full run checks for one; now every drink has one.)
+5. **Sugar counts are fixed per recipe** (the Coffee has two, everything else none): a held second sugar would be said
+   "no sugars" by words.js while the ticket still wants one.
+
+## 3. Cooking: two stage sets
+
+| set | stages (first .. last) | Simple `choose` | ask | stop | notes |
+|---|---|---|---|---|---|
+| `pour` | empty, mild, smooth, bold, burnt | Mild, Smooth, Bold | "How strong?" | "Stop the Pour" | Simple and the tutorial ask it (since 2026-11-11; it was `simple: 'auto'`). Cook step `want: 'strength'` |
+| `fry` | raw, golden, darkGolden, burnt | Golden, Dark Golden | "How golden?" | "Lift the Basket" | "Timed is one stop" (spec 5.3). Cook step `want: 'fry'` |
+
+Stage names: Empty, Mild, Smooth, Bold, Burnt, Raw, Golden, Dark Golden. Speeds: the pack's `cookSpeeds` 12 / 8 / 5 s a
+stage, `wantedScale` 2 (the Burger Bar's grill). **Burnt coffee and a burnt donut are Timed's last stages** (one
+mistake, `complain.done`), never gross-outs. The strength is drawn from `picks.strength` (normal Smooth), the fry from
+`picks.fry` (normal Golden).
+
+## 4. Recipes
+
+`level` is the only gate. "As written" is the ticket with the normal picks (change 0).
+
+| id | Name | level | course | price | As written (the ticket) | Can change |
+|---|---|---|---|---|---|---|
+| `coffee` | Coffee | 1 | drink | 4 | medium cup, drip, smooth, with cream and two sugars | size, strength; holds cream; adds vanilla |
+| `blackCoffee` | Black Coffee | 1 | drink | 3 | medium cup, drip, smooth, nothing else on it | size, strength; adds extra shot |
+| `latte` | Latte | 1 | drink | 5 | medium cup, latte, smooth, whole milk, nothing else on it | size, strength, milk; adds vanilla, caramel, whipped cream |
+| `hotChocolate` | Hot Chocolate | 2 | drink | 4 | medium cup, hot chocolate, whole milk, with whipped cream | size, milk; holds whipped cream; adds caramel, vanilla |
+| `cappuccino` | Cappuccino | 2 | drink | 5 | medium cup, cappuccino, smooth, whole milk, nothing else on it | size, strength, milk; adds extra shot, caramel |
+| `vanillaLatte` | Vanilla Latte | 2 | drink | 6 | medium cup, latte, smooth, whole milk, with vanilla | size, strength, milk; adds whipped cream |
+| `redEye` | Red Eye | 2 | drink | 5 | medium cup, drip, smooth, with extra shot | size, strength; adds cream |
+| `wakeUpCall` | Wake-Up Call | 3 | drink | 7 | medium cup, cappuccino, smooth, whole milk, with extra shot, vanilla, caramel and whipped cream | size, strength, milk; holds vanilla, whipped cream |
+| `glazedDonut` | Glazed Donut | 1 | donut | 3 | classic dough, golden, sugar glaze, nothing else on it | dough, fry; adds sprinkles, nuts |
+| `sprinkleDonut` | Sprinkle Donut | 1 | donut | 3 | classic dough, golden, strawberry glaze, with sprinkles | dough, fry; adds coconut |
+| `chocolateDonut` | Double Chocolate Donut | 2 | donut | 4 | chocolate dough, golden, chocolate glaze, with nuts | fry; holds nuts; adds sprinkles |
+| `jellyDonut` | Jelly Donut | 2 | donut | 4 | jelly-filled dough, golden, sugar glaze, nothing else on it | fry, glaze; adds coconut |
+| `everythingDonut` | Everything Donut | 3 | donut | 5 | classic dough, golden, sugar glaze, with sprinkles, coconut and nuts | dough, fry, glaze; holds coconut, nuts |
+| `giantDonut` | Giant Donut | `'event'` | donut | 15 | classic dough, golden, strawberry glaze, with sprinkles; `look: { shape: 'donut', giant: true }` | the finale only |
+
+Slots and picks (level 5 uses the fancy lists):
+
+| slot (question) | values (label; ticket words) | pick: values, normal, fancy |
+|---|---|---|
+| `size` "Size" | smallCup "Small", mediumCup "Medium", largeCup "Large"; "medium cup" (ids are not `medium`: js/core quotes that word) | all three, mediumCup |
+| `drink` "Drink" | drip "Drip", latte "Latte", cappuccino "Cappuccino", hotChocolate "Hot Chocolate"; "drip", "latte" … | fixed by each recipe |
+| `milk` "Milk" | whole "Whole", oat "Oat", skim "Skim"; "whole milk" | all three, whole |
+| `dough` "Dough" | classic "Classic", chocolate "Chocolate", jelly "Jelly-Filled"; "classic dough" | all three, classic |
+| `glaze` "Glaze" | sugar "Sugar", chocolate "Chocolate", strawberry "Strawberry", noGlaze "None"; "sugar glaze", "glaze: none" (never "no glaze") | sugar/chocolate/strawberry, sugar, fancy + noGlaze |
+| (want) `strength` | the pour's stages | mild/smooth/bold, smooth |
+| (want) `fry` | the fryer's stages | golden/darkGolden, golden |
+
+**Combos** (level 3 up): one item, or two at the level's `more` odds: a drink and a donut, in that order. Never two
+drinks or two donuts except Gus's two of one thing. Order Size "One Item" makes every order one item.
+
+## 5. The ladder (`levels: {}`)
+
+| Level | On offer | Items | Gross-outs | Extras |
+|---|---|---|---|---|
+| 1 | coffee, black coffee, latte, glazed donut, sprinkle donut | 1; at most 2 optional parts; change 0.2 | none | |
+| 2 | + hot chocolate, cappuccino, vanilla latte, red eye, double chocolate donut, jelly donut | 1; change 0.3 | none | Priya's usual comes on |
+| 3 | + Wake-Up Call, Everything Donut | 1 or 2 (35% two) | 0.3 an order, at most 2 a shift, never the first | |
+| 4 | the same | as 3, change 0.4 | as 3 | one odd order at 50% a shift; one visitor (Reginald, Kai or Walt), never first |
+| 5 | the same | as 4, change 0.5, fancy (glaze None) | 0.35, at most 2 | odd orders at 60%, `everythingCup` too |
+
+Measured over 300 five-order shifts a level (seeds 1-300): 20% of all orders are two items (levels 3-5 about a
+third); the gross-outs landed stale 338, spoiled 269, fly 85 (every donut has a dough, the milk drinks a milk, only
+some donuts sprinkles); the three visitors came about evenly (Kai 198, Reginald 194, Walt 208); Kai never ordered a
+coffee and Jitters never got whipped cream.
+
+## 6. Ridiculous orders (level 4 and 5)
+
+The customer says `order.odd.<id>` instead of the order; the ticket is plain and complete. At most one a shift, never
+the first order or the visitor's.
+
+| id | level | recipe | the change | The ticket | Who | Presses (Simple / Timed) |
+|---|---|---|---|---|---|---|
+| `halfDecaf` | 4 | blackCoffee | adds an extra shot ("half decaf, half extra caffeine" is said: there is no decaf) | Black Coffee: medium cup, drip, smooth, with extra shot | anyone | 10 / 10 |
+| `coffeeDonut` | 4 | jellyDonut | none ("a donut with a coffee inside it" is said; the jelly stays jelly) | Jelly Donut: jelly-filled dough, golden, sugar glaze, nothing else on it | anyone | 7 / 7 |
+| `sevenShots` | 4 | latte | large, bold, adds one extra shot ("seven extra shots" is said) | Latte: large cup, latte, bold, whole milk, with extra shot | Jitters only | 9 / 9 |
+| `everythingCup` | 5 | cappuccino | large, bold, adds extra shot, vanilla, caramel and whipped cream ("everything on the bar") | Cappuccino: large cup, cappuccino, bold, whole milk, with extra shot, vanilla, caramel and whipped cream (Jitters: no whipped cream, his dislike) | anyone | 9 / 9 |
+
+## 7. The five-star event: The Morning Rush
+
+```js
+events: { five: { name: 'The Morning Rush',
+  customers: ['marge', 'gus', 'bev', 'vernon', 'sal', 'priya', 'reginald', 'kai', 'walt'],
+  finale: { customer: 'jitters', items: [{ recipe: 'giantDonut', set: { fry: 'golden' } },
+    { recipe: 'redEye', set: { size: 'largeCup', strength: 'bold' } }] } } }
+```
+
+- The whole office building next door comes in before work, **spoken of, never shown**: the customers are the drawn
+  cast. Shift Length orders at level-4 complexity (one or two items), no visitors, no odd orders.
+- The finale, always last: Jitters, who works in that building, orders the giant donut off the roof for the whole
+  office (his `order.gag`) and his own Red Eye: "Giant Donut: classic dough, golden, strawberry glaze, with sprinkles.
+  Red Eye: large cup, drip, bold, with extra shot." 16 presses, Simple or Timed. The donut is drawn giant and adds no
+  choices. If Jitters isn't drawn, the first drawn regular (Marge) orders it.
+- Mitch: `event.intro`, `event.celebrate`, `event.again`.
+
+## 8. Who comes in, and what they order
+
+| id | role here | likes (others 0.5) | also | Brief (proposal / spec 2.3) |
+|---|---|---|---|---|
+| `marge` | regular | coffee 3 | `usual`: Coffee, medium, smooth (cream and two sugars, as written): `order.usual` | "Coffee, cream and two sugars" |
+| `gus` | regular | coffee 2, glazed donut 2, black coffee 1 | cast `twin`: two of one thing from level 3; "a dozen donuts" is said in `order.twin` | "Two coffees and a dozen donuts" |
+| `bev` | regular | black coffee 3, red eye 1 | `favourite`: black coffee, +2 (`react.favourite`); `set: { strength: 'bold' }` | "Black coffee" |
+| `vernon` | regular | latte 3, vanilla latte 1, cappuccino 1 | `set: { milk: 'oat' }`; cast `exact`; "extra hot" is said, never made | "Oat latte, extra hot" |
+| `sal` | regular | black coffee 3, glazed donut 2 | `favourite`: glazed donut, +2; no lettuce here, no dislike | "Plain coffee, black" |
+| `priya` | regular (here only, spec 5.4) | red eye 3, black coffee 2, glazed donut 1 | `usual`: Red Eye, large, bold (from level 2); `favourite`: Red Eye, +2; `set: { size: 'largeCup', strength: 'bold' }` | the night-shift nurse, the Cafe's most loyal regular |
+| `jitters` | local | red eye 3, Wake-Up Call 3, cappuccino 2, latte 1 | `dislikes: ['whip']` (held, never added: `order.dislike`); `set: { strength: 'bold' }`; `order.gag`; the event's finale; the tutorial | far too much coffee already |
+| `reginald` | visitor, level 4 | Wake-Up Call 2, Everything Donut 2 | cast `newest`: the newest recipe on offer (the Wake-Up Call, first of level 3) | the critic |
+| `kai` | visitor, level 4 | hot chocolate 3, sprinkle donut 3, double chocolate 2 | `dislikes: ['coffee']`: coffee is the item of every coffee recipe, so he never orders one (the cast's mention: "I'm not allowed coffee"); cast `short` | the young reviewer |
+| `walt` | visitor, level 4 (cameo, spec 2.2) | black coffee 3, glazed donut 3 | `set: { size: 'smallCup' }` ("coffee came in one size"); the Ice Cream Emporium's local, here like 1955 | a cross-court running joke against Jitters |
+
+Walt's voice passes `tests/cast.test.cjs`'s strict "who can meet" check at the cafe (checked before he was listed; the
+whole cast test passes with him in). Rita would not have (too close to Priya on David-Zira-Mark).
+
+## 9. Gross-outs (from level 3)
+
+| id | on | label (`say`) | fx (all the kit's) | What it does |
+|---|---|---|---|---|
+| `stale` | the `dough` pick (3 values): classic, chocolate, jelly | "{name} dough, stale" → "Chocolate dough, stale." | `tint` #a59d8a (grey), `spots` #6b6252 ×8 (cracks, crumbs), `smoke` #d8d0bf (a puff of dust) | Mitch `gross.stale`; served: `react.gross`, `complain.gross.stale`; receipt "Dough: chocolate dough, stale" |
+| `spoiled` | the `milk` pick (3 values): whole, oat, skim | "{name} milk, spoiled" → "Oat milk, spoiled." | `tint` #d9dc9c (green-yellow), `spots` #b7bd72 ×6 (lumps), `stink` | as above, `.spoiled` |
+| `fly` | sprinkles (an Add) | "{name} with a fly in them" → "Sprinkles with a fly in them." | `fly` (game.js plays `buzz` for the id `fly`) | as above, `.fly` |
+
+On a pick, the bad value stands among the tiles under its own label, Swap It replaces it and asks again, and picking
+another value is a pick mistake. Burnt coffee and a burnt donut are Timed's last stages instead (spec 4.6).
+
+## 10. For food-cafe: every look, set, flourish and cook
+
+`made()` of a drink: `{ recipe, ing: 'cup', parts: [{ ing: 'cream' }, { ing: 'sugar' }, { ing: 'sugar' }, …],
+picks: { size, drink, strength?, milk? }, counts: { sugar? }, auto: ['art'] or ['lid'] }` (the coffee bar `builds.on` the cup;
+`picks.strength` is the pour's stage, there is no `made.done`; a hot chocolate has no strength). Of a donut: `{ recipe,
+ing: 'donut', parts: [{ ing: 'sprinkles', gross? }, …], picks: { dough, fry, glaze }, auto: ['dunk']? }` (`picks.fry`
+is the fryer's stage). `k.sequence` gives the slot values that have looks in line order (size, drink, milk; dough,
+glaze) between the vessel and the Add parts. **Recipe looks name the layout**: `coffeeCup` for every drink, `donut` for
+every donut (`giant: true` on the event's). The kit's `stack` would pile toppings; a donut spreads them on its glaze,
+a cup fills.
+
+| look.shape | used by | set(s) | how it looks | with cooking |
+|---|---|---|---|---|
+| `paperCup` | ingredient `cup` (the vessel) | coffee, counter | a takeaway paper cup, cream (#fff8ec) with a brown sleeve (the court's warm brown) and a cream coffee bean on it (a bean, not a heart: the latte art is the only heart on a drink, 2026-11-11). No lid waits beside it: the lid comes in at its own step (`lidOn`) | none; its size from `made.picks.size` |
+| `cupSize` | size `smallCup` / `mediumCup` / `largeCup` (`look.scale` 0.82 / 1 / 1.2) | coffee (the pick), counter | the cup at that scale (the size pick drops the matching cup onto the drip tray) | none |
+| `drinkBase` | drink `drip` (#5a3219), `latte` (#c9a27a), `cappuccino` (#b88c62, `foam: true`), `hotChocolate` (#6b3b22) | coffee, counter | what fills the cup, `look.colour`: drip black coffee; latte milky tan; cappuccino a tall white foam cap; hot chocolate dark cocoa | the coffee's colour follows `picks.strength` through the `coffee` ramp below |
+| `coffeeFill` | ingredient `coffee` (the item of every coffee) | coffee (the pour), counter | the coffee in the cup at a level; its `ramp` by stage: empty #f3ece2 (the cup's inside), mild #b7814f, smooth #7c4a26, bold #4a2914, burnt #1d120b | the pour: the level rises and darkens a stage at a time; burnt adds a wisp of smoke and a dark ring |
+| `cocoaFill` | ingredient `cocoa` (the hot chocolate's item) | coffee, counter | hot chocolate, #6b3b22, a little glossy | none |
+| `milkJug` (the shape name stays; it draws a pitcher) | milk `whole` (band red #d8302c), `oat` (orange #e0962a), `skim` (blue #2f7fd0) | coffee (the pick, and the spoiled one on the line), counter (as the milk in the drink) | **one open steel frothing pitcher for every milk** (2026-11-11: a capped jug poured, and each milk had its own jug): a pointed spout, a band in the milk's label colour with a white dot, the milk showing inside in its own colour (whole #fbf5e8, oat #e8d3a8, skim #eef3f7); the stream is that colour. The spoiled one shows it in the milk itself (green-yellow, lumps, stink lines; the stink lines are hidden while it is tipped, and come back on the drink). In the drink: the milk tops the cup up and pales it | none |
+| `creamSwirl` | cream | coffee, counter | waiting: a small steel creamer; in the cup: a pale swirl on the coffee | none |
+| `espressoShot` | shot (Extra Shot) | coffee, counter | waiting: a little shot glass of espresso; in: a dark ring of crema on top | none |
+| `syrupPump` | vanilla (#f3dc8a), caramel (#c77a2a) | coffee, counter | waiting: a pump bottle as tall as a real one beside a takeaway cup, the syrup's colour, a label with a dot of it; in: it is set down on the drip tray beside the cup (the tray runs on to the right for it), its nozzle reaching over the opening, one pump, and only the syrup stream goes in (2026-11-11: the bottle used to stand inside the cup); the drizzle of `look.colour` shows on the drink as the stream ends and stays | none |
+| `sugarCube` (the shape name stays; it draws a packet) | sugar (max 2) | coffee, counter | waiting: a paper sugar packet (white, a brown band); in: it comes over the cup, is torn open, the sugar pours into the opening, and the empty torn packet is laid on the tray beside the cup, where it stays: the same packets beside the cup on the line, at the review and on the counter (`made.counts.sugar`; it used to be a cube on a spoon that dipped into the cup, and the packets appeared only on the counter) | none |
+| `whippedCream` | whip | coffee, counter | waiting: the red whipped-cream can from the backdrop; in: the can turns over above the cup, its nozzle over the opening (never in the cup), and a white swirled peak grows up from the drink, the can rising with it; the peak it grows is the layout's own (`whipSpec`: inside the opening, its ridges clear of the wall, 0.13 above the rim) and it stays from then on (2026-11-11: it vanished as the can left and came back at the end) | none |
+| `doughRing` | dough `classic` (#f3e2bd), `chocolate` (#7a4a2c) | donuts (dough, fryer, glaze), counter | a raw ring of dough; once fried, the `donutBody` ramp colours it (chocolate stays chocolate, browning darker) | the ring puffs a little in the fryer |
+| `doughBall` | dough `jelly` (#f3e2bd, `look.jam` #c8283c) | donuts, counter | a round donut with no hole and a dot of red jam peeking out of one side | as `doughRing` |
+| `donutBody` | ingredient `donut` (the item) | donuts (the fryer), counter | the fried donut's colour by stage, its `ramp`: raw #f1dfb8, golden #d99f4f, darkGolden #a8642b, burnt #3a2214 | doneness as a colour and a mark: a pale ring round the middle (the fry line) at golden, a darker ring at dark golden, cracks and smoke at burnt |
+| `glaze` | glaze `sugar` (#fbf6ec, translucent white), `chocolate` (#4e2a17), `strawberry` (#f58fb4, the roof's pink) | donuts (the glaze bar), counter | a glossy layer over the top half of the donut with a few drips down the side; the bowls on the backdrop are white, chocolate and pink | none (after the fryer) |
+| `bareDonut` | glaze `noGlaze` | donuts, counter | nothing on top: the fried donut shows; a few sugar grains so "glaze: none" looks bare, not missing | none |
+| `sprinkles` | sprinkles (`look.colours` pink, yellow, blue, green, white) | donuts, counter | waiting: an open glass jar of them (it had a lid that vanished as it tipped; coconut and nuts too); on: rainbow rods scattered over the glaze only (a `k.scatter` on the glaze's surface, not the box's top), there as the last pieces land | none |
+| `coconutFlakes` | coconut (#fffaf0) | donuts, counter | white flakes over the glaze | none |
+| `choppedNuts` | nuts (#c08a4e) | donuts, counter | tan chopped nut pieces over the glaze | none |
+| `coffeeCup` | recipe look of every drink | layout | the cup (sized), filled with the drink: base colour, milk, cream swirl, crema ring, syrup drizzle, sugar gone in, whipped cream on top; the latte art on a latte or a cappuccino once `made.auto` has `art` (under any whipped cream); the lid on a drip or a hot chocolate once it has `lid` | the pour's level and colour by `picks.strength` |
+| `donut` | recipe look of every donut; `giant: true` on `giantDonut` | layout | the donut (ring or ball by `picks.dough`), coloured by `picks.fry`, the glaze on its top, the toppings on the glaze; on the counter on a small square of wax paper | by `picks.fry` |
+
+**Sets** (measure your own lines: the 5.2 table asked for coffee 65 and donuts 62; by eye the coffee bar's cream
+counter top starts near 58% and the donut station's steel near 57%, so measure):
+
+- `counter`: `line 0.80`, `surface { y, back }` solved like a station (decision 4); a counter top in the court
+  picture's Cafe colours (warm brown wood, cream trim; sample the counter picture's returns). One item at `spots[0]`;
+  a drink and a donut side by side with `counter.arrange` (copy the pizza's). **The painted queue is further right
+  than the page's generic box**: the yawning office worker, the student and the man with the corgi stand at
+  **59.9-82.2% across, 55-76% down** (`BBArt.cafe.counter`, which content-cafe's own measurement of
+  art-source/backdrops/cafe-counter.png matches), so the order has room up to the 52% the driver checks. The corgi's
+  tail is at 82%: Mitch's spot (88%) is just clear.
+- `coffee`: the cup low and left of centre on the cream counter, under the espresso machine's left spout; the next
+  ingredient on the right (the milk jugs, the pump bottles and the whipped-cream can are on the right of the
+  backdrop). Its `pick` hook: a size pick drops the cup onto the drip tray; a drink pick sets the base (a hot chocolate's
+  cocoa pours from the pitcher; a coffee's cup waits for the strength); a milk pick: the one pitcher comes in and pours
+  that milk (on a latte or a cappuccino it stays pouring for the latte art). Its cook (`cook: 'pour'`): `show(c, s)` draws the cup at `s.stage` of the pour;
+  Simple's `run` pours to `s.stage` (the coffee runs from the spout, the level rises, about 1.8 s, Reduced: at once);
+  Timed: the stream runs, the level rises and darkens a stage at a time, a puff of smoke at burnt. **Strength shows as
+  a colour and a mark** (a fill line on the cup's side per stage, so Mild, Smooth and Bold differ by height too). The
+  Timed control prop is the page's `espressoLever`. Its `auto` (or `autos.latteArt`): **`latteArt`**, after the milk on
+  a latte or a cappuccino: **the milk's own pitcher, still pouring where the milk pick left it, draws the heart** (one
+  pour: the milk pick ends with the pitcher tipped over the cup, the flourish carries on from that exact pose, a little
+  wiggle, the heart grows, then the pitcher goes on down the line; there is no second pitcher, and no heart before it;
+  Reduced: the heart is there at once). A hot chocolate's cocoa comes from the same pitcher (cocoa in it, a brown
+  band), never from the espresso spout. And **`lidOn`**, the last step of a drip or a hot chocolate: a white lid comes in from the line, high over
+  the cup, drops on and snaps (a clear dome over whipped cream), the cup gives a little bounce (Reduced: the lid is on at
+  once). The frame redraws the cup after an Add from the order as it stands after the whole answer, which already lists
+  the lid; the module keeps it off for that one redraw (`hold` in js/food/cafe.js), so the lid never shows before it
+  goes on. On the counter
+  a drink with `lid` in `made.auto` wears its lid; one with `art` shows its heart.
+- `donuts` (three stations share it): the donut low on the steel counter in front of the glaze bowls; the fryer's oil
+  on the left of the picture. The dough pick lays a raw ring (or ball) on the counter. Its cook (`cook: 'fry'`): the
+  donut goes into the oil in the basket, bubbles, flips by itself, comes out (Simple's `run`); Timed: it browns a stage
+  at a time in the basket; the control prop is the page's `fryerBasket`. Its `auto` (or `autos.glazeDunk`):
+  **`glazeDunk`**, after the glaze pick (not with None): the donut dips face-down into the bowl of that glaze and comes
+  up glazed, one drip (Reduced: glazed at once). The wax paper stays on the counter (it used to go into the glaze with
+  the donut), the donut dips just into the glaze (a jelly ball, twice a ring's height, went through the bowl), and the
+  bowl is as big as the donut (the event's giant). The fryer's tank and basket are as big as the donut in them too, and
+  the donut flips about its middle (about its base it went under the oil, out of sight).
+
+Gross-out fx are the kit's (`tint`, `spots`, `smoke`, `stink`, `fly`): no custom fx. The stale dough and the spoiled
+milk sit on the line as the bad value (a pick gross-out, world.md 3.5): check that the grey dough and the lumpy milk in its open pitcher read
+as wrong at 1280 x 720.
+
+## 11. Sounds
+
+`coffeeBar`: `cook: 'pour'` (the espresso runs: in Simple when the drink is picked, in Timed when the clock starts),
+`done: 'hiss'` (the machine lets off steam as the pour ends), `auto: 'hiss'` (the steam wand before the latte art; the
+machine's puff as a lid goes on). `fryer`:
+`cook: 'fryer'` (the donut drops into the oil). `glaze`: `auto: 'dip'` (the dunk). Every Add plays the default `plop`,
+each Timed stage `tick`, a pick that ends its station (the dough) `plop`. The page plays `swoosh` (Skip), `toss` (Swap
+It), `buzz` (the gross-out id `fly`), `ding`, `kaching`, `stars`, `ew` as for the diner. All exist (`packs/cafe/sound`,
+`packs/shared/sound`); `tests/voices.test.cjs` checks them.
+
+## 12. For the script: every moment and who must say it
+
+`SC.moments(pack)` on the merged pack: 62 moments, 242 coverage items with an empty script. F = the pack's 'customer'
+fallback lines count for anyone with fewer than two of their own.
+
+- **Customers, everyone** (marge gus bev vernon sal priya jitters reginald kai walt): `greet` ×3, `smalltalk` ×3,
+  `goodbye` ×3 (the cast script supplies these for the regulars and visitors; **jitters and walt have none there**);
+  F: `react.3`/`.2`/`.1` ×3 of their own, `react.gross`, `complain.extra`/`.unasked`/`.missing` ({ing}{ings}),
+  `complain.tooMany`/`.tooFew` (the sugar is the only counted Add: name it), `complain.done` ({want}: mild, smooth,
+  bold, golden, dark golden; {ing}: coffee or donut), `complain.pick` ({slot}{want}: size, drink, milk, dough, glaze),
+  `complain.more`, `complain.gross.stale` and `.spoiled` ({slot}{value}: a pick gross-out, never {ing}),
+  `complain.gross.fly` ({ing}: sprinkles).
+- **Some**: `visitor.arrive` reginald kai walt; `order.usual` marge, priya; `order.twin` gus (two coffees or two
+  donuts: the line must fit both; "a dozen donuts" is said here); `order.dislike` jitters (whipped cream), kai (coffee:
+  never actually said, since coffee is never held, but coverage asks for one); `order.gag` jitters (≤ 8 s; one that
+  still reads at the Morning Rush finale, when the giant donut is for his whole office); `react.favourite` bev (black
+  coffee), sal (glazed donut), priya (Red Eye); F `order.odd.halfDecaf`, `.coffeeDonut`, `.everythingCup` (marge gus
+  bev vernon sal priya jitters) and `.sevenShots` (jitters).
+- **Mitch** (2 each unless 1): `shift.start`, `shift.end`, `uniform` (1); `tutorial.intro`, `.ticket`, `.review`,
+  `.serve`, `.gross` (the tutorial's gross-out is the spoiled whole milk, on a pick); `tutorial.coffeeBar`, `.dough`,
+  `.fryer`, `.glaze`, `tutorial.cook.coffeeBar` (heard in the tutorial since 2026-11-11, when Simple asks the
+  strength: "Pick Bold"), `tutorial.cook.fryer`; `tutorial.warn.extra`/`.unasked`/`.missing`/
+  `.tooMany`/`.tooFew`/`.done`/`.pick`/`.gross`/`.grossSkip`; `gross.stale`, `.spoiled` ({value}), `gross.fly`
+  ({ing}); `nearly` ({want}{name}), `after.3`, `after.1`, `after.gross`, `event.intro`/`.celebrate`/`.again` ({name}).
+- **Blank words**: {slot} size, drink, milk, dough, glaze; {want}/{got} on picks small, medium, large, drip, latte,
+  cappuccino, hot chocolate, whole, oat, skim, classic, chocolate, jelly-filled, sugar, strawberry, **none**; stages
+  mild, smooth, bold, golden, dark golden (and empty, raw, burnt as {got}); {ing} cream, extra shot, vanilla, caramel,
+  whipped cream, sprinkles, coconut, nuts (sugar only on count mistakes), coffee or donut for `done`.
+- **The brief**: Jitters's gag is caffeine (seven extra shots, half decaf, a donut with coffee in it); Priya is coffee
+  deprived and the most loyal; Marge's "coffee, cream and two sugars"; Gus's "two coffees and a dozen donuts"; Bev's
+  black coffee; Vernon's oat latte, extra hot ("I will know"); Sal's plain black coffee; Walt's 1955; Kai is not
+  allowed coffee (his cast mention); Reginald's crowned coffee bean (in the counter art and his cast mention).
+
+## 13. Help
+
+The pack's `help` (Pause > Help): "Ben's Cafe. Coffee starts at the coffee bar: pick the cup size, then the drink. The
+machine pours the coffee: in Simple, pick its strength: Mild, Smooth or Bold, as the ticket says; in Timed, watch it
+pour and Stop the Pour at the strength on the ticket. A latte, a cappuccino or a hot chocolate then gets its milk: Whole, Oat or Skim.
+Then Add or Skip each extra as it comes down the line: cream for a drip coffee, an extra shot, vanilla, caramel, sugar
+for a drip coffee, and whipped cream. Donuts start at the dough board: pick the dough. Then the fryer: in Simple, pick
+Golden or Dark Golden; in Timed, Lift the Basket at the stage on the ticket. Last, the glaze bar: pick the glaze, then
+Add or Skip sprinkles, coconut and nuts. The ticket lists everything: add what's on it, skip what isn't. If something
+looks wrong, Swap It brings a fresh one."
+
+## 14. Theme: warm brown and cream
+
+| token | value | token | value | token | value |
+|---|---|---|---|---|---|
+| pageBg | #2b170d | ticketAccent | #8a3a1a | cardValue | #ffe2b0 |
+| panelTop | #7a4a2b | ticketNow | #fbe7cc | logoTop | #ffe9c9 |
+| panelBottom | #55321c | perforation | #d6bb98 | logoMain | #fff8ec |
+| panelLip | #2e1a0e | hudBg | rgba(43,23,13,.86) | wheelInk | #1e130c |
+| plateTop | #fff8ec | gaugeBg | rgba(30,16,8,.92) | wheelSteel | #e3d8ca |
+| plateBottom | #efdcc0 | star | #c47a08 | wheelDark | #7a4a2b |
+| mark | #5a3218 | boardGlow | #4a2c1a | board | #3a2416 |
+| labelBg | rgba(43,23,13,.9) | woodInset | #2e1a0e | wood | #e8d2ae (a cream frame) |
+
+A coffee-brown control panel and dark roast menu boards in a cream frame; cream plates and paper. **Contrast,
+computed** (WCAG; translucent tokens composited over white, the worst backdrop), each token keeping its diner job
+(diner.md 14):
+
+- The highlight #ffd400 on: panelTop 5.16, panelBottom 7.89, board 10.16, boardGlow 8.80, gaugeBg 10.61, pageBg 11.92
+  (need 3; `tests/pack.test.cjs` checks the five it lists).
+- Text: ink on plateTop 17.24, plateBottom 13.58, ticketNow 15.09; ticketAccent on paper 7.47 and on ticketNow 6.44;
+  white on labelBg 12.84, hudBg 11.23, gaugeBg 15.19; chalk on board 12.81 and boardGlow 11.10; cardValue 11.61 /
+  10.06; logoTop 12.29 / 10.65; logoMain 13.78 / 11.94; white on the panel 7.39 / 11.29 (need 4.5).
+- Graphics: star on the receipt's paper 3.29, board 4.25, boardGlow 3.68; mark on the plates 10.45 / 8.23 (need 3).
+
+## 15. The tutorial
+
+Jitters (the Cafe's own); one guided order through every station: "Latte: large cup, latte, bold, whole milk, with
+extra shot. Sprinkle Donut: classic dough, golden, strawberry glaze, with sprinkles." The whole milk comes down spoiled
+(`gross: { item: 0, slot: 'milk', event: 'spoiled' }`), so Swap It is taught once, on a pick. Always Simple: Mitch
+explains the strength (`tutorial.cook.coffeeBar`: "Jitters said bold. Pick Bold") as he does the fryer's Golden; he
+warns before each mistake. 15 presses done right, plus the Swap It: 16.
+
+## 16. Press counts (`pressReport('cafe')`, Serve included; the same at every level)
+
+| recipe | levels | Simple | Timed |
+|---|---|---|---|
+| coffee | 1-5 | 11 (size, drink, strength, cream, shot, vanilla, caramel, sugar ×2, whipped cream, Serve) | 11 (the pour) |
+| blackCoffee | 1-5 | 10 (the sugar is one Skip) | 10 |
+| redEye | 2-5 | 10 | 10 |
+| latte, cappuccino, vanillaLatte, wakeUpCall | 1-5 / 2-5 / 3-5 | 9 (size, drink, strength, milk, shot, vanilla, caramel, whipped cream, Serve) | 9 |
+| hotChocolate | 2-5 | 7 (no pour, no extra shot) | 7 |
+| every donut | 1-5 | 7 (dough, fryer, glaze, sprinkles, coconut, nuts, Serve) | 7 (the fryer is one stop either way) |
+| giantDonut (event) | event | 7 alone; the finale with the Red Eye 15 | 16 |
+
+Whole orders (worked out from the table, 2026-11-11, with the strength asked in Simple too): level 1 and 2 at most 11;
+levels 3-5 and the event at most 21 (Gus's two Coffees, either mode); a drink and a donut 13-17; every odd order 7-10;
+the tutorial 16. Budget (spec 4.3): level
+1 ≤ 14, any order ≤ 28.
+
+## 17. Requests (for the owners named)
+
+- **page / integrate**: `packs/cafe/pack.js` and `packs/cafe/script.js` are on the page (content-cafe added both lines,
+  pilot.md 3). Draw `espressoLever` as the pour's Timed control and `fryerBasket` as the fryer's; play the auto events
+  `latteArt`, `lidOn` and `glazeDunk`. The counter picture's queue is at 59.9-82.2% across (`BBArt.cafe.counter`): wherever the
+  page still uses a fixed 52% queue edge, the cafe's own box gives the order and the answer column more room. (The
+  tutorial's pour is no longer automatic: since 2026-11-11 Simple asks the strength, so `tutorial.cook.coffeeBar` is
+  heard as `tutorial.cook.fryer` is.)
+- **food-cafe**: section 10.
+
+## 18. Traps this pack hit (for the content lanes after it)
+
+- **An id that js/core quotes anywhere, comments included, fails pack.test** ("no js/core file names an id"): words.js
+  has "medium" in a comment, so a value id `medium` fails. The sizes are `smallCup`/`mediumCup`/`largeCup`; their
+  names stay Small, Medium, Large. Run the test before settling ids.
+- **A held copy of a counted part reads wrong.** Holds are per ingredient: two `sugar` parts with one `opt: 'in'` held
+  make the customer say "no sugars" while the ticket wants one. Fix counts per recipe (or make every copy fixed).
+- **A pick gross-out's lines use `{value}`** (and `{slot}`), never `{ing}`; `SC.varsFor` lists a clip per value it sits
+  on. Its label reads "<value> <slot>, <state>" as spec 4.6's example ("Oat milk, spoiled").
+- **A `want` cook step is said in line order; `done` is said first.** "Latte, large cup, bold, oat milk" (want) reads
+  better than "Latte, bold, large cup" (done). The schema and line treat both alike.
+- **`simple: 'auto'` cooks never ask in Simple**, so the ticket names a stage the player never chooses (the Cafe's
+  strength until 2026-11-11, the user's "smooth and bold" playtest note). Use it only where the ticket never names the
+  stage as something to do, or let Simple ask.
+- **A recipe the customer must never order** (Kai and coffee): make it the item's `ing` and put it in `dislikes`;
+  `O.canOrder` keeps him off every recipe whose item it is. Coverage then asks for one `order.dislike` line he never
+  says.

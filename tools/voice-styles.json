@@ -1,0 +1,102 @@
+{
+  "_about": "The voice quality test, round 2 (tools/voice-styles.py). Round 1's picks (voice-source/burger-bar-voice-picks.json, 2026-11-08) approved Mitch and sent Marge, Gus, Coach Bev and Vernon back for new voices with the notes quoted in 'asked'; Sal is new. Each style is a Voice Studio 'Describe a voice' description (VoxCPM2: who, how it sounds, how it speaks; no rasp or gravel words, which came out as distortion in round 1). sample: what the designed voice says (the clip every game line is then cloned from). line: the game line the test plays; the voice model is given it with the recorder's own respellings from tools/voices.json (Marge's 'hun', Coach Bev's calm punctuation), or 'say' if a character has one. pitch (Hz) and rate (words a second): what a candidate should roughly land on.",
+  "marge": {
+    "name": "Marge",
+    "asked": "Deliver on hon with comma sounds unnatural. it's still distorted. let's reprompt with some different styles to choose from.",
+    "clip": "marge/react2.1",
+    "line": "It's fine, hon. I was married forty years. I know fine.",
+    "sample": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+    "pitch": [150, 265],
+    "rate": [2.0, 3.6],
+    "styles": [
+      {"id": "sweet", "label": "Sweet grandma",
+       "describe": "An elderly woman around seventy, a retired school-bus driver. A warm, smooth, gentle voice, medium pitch. Unhurried, sweet and kind, with a dry, knowing sense of humor. Clear studio recording."},
+      {"id": "southern", "label": "Southern charm",
+       "describe": "An elderly woman around seventy from Georgia with a light Southern accent. A warm, smooth, honeyed voice. Sweet, unhurried and gently teasing. Clear studio recording."},
+      {"id": "brassy", "label": "Brassy and dry",
+       "describe": "An older woman around seventy, a no-nonsense retired bus driver. A clear, confident, brassy voice. Dry, deadpan and wisecracking, but warm underneath. Clear studio recording."},
+      {"id": "midwest", "label": "Chatty Midwest",
+       "describe": "A cheerful elderly woman around seventy from Minnesota with a Midwestern accent. A bright, friendly, clear voice. Chatty, polite and sweet as pie. Clear studio recording."}
+    ]
+  },
+  "gus": {
+    "name": "Gus",
+    "asked": "needs more western drawl and slightly faster cadence",
+    "clip": "gus/react2.1",
+    "line": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+    "sample": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+    "pitch": [78, 145],
+    "rate": [2.4, 3.8],
+    "styles": [
+      {"id": "texas", "label": "Texas drawl",
+       "describe": "A big, friendly long-haul trucker around fifty with a heavy Texas accent and a Western drawl. A deep, warm voice. Easygoing and friendly, at an easy, steady pace. Clear studio recording."},
+      {"id": "southern", "label": "Southern drawl",
+       "describe": "A big, burly trucker around fifty from Tennessee with a heavy Southern drawl. A deep, warm, friendly voice. Relaxed but lively, at a steady pace. Clear studio recording."},
+      {"id": "cowboy", "label": "Cowboy",
+       "describe": "A weathered cowboy around fifty from Wyoming with a Western drawl. A low, warm, friendly voice. Laid-back and good-humored, but not slow. Clear studio recording."},
+      {"id": "country", "label": "Country",
+       "describe": "A friendly country trucker around fifty from Oklahoma with a heavy country accent. A deep, warm, rumbling voice. Chatty and good-natured, at a natural pace. Clear studio recording."}
+    ]
+  },
+  "bev": {
+    "name": "Coach Bev",
+    "asked": "too high pitch. distorted. needs a butch female sounding character.",
+    "clip": "bev/greet.2",
+    "line": "Hustle, hustle! I've got practice in twenty!",
+    "sample": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+    "pitch": [110, 185],
+    "rate": [2.4, 4.0],
+    "seeds": 6,
+    "_first_try": "The first wording (loud, barks orders, cheering, an all-exclamation sample) shouted at 209-393 Hz with clarity down to 2.3: the 'too high, distorted' of round 1 again. These ask for a low-pitched voice speaking steadily.",
+    "styles": [
+      {"id": "butch", "label": "Butch coach",
+       "describe": "A tough, butch woman in her forties, a high-school gym coach. A low-pitched, deep voice for a woman, almost masculine. Firm, blunt and no-nonsense, speaking steadily rather than shouting. Clear studio recording."},
+      {"id": "sergeant", "label": "Drill sergeant",
+       "describe": "A burly, muscular woman in her forties, a retired army drill sergeant who now coaches gym. A deep, low-pitched, powerful alto voice. Firm and intense, but calm. Clear studio recording."},
+      {"id": "softball", "label": "Softball coach",
+       "describe": "A stocky woman softball coach in her forties. A deep, low-pitched alto voice, confident and gruff. Matter-of-fact and competitive. Clear studio recording."},
+      {"id": "boston", "label": "Boston coach",
+       "describe": "A tough woman gym coach in her forties from Boston with a Boston accent. A low-pitched, deep voice. Blunt and competitive, talking steadily. Clear studio recording."}
+    ]
+  },
+  "vernon": {
+    "name": "Vernon",
+    "asked": "this character needs to have a foppish fem male voice similar to Frasier or his brother niles.",
+    "clip": "vernon/greet.2",
+    "line": "[sigh] Ah. You again. My eleven followers are waiting.",
+    "sample": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+    "pitch": [105, 195],
+    "rate": [2.0, 3.4],
+    "styles": [
+      {"id": "fussy", "label": "Fussy snob",
+       "describe": "A fussy, foppish man around forty, a snobbish food blogger. A light, refined tenor voice with crisp, precise, over-enunciated diction and a haughty, slightly nasal tone. Prissy and pompous. Clear studio recording."},
+      {"id": "effete", "label": "Effete and theatrical",
+       "describe": "An effete, delicate, upper-class man around forty. A soft, light, airy voice, theatrical and easily offended, savouring every word. Clear studio recording."},
+      {"id": "atlantic", "label": "Mid-Atlantic",
+       "describe": "A pompous, over-educated man around forty with a polished mid-Atlantic accent. A smooth, refined tenor voice, precise and fastidious, every word chosen with great care. Clear studio recording."},
+      {"id": "prissy", "label": "Prissy and high-strung",
+       "describe": "A prim, high-strung, finicky man around forty. A thin, slightly high, nasal voice, fluttery and dramatic, fussing over every detail. Clear studio recording."}
+    ]
+  },
+  "sal": {
+    "name": "Sal",
+    "asked": "add a character like Carl from aqua teen with a similar new york gruff crude speaking style",
+    "clip": "sal/greet.2",
+    "line": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+    "sample": "Yo. I been standin' at that hot dog cart since six in the mornin', and my feet are killin' me. Gimme a burger.",
+    "pitch": [80, 155],
+    "rate": [2.6, 4.4],
+    "seeds": 6,
+    "_first_try": "The first wording (loud, brash, loud-mouthed, pushy) came out shouting at 170-310 Hz; only 1 of 16 sounded like a deep, gruff man. These ask for low-pitched grumbling instead.",
+    "styles": [
+      {"id": "bronx", "label": "The Bronx",
+       "describe": "A heavyset man in his fifties from the Bronx with a heavy New York accent. A low-pitched, deep, gruff voice. Blunt, grumpy and crude, grumbling rather than shouting. Clear studio recording."},
+      {"id": "brooklyn", "label": "Brooklyn",
+       "describe": "A big, burly hot-dog vendor in his fifties from Brooklyn with a thick Brooklyn accent. A deep, low-pitched, chesty voice. Sarcastic and grumpy, talking out of the side of his mouth. Clear studio recording."},
+      {"id": "queens", "label": "Queens",
+       "describe": "A grouchy, heavyset man around sixty from Queens, New York, with a strong New York accent. A deep, low, gruff voice. Impatient and wisecracking, in a gruff mutter. Clear studio recording."},
+      {"id": "jersey", "label": "Jersey",
+       "describe": "A heavyset, crude man in his fifties from New Jersey with a heavy New Jersey accent. A deep, low-pitched voice. Lazy, cranky and blunt. Clear studio recording."}
+    ]
+  }
+}

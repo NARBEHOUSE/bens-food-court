@@ -1,0 +1,11 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Scene: the sushi prep counter, as seen by the cook standing at it. The camera looks slightly downward.
+Composition (percent of the image):
+- Top 62%: the wall behind the station: pale wood shelves with a rice cooker, stacked sheets of nori, bowls of salmon, tuna, crab, cucumber, avocado and cream cheese, sesame seeds, bottles of spicy mayo and eel sauce, a bamboo mat on a hook.
+- Bottom 38%: the back edge of a pale wooden cutting counter, plain and simple (the game draws the food and the work surface on top of this part).
+Hidden funny details, small but findable: a rice grain sculpture of a tiny mountain; a cucumber in a tiny headband; a framed photo of a very serious salmon; a rubber octopus on the shelf.
+Everything sharp. No text anywhere except what the details ask for. No border.
+Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; no real logos.
+Save as art-source/backdrops/sushi-prep.png (1536 x 1024) and the prompt as art-source/backdrops/sushi-prep-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

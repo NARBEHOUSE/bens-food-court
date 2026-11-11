@@ -1,0 +1,343 @@
+/** Ben's Sushi - the restaurant, as data (docs/api/pack-format.md; in words: docs/api/packs/sushi.md).
+ *
+ *  A navy-and-wood sushi bar with noren curtains, paper lanterns, a little conveyor belt and a lucky cat that waves
+ *  (FOODCOURT-BUILD.md 5.3, BENS-FOOD-COURT "Ben's Sushi"). The engine (js/core) reads this and nothing else; the
+ *  food is js/food/sushi.js (food-sushi), the lines are packs/sushi/script.js, who everyone IS is packs/cast/cast.js.
+ *
+ *  The line, every roll 11 presses at the prep table, then the mat, then the board (Serve makes 13 in Simple):
+ *    prep (Prep Table)        roll Regular/Inside-Out/Hand Roll -> rice White/Brown (None only in a ridiculous order)
+ *                             -> Add or Skip each filling as it comes down the line (salmon, tuna, crab, cucumber,
+ *                             avocado, cream cheese) -> Add or Skip each topping (sesame seeds, spicy mayo, eel sauce)
+ *    mat (Rolling Mat)        the bamboo mat rolls it. Simple: it rolls by itself to the ticket's tightness (the
+ *                             proposal's "it rolls and slices with a flourish"; simple: 'auto', as the cafe's pour).
+ *                             Timed: watch it roll and Stop Rolling at the ticket's stage (left on, it stops at
+ *                             Squashed: Timed's last stage, never a gross-out). No shared tool prop fits: a drawn button.
+ *    board (Cutting Board)    pieces 6/8/10, a pick in Simple and Timed alike (spec 5.3), then the knife slices it (a
+ *                             flourish). A hand roll is a cone: it is never sliced, so the board asks it nothing.
+ *  Miso soup (a side, from level 2): the soup station on the prep backdrop: miso White/Red, the ladle (a flourish),
+ *  then Add or Skip tofu, seaweed and mushrooms. 4 presses (Serve makes 5).
+ *
+ *  The fillings and toppings are Add or Skip steps, one at a time (pilot.md 5.2): that is where the fish that smells
+ *  off and the fish that winks sit, where Marge's "nothing raw, hon" holds the fish, and where Dennis's eel sauce is
+ *  held. The hair in the rice sits on the rice pick and the soggy seaweed on the roll pick (3 values each, spec 4.6).
+ *
+ *  Plain data only: no functions, no Math.random. Ids match /^\w+$/.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBPacks = root.BBPacks || {}).sushi = data;
+})(typeof window === 'undefined' ? globalThis : window, {
+  id: 'sushi',
+  version: 1,
+  name: "Ben's Sushi",
+  format: 3,                      // packs/sushi/script.js covers every moment (content-sushi, 2026-11-09)
+
+  help: "Ben's Sushi. Every roll starts at the prep table: pick the roll, Regular, Inside-Out or Hand Roll, then the " +
+    'rice, White or Brown. Then Add or Skip each filling as it comes down the line, salmon, tuna, crab, cucumber, ' +
+    'avocado and cream cheese, and each topping, sesame seeds, spicy mayo and eel sauce. Then the rolling mat: in ' +
+    'Simple, it rolls by itself, as tight as the ticket says; in Timed, watch it roll and Stop Rolling when it reaches ' +
+    'the tightness on the ticket. Last, the cutting board: pick how many pieces, and the knife slices it. A hand roll ' +
+    'is a cone, so it is never sliced. Miso soup is made at the soup station: pick the miso, then Add or Skip the ' +
+    "tofu, seaweed and mushrooms. The ticket lists everything: add what's on it, skip what isn't. If something looks " +
+    'wrong, Swap It brings a fresh one.',
+
+  /* ── colours (spec 5.6): sushi navy and wood. Contrast worked out in docs/api/packs/sushi.md 14: every colour the
+     highlight sits on is at least 3:1 against #ffd400, every text colour at least 4.5:1 on what it sits on. ── */
+  theme: {
+    pageBg: '#0b1630',                 // behind everything (loading, fades): night navy, the noren's ground
+    panelTop: '#1d3768',               // the line's control panel: indigo navy (the highlight sits on it)
+    panelBottom: '#122650',
+    panelLip: '#081227',
+    plateTop: '#fbf5e6',               // the mat's tightness plates: rice-paper white, ink words
+    plateBottom: '#eadcc0',
+    mark: '#1d3768',                   // the mark on a plate: navy, like the noren's waves
+    labelBg: 'rgba(8,18,39,.9)',       // white words on a prop's label
+    ticketAccent: '#1d3768',           // the customer's name on the ticket (on paper)
+    ticketNow: '#e2eaf6',              // the item being made, on the ticket (ink words): a pale indigo wash
+    perforation: '#b6c0d4',
+    hudBg: 'rgba(11,22,48,.86)',       // white words
+    gaugeBg: 'rgba(6,14,32,.92)',      // the Timed gauge: white words, the highlight marks the stage now
+    star: '#c97c00',                   // amber stars: 3:1 on the receipt's paper and on the navy board and its glow
+    boardGlow: '#203e72',              // menu boards: a navy board in a pale wood frame
+    woodInset: '#3b2614',
+    cardValue: '#ffe7a3',
+    logoTop: '#f4e6c8',
+    logoMain: '#fbf5e6',
+    wheelInk: '#111a2b',
+    wheelSteel: '#dfe4e8',
+    wheelDark: '#1d3768',              // the ticket wheel's spokes, navy
+    board: '#122650',
+    wood: '#c99a62',                   // the boards' frame: pale hinoki wood, the sushi counter's own
+  },
+  courses: ['main', 'side'],      // a two-item order (level 3 up) is a roll and miso soup, or Gus's two of one thing
+  levels: {},                     // the engine's ladder unchanged (pack-format.md 12)
+
+  manager: { id: 'mitch', art: 'mitch-sushi' },   // the headband, the sushi chef's jacket and a very serious face
+
+  /* ── cooking: the roll on the bamboo mat ──────────────────────────────── */
+  // The mat rolls the whole item, flat to squashed. Simple rolls it to the ticket's stage by itself (simple: 'auto':
+  // Simple only picks the pieces, as the proposal has it); Timed stops it. Squashed is Timed's last stage.
+  stageSets: {
+    roll: { stages: ['flat', 'loose', 'firm', 'tight', 'squashed'], choose: ['loose', 'firm', 'tight'],
+      ask: 'How tight?', stop: 'Stop Rolling', simple: 'auto' },
+  },
+  stageNames: { flat: 'Flat', loose: 'Loose', firm: 'Firm', tight: 'Tight', squashed: 'Squashed' },
+  cookSpeeds: { verySlow: 12, slow: 8, normal: 5 },   // the Burger Bar's grill: seconds a stage
+  wantedScale: 2,                                     // the ticket's stage lasts twice as long
+
+  /* ── what goes on (looks: docs/api/packs/sushi.md 10 has the table food-sushi draws from) ── */
+  ingredients: {
+    // The items. A roll is built on the bamboo mat (the prep table builds on it); on the counter it is served on a
+    // wooden board. The soup is built in its lacquer bowl.
+    roll:        { name: 'Roll', plural: 'Rolls', look: { shape: 'rollMat', colour: 0xd9b26a } },
+    soup:        { name: 'Miso Soup', plural: 'Bowls of Miso Soup', look: { shape: 'misoBowl', colour: 0x8a1f1a } },
+    // The fillings, in the order the prep shelf paints them.
+    salmon:      { name: 'Salmon', plural: 'Salmon', look: { shape: 'salmon', colour: 0xf28a5b } },
+    tuna:        { name: 'Tuna', plural: 'Tuna', look: { shape: 'tuna', colour: 0xc8283c } },
+    crab:        { name: 'Crab', plural: 'Crab', look: { shape: 'crab', colour: 0xf4e6dc } },
+    cucumber:    { name: 'Cucumber', plural: 'Cucumber', look: { shape: 'cucumber', colour: 0x5aa63a } },
+    avocado:     { name: 'Avocado', plural: 'Avocado', look: { shape: 'avocado', colour: 0xb7cf5a } },
+    creamCheese: { name: 'Cream Cheese', plural: 'Cream Cheese', look: { shape: 'creamCheese', colour: 0xfbf7ee } },
+    // The toppings: the seeds from their bowl, the two sauces from the squeeze bottles on the prep shelf.
+    sesame:      { name: 'Sesame Seeds', plural: 'Sesame Seeds', look: { shape: 'sesame', colour: 0xe9d9a6 } },
+    spicyMayo:   { name: 'Spicy Mayo', plural: 'Spicy Mayo', sauce: true, look: { shape: 'sauce', colour: 0xf08a3c } },
+    eelSauce:    { name: 'Eel Sauce', plural: 'Eel Sauce', sauce: true, look: { shape: 'sauce', colour: 0x4a2414 } },
+    // What goes in the miso soup.
+    tofu:        { name: 'Tofu', plural: 'Tofu', look: { shape: 'tofu', colour: 0xfbf6e8 } },
+    wakame:      { name: 'Seaweed', plural: 'Seaweed', look: { shape: 'wakame', colour: 0x2f5a2a } },
+    mushrooms:   { name: 'Mushrooms', plural: 'Mushrooms', look: { shape: 'enoki', colour: 0xf1e9d2 } },
+  },
+
+  /* ── named picks ────────────────────────────────────────────────────────── */
+  // The ticket never says "no X": the None rice says itself ("rice: none"). A hand roll reads "hand roll" (its own
+  // say: a value's say is its words, not a template), the others "regular roll", "inside-out roll".
+  slots: {
+    roll: { name: 'Roll', say: '{value} roll', values: [
+      { id: 'regular', name: 'Regular', look: { shape: 'nori', colour: 0x1f3326 } },
+      { id: 'insideOut', name: 'Inside-Out', look: { shape: 'noriInside', colour: 0x1f3326 } },
+      { id: 'handRoll', name: 'Hand Roll', say: 'hand roll', look: { shape: 'noriCone', colour: 0x1f3326 } }] },
+    rice: { name: 'Rice', say: '{value} rice', values: [
+      { id: 'white', name: 'White', look: { shape: 'rice', colour: 0xfbf8f0 } },
+      { id: 'brown', name: 'Brown', look: { shape: 'rice', colour: 0xc8a171 } },
+      { id: 'noRice', name: 'None', say: 'rice: none', look: { shape: 'noRice' } }] },
+    pieces: { name: 'Pieces', say: '{value} pieces', values: [
+      { id: 'six', name: '6', look: { shape: 'rollCut', pieces: 6 } },
+      { id: 'eight', name: '8', look: { shape: 'rollCut', pieces: 8 } },
+      { id: 'ten', name: '10', look: { shape: 'rollCut', pieces: 10 } }] },
+    miso: { name: 'Miso', say: '{value} miso', values: [
+      { id: 'whiteMiso', name: 'White', look: { shape: 'misoBroth', colour: 0xe0b86a } },
+      { id: 'redMiso', name: 'Red', look: { shape: 'misoBroth', colour: 0x8a4a22 } }] },
+  },
+
+  /* ── stations ───────────────────────────────────────────────────────────── */
+  stations: {
+    prep: {
+      name: 'Prep Table', backdrop: 'prep', redo: 'Redo the Roll', builds: { on: 'roll' },
+      steps: [
+        { kind: 'pick', slot: 'roll' },
+        { kind: 'pick', slot: 'rice' },
+        { kind: 'add', ing: 'salmon' },
+        { kind: 'add', ing: 'tuna' },
+        { kind: 'add', ing: 'crab' },
+        { kind: 'add', ing: 'cucumber' },
+        { kind: 'add', ing: 'avocado' },
+        { kind: 'add', ing: 'creamCheese' },
+        { kind: 'add', ing: 'sesame' },
+        { kind: 'add', ing: 'spicyMayo' },
+        { kind: 'add', ing: 'eelSauce' },
+      ],
+    },
+    mat: {
+      name: 'Rolling Mat', backdrop: 'roll', redo: 'Roll It Again', sounds: { cook: 'mat' },
+      steps: [{ kind: 'cook', stages: 'roll' }],
+    },
+    board: {
+      name: 'Cutting Board', backdrop: 'roll', redo: 'Slice Again', sounds: { auto: 'knife' },
+      // A hand roll is a cone: never sliced, so these two pass it by (read from the ticket, never from the pick).
+      steps: [
+        { kind: 'pick', slot: 'pieces', when: { slot: 'roll', in: ['regular', 'insideOut'] } },
+        { kind: 'auto', id: 'slice', show: 'rollSlice', when: { slot: 'roll', in: ['regular', 'insideOut'] } },
+      ],
+    },
+    soup: {
+      name: 'Soup Station', backdrop: 'prep', redo: 'Redo the Soup', builds: { on: 'soup' },
+      steps: [
+        { kind: 'pick', slot: 'miso' },
+        { kind: 'auto', id: 'ladle', show: 'misoLadle' },        // the broth is ladled into the bowl
+        { kind: 'add', ing: 'tofu' },
+        { kind: 'add', ing: 'wakame' },
+        { kind: 'add', ing: 'mushrooms' },
+      ],
+    },
+  },
+
+  /* ── how orders choose values (level 5 uses the fancy lists) ───────────── */
+  picks: {
+    roll:   { values: ['regular', 'insideOut', 'handRoll'], normal: 'regular' },
+    rice:   { values: ['white', 'brown'], normal: 'white' },
+    tight:  { values: ['loose', 'firm', 'tight'], normal: 'firm' },
+    pieces: { values: ['six', 'eight', 'ten'], normal: 'eight' },
+    miso:   { values: ['whiteMiso', 'redMiso'], normal: 'whiteMiso' },
+  },
+
+  /* ── the menu (spec 4.3): level is the only gate ───────────────────────── */
+  // Every roll names its roll, rice, pieces and its tightness (done); opt 'in' parts can be held ("no cucumber"),
+  // opt 'out' parts can be added ("add sesame seeds"). Recipe looks name the layout the food draws the item with.
+  recipes: {
+    californiaRoll: {
+      name: 'California Roll', plural: 'California Rolls', price: 8, level: 1, course: 'main', look: { shape: 'sushiRoll' },
+      stations: ['prep', 'mat', 'board'],
+      item: { ing: 'roll', done: { pick: 'tight' },
+        slots: { roll: { pick: 'roll' }, rice: { pick: 'rice' }, pieces: { pick: 'pieces' } },
+        parts: [{ ing: 'crab' }, { ing: 'cucumber' }, { ing: 'avocado' }, { ing: 'sesame', opt: 'out' }] },
+    },
+    spicyTunaRoll: {
+      name: 'Spicy Tuna Roll', plural: 'Spicy Tuna Rolls', price: 9, level: 1, course: 'main', look: { shape: 'sushiRoll' },
+      stations: ['prep', 'mat', 'board'],
+      item: { ing: 'roll', done: { pick: 'tight' },
+        slots: { roll: { pick: 'roll' }, rice: { pick: 'rice' }, pieces: { pick: 'pieces' } },
+        parts: [{ ing: 'tuna' }, { ing: 'cucumber', opt: 'in' }, { ing: 'spicyMayo' }, { ing: 'sesame', opt: 'out' }] },
+    },
+    veggieRoll: {
+      name: 'Veggie Roll', plural: 'Veggie Rolls', price: 7, level: 1, course: 'main', look: { shape: 'sushiRoll' },
+      stations: ['prep', 'mat', 'board'],
+      item: { ing: 'roll', done: { pick: 'tight' },
+        slots: { roll: { pick: 'roll' }, rice: { pick: 'rice' }, pieces: { pick: 'pieces' } },
+        parts: [{ ing: 'cucumber' }, { ing: 'avocado' }, { ing: 'creamCheese', opt: 'out' }, { ing: 'sesame', opt: 'out' }] },
+    },
+    phillyRoll: {
+      name: 'Philly Roll', plural: 'Philly Rolls', price: 9, level: 2, course: 'main', look: { shape: 'sushiRoll' },
+      stations: ['prep', 'mat', 'board'],
+      item: { ing: 'roll', done: { pick: 'tight' },
+        slots: { roll: { pick: 'roll' }, rice: { pick: 'rice' }, pieces: { pick: 'pieces' } },
+        parts: [{ ing: 'salmon' }, { ing: 'cucumber', opt: 'in' }, { ing: 'creamCheese' }, { ing: 'sesame', opt: 'out' }] },
+    },
+    dragonRoll: {
+      name: 'Dragon Roll', plural: 'Dragon Rolls', price: 11, level: 2, course: 'main', look: { shape: 'sushiRoll' },
+      stations: ['prep', 'mat', 'board'],
+      item: { ing: 'roll', done: { pick: 'tight' },
+        slots: { roll: { pick: 'roll' }, rice: { pick: 'rice' }, pieces: { pick: 'pieces' } },
+        parts: [{ ing: 'crab' }, { ing: 'cucumber' }, { ing: 'avocado' }, { ing: 'sesame', opt: 'in' }, { ing: 'eelSauce' }] },
+    },
+    misoSoup: {
+      name: 'Miso Soup', plural: 'Bowls of Miso Soup', price: 3, level: 2, course: 'side', look: { shape: 'misoSoup' },
+      stations: ['soup'],
+      item: { ing: 'soup', slots: { miso: { pick: 'miso' } },
+        parts: [{ ing: 'tofu' }, { ing: 'wakame' }, { ing: 'mushrooms', opt: 'out' }] },
+    },
+    // Every fish on the line: the newest at level 3 (Reginald's), and Vernon's to judge.
+    rainbowRoll: {
+      name: 'Rainbow Roll', plural: 'Rainbow Rolls', price: 13, level: 3, course: 'main', look: { shape: 'sushiRoll' },
+      stations: ['prep', 'mat', 'board'],
+      item: { ing: 'roll', done: { pick: 'tight' },
+        slots: { roll: { pick: 'roll' }, rice: { pick: 'rice' }, pieces: { pick: 'pieces' } },
+        parts: [{ ing: 'salmon' }, { ing: 'tuna' }, { ing: 'crab' }, { ing: 'cucumber', opt: 'in' }, { ing: 'avocado' }] },
+    },
+    // "Build your own": everything but the cucumber is the customer's to keep or leave, so every one comes out
+    // different (the level's change odds decide, never the customer's personality: the presses stay the same).
+    buildYourOwn: {
+      name: 'Build Your Own Roll', plural: 'Build Your Own Rolls', price: 12, level: 3, course: 'main', look: { shape: 'sushiRoll' },
+      stations: ['prep', 'mat', 'board'],
+      item: { ing: 'roll', done: { pick: 'tight' },
+        slots: { roll: { pick: 'roll' }, rice: { pick: 'rice' }, pieces: { pick: 'pieces' } },
+        parts: [{ ing: 'salmon', opt: 'in' }, { ing: 'tuna', opt: 'in' }, { ing: 'crab', opt: 'in' }, { ing: 'cucumber' },
+          { ing: 'avocado', opt: 'in' }, { ing: 'creamCheese', opt: 'out' }, { ing: 'sesame', opt: 'out' },
+          { ing: 'spicyMayo', opt: 'out' }, { ing: 'eelSauce', opt: 'out' }] },
+    },
+    // The five-star event's giant: made on the normal line, ten pieces set out on a wooden boat, drawn 1.6 times
+    // bigger. The boat is its look, never a slot value (that would add a choice to every roll).
+    sushiBoat: {
+      name: 'Sushi Boat', plural: 'Sushi Boats', price: 26, level: 'event', course: 'main',
+      look: { shape: 'sushiBoat', giant: true },
+      stations: ['prep', 'mat', 'board'],
+      item: { ing: 'roll', done: { pick: 'tight' }, slots: { roll: 'regular', rice: 'white', pieces: 'ten' },
+        parts: [{ ing: 'salmon' }, { ing: 'tuna' }, { ing: 'crab' }, { ing: 'cucumber' }, { ing: 'avocado' }, { ing: 'sesame' }] },
+    },
+  },
+
+  /* ── gross-outs (spec 4.6): the label names it, Swap It brings a fresh one ── */
+  // Two on fillings (Add steps), two on picks of three values (the rice, the roll's seaweed). A squashed roll is not
+  // here: it is the roll set's last stage, in Timed only.
+  gross: [
+    { id: 'smelly', on: ['salmon'], say: 'the {name}, smelling off', fx: { stink: 0x9fbf5a, tint: 0xd49a7e } },
+    { id: 'wink', on: ['tuna'], say: 'the {name}, winking at you', fx: { wink: true } },    // food-sushi draws the eye
+    { id: 'hair', step: 'pick', slot: 'rice', on: ['white', 'brown'], say: '{name} rice with a hair in it', fx: { hair: true } },
+    { id: 'soggy', step: 'pick', slot: 'roll', on: ['regular', 'insideOut', 'handRoll'], say: '{name}, soggy seaweed',
+      fx: { droop: true, tint: 0x4f6a3a } },
+  ],
+
+  /* ── people (spec 2.2, 2.3, 5.4): what each orders here; who they are is the cast's ── */
+  regulars: [
+    // A California roll, "nothing raw, hon": the crab is cooked. She never orders a roll that must come with raw
+    // fish, and holds the salmon and tuna wherever they are optional (she says why).
+    { id: 'marge', likes: [['californiaRoll', 3], ['veggieRoll', 1]], dislikes: ['salmon', 'tuna'],
+      usual: [{ recipe: 'californiaRoll', set: { roll: 'regular', rice: 'white', tight: 'firm', pieces: 'eight' } }] },
+    // Two of one thing where the level allows two items (his cast twin); "two of every roll" is said (order.twin).
+    { id: 'gus', likes: [['californiaRoll', 2], ['spicyTunaRoll', 2], ['dragonRoll', 1]] },
+    // Spicy tuna: her favourite.
+    { id: 'bev', likes: [['spicyTunaRoll', 3]], favourite: { recipe: 'spicyTunaRoll', bonus: 2 } },
+    // Judges it alongside Chef Hiro (his lines name him; he orders alone): a regular roll, white rice, tight, eight
+    // pieces, and his cast `exact` strays further from the recipe.
+    { id: 'vernon', likes: [['rainbowRoll', 2], ['spicyTunaRoll', 1], ['californiaRoll', 1]],
+      set: { roll: 'regular', rice: 'white', tight: 'tight', pieces: 'eight' } },
+    // Asks if there's a hot dog roll (his greet and order lines); settles for the California, the imitation crab
+    // being "the hot dog of the sea". No lettuce here, so no dislike to hold.
+    { id: 'sal', likes: [['californiaRoll', 3], ['spicyTunaRoll', 1]], favourite: { recipe: 'californiaRoll', bonus: 2 } },
+    // The locals. Chef Hiro, the stern master who comes in to judge: a regular roll, white rice, firm ("tight is for
+    // people who are afraid"), eight pieces; the simplest rolls, where nothing can hide. The event's finale is his.
+    { id: 'hiro', likes: [['veggieRoll', 3], ['californiaRoll', 1], ['rainbowRoll', 2]],
+      set: { roll: 'regular', rice: 'white', tight: 'firm', pieces: 'eight' } },
+    // Dennis, the nervous first-timer who has never had sushi: the safe rolls, now and then a brave one. He holds the
+    // eel sauce wherever it is optional and never orders a roll that must come with it ("there's no eel in it? Then
+    // what IS in it?").
+    { id: 'dennis', likes: [['californiaRoll', 3], ['veggieRoll', 3], ['spicyTunaRoll', 1], ['misoSoup', 1]], dislikes: ['eelSauce'] },
+    // Special visitors from level 4, one a shift, never first: the critic, his ten-year-old fan, and a cameo (spec
+    // 2.2): Inferno from Ben's Burritos, here for the spicy mayo (Chef Hiro came to judge his burritos; he returns
+    // the favour).
+    { id: 'reginald', likes: [['rainbowRoll', 2], ['dragonRoll', 1]], visitor: { level: 4 } },
+    { id: 'kai', likes: [['californiaRoll', 2], ['veggieRoll', 2]], visitor: { level: 4 } },
+    { id: 'inferno', likes: [['spicyTunaRoll', 3]], always: ['spicyTunaRoll'], visitor: { level: 4 } },
+  ],
+
+  /* ── the tutorial: one guided order through every station, with a gross-out to Swap ── */
+  // Dennis's first sushi ever, and the player's first roll: an inside-out California roll (prep, mat, board) and a
+  // white miso soup (soup station). The white rice comes down with a hair in it, so Swap It is taught once, on a pick.
+  tutorial: {
+    customer: 'dennis',
+    items: [
+      { recipe: 'californiaRoll', set: { roll: 'insideOut', rice: 'white', tight: 'firm', pieces: 'eight' } },
+      { recipe: 'misoSoup', set: { miso: 'whiteMiso' } },
+    ],
+    gross: { item: 0, slot: 'rice', event: 'hair' },
+  },
+
+  /* ── ridiculous orders (level 4+, at most one a shift): said in order.odd.<id>; the ticket stays plain ── */
+  oddOrders: [
+    // "A roll with no fish and no rice." A California roll with the crab held and rice: none.
+    { id: 'noFishNoRice', recipe: 'californiaRoll', holds: ['crab'], picks: { rice: 'noRice' }, say: 'order.odd.noFishNoRice' },
+    // "A sushi burrito. Don't cut it." It belongs at the burrito place: here it is a Rainbow hand roll (never sliced)
+    // with spicy mayo. Never Marge (raw fish) or Chef Hiro (he would rather not discuss it).
+    { id: 'sushiBurrito', recipe: 'rainbowRoll', picks: { roll: 'handRoll' }, adds: ['spicyMayo'],
+      who: ['gus', 'bev', 'vernon', 'sal', 'dennis'], say: 'order.odd.sushiBurrito' },
+    // "Just the ginger." The line has no ginger to serve: the ginger is said, and the ticket is the plainest roll
+    // there is, a cucumber roll in six pieces, "to put the ginger on".
+    { id: 'justGinger', recipe: 'veggieRoll', holds: ['avocado'], picks: { pieces: 'six' }, say: 'order.odd.justGinger' },
+    // "Everything on the line, inside-out, ten pieces." The Build Your Own with all of it (dislikes still held).
+    { id: 'theWorks', level: 5, recipe: 'buildYourOwn', adds: ['creamCheese', 'sesame', 'spicyMayo', 'eelSauce'],
+      picks: { roll: 'insideOut', pieces: 'ten' }, say: 'order.odd.theWorks' },
+  ],
+
+  /* ── the five-star event (spec 4.4): the Sushi Boat; Chef Hiro's order is the finale ── */
+  // Shift Length orders at level-4 complexity from the court; the last is always Chef Hiro's giant boat of rolls and
+  // a red miso. His reaction is the approval; the 5th star still follows the average rule, as everywhere.
+  events: {
+    five: {
+      name: 'The Sushi Boat',
+      customers: ['marge', 'gus', 'bev', 'vernon', 'sal', 'dennis', 'reginald', 'kai', 'inferno'],
+      finale: { customer: 'hiro', items: [
+        { recipe: 'sushiBoat', set: { tight: 'firm' } },
+        { recipe: 'misoSoup', set: { miso: 'redMiso' } },
+      ] },
+    },
+  },
+});

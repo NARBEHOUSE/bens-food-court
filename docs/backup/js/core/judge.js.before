@@ -1,0 +1,64 @@
+/** Ben's Burger Bar - the rating (DESIGN.md "Rating").
+ *
+ *  Accuracy only, never time. Every step is checked against what the ticket wants
+ *  (line.expected), and each difference is a mistake:
+ *    extra     a topping added that is not on the ticket   (held: "I said no cheese!";
+ *              never asked for: "I didn't ask for onions.")
+ *    missing   a topping skipped that the ticket wanted    ("Where are my pickles?")
+ *    count     patties too many or too few (one mistake for each)
+ *    done      the wrong doneness (one per item)
+ *    pick      the wrong size, drink or side
+ *    gross     a bad ingredient served
+ *  Stars: 3 with none, 2 with one or two, 1 with more. No zero, no fail.
+ *  Tip: price x (0.6 + 0.2 x stars), at least 1; a favourite adds a bonus to the tip and
+ *  never touches the stars.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./line.js'));
+  else (root.BB = root.BB || {}).judge = factory(root.BB.line);
+})(typeof window === 'undefined' ? globalThis : window, function (L) {
+  'use strict';
+
+  function mistakes(pack, o) {
+    const out = [];
+    o.items.forEach((item, i) => {
+      for (const sid of L.stationsOf(pack, item)) {
+        pack.stations[sid].steps.forEach((step, n) => {
+          const key = L.keyOf(sid, n), want = L.expected(pack, item, sid, n), got = item.answers[key];
+          if (step.kind === 'add') {
+            const g = got || 0, w = want || 0;
+            if ((step.max || 1) > 1) {
+              if (g !== w) out.push({ item: i, kind: 'count', ing: step.ing, want: w, got: g, n: Math.abs(g - w) });
+            } else if (g > w) out.push({ item: i, kind: 'extra', ing: step.ing, n: 1, held: (item.spec.holds || []).includes(step.ing) });
+            else if (g < w) out.push({ item: i, kind: 'missing', ing: step.ing, n: 1 });
+          } else if (step.kind === 'cook') {
+            // No patty at all is counted once, as a count mistake, not again as doneness.
+            if (want && got && got !== want) out.push({ item: i, kind: 'done', ing: L.cookIng(pack, item, sid, step), want, got, n: 1 });
+          } else if (step.kind === 'pick') {
+            if (want && got !== want) out.push({ item: i, kind: 'pick', of: step.of || 'ing', want, got: got || null, n: 1 });
+          }
+        });
+      }
+      item.gross.forEach(g => out.push({ item: i, kind: 'gross', ing: g.ing, event: g.event, n: 1 }));
+    });
+    return out;
+  }
+
+  const starsFor = count => (count === 0 ? 3 : count <= 2 ? 2 : 1);
+
+  /** The serve: { stars, count, mistakes, tip, favourite } */
+  function score(pack, o) {
+    const list = mistakes(pack, o);
+    const count = list.reduce((k, m) => k + m.n, 0);
+    const stars = starsFor(count);
+    const C = o.ticket.customer || {};
+    const price = o.items.reduce((k, it) => k + pack.recipes[it.spec.recipe].price, 0);
+    let scale = C.tipScale || 1;
+    if (stars === 3 && C.threeStarScale) scale *= C.threeStarScale;
+    const fav = C.favourite && o.items.some(it => it.spec.recipe === C.favourite.recipe) ? C.favourite : null;
+    const tip = Math.max(1, Math.round(price * (0.6 + 0.2 * stars) * scale)) + (fav ? fav.bonus : 0);
+    return { stars, count, mistakes: list, tip, favourite: !!fav };
+  }
+
+  return { mistakes, score, starsFor };
+});

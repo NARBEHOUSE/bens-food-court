@@ -1,0 +1,154 @@
+/** Ben's Food Court - the court itself, as data (docs/FOODCOURT-BUILD.md 2.1, 4.1, 6.2, 7).
+ *
+ *  The court's rules (js/core/court.js, BB.courtRules) read this and nothing else, so they
+ *  never name a restaurant, an arm or a number. Changing an unlock, a threshold or a crowd
+ *  is a change here, not in the rules. docs/api/court-rules.md is the format.
+ *
+ *  restaurants  spec 2.1, listed in SCAN ORDER, round the U: up the left arm's slots, along
+ *               the bottom, then the right arm from its lower slot to its upper one. The flat
+ *               list, the parts and the tutorial picker all use this order.
+ *                 pack   the pack id (packs/<pack>/)
+ *                 name   the full name ("Ben's Pizza Parlor"): announcements, results
+ *                 short  the scan name ("Pizza Parlor"): scan labels, parts, Help
+ *                 said   how a sentence names it ("the Pizza Parlor"): goals and results
+ *                 arm    which part of the U it stands on (an `arms` id)
+ *                 slot   its place on that arm: 1 is the upper one on an arm, the left one
+ *                        along the bottom
+ *                 start  open from the start
+ *                 unlock its place in the unlock order (null for a start restaurant)
+ *  arms         the parts of the U, in the order the court's root scans them.
+ *  unlocks      spec 4.1, in order: each opens `pack` once EVERY open restaurant has at
+ *               least `stars` stars.
+ *  rules        spec 4.1's thresholds.
+ *  crowd        spec 6.2: who stands at a storefront, by popularity (row = popularity).
+ *  layout       spec 6.2: boxes and spots in percent of the court picture.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else root.BBCourt = data;
+})(typeof window === 'undefined' ? globalThis : window, {
+  version: 1,
+  // Recorded clips stay off until the final voice pass (spec 6.6): every line is text to
+  // speech. The voice pass flips this one flag.
+  recordedVoices: false,
+
+  arms: [
+    { id: 'left', name: 'Left' },
+    { id: 'bottom', name: 'Bottom' },
+    { id: 'right', name: 'Right' },
+  ],
+
+  restaurants: [
+    { pack: 'smoothie', name: "Ben's Smoothie Shack", short: 'Smoothie Shack', said: 'the Smoothie Shack', arm: 'left', slot: 1, start: false, unlock: 1 },
+    { pack: 'burrito', name: "Ben's Burritos", short: 'Burritos', said: "Ben's Burritos", arm: 'left', slot: 2, start: false, unlock: 2 },
+    { pack: 'pizza', name: "Ben's Pizza Parlor", short: 'Pizza Parlor', said: 'the Pizza Parlor', arm: 'bottom', slot: 1, start: true, unlock: null },
+    { pack: 'diner', name: "Ben's Burger Bar", short: 'Burger Bar', said: 'the Burger Bar', arm: 'bottom', slot: 2, start: true, unlock: null },
+    { pack: 'cafe', name: "Ben's Cafe", short: 'Cafe', said: 'the Cafe', arm: 'bottom', slot: 3, start: true, unlock: null },
+    { pack: 'icecream', name: "Ben's Ice Cream Emporium", short: 'Ice Cream Emporium', said: 'the Ice Cream Emporium', arm: 'right', slot: 2, start: false, unlock: 4 },
+    { pack: 'sushi', name: "Ben's Sushi", short: 'Sushi', said: "Ben's Sushi", arm: 'right', slot: 1, start: false, unlock: 3 },
+  ],
+
+  unlocks: [
+    { pack: 'smoothie', stars: 3 },   // the 4th restaurant: every open one at 3 stars
+    { pack: 'burrito', stars: 4 },    // the 5th: every open one at 4 stars
+    { pack: 'sushi', stars: 5 },      // the 6th: every open one at 5 stars
+    { pack: 'icecream', stars: 5 },   // the 7th: every open one at 5 stars
+  ],
+
+  rules: {
+    good: 2.0,           // a finished shift is good when its average stars reach this
+    popularityMax: 10,   // each good shift adds 1, up to this; at this a restaurant is fully busy
+    // Stars come from popularity and are only ever raised. A normal shift never gives more
+    // than the last of these; the next star comes only from the event.
+    stars: [
+      { popularity: 0, stars: 1 },
+      { popularity: 1, stars: 2 },
+      { popularity: 3, stars: 3 },
+      { popularity: 5, stars: 4 },
+    ],
+    // The five-star event is due at this popularity with these stars. A good event shift
+    // gives `gives` stars and the gold sign; a failed one can be tried again.
+    event: { popularity: 7, stars: 4, gives: 5 },
+  },
+
+  // Spec 6.2's crowd by popularity, one row per popularity 0..popularityMax:
+  //   0-2 one or two shoppers passing · 3-6 a short queue
+  //   7-9 a queue out the door, plus diners at the nearest tables · 10 every nearby table full
+  // tier: quiet | shortQueue | outTheDoor | full. passing: shoppers strolling by (layout
+  // `passing` lines); queue: people on the queue spots, front first; seated: diners on the
+  // store's seats, nearest first ('all' = every seat).
+  crowd: [
+    { tier: 'quiet', passing: 1, queue: 0, seated: 0 },          // 0
+    { tier: 'quiet', passing: 2, queue: 0, seated: 0 },          // 1
+    { tier: 'quiet', passing: 2, queue: 0, seated: 0 },          // 2
+    { tier: 'shortQueue', passing: 0, queue: 2, seated: 0 },     // 3
+    { tier: 'shortQueue', passing: 0, queue: 2, seated: 0 },     // 4
+    { tier: 'shortQueue', passing: 0, queue: 3, seated: 0 },     // 5
+    { tier: 'shortQueue', passing: 0, queue: 3, seated: 0 },     // 6
+    { tier: 'outTheDoor', passing: 0, queue: 5, seated: 1 },     // 7
+    { tier: 'outTheDoor', passing: 0, queue: 5, seated: 2 },     // 8
+    { tier: 'outTheDoor', passing: 0, queue: 5, seated: 3 },     // 9
+    { tier: 'full', passing: 0, queue: 5, seated: 'all' },       // 10: fully busy
+  ],
+
+  // Measured from art-source/backdrops/court.png (1536 x 1024; shipped as
+  // packs/court/art/court.webp). Everything is in percent of the picture, drawn with
+  // object-fit: contain semantics.
+  //   boxes  [x0, y0, x1, y1]: sign = the blank sign board (name plate and star sign go
+  //          here); store = the whole storefront (scan frame, zoom, shutter).
+  //   spots  [x, y], where a person's FEET go (queue, front first) or where a diner sits
+  //          (seats: the chair's seat, nearest first; no seat belongs to two stores).
+  //   passing [x0, y0, x1, y1]: a line one passing shopper strolls along, slowly, back
+  //          and forth (standing at x0, y0 under Reduced motion).
+  // The boxes are spec 6.2's measurements. Queues, seats and passing lines are a first
+  // guess, to be tuned by eye in the review frames. The bottom row's counters face the
+  // viewer, so their queues stand along the counter front at the picture's foot.
+  layout: {
+    picture: { w: 1536, h: 1024 },
+    board: [42.4, 32.9, 57.1, 40.8],   // the plinth's top: the progress board's easel stands on it
+    stores: {
+      smoothie: {
+        sign: [8.6, 16.0, 20.9, 23.7], store: [0, 8, 25, 39],
+        queue: [[18.5, 38], [22, 38], [24.8, 36.8], [26, 33.5], [26.8, 30.2]],
+        seats: [[33.1, 23.3], [34.8, 19.1], [39.8, 23.3], [39.9, 19.8], [32.8, 28.9], [38.6, 29.1]],
+        passing: [[25, 24, 28.5, 33.5], [17, 38.3, 23.5, 38.3]],
+      },
+      burrito: {
+        sign: [7.5, 42.8, 19.4, 50.3], store: [0, 38, 23, 68],
+        queue: [[24.3, 63.5], [25, 60], [25.3, 56.5], [25.5, 53], [25.8, 49.5]],
+        seats: [[32.4, 51.1], [34.2, 46.8], [32.1, 33.3], [37.6, 33.7]],
+        passing: [[24.6, 62, 25.6, 50.5], [24, 48, 25, 41.5]],
+      },
+      pizza: {
+        sign: [11.6, 72.9, 29.0, 78.4], store: [5, 65, 33, 100],
+        queue: [[20, 99.3], [25, 99.3], [15, 99.3], [29.5, 99.3], [10.5, 99.3]],
+        seats: [[35.9, 61.3], [37.0, 56.8], [39.5, 51.1], [39.5, 47.5]],
+        passing: [[10.5, 99.4, 21, 99.4], [30, 99.4, 19, 99.4]],
+      },
+      diner: {
+        sign: [41.4, 73.0, 58.6, 78.5], store: [33, 66, 67, 100],
+        queue: [[50, 99.3], [45.5, 99.3], [54.5, 99.3], [41, 99.3], [59, 99.3]],
+        seats: [[41.6, 60.8], [58.4, 60.8], [42.5, 57.0], [57.5, 57.0]],
+        passing: [[37, 99.4, 49, 99.4], [62, 99.4, 51, 99.4]],
+      },
+      cafe: {
+        sign: [71.3, 72.9, 86.8, 78.3], store: [67, 66, 95, 100],
+        queue: [[80, 99.3], [75, 99.3], [85, 99.3], [70.5, 99.3], [89.5, 99.3]],
+        seats: [[63.9, 61.3], [63.0, 56.8], [60.5, 51.1], [60.7, 47.5]],
+        passing: [[69.5, 99.4, 80, 99.4], [91, 99.4, 81, 99.4]],
+      },
+      icecream: {
+        sign: [80.6, 43.5, 92.6, 50.0], store: [77, 37, 100, 68],
+        queue: [[76.8, 62.5], [76.2, 59], [75.8, 55.5], [75.4, 52], [75, 48.5]],
+        seats: [[67.8, 51.1], [66.0, 46.8], [67.9, 33.3], [62.4, 33.7]],
+        passing: [[75.2, 50, 76.4, 61.5], [75.8, 46.5, 74.8, 41]],
+      },
+      sushi: {
+        sign: [79.8, 17.6, 91.7, 24.4], store: [75, 9, 100, 38],
+        queue: [[80, 38.3], [76.8, 38.2], [74.6, 35.6], [73.6, 32.2], [72.8, 28.6]],
+        seats: [[66.9, 23.3], [65.2, 19.1], [60.1, 23.3], [60.1, 19.8], [67.0, 28.9], [61.4, 29.1]],
+        passing: [[74.5, 25, 72.2, 33.5], [84, 38.4, 78, 38.4]],
+      },
+    },
+  },
+});

@@ -1,0 +1,346 @@
+/** Ben's Food Court - the 2D stage (DESIGN.md "Look and feel: 2.5D", "No floating UI"; docs/api/page.md).
+ *
+ *  The station's backdrop, the customer (big, behind the counter), Mitch in the restaurant's uniform, the real
+ *  objects the choices live on (the ticket wheel, the "Back in 5" sign, the register, the bell) and the line's
+ *  own controls (enamel push-buttons, the dial's plates, the station's Timed tool, order slips, pick tiles).
+ *  A character never animates: a new pose pops in, with a squash and a bounce on Full motion and a plain cut
+ *  on Reduced. Pictures are only asked for when an art manifest says they exist (docs/api/cast.md):
+ *    cast poses   packs/cast/art/cast/<folder>/<pose>.webp (BBArt.cast.people); a missing pose is the folder's neutral
+ *    Mitch        pack.manager.art once that folder has a neutral, else plain mitch
+ *    props        packs/<pack>/art/props/<name>.webp when BBArt[pack].props has it, else packs/shared/art/props/
+ *    backdrops    packs/<pack>/art/backdrops/<station's backdrop>.webp (BBArt[pack].backdrops); the court picture
+ *                 at the court; a missing backdrop shows the theme colour
+ *  usePack(pack) switches all of it to a restaurant (or null: the court and menus) and writes the pack's theme
+ *  tokens under body[data-pack=<id>] (spec 5.6; High Contrast overrides them).
+ */
+(function () {
+  'use strict';
+  const W = BB.words;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const reduced = () => document.body.dataset.motion === 'reduced';
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
+  let pack = null;                                   // the restaurant on show (merged), or null
+  const castArt = () => ((window.BBArt && BBArt.cast && BBArt.cast.people) || {});
+  const packArt = () => ((pack && window.BBArt && BBArt[pack.id]) || { backdrops: [], props: [] });
+  const sharedProps = () => ((window.BBArt && BBArt.shared && BBArt.shared.props) || []);
+  const courtArt = () => ((window.BBArt && BBArt.court) || { picture: false, props: [] });
+  const people = () => ((window.BBCast && BBCast.people) || {});
+
+  /** Theme tokens (spec 5.6): pack.theme keys -> the custom properties bb.css defines with the diner's values. */
+  const THEME = {
+    pageBg: '--page-bg', panelTop: '--panel-top', panelBottom: '--panel-bottom', panelLip: '--panel-lip',
+    plateTop: '--plate-top', plateBottom: '--plate-bottom', mark: '--mark', labelBg: '--label-bg',
+    ticketAccent: '--ticket-accent', ticketNow: '--ticket-now', perforation: '--perforation', hudBg: '--hud-bg', gaugeBg: '--gauge-bg',
+    star: '--star', boardGlow: '--board-glow', woodInset: '--wood-inset', cardValue: '--card-value', logoTop: '--logo-top', logoMain: '--logo-main',
+    wheelInk: '--wheel-ink', wheelSteel: '--wheel-steel', wheelDark: '--wheel-dark', board: '--board', wood: '--wood',
+  };
+
+  /* ── where the pictures are ─────────────────────────────────────────────── */
+  function castSrc(folder, pose) {
+    const A = castArt()[folder] || [];
+    const p = A.includes(pose) ? pose : A.includes('neutral') ? 'neutral' : null;
+    return p ? 'packs/cast/art/cast/' + folder + '/' + p + '.webp' : null;
+  }
+  /** Mitch's folder here: the restaurant's uniform once its neutral exists, otherwise plain Mitch. */
+  function managerFolder() {
+    const want = pack && pack.manager && pack.manager.art;
+    if (want && (castArt()[want] || []).includes('neutral')) return want;
+    const M = people().mitch;
+    return (M && M.art) || 'mitch';
+  }
+  function propSrc(name) {
+    if (!name) return null;
+    if (pack && (packArt().props || []).includes(name)) return 'packs/' + pack.id + '/art/props/' + name + '.webp';
+    if (sharedProps().includes(name)) return 'packs/shared/art/props/' + name + '.webp';
+    return null;
+  }
+  /** A scene's picture: a station's backdrop (or the counter) in the restaurant; the court picture at the court. */
+  function backdropSrc(name) {
+    if (!pack) return name === 'court' && courtArt().picture ? 'packs/court/art/court.webp' : null;
+    const st = pack.stations && pack.stations[name];
+    const b = name === 'counter' ? 'counter' : (st && st.backdrop) || name;
+    return (packArt().backdrops || []).includes(b) ? 'packs/' + pack.id + '/art/backdrops/' + b + '.webp' : null;
+  }
+
+  function init() {
+    pointProps();
+    buildWheel();
+    window.addEventListener('resize', () => drawWheel());
+    // A new text size changes the ticket's width (applied to the page first, so wait a moment).
+    if (BB.save && BB.save.onChange) BB.save.onChange(() => setTimeout(drawWheel, 0));
+  }
+  /** The real objects' pictures, from the restaurant's own props or the shared ones; none: the label alone. */
+  function pointProps() {
+    [['back5', 'back5'], ['register', 'register'], ['bell', 'bell']].forEach(([id, p]) => {
+      const el = $(id);
+      let img = el.querySelector('img');
+      const src = propSrc(p);
+      if (src) {
+        if (!img) { img = document.createElement('img'); img.alt = ''; img.setAttribute('aria-hidden', 'true'); el.insertBefore(img, el.firstChild); }
+        if (img.getAttribute('src') !== src) img.src = src;
+        el.classList.remove('noart');
+      } else { if (img) img.remove(); el.classList.add('noart'); }
+    });
+  }
+
+  /* ── the restaurant on show, and its theme ──────────────────────────────── */
+  function applyTheme() {
+    let st = $('packTheme');
+    if (!st) { st = document.createElement('style'); st.id = 'packTheme'; document.head.appendChild(st); }
+    if (!pack || !pack.theme) { st.textContent = ''; return; }
+    const lines = Object.keys(THEME).filter(k => pack.theme[k] !== undefined && pack.theme[k] !== null)
+      .map(k => THEME[k] + ': ' + String(pack.theme[k]).replace(/[;{}]/g, '') + ';');
+    // High Contrast keeps the one checked palette: the theme is not applied under it.
+    st.textContent = 'body[data-pack="' + pack.id + '"]:not([data-theme="contrast"]) { ' + lines.join(' ') + ' }';
+  }
+  /** Switch the stage to a restaurant (its merged pack), or to none (null: the court and the menus). */
+  function usePack(p) {
+    pack = p || null;
+    document.body.dataset.pack = pack ? pack.id : '';
+    applyTheme();
+    pointProps();
+    scene = null; sceneName = null;          // the next setScene draws this restaurant's picture, whatever the name
+    shown.customer = null; shown.mitch = null;
+    customer(null); mitch(null); bubble(null); receipt(null); ticket(null); gauge(null); clearControls();
+    show('register', false); show('bell', false);
+  }
+
+  /* ── scenes ─────────────────────────────────────────────────────────────── */
+  let scene = null, sceneName = null;
+  /** Go to a station's set: the backdrop and the 3D camera change together, behind a quick fade.
+   *  Names: a station id, 'counter', or 'court' (no restaurant). */
+  async function setScene(name) {
+    const key = (pack ? pack.id : 'court') + ':' + name;
+    if (scene === key) return;
+    const first = scene === null;
+    scene = key; sceneName = name;
+    const fade = $('fade');
+    if (!first && !reduced()) { fade.classList.add('on'); await wait(170); }
+    document.body.dataset.scene = name;
+    document.body.dataset.place = !pack || name === 'court' ? 'court' : name === 'counter' ? 'counter' : 'kitchen';
+    const src = backdropSrc(name);
+    $('backdrop').style.backgroundImage = src ? 'url("' + src + '")' : '';
+    if (BB.world && BB.world.goTo) BB.world.goTo(pack && name !== 'court' ? name : null);
+    drawWheel();
+    if (!first && !reduced()) { await wait(30); fade.classList.remove('on'); await wait(150); }
+    // A ticket that went up while the wheel was out of sight (at the counter) comes round now.
+    if (wheel.pending && wheelShown()) { wheel.pending = null; spinWheel('in'); }
+  }
+
+  /* ── characters ─────────────────────────────────────────────────────────── */
+  const shown = { customer: null, mitch: null };
+  function pop(el) {
+    if (reduced()) return;
+    el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  }
+  /** The customer at the counter in a pose, or nobody (folder null). A child is drawn at the cast's `scale`
+   *  from the bottom centre (bb.css --cs): the same feet line. */
+  function customer(folder, pose) {
+    const el = $('customer');
+    if (!folder) { el.classList.remove('on'); shown.customer = null; return; }
+    const src = castSrc(folder, pose);
+    const key = folder + '/' + pose;
+    if (!src) { el.classList.remove('on'); return; }
+    const P = people()[folder] || Object.values(people()).find(x => x && x.art === folder);
+    el.style.setProperty('--cs', String(P && P.scale ? P.scale : 1));
+    if (shown.customer !== key) { el.src = src; shown.customer = key; pop(el); }
+    el.classList.add('on');
+  }
+  /** Mitch in a pose, sliding in; null slides him out. */
+  function mitch(pose) {
+    const el = $('mitch');
+    if (!pose) { el.classList.remove('on'); shown.mitch = null; return; }
+    const folder = managerFolder();
+    const src = castSrc(folder, pose);
+    if (!src) return;
+    const key = folder + '/' + pose;
+    if (shown.mitch !== key) { el.src = src; if (shown.mitch) pop(el); shown.mitch = key; }
+    el.classList.add('on');
+  }
+
+  /* ── the ticket wheel ───────────────────────────────────────────────────── */
+  // A diner order wheel seen from the front (DESIGN.md "Where things sit"): a steel ring hung flat from the
+  // ceiling, clips round its edge, in the kitchen's top-left corner and partly off the screen. The order
+  // hangs from the front clip. It turns left to right: a new ticket comes round from the left, and Ticket
+  // turns it once all the way round. The counter has no wheel. Drawn here, not painted, so the words on the
+  // ticket stay sharp at every text size; geometry() is plain numbers, for the Node layout check. Its colours
+  // are the theme's wheel tokens (bb.css).
+  const CLIPS = 8, STEP = Math.PI * 2 / CLIPS, SVG = 'http://www.w3.org/2000/svg';
+  const wheel = { theta: 0, anim: 0, order: null, pending: null };
+  const wheelShown = () => document.body.dataset.place === 'kitchen';
+  function buildWheel() {
+    const el = $('wheel');
+    el.innerHTML = '';
+    ['back', 'front'].forEach(k => { const s = document.createElementNS(SVG, 'svg'); s.setAttribute('class', k); s.setAttribute('aria-hidden', 'true'); el.appendChild(s); });
+    for (let i = 0; i < CLIPS; i++) {
+      const s = document.createElement('div');
+      s.className = 'slot';
+      s.innerHTML = '<i class="clip"></i>' + (i === 0 ? '<div id="ticket" style="display:none"></div>' : '');
+      el.appendChild(s);
+    }
+  }
+  /** Where everything on the wheel is, for a window w x h, a text size and the wheel's turn theta (radians). */
+  function geometry(w, h, text, theta) {
+    const vw = w / 100, vh = h / 100;
+    const tw = Math.min(22 * vw, 40 * vh) * ({ large: 1.12, xlarge: 1.25 }[text] || 1);   // a ticket's width
+    const R = tw * 1.05;                                                                  // the ring, centre to rim
+    const g = { tw, R, ry: R * 0.09, cx: tw / 2 + Math.max(12, 1.4 * vw), cy: 4.5 * vh };
+    g.slots = Array.from({ length: CLIPS }, (_, i) => {
+      const phi = theta + i * STEP, cz = Math.cos(phi);
+      return { phi, cz, x: g.cx + g.R * Math.sin(phi), y: g.cy + g.ry * cz, scale: 1 + 0.08 * (cz - 1),
+        paper: Math.max(0, Math.min(1, (cz - 0.05) / 0.3)), shade: 0.62 + 0.38 * Math.max(0, cz) };
+    });
+    return g;
+  }
+  function drawWheel() {
+    const el = $('wheel');
+    if (!el || !wheelShown()) return;
+    const g = geometry(window.innerWidth, window.innerHeight, document.body.dataset.text, wheel.theta);
+    el.style.setProperty('--tw', g.tw + 'px');
+    el.querySelectorAll('.slot').forEach((s, i) => {
+      const p = g.slots[i], left = (p.x - g.tw / 2).toFixed(1) + 'px', top = p.y.toFixed(1) + 'px';
+      s.style.width = g.tw + 'px';
+      // Square on (the order at rest) is a plain move, so the words are drawn crisp.
+      s.style.transform = p.cz > 0.9999 ? `translate(${left}, ${top})`
+        : `translate(${left}, ${top}) scale(${p.scale.toFixed(3)}) perspective(${Math.round(g.tw * 3.2)}px) rotateY(${p.phi.toFixed(4)}rad)`;
+      s.style.zIndex = String(50 + Math.round(49 * p.cz));
+      s.style.filter = p.cz > 0.995 ? '' : `brightness(${p.shade.toFixed(3)})`;
+      if (i === 0) $('ticket').style.opacity = p.paper.toFixed(3);
+    });
+    // The rod up to the ceiling, the ring, its spokes and the hub: the back half behind the clips, the front half in front.
+    const { cx, cy, R, ry } = g, sw = Math.max(5, R * 0.035);
+    const ink = 'var(--wheel-ink)', steel = 'var(--wheel-steel)', dark = 'var(--wheel-dark)';
+    const w = Math.ceil(cx + R + sw * 2), h = Math.ceil(cy + ry + sw * 2);
+    const arc = (sweep, col, width, dy, extra) => `<path d="M ${cx - R} ${cy + (dy || 0)} A ${R} ${ry} 0 0 ${sweep} ${cx + R} ${cy + (dy || 0)}" fill="none" style="stroke:${col}" stroke-width="${width}" stroke-linecap="round"${extra || ''}/>`;
+    const spoke = (p, col, width) => `<line x1="${cx}" y1="${cy}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" style="stroke:${col}" stroke-width="${width}" stroke-linecap="round"/>`;
+    const spokes = list => list.map(p => spoke(p, ink, sw * 0.5 + 4)).join('') + list.map(p => spoke(p, dark, sw * 0.5)).join('');
+    const back = el.querySelector('svg.back'), front = el.querySelector('svg.front');
+    [back, front].forEach(s => { s.setAttribute('width', w); s.setAttribute('height', h); s.setAttribute('viewBox', `0 0 ${w} ${h}`); });
+    back.innerHTML = `<rect x="${cx - R * 0.025}" y="-20" width="${R * 0.05}" height="${cy + 20}" style="fill:${steel};stroke:${ink}" stroke-width="3"/>` +
+      arc(1, ink, sw + 6) + arc(1, dark, sw) + spokes(g.slots.filter(p => p.cz < 0)) +
+      `<ellipse cx="${cx}" cy="${cy}" rx="${R * 0.075}" ry="${R * 0.045}" style="fill:${steel};stroke:${ink}" stroke-width="3"/>` +
+      spokes(g.slots.filter(p => p.cz >= 0));
+    front.innerHTML = arc(0, ink, sw + 6) + arc(0, steel, sw) + arc(0, '#fff', sw * 0.25, -sw * 0.22, ' stroke-opacity=".75"');
+  }
+  /** Turn the wheel: 'in' brings a new ticket round from the left, 'turn' takes it once all the way round. */
+  function spinWheel(kind) {
+    cancelAnimationFrame(wheel.anim);
+    wheel.anim = 0;
+    if (reduced() || !wheelShown()) { wheel.theta = 0; turning(false); drawWheel(); return; }
+    // A turn starts from wherever the wheel is, so pressing Ticket mid-spin never makes it jump.
+    const from = kind === 'in' ? -3 * STEP : wheel.theta - Math.PI * 2, ms = kind === 'in' ? 1100 : 1600, t0 = performance.now();
+    const ease = kind === 'in'
+      ? t => 1 + 1.9 * Math.pow(t - 1, 3) + 0.9 * Math.pow(t - 1, 2)          // slows, a touch past the front, settles
+      : t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    wheel.theta = from;
+    turning(true);
+    drawWheel();
+    const tick = now => {
+      const t = Math.min(1, (now - t0) / ms);
+      wheel.theta = t < 1 ? from * (1 - ease(t)) : 0;
+      drawWheel();
+      wheel.anim = t < 1 ? requestAnimationFrame(tick) : 0;
+      if (t >= 1) turning(false);
+    };
+    wheel.anim = requestAnimationFrame(tick);
+  }
+  /** While the wheel turns, the scan's corner brackets wait (ui.js): they would chase the order round the back. */
+  const turning = on => document.body.classList.toggle('wheelTurning', !!on);
+  /** The order on the wheel (null takes it down). active: the item being made. spin: a new order comes round,
+   *  the same one turns once (Ticket); a new one that goes up while the wheel is out of sight comes round later. */
+  function ticket(order, active, spin) {
+    const el = $('ticket');
+    if (!el) return;
+    if (!order || !pack) { el.innerHTML = ''; el.style.display = 'none'; wheel.order = null; wheel.pending = null; return; }
+    const fresh = order !== wheel.order;
+    wheel.order = order;
+    el.style.display = '';
+    // Each item spelt out (words.js "the ticket"): the name, then everything after it in the order the line asks
+    // for it (spelled().bits). With more than one item, the one being made is spelt out and the others wait as
+    // their names, so the ticket stays small enough to read.
+    const many = order.items.length > 1;
+    el.innerHTML = '<div class="who">' + esc(order.ticket.customer.name) + '</div><ol>' +
+      order.items.map((it, i) => {
+        const sp = W.spelled(pack, it.spec), open = !many || i === active || active < 0;
+        return '<li' + (i === active && many ? ' class="now"' : '') + '><b>' + esc(sp.head) + '</b>' +
+          (open && sp.bits.length ? '<span class="bits">' + esc(sp.bits.join(', ')) + '</span>' : '') + '</li>';
+      }).join('') + '</ol>';
+    el.classList.toggle('many', many);
+    if (spin && wheelShown()) return spinWheel(fresh ? 'in' : 'turn');
+    if (spin && fresh) wheel.pending = 'in';
+    if (fresh && !spin) { cancelAnimationFrame(wheel.anim); wheel.anim = 0; wheel.theta = 0; turning(false); }
+    drawWheel();
+  }
+  /** The scan's Ticket target: the order on the wheel. */
+  const ticketEl = () => $('ticket');
+
+  /* ── the line's controls ───────────────────────────────────────────────── */
+  /** Draw the answers. list: [{ id, kind, label, icon, cls, marks, swatch, prop }]. -> { id: element }
+   *    btn      an enamel push-button (cls add | skip | swap)
+   *    plate    a dial plate: marks (count) and a swatch colour, for Simple cooking
+   *    tool     the station's Timed control prop (prop: a shared prop name); no picture: a drawn button
+   *    tile     a pick's value (cls more: a More… row; bad: the gross-out's value)
+   *    slip     an order slip (the review's redos; cls ticketSlip: the counter's Ticket) */
+  function controls(list, bare) {
+    const box = $('controls');
+    box.innerHTML = '';
+    box.classList.toggle('bare', !!bare);
+    const out = {};
+    for (const c of list) {
+      const el = document.createElement('div');
+      const kind = c.kind === 'spatula' ? 'tool' : c.kind;
+      el.className = 'ctl ' + kind + (c.cls ? ' ' + c.cls : '');
+      el.dataset.id = c.id;
+      if (kind === 'btn') el.innerHTML = (c.icon ? '<span class="ic">' + c.icon + '</span>' : '') + '<span class="lb">' + esc(c.label) + '</span>';
+      else if (kind === 'plate') {
+        el.innerHTML = '<span class="marks">' + '<i></i>'.repeat(c.marks || 0) + '</span>' +
+          '<span class="sw" style="background:#' + (c.swatch === undefined ? 0x999999 : c.swatch).toString(16).padStart(6, '0') + '"></span><span class="lb">' + esc(c.label) + '</span>';
+      } else if (kind === 'tool') {
+        const src = propSrc(c.kind === 'spatula' ? 'spatula' : c.prop);
+        if (src) el.innerHTML = '<img alt="" src="' + src + '"><span class="lb">' + esc(c.label) + '</span>';
+        else { el.className = 'ctl btn tool' + (c.cls ? ' ' + c.cls : ''); el.innerHTML = '<span class="ic">■</span><span class="lb">' + esc(c.label) + '</span>'; }
+      } else el.innerHTML = (c.icon ? '<span class="ic">' + c.icon + '</span>' : '') + '<span class="lb">' + esc(c.label) + '</span>';
+      box.appendChild(el);
+      out[c.id] = el;
+    }
+    return out;
+  }
+  const clearControls = () => { $('controls').innerHTML = ''; };
+
+  /** The real objects that are choices on some screens. */
+  function show(prop, on) { $(prop).classList.toggle('on', !!on); return $(prop); }
+
+  /* ── the Timed gauge ────────────────────────────────────────────────────── */
+  function gauge(stages, s, want) {
+    const g = $('gauge');
+    if (!stages || !pack) { g.classList.remove('on'); g.innerHTML = ''; return; }
+    g.innerHTML = stages.map((st, i) => '<span class="' + (i === s ? 'now ' : '') + (st === want ? 'want' : '') + '">' + esc(W.stage(pack, st)) + '</span>').join('');
+    g.classList.add('on');
+  }
+
+  /* ── speech bubbles, the receipt, the corner count ─────────────────────── */
+  function bubble(kind, name, text) {
+    const b = $('bubble');
+    if (!text) { b.classList.remove('on'); return; }
+    b.className = 'on ' + kind;
+    b.querySelector('b').textContent = name;
+    b.querySelector('span').textContent = BB.script.clean(text);
+  }
+  function receipt(r) {
+    const el = $('receipt');
+    if (!r || !pack) { el.classList.remove('on'); el.innerHTML = ''; return; }
+    const stars = '<div class="stars">' + [1, 2, 3].map(i => '<span' + (i > r.stars ? ' class="off"' : '') + '>★</span>').join('') + '</div>';
+    const lines = r.mistakes.length ? '<ul>' + r.mistakes.map(m => '<li>' + esc(W.mistake(pack, m)) + '</li>').join('') + '</ul>'
+      : '<p>Everything as ordered.</p>';
+    el.innerHTML = '<h2>' + esc(r.name) + '</h2>' + stars + lines + '<div class="tip">Tip: ' + r.tip + ' coins' + (r.favourite ? ' (a favourite!)' : '') + '</div>';
+    el.classList.add('on');
+  }
+  function hud(text) { $('hud').textContent = text || ''; }
+
+  BB.stage = { init, usePack, setScene, customer, mitch, ticket, ticketEl, controls, clearControls, show, gauge, bubble, receipt, hud,
+    castSrc, propSrc, backdropSrc, managerFolder,
+    get scene() { return sceneName; }, get pack() { return pack; },
+    /** For the Node layout check. */ wheelGeometry: geometry, get wheelTheta() { return wheel.theta; } };
+})();

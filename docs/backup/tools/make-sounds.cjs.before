@@ -1,0 +1,77 @@
+/** Ben's Burger Bar - synthesise the sound effects into small WAV files (no Web Audio at
+ *  run time: they play through the hub's SafeAudio, ACCESSIBILITY.md §5).
+ *
+ *  node tools/make-sounds.cjs [names...]   ->  packs/diner/sound/*.wav (only the named ones, when named:
+ *  every sound is still worked out in order, so the seeded ones come out the same, but only those are written)
+ *
+ *  Sounds heard on every step stay short, soft and below about 2.5 kHz (a cue Ben hears
+ *  hundreds of times must not wear on him); the bright ones (the register, the stars) only
+ *  play once an order.
+ */
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const OUT = path.join(__dirname, '..', 'packs', 'diner', 'sound');
+const SR = 22050;
+
+let seed = 7;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647) * 2 - 1;
+const ONLY = process.argv.slice(2);
+function wav(name, samples) {
+  if (ONLY.length && !ONLY.includes(name)) return;
+  const n = samples.length, buf = Buffer.alloc(44 + n * 2);
+  buf.write('RIFF', 0); buf.writeUInt32LE(36 + n * 2, 4); buf.write('WAVE', 8); buf.write('fmt ', 12);
+  buf.writeUInt32LE(16, 16); buf.writeUInt16LE(1, 20); buf.writeUInt16LE(1, 22); buf.writeUInt32LE(SR, 24);
+  buf.writeUInt32LE(SR * 2, 28); buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34); buf.write('data', 36); buf.writeUInt32LE(n * 2, 40);
+  for (let i = 0; i < n; i++) buf.writeInt16LE(Math.max(-32767, Math.min(32767, Math.round(samples[i] * 32767))), 44 + i * 2);
+  fs.writeFileSync(path.join(OUT, name + '.wav'), buf);
+  console.log(name, (n / SR).toFixed(2) + ' s', Math.round(buf.length / 1024) + ' KB');
+}
+const len = s => Math.round(s * SR);
+const env = (t, a, d) => (t < a ? t / a : Math.exp(-(t - a) / d));
+/** One-pole low-pass, to keep noise below a cutoff. */
+function lowpass(x, hz) { const k = 1 - Math.exp(-2 * Math.PI * hz / SR); let y = 0; return x.map(v => (y += k * (v - y))); }
+
+fs.mkdirSync(OUT, { recursive: true });
+
+// plop: a topping lands on the stack (every Add). Soft low thump.
+wav('plop', Array.from({ length: len(0.16) }, (_, i) => { const t = i / SR, f = 260 - 900 * t; return Math.sin(2 * Math.PI * f * t) * env(t, 0.004, 0.045) * 0.42; }));
+// swoosh: an ingredient slides away (Skip). Filtered noise, quiet.
+wav('swoosh', lowpass(Array.from({ length: len(0.22) }, (_, i) => { const t = i / SR; return rnd() * Math.sin(Math.PI * t / 0.22) * 0.35; }), 1600));
+// toss: the bad one is thrown out (Swap It). A rising whoosh and a soft bin thunk.
+wav('toss', lowpass(Array.from({ length: len(0.42) }, (_, i) => { const t = i / SR; return (t < 0.28 ? rnd() * Math.sin(Math.PI * t / 0.28) * 0.4 : 0) + (t > 0.3 ? Math.sin(2 * Math.PI * 140 * t) * env(t - 0.3, 0.003, 0.04) * 0.5 : 0); }), 2000));
+// sizzle: patties hit the grill. Low-passed crackle, a little over a second, gentle.
+wav('sizzle', lowpass(Array.from({ length: len(1.3) }, (_, i) => { const t = i / SR; const crackle = Math.random() < 0.004 ? 1 : 0; return (rnd() * 0.22 + crackle * rnd() * 0.5) * Math.min(1, t / 0.05) * Math.min(1, (1.3 - t) / 0.3); }), 2300));
+// flip: a quick spatula "fwip".
+wav('flip', lowpass(Array.from({ length: len(0.18) }, (_, i) => { const t = i / SR; return rnd() * Math.sin(Math.PI * t / 0.18) * 0.4 + Math.sin(2 * Math.PI * (300 + 900 * t) * t) * env(t, 0.01, 0.05) * 0.2; }), 2200));
+// tick: a Timed stage change. A short soft wood-block click.
+wav('tick', Array.from({ length: len(0.07) }, (_, i) => { const t = i / SR; return Math.sin(2 * Math.PI * 900 * t) * env(t, 0.001, 0.012) * 0.35; }));
+// ding: the counter bell (once an order). A bell near 1.6 kHz with soft partials.
+wav('ding', Array.from({ length: len(0.9) }, (_, i) => { const t = i / SR; const e = env(t, 0.002, 0.28); return (Math.sin(2 * Math.PI * 1568 * t) * 0.5 + Math.sin(2 * Math.PI * 2093 * t) * 0.18 + Math.sin(2 * Math.PI * 784 * t) * 0.2) * e * 0.5; }));
+// kaching: the register (once an order): a key clunk, a drawer and a bright bell.
+wav('kaching', Array.from({ length: len(0.8) }, (_, i) => {
+  const t = i / SR;
+  const clunk = Math.sin(2 * Math.PI * 180 * t) * env(t, 0.002, 0.03) * 0.5;
+  const drawer = t > 0.08 && t < 0.3 ? rnd() * 0.18 * Math.sin(Math.PI * (t - 0.08) / 0.22) : 0;
+  const bell = t > 0.12 ? (Math.sin(2 * Math.PI * 2637 * t) * 0.3 + Math.sin(2 * Math.PI * 3520 * t) * 0.15) * env(t - 0.12, 0.002, 0.18) : 0;
+  return clunk + drawer + bell;
+}));
+// stars: the rating appears (once an order): three rising notes.
+wav('stars', Array.from({ length: len(0.75) }, (_, i) => { const t = i / SR; const k = Math.min(2, Math.floor(t / 0.16)), f = [784, 988, 1175][k], tt = t - k * 0.16; return Math.sin(2 * Math.PI * f * t) * env(tt, 0.004, 0.12) * 0.38; }));
+// buzz: a fly is on the food. A soft low buzz with a wobble.
+wav('buzz', lowpass(Array.from({ length: len(0.9) }, (_, i) => { const t = i / SR; return Math.sign(Math.sin(2 * Math.PI * (190 + 25 * Math.sin(2 * Math.PI * 7 * t)) * t)) * 0.12 * Math.min(1, t / 0.05) * Math.min(1, (0.9 - t) / 0.15); }), 1400));
+// ew: a gross-out is served. A low descending "wah".
+wav('ew', Array.from({ length: len(0.6) }, (_, i) => { const t = i / SR; const f = 220 - 120 * t; return (Math.sin(2 * Math.PI * f * t) + 0.4 * Math.sin(2 * Math.PI * 2 * f * t)) * env(t, 0.02, 0.25) * 0.3; }));
+// squirt: a squeeze bottle (each sauce's Add, up to three a burger). Airy band of noise (300 Hz to 1.5 kHz,
+// not a rumble) with a little sputter as it is squeezed, then one soft drip. Short, low and quiet.
+wav('squirt', (() => {
+  const raw = Array.from({ length: len(0.62) }, () => rnd());
+  const hi = lowpass(raw, 1500), lo = lowpass(raw, 300);
+  return hi.map((v, i) => {
+    const t = i / SR;
+    const sputter = 0.65 + 0.35 * Math.sin(2 * Math.PI * (22 + 30 * t) * t);
+    const shape = Math.min(1, t / 0.03) * (t < 0.42 ? 1 : Math.max(0, 1 - (t - 0.42) / 0.14));
+    const drip = t > 0.5 ? Math.sin(2 * Math.PI * (420 - 2100 * (t - 0.5)) * (t - 0.5)) * env(t - 0.5, 0.003, 0.03) * 0.3 : 0;
+    return (v - lo[i]) * sputter * shape * 0.9 + drip;
+  });
+})());

@@ -1,0 +1,683 @@
+/** Ben's Burger Bar - the food in 3D (DESIGN.md "Look and feel: 2.5D").
+ *
+ *  Chunky, cel-shaded food in close-up, drawn on a transparent canvas over the station's
+ *  2D backdrop: toon materials with three hard shading bands and black outlines (inverted
+ *  hulls), so the food matches the cartoon characters. Three sets share one scene, each
+ *  with a fixed camera: the grill, the board and the counter. How each ingredient looks
+ *  comes from the pack (`look.shape`), never from its id.
+ *
+ *  Doneness is a colour AND a mark: one grill line per stage, char flecks when charred.
+ *  Gross-outs show here too: a tint, stink lines, a hair, a fly that circles, smoke.
+ *  Every animation is short, never needed to play, and skipped with Motion Reduced.
+ */
+(function () {
+  'use strict';
+  const pack = BBPacks.diner;
+  const hubGraphics = window.NarbeGraphics ? NarbeGraphics.openGame('bensfoodcourt') : null;
+  const reduced = () => document.body.dataset.motion === 'reduced';
+
+  let renderer = null, scene = null, camera = null, wrap = null;
+  let last = 0, running = false;
+  const tweens = [];
+  const spinners = [];                  // things that move every frame: flies, smoke, stink lines
+
+  /* ── materials: toon bands + outlines ──────────────────────────────────── */
+  const GRADIENT = (() => {
+    const t = new THREE.DataTexture(new Uint8Array([70, 160, 255]), 3, 1, THREE.RedFormat);
+    t.minFilter = t.magFilter = THREE.NearestFilter;
+    t.needsUpdate = true;
+    return t;
+  })();
+  const mats = new Map();
+  function toon(color, opts) {
+    const key = color + (opts ? JSON.stringify(opts) : '');
+    if (!mats.has(key)) mats.set(key, new THREE.MeshToonMaterial(Object.assign({ color, gradientMap: GRADIENT }, opts || {})));
+    return mats.get(key);
+  }
+  const OUTLINE = new THREE.ShaderMaterial({
+    uniforms: { thickness: { value: 0.011 }, color: { value: new THREE.Color(0x1b120e) } },
+    vertexShader: 'uniform float thickness; void main() { vec3 p = position + normal * thickness; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }',
+    fragmentShader: 'uniform vec3 color; void main() { gl_FragColor = vec4(color, 1.0); }',
+    side: THREE.BackSide,
+  });
+  /** A mesh with its outline. */
+  function ink(geo, mat, noOutline) {
+    const g = new THREE.Group();
+    const m = new THREE.Mesh(geo, mat);
+    g.add(m);
+    if (!noOutline) { const o = new THREE.Mesh(geo, OUTLINE); o.renderOrder = -1; g.add(o); }
+    g.userData.body = m;
+    return g;
+  }
+  const cyl = (r, h, seg) => new THREE.CylinderGeometry(r, r, h, seg || 32, 1);
+  // Thin things (a line of sauce, a bottle's nozzle) get a thinner outline, or the ink swamps them.
+  const OUTLINE_THIN = OUTLINE.clone();
+  OUTLINE_THIN.uniforms.thickness.value = 0.0045;
+  function inkThin(geo, mat) {
+    const g = new THREE.Group();
+    const m = new THREE.Mesh(geo, mat), o = new THREE.Mesh(geo, OUTLINE_THIN);
+    o.renderOrder = -1;
+    g.add(m, o);
+    g.userData.body = m;
+    return g;
+  }
+  const SHINE = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.72 });
+
+  /* ── sauces: a squeeze bottle on the line, then a glossy line of sauce across the food ── */
+  // The squeeze-bottle zigzag: a few long strokes back and forth across the burger, corners rounded
+  // (Chaikin) wide enough that the bead never folds into itself at a turn.
+  const SAUCE = { r: 0.017, flat: 0.62, seg: 160, rad: 8 };
+  const SAUCE_PATH = (() => {
+    let p = [[-0.27, -0.06], [-0.17, 0.17], [-0.06, -0.19], [0.05, 0.19], [0.16, -0.17], [0.26, 0.08]];
+    for (let k = 0; k < 4; k++) {
+      const q = [p[0]];
+      for (let i = 0; i < p.length - 1; i++) {
+        const [a, b] = [p[i], p[i + 1]];
+        q.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25], [a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]);
+      }
+      q.push(p[p.length - 1]);
+      p = q;
+    }
+    return new THREE.CatmullRomCurve3(p.map(([x, z]) => new THREE.Vector3(x, 0, z)), false, 'centripetal');
+  })();
+  const SAUCE_GEO = new THREE.TubeGeometry(SAUCE_PATH, SAUCE.seg, SAUCE.r, SAUCE.rad, false);
+  const SAUCE_CAP = new THREE.SphereGeometry(SAUCE.r, 12, 8);
+  // Glints along the top of the bead (they show as the line reaches them while it is squirted).
+  const SHINE_AT = [[0.03, 0.1], [0.18, 0.26], [0.35, 0.46], [0.55, 0.62], [0.7, 0.79], [0.87, 0.95]];
+  const SHINE_GEOS = SHINE_AT.map(([a, b]) => new THREE.TubeGeometry(new THREE.CatmullRomCurve3(Array.from({ length: 9 },
+    (_, i) => SAUCE_PATH.getPointAt(a + (b - a) * i / 8).add(new THREE.Vector3(0, SAUCE.r * 0.74, 0)))), 12, 0.0045, 5, false));
+  const STREAM_GEO = new THREE.CylinderGeometry(0.0115, 0.0115, 1, 8, 1);
+  const UP = new THREE.Vector3(0, 1, 0);
+  /** The pack's sauces in order: each lies at its own angle, so two on one burger cross. */
+  const sauceIndex = id => Object.keys(pack.ingredients).filter(k => pack.ingredients[k].sauce).indexOf(id);
+  /** Show a bead of sauce squirted as far as u (0 to 1) along its path. */
+  function growSauce(S, u) {
+    const k = Math.round(Math.max(0, Math.min(1, u)) * SAUCE.seg);
+    S.geo.setDrawRange(0, k * SAUCE.rad * 6);
+    S.capA.visible = k > 0;
+    S.capB.visible = u >= 1;
+    S.shine.forEach((m, i) => { m.visible = u >= SHINE_AT[i][1]; });
+  }
+  /** A diner squeeze bottle: body, shoulder, screw cap and nozzle, with a glint down the front. */
+  function bottle(part) {
+    const L = lookOf(part.ing), g = new THREE.Group(), S = 1.25;
+    const lathe = pts => new THREE.LatheGeometry(pts.map(([x, y]) => new THREE.Vector2(x * S, y * S)), 32);
+    const body = [[0, 0], [0.072, 0], [0.08, 0.012], [0.08, 0.235], [0.074, 0.262], [0.052, 0.284], [0.036, 0.29], [0, 0.29]];
+    const cap = [[0, 0.284], [0.046, 0.284], [0.049, 0.292], [0.049, 0.322], [0.042, 0.328], [0.028, 0.33], [0.009, 0.41], [0, 0.413]];
+    g.add(ink(lathe(body), toon(L.colour)), inkThin(lathe(cap), toon(L.cap !== undefined ? L.cap : L.colour)));
+    const glint = new THREE.Mesh(new THREE.CylinderGeometry(0.0806 * S, 0.0806 * S, 0.17 * S, 10, 1, true, -0.66, 0.22), SHINE);
+    glint.position.y = 0.13 * S;
+    g.add(glint);
+    g.userData.bottle = { tip: 0.413 * S, colour: L.colour };
+    g.userData.part = part;
+    return { g, h: 0.413 * S };
+  }
+
+  /* ── food: one builder per look.shape ───────────────────────────────────── */
+  // Raw to charred, by stage index (pack stage list: raw rare medium mediumWell well charred).
+  const PATTY = [0xe68d88, 0xc8655d, 0x9d5038, 0x7d4229, 0x5f3521, 0x261812];
+  const FRIED = [0xf6e3a0, 0xf2c14e, 0xd99a2b, 0xa8681c, 0x3a2410];
+  const lookOf = id => (pack.ingredients[id] && pack.ingredients[id].look) || { shape: 'disc', colour: 0x999999 };
+  function noise(a, k) { return Math.sin(a * 7.0 + k) * 0.5 + Math.sin(a * 13.0 + k * 1.7) * 0.3 + Math.sin(a * 3.0 + k * 0.6) * 0.2; }
+
+  const BUILD = {
+    bun(part) {
+      const L = lookOf(part.ing), g = new THREE.Group(), top = part.layer === 'top';
+      if (top) {
+        const pts = [];
+        for (let i = 0; i <= 12; i++) { const a = (i / 12) * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * 0.37, Math.sin(a) * 0.2)); }
+        const dome = ink(new THREE.LatheGeometry(pts, 40), toon(L.colour));
+        g.add(dome);
+        const seed = new THREE.SphereGeometry(0.014, 6, 4);
+        for (let i = 0; i < 16; i++) {
+          const a = i * 2.4, rr = 0.06 + (i % 5) * 0.055;
+          const y = Math.sqrt(Math.max(0, 1 - (rr / 0.37) ** 2)) * 0.2;
+          const s = new THREE.Mesh(seed, toon(0xfff3d6));
+          s.scale.set(1.5, 0.6, 0.9); s.position.set(Math.cos(a) * rr, y + 0.004, Math.sin(a) * rr); s.rotation.y = a;
+          g.add(s);
+        }
+        return { g, h: 0.2 };
+      }
+      const pts = [new THREE.Vector2(0, 0), new THREE.Vector2(0.33, 0), new THREE.Vector2(0.365, 0.03), new THREE.Vector2(0.37, 0.07), new THREE.Vector2(0.35, 0.09), new THREE.Vector2(0, 0.09)];
+      g.add(ink(new THREE.LatheGeometry(pts, 40), toon(L.colour)));
+      const crumb = new THREE.Mesh(new THREE.CircleGeometry(0.345, 40), toon(0xf4d9a6));
+      crumb.rotation.x = -Math.PI / 2; crumb.position.y = 0.0905; g.add(crumb);
+      return { g, h: 0.09 };
+    },
+    patty(part, opts) {
+      const g = new THREE.Group();
+      const geo = cyl(0.31, 0.07, 36);
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), z = pos.getZ(i), a = Math.atan2(z, x), r = Math.hypot(x, z);
+        if (r > 0.05) { const k = 1 + noise(a, 1.3) * 0.045; pos.setX(i, x * k); pos.setZ(i, z * k); }
+      }
+      geo.computeVertexNormals();
+      const s = Math.max(0, stageIndex(part, opts));
+      const body = ink(geo, toon(PATTY[Math.min(s, PATTY.length - 1)]));
+      body.position.y = 0.035;
+      g.add(body);
+      g.userData.cook = body.userData.body;
+      // Grill marks: one per stage past raw; char flecks when charred.
+      const marks = new THREE.Group();
+      marks.position.y = 0.071;
+      const n = Math.min(s, 4);
+      for (let i = 0; i < n; i++) {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.006, 0.03), toon(0x1a0e08));
+        m.position.z = -0.18 + (i + 0.5) * (0.36 / n); m.rotation.y = 0.45;
+        marks.add(m);
+      }
+      if (s >= 5) for (let i = 0; i < 14; i++) {
+        const f = new THREE.Mesh(new THREE.CircleGeometry(0.02 + (i % 3) * 0.008, 6), toon(0x0a0605));
+        f.rotation.x = -Math.PI / 2; f.position.set(Math.cos(i * 2.1) * 0.22 * ((i % 4) / 4 + 0.2), 0.001, Math.sin(i * 2.1) * 0.22 * ((i % 3) / 3 + 0.2));
+        marks.add(f);
+      }
+      g.add(marks);
+      g.userData.marks = marks;
+      return { g, h: 0.07 };
+    },
+    slice(part) {
+      const L = lookOf(part.ing);
+      const geo = new THREE.BoxGeometry(0.6, 0.018, 0.6, 10, 1, 10);
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), z = pos.getZ(i);
+        const r = Math.hypot(x, z), over = Math.max(0, r - 0.27);
+        pos.setY(i, pos.getY(i) - over * over * 2.6);          // the corners drape over the edge
+      }
+      geo.computeVertexNormals();
+      const m = ink(geo, toon(L.colour));
+      m.rotation.y = Math.PI / 4 + (part.n || 0) * 0.3;
+      m.position.y = 0.009;
+      const g = new THREE.Group(); g.add(m);
+      return { g, h: 0.018 };
+    },
+    strips(part) {
+      const L = lookOf(part.ing), g = new THREE.Group();
+      [-0.07, 0.07].forEach((z, k) => {
+        const geo = new THREE.PlaneGeometry(0.66, 0.08, 18, 1);
+        const pos = geo.attributes.position;
+        for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getX(i) * 16 + k) * 0.018);
+        geo.rotateX(-Math.PI / 2);
+        geo.computeVertexNormals();
+        const meat = ink(geo, toon(L.colour, { side: THREE.DoubleSide }));
+        meat.position.set(0, 0.012, z); meat.rotation.y = k ? 0.2 : -0.15;
+        const fat = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.022, 18, 1), toon(L.fat || 0xf2c4a8, { side: THREE.DoubleSide }));
+        fat.rotation.x = -Math.PI / 2; fat.position.set(0, 0.016 + Math.sin(k) * 0.002, z + 0.01); fat.rotation.z = meat.rotation.y;
+        g.add(meat, fat);
+      });
+      return { g, h: 0.028 };
+    },
+    leaf(part) {
+      const L = lookOf(part.ing);
+      const geo = new THREE.CircleGeometry(0.4, 48, 0, Math.PI * 2);
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), y = pos.getY(i), r = Math.hypot(x, y), a = Math.atan2(y, x);
+        const k = 1 + Math.sin(a * 7) * 0.06;
+        pos.setX(i, x * k); pos.setY(i, y * k);
+        pos.setZ(i, r > 0.2 ? Math.sin(a * 9) * 0.03 * ((r - 0.2) / 0.2) : 0);
+      }
+      geo.rotateX(-Math.PI / 2);
+      geo.computeVertexNormals();
+      const m = ink(geo, toon(L.colour, { side: THREE.DoubleSide }));
+      m.position.y = 0.014;
+      const g = new THREE.Group(); g.add(m);
+      return { g, h: 0.03 };
+    },
+    disc(part) {
+      const L = lookOf(part.ing), g = new THREE.Group();
+      [[-0.1, 0.02], [0.11, -0.03]].forEach(([x, z]) => {
+        const s = ink(cyl(0.16, 0.03, 28), toon(L.colour)); s.position.set(x, 0.015, z); g.add(s);
+        const inner = new THREE.Mesh(new THREE.CircleGeometry(0.115, 24), toon(L.inner || L.colour));
+        inner.rotation.x = -Math.PI / 2; inner.position.set(x, 0.0305, z); g.add(inner);
+      });
+      return { g, h: 0.03 };
+    },
+    chips(part) {
+      const L = lookOf(part.ing), g = new THREE.Group();
+      [[-0.14, 0.04], [0.02, -0.12], [0.15, 0.06], [0.0, 0.14]].forEach(([x, z], i) => {
+        const c = ink(cyl(0.075, 0.016, 18), toon(L.colour)); c.position.set(x, 0.008 + (i % 2) * 0.004, z); g.add(c);
+        const top = new THREE.Mesh(new THREE.CircleGeometry(0.055, 14), toon(0xa9cf5a));
+        top.rotation.x = -Math.PI / 2; top.position.set(x, 0.0172 + (i % 2) * 0.004, z); g.add(top);
+      });
+      return { g, h: 0.02 };
+    },
+    rings(part) {
+      const L = lookOf(part.ing), g = new THREE.Group();
+      [[0.0, 0.0, 0.17], [0.09, 0.05, 0.12]].forEach(([x, z, r]) => {
+        const t = ink(new THREE.TorusGeometry(r, 0.022, 10, 36), toon(L.colour));
+        t.rotation.x = Math.PI / 2; t.position.set(x, 0.022, z); g.add(t);
+      });
+      return { g, h: 0.044 };
+    },
+    sauce(part, opts) {
+      // A glossy bead lying on the food: a flattened tube with round ends, thin ink and glints along the top.
+      // opts.growing: its own copy of the tube, so it can be squirted on a bit at a time.
+      const L = lookOf(part.ing), g = new THREE.Group(), bead = new THREE.Group(), mat = toon(L.colour);
+      const geo = opts && opts.growing ? SAUCE_GEO.clone() : SAUCE_GEO;
+      const capA = inkThin(SAUCE_CAP, mat), capB = inkThin(SAUCE_CAP, mat);
+      capA.position.copy(SAUCE_PATH.getPointAt(0)); capB.position.copy(SAUCE_PATH.getPointAt(1));
+      const shine = SHINE_GEOS.map(sg => new THREE.Mesh(sg, SHINE));
+      bead.add(inkThin(geo, mat), capA, capB, ...shine);
+      bead.scale.y = SAUCE.flat;
+      bead.position.y = SAUCE.r * SAUCE.flat;
+      bead.rotation.y = (part.n || 0) * 0.9 + Math.max(0, sauceIndex(part.ing)) * 0.7;
+      g.add(bead);
+      g.userData.sauce = { geo, bead, capA, capB, shine };
+      return { g, h: 0.016 };
+    },
+    plate() {
+      const pts = [new THREE.Vector2(0, 0), new THREE.Vector2(0.5, 0), new THREE.Vector2(0.62, 0.035), new THREE.Vector2(0.64, 0.05), new THREE.Vector2(0.5, 0.025), new THREE.Vector2(0, 0.025)];
+      const g = new THREE.Group();
+      g.add(ink(new THREE.LatheGeometry(pts, 48), toon(0xfbfaf4)));
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.585, 0.008, 6, 48), toon(0x3d7fc4));
+      rim.rotation.x = Math.PI / 2; rim.position.y = 0.04; g.add(rim);
+      return { g, h: 0.025 };
+    },
+    fries(part, opts) {
+      const g = new THREE.Group(), s = Math.max(0, stageIndex(part, opts));
+      for (let i = 0; i < 22; i++) {
+        const f = ink(new THREE.BoxGeometry(0.035, 0.24, 0.035), toon(FRIED[Math.min(s, FRIED.length - 1)]));
+        f.position.set(Math.cos(i * 2.4) * 0.12 * ((i % 4) / 4 + 0.3), 0.1, Math.sin(i * 2.4) * 0.1 * ((i % 3) / 3 + 0.3));
+        f.rotation.set((i % 5 - 2) * 0.12, i, (i % 3 - 1) * 0.18);
+        g.add(f);
+      }
+      return { g, h: 0.22 };
+    },
+    onionRings(part, opts) {
+      const g = new THREE.Group(), s = Math.max(0, stageIndex(part, opts));
+      for (let i = 0; i < 5; i++) {
+        const t = ink(new THREE.TorusGeometry(0.1, 0.035, 10, 24), toon(FRIED[Math.min(s, FRIED.length - 1)]));
+        t.rotation.x = Math.PI / 2 + (i % 2) * 0.4; t.position.set((i - 2) * 0.06, 0.04 + i * 0.03, (i % 2) * 0.04);
+        g.add(t);
+      }
+      return { g, h: 0.2 };
+    },
+  };
+  function stageIndex(part, opts) {
+    if (opts && opts.stage !== undefined) return opts.stage;
+    const I = pack.ingredients[part.ing];
+    if (!I || !I.stages || !part.done) return 0;
+    return pack.stageSets[I.stages].stages.indexOf(part.done);
+  }
+  /** One ingredient, ready to stack: { g, h }. */
+  function food(part, opts) {
+    const b = (BUILD[lookOf(part.ing).shape] || BUILD.disc)(part, opts);
+    if (part.gross) gross(b.g, part.gross);
+    b.g.userData.part = part;
+    return b;
+  }
+
+  /* ── gross-outs ─────────────────────────────────────────────────────────── */
+  const SPRITES = {};
+  function sprite(kind) {
+    if (!SPRITES[kind]) {
+      const c = document.createElement('canvas'); c.width = 64; c.height = 128;
+      const x = c.getContext('2d');
+      if (x && kind === 'stink') {
+        x.strokeStyle = '#7fc23a'; x.lineWidth = 7; x.lineCap = 'round';
+        x.beginPath(); for (let y = 120; y > 8; y -= 4) x.lineTo(32 + Math.sin(y / 12) * 14, y); x.stroke();
+      } else if (x && kind === 'puff') {
+        const grd = x.createRadialGradient(32, 64, 4, 32, 64, 30); grd.addColorStop(0, 'rgba(235,235,235,0.9)'); grd.addColorStop(1, 'rgba(200,200,200,0)');
+        x.fillStyle = grd; x.beginPath(); x.arc(32, 64, 30, 0, Math.PI * 2); x.fill();
+      }
+      const t = new THREE.CanvasTexture(c);
+      SPRITES[kind] = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false });
+    }
+    return SPRITES[kind];
+  }
+  function gross(g, eventId) {
+    const E = (pack.gross || []).find(x => x.id === eventId);
+    if (!E) return;
+    const fx = E.fx || {};
+    if (fx.tint !== undefined) g.traverse(o => {
+      if (o.isMesh && o.material && o.material.isMeshToonMaterial) {
+        o.material = o.material.clone();
+        o.material.color.lerp(new THREE.Color(fx.tint), 0.65);
+      }
+    });
+    if (fx.droop) g.scale.y *= 0.6;
+    if (fx.stink || fx.smoke) {
+      for (let i = 0; i < 3; i++) {
+        const s = new THREE.Sprite(sprite(fx.smoke ? 'puff' : 'stink'));
+        s.scale.set(0.12, 0.24, 1);
+        s.position.set(-0.15 + i * 0.15, 0.2, 0);
+        g.add(s);
+        spinners.push({ o: s, kind: 'rise', base: s.position.clone(), phase: i * 0.7 });
+      }
+    }
+    if (fx.hair) {
+      const pts = [];
+      for (let i = 0; i <= 12; i++) pts.push(new THREE.Vector3(-0.2 + i * 0.035, 0.05 + Math.sin(i * 1.3) * 0.008, Math.sin(i * 0.9) * 0.06));
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.0045, 5, false), toon(0x1a1410)));
+    }
+    if (fx.fly) {
+      const fly = new THREE.Group();
+      fly.add(ink(new THREE.SphereGeometry(0.035, 10, 8), toon(0x161616)));
+      [-1, 1].forEach(sd => {
+        const w = new THREE.Mesh(new THREE.CircleGeometry(0.04, 10), new THREE.MeshBasicMaterial({ color: 0xdff4ff, transparent: true, opacity: 0.7, side: THREE.DoubleSide }));
+        w.position.set(sd * 0.03, 0.03, 0); w.rotation.set(-0.6, 0, sd * 0.5);
+        fly.add(w);
+      });
+      g.add(fly);
+      spinners.push({ o: fly, kind: 'orbit', phase: Math.random() * 6 });
+    }
+  }
+
+  /* ── the sets ───────────────────────────────────────────────────────────── */
+  // Cameras relative to each set. The kitchen ones were solved (art-source/review) so the food sits
+  // left of centre, low and large, and each work surface starts where its backdrop's painted surface
+  // does (about 64% down the screen), leaving the wall and its gags in view; the controls are on the right.
+  const SETS = {
+    grill:   { x: -12, cam: { pos: [0.324, 2.911, 4.002], at: [0.324, 1.115, 0.15], fov: 30 } },
+    board:   { x: 0, cam: { pos: [0.329, 2.573, 3.277], at: [0.329, 1.115, 0.15], fov: 30 } },
+    counter: { x: 12, cam: { pos: [0, 1.75, 3.6], at: [0, 1.05, -0.4], fov: 42 } },
+  };
+  const TOP = 0.5;              // the height of every work surface
+  const groups = {};
+  let at = 'counter';
+
+  function buildSets() {
+    // Grill: a dark steel cooking plate with raised bars along it.
+    const grill = groups.grill = new THREE.Group(); grill.position.x = SETS.grill.x;
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(7, 0.12, 1.9), toon(0x2c2c30)); plate.position.set(0, TOP - 0.06, 0.65); grill.add(plate);
+    for (let i = 0; i < 10; i++) { const bar = new THREE.Mesh(new THREE.BoxGeometry(7, 0.012, 0.035), toon(0x45454b)); bar.position.set(0, TOP + 0.006, -0.22 + i * 0.2); grill.add(bar); }
+    const lip = new THREE.Mesh(new THREE.BoxGeometry(7, 0.16, 0.12), toon(0x9aa3ab)); lip.position.set(0, TOP - 0.02, 1.62); grill.add(lip);
+    grill.userData.slots = [-0.75, 0, 0.75].map(x => new THREE.Vector3(x, TOP, 0.15));
+    // Board: butcher block.
+    const board = groups.board = new THREE.Group(); board.position.x = SETS.board.x;
+    const block = new THREE.Mesh(new THREE.BoxGeometry(7, 0.14, 2.0), toon(0xc98f53)); block.position.set(0, TOP - 0.07, 0.5); board.add(block);
+    for (let i = 0; i < 9; i++) { const seam = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.142, 2.0), toon(0xa86f3a)); seam.position.set(-3.2 + i * 0.8, TOP - 0.07, 0.5); board.add(seam); }
+    // The line: a short steel slide the ingredients come down, to the right of the burger.
+    const slide = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.04, 0.62), toon(0xb8c1c8)); slide.position.set(1.0, TOP + 0.02, 0.15); slide.rotation.z = 0.1; board.add(slide);
+    board.userData.stack = new THREE.Vector3(0, TOP, 0.15);
+    board.userData.incoming = new THREE.Vector3(0.98, TOP + 0.12, 0.15);
+    // Counter: red laminate with a chrome edge, the front of the diner's counter.
+    const counter = groups.counter = new THREE.Group(); counter.position.x = SETS.counter.x;
+    const top = new THREE.Mesh(new THREE.BoxGeometry(9, 0.12, 1.6), toon(0xc7352b)); top.position.set(0, 0.86, 0.5); counter.add(top);
+    const edge = new THREE.Mesh(new THREE.BoxGeometry(9, 0.08, 0.06), toon(0xdfe5ea)); edge.position.set(0, 0.86, 1.31); counter.add(edge);
+    const front = new THREE.Mesh(new THREE.BoxGeometry(9, 0.86, 0.1), toon(0x2f8a87)); front.position.set(0, 0.43, 1.32); counter.add(front);
+    counter.userData.plates = [new THREE.Vector3(0.35, 0.92, 0.55), new THREE.Vector3(1.4, 0.92, 0.6), new THREE.Vector3(-0.7, 0.92, 0.6)];
+    scene.add(grill, board, counter);
+    ['grill', 'board', 'counter'].forEach(k => { groups[k].userData.food = new THREE.Group(); groups[k].add(groups[k].userData.food); });
+  }
+
+  /* ── what each set shows ────────────────────────────────────────────────── */
+  // Each step rebuilds its food, so the old shapes are freed (not the shared sauce ones), or a long shift
+  // slowly fills the graphics card's memory.
+  const KEEP = new Set([SAUCE_GEO, SAUCE_CAP, STREAM_GEO, ...SHINE_GEOS]);
+  const clear = g => {
+    while (g.children.length) {
+      const c = g.children[0];
+      g.remove(c);
+      c.traverse(o => { if (o.isMesh && !o.isSprite && o.geometry && !KEEP.has(o.geometry)) o.geometry.dispose(); });
+    }
+  };
+  function stackOf(parts, opts) {
+    const g = new THREE.Group();
+    let h = 0;
+    parts.forEach((p, i) => {
+      const f = food(Object.assign({ n: i }, p), opts);
+      f.g.position.y = h;
+      g.add(f.g);
+      h += f.h;
+    });
+    g.userData.h = h;
+    return g;
+  }
+
+  /** The grill: n of an ingredient, cooked to a stage index (raw = 0). */
+  let grillIng = null;
+  function showGrill(ing, n, stage) {
+    if (!scene) return;
+    const F = groups.grill.userData.food;
+    clear(F);
+    grillIng = ing;
+    const slots = groups.grill.userData.slots;
+    const where = n === 1 ? [1] : n === 2 ? [0, 2] : [0, 1, 2];
+    for (let i = 0; i < Math.min(n, 3); i++) {
+      const p = food({ ing }, { stage: stage || 0 });
+      p.g.position.copy(slots[where[i]]);
+      F.add(p.g);
+    }
+  }
+  /** Drop one more onto the grill (Add): it falls into place. */
+  function dropOnGrill(ing, n) {
+    if (!scene) return Promise.resolve();
+    showGrill(ing, n, 0);
+    const F = groups.grill.userData.food, p = F.children[F.children.length - 1];
+    if (!p || reduced()) return Promise.resolve();
+    const y = p.position.y;
+    return tween(260, t => { p.position.y = y + (1 - ease(t)) * 0.6; });
+  }
+  /** The grill's food, cooked: a sizzle, a hop and a flip, then the doneness. */
+  function cookGrill(stage, ms) {
+    if (!scene) return Promise.resolve();
+    const F = groups.grill.userData.food;
+    const n = F.children.length;
+    if (reduced() || !n) { showGrill(grillIng, n, stage); return Promise.resolve(); }
+    const half = (ms || 1800) / 2;
+    puffs(F, n, ms || 1800);
+    return tween(half, t => F.children.forEach(p => { p.position.y = TOP + Math.sin(t * Math.PI * 4) * 0.008; }))
+      .then(() => {
+        showGrill(grillIng, n, Math.max(1, Math.round(stage / 2)));
+        const now = F.children.slice();
+        return tween(380, t => now.forEach(p => { p.position.y = TOP + Math.sin(t * Math.PI) * 0.32; p.rotation.x = t * Math.PI; }));
+      })
+      .then(() => { showGrill(grillIng, n, stage); return wait(half - 380); });
+  }
+  /** Timed cooking: the food shows each stage as it reaches it. */
+  function grillStage(stage) { if (!scene) return; showGrill(grillIng, groups.grill.userData.food.children.filter(c => c.userData.part).length, stage); }
+  function puffs(parent, n, ms) {
+    for (let i = 0; i < n * 3; i++) {
+      const s = new THREE.Sprite(sprite('puff'));
+      s.scale.set(0.3, 0.6, 1);
+      const slot = groups.grill.userData.slots[i % 3];
+      s.position.set(slot.x + (i % 2 ? 0.12 : -0.1), TOP + 0.15, slot.z);
+      parent.add(s);
+      spinners.push({ o: s, kind: 'rise', base: s.position.clone(), phase: i * 0.5, until: performance.now() + (ms || 1800) });
+    }
+  }
+
+  /** The board: the stack so far, and the ingredient waiting on the line (or none). */
+  function showBoard(parts, incoming) {
+    if (!scene) return Promise.resolve();
+    const F = groups.board.userData.food;
+    clear(F);
+    const plate = food({ ing: 'plate' });
+    plate.g.position.copy(groups.board.userData.stack);
+    plate.g.scale.set(0.8, 1, 0.8);
+    F.add(plate.g);
+    const s = stackOf(parts);
+    s.position.copy(groups.board.userData.stack); s.position.y += plate.h;
+    s.name = 'stack';
+    F.add(s);
+    if (incoming) {
+      // A sauce waits in its squeeze bottle, standing on the line; everything else waits as itself.
+      const isSauce = lookOf(incoming.ing).shape === 'sauce';
+      const f = isSauce ? bottle(incoming) : food(incoming);
+      f.g.position.copy(groups.board.userData.incoming);
+      if (isSauce) f.g.position.y = TOP + 0.045;
+      f.g.name = 'incoming';
+      F.add(f.g);
+      if (!reduced()) {
+        const to = f.g.position.clone(), from = to.clone().add(new THREE.Vector3(1.4, 0.4, 0));
+        f.g.position.copy(from);
+        return tween(320, t => f.g.position.lerpVectors(from, to, ease(t)));
+      }
+    }
+    return Promise.resolve();
+  }
+  /** The waiting ingredient goes on the stack, slides away, or is tossed for a fresh one. A sauce's Add is
+   *  the squirt; opts.onSquirt is called as the sauce starts to come out (the game plays the sound then). */
+  function lineOutcome(kind, opts) {
+    if (!scene) return Promise.resolve();
+    const F = groups.board.userData.food, inc = F.getObjectByName('incoming'), stack = F.getObjectByName('stack');
+    if (!inc || reduced()) return Promise.resolve();
+    const from = inc.position.clone();
+    if (kind === 'add' && inc.userData.bottle && stack) return squirt(F, inc, stack, opts && opts.onSquirt);
+    if (kind === 'add') {
+      const to = stack.position.clone(); to.y += stack.userData.h;
+      return tween(360, t => { inc.position.lerpVectors(from, to, ease(t)); inc.position.y += Math.sin(t * Math.PI) * 0.35; });
+    }
+    if (kind === 'swap') return tween(360, t => { inc.position.set(from.x + t * 2.5, from.y + Math.sin(t * Math.PI) * 0.6, from.z - t); inc.rotation.z = t * 6; });
+    return tween(300, t => { inc.position.set(from.x + t * 2.2, from.y, from.z); });
+  }
+
+  /** A sauce's Add: the bottle comes off the line, turns over above the burger and squeezes a line of sauce
+   *  across it (the same bead the burger keeps afterwards, drawn a bit further each frame), then turns back
+   *  and goes on down the line. About a second and a half; skipped with Motion Reduced. */
+  function squirt(F, inc, stack, onSquirt) {
+    const B = inc.userData.bottle;
+    const bead = food(Object.assign({}, inc.userData.part, { n: stack.children.length }), { growing: true });
+    bead.g.position.y = stack.userData.h;
+    stack.add(bead.g);
+    const S = bead.g.userData.sauce;
+    growSauce(S, 0);
+    F.updateMatrixWorld(true);
+    const lean = Math.PI - 0.38;                                      // upside down, leaning: held from the right
+    const tip = new THREE.Vector3(0, B.tip, 0).applyEuler(new THREE.Euler(0, 0, lean));
+    const jet = tip.clone().normalize(), H = 0.24;                    // the sauce leaves along the nozzle, H to the food
+    const landing = u => F.worldToLocal(S.bead.localToWorld(SAUCE_PATH.getPointAt(Math.max(0, Math.min(1, u)))));
+    const hold = u => landing(u).sub(jet.clone().multiplyScalar(H)).sub(tip);   // where the bottle's base is
+    const stream = new THREE.Mesh(STREAM_GEO, toon(B.colour));
+    stream.visible = false;
+    F.add(stream);
+    const from = inc.position.clone(), start = hold(0);
+    return tween(340, t => {                                          // off the line, up and over
+      const e = ease(t);
+      inc.position.lerpVectors(from, start, e);
+      inc.position.y += Math.sin(t * Math.PI) * 0.25;
+      inc.rotation.z = lean * e;
+    }).then(() => {
+      if (onSquirt) onSquirt();
+      stream.visible = true;
+      return tween(950, t => {                                        // the squeeze: along the path at a steady pace
+        growSauce(S, t);
+        inc.position.copy(hold(t));
+        const sq = 0.5 + 0.5 * Math.sin(t * Math.PI * 7);
+        inc.scale.set(1 - 0.07 * sq, 1, 1 + 0.05 * sq);
+        const len = H * Math.min(1, t * 10), end = landing(t);       // the first squirt shoots down to the food
+        stream.position.copy(end).sub(jet.clone().multiplyScalar(len / 2));
+        stream.quaternion.setFromUnitVectors(UP, jet);
+        stream.scale.set(1, Math.max(0.001, len), 1);
+      });
+    }).then(() => {
+      growSauce(S, 1);
+      F.remove(stream);
+      inc.scale.set(1, 1, 1);
+      const p0 = inc.position.clone();
+      return tween(320, t => {                                        // turns back over and goes on down the line
+        const e = ease(t);
+        inc.rotation.z = lean * (1 - e);
+        inc.position.set(p0.x + e * 2.6, p0.y + Math.sin(t * Math.PI) * 0.18, p0.z);
+      });
+    });
+  }
+
+  /** The counter: the order, on plates, in front of the customer. */
+  function showCounter(made) {
+    if (!scene) return;
+    const F = groups.counter.userData.food;
+    clear(F);
+    (made || []).forEach((m, i) => {
+      const spot = groups.counter.userData.plates[i % 3];
+      const plate = food({ ing: 'plate' });
+      plate.g.position.copy(spot); F.add(plate.g);
+      const st = stackOf(m.parts.length ? m.parts : [{ ing: m.ing, done: m.done }]);
+      st.position.copy(spot); st.position.y += plate.h;
+      st.scale.setScalar(0.9);
+      F.add(st);
+    });
+  }
+  /** Serve: the plates slide across to the customer. */
+  function serveOut() {
+    if (!scene) return Promise.resolve();
+    const F = groups.counter.userData.food;
+    if (reduced()) return Promise.resolve();
+    const start = F.children.map(c => c.position.clone());
+    return tween(520, t => F.children.forEach((c, i) => { c.position.z = start[i].z - ease(t) * 0.9; c.position.x = start[i].x - ease(t) * 0.4; }));
+  }
+
+  /* ── camera, tweens and the frame loop ──────────────────────────────────── */
+  function goTo(set) {
+    at = set;
+    // Without a renderer (WebGL would not start) the game still plays: the 3D food is just absent.
+    if (!camera || !SETS[set]) return;
+    const c = SETS[set].cam, x = SETS[set].x;
+    camera.position.set(x + c.pos[0], c.pos[1], c.pos[2]);
+    camera.fov = c.fov;
+    camera.updateProjectionMatrix();
+    camera.lookAt(x + c.at[0], c.at[1], c.at[2]);
+  }
+  const ease = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+  function tween(ms, fn) {
+    return new Promise(resolve => { tweens.push({ t0: performance.now(), ms: Math.max(1, ms), fn, resolve }); });
+  }
+  const wait = ms => new Promise(r => setTimeout(r, Math.max(0, ms)));
+
+  function frame(now) {
+    if (!running) return;
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.1, last ? (now - last) / 1000 : 0);
+    last = now;
+    if (hubGraphics) hubGraphics.frame(now);
+    for (let i = tweens.length - 1; i >= 0; i--) {
+      const tw = tweens[i], t = Math.min(1, (now - tw.t0) / tw.ms);
+      tw.fn(t);
+      if (t >= 1) { tweens.splice(i, 1); tw.resolve(); }
+    }
+    for (let i = spinners.length - 1; i >= 0; i--) {
+      const s = spinners[i];
+      if (!s.o.parent || (s.until && now > s.until)) { if (s.until && s.o.parent) s.o.parent.remove(s.o); spinners.splice(i, 1); continue; }
+      s.phase += dt;
+      if (s.kind === 'rise') { const k = (s.phase % 2) / 2; s.o.position.set(s.base.x + Math.sin(s.phase * 3) * 0.03, s.base.y + k * 0.35, s.base.z); s.o.material.opacity = 1 - k; }
+      else if (s.kind === 'orbit' && !reduced()) { s.o.position.set(Math.cos(s.phase * 2.2) * 0.22, 0.2 + Math.sin(s.phase * 5) * 0.04, Math.sin(s.phase * 2.2) * 0.16); s.o.rotation.y = -s.phase * 2.2; }
+    }
+    renderer.render(scene, camera);
+  }
+
+  function resize() {
+    if (!renderer) return;
+    const w = window.innerWidth, h = window.innerHeight;
+    const ratio = hubGraphics ? hubGraphics.pixelRatio(Math.min(window.devicePixelRatio || 1, 2), w, h) : Math.min(window.devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(ratio);
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+
+  async function init() {
+    if (hubGraphics) await hubGraphics.ready;
+    wrap = document.getElementById('canvasWrap');
+    const opts = { antialias: true, alpha: true, powerPreference: 'high-performance' };
+    try { renderer = new THREE.WebGLRenderer(hubGraphics ? hubGraphics.rendererOptions(opts) : opts); }
+    catch (e) { renderer = null; console.warn("Ben's Burger Bar: WebGL would not start, so the food is not drawn", e); return; }
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.setClearColor(0x000000, 0);
+    wrap.appendChild(renderer.domElement);
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(40, 1, 0.1, 60);
+    scene.add(new THREE.HemisphereLight(0xfff4e6, 0x6b4c3a, 1.35));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(1.5, 5, 3.5); scene.add(sun);
+    buildSets();
+    goTo('counter');
+    resize();
+    if (hubGraphics) hubGraphics.subscribe(resize);
+    window.addEventListener('resize', resize);
+    running = true;
+    requestAnimationFrame(frame);
+  }
+
+  /** The colour of an ingredient at a stage index (the dial plates show it beside the word and the marks). */
+  function colourOf(ing, k) {
+    const shape = lookOf(ing).shape;
+    if (shape === 'patty') return PATTY[Math.max(0, Math.min(k, PATTY.length - 1))];
+    if (shape === 'fries' || shape === 'onionRings') return FRIED[Math.max(0, Math.min(k, FRIED.length - 1))];
+    return lookOf(ing).colour || 0x999999;
+  }
+
+  BB.world = { init, goTo, showGrill, dropOnGrill, cookGrill, grillStage, showBoard, lineOutcome, showCounter, serveOut, colourOf, get at() { return at; },
+    /** For the Node renderer: the scene and camera as they are. */ __scene: () => ({ scene, camera }) };
+})();

@@ -1,0 +1,78 @@
+/** The script: picking lines without repeats, filling blanks, recordings that match their
+ *  words, and the full list of clips the cast needs. */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const { diner: pack, load, SC, W } = require('./bot.cjs');
+const script = load('packs/diner/script.js');
+
+const customers = pack.regulars.filter(c => c.art).map(c => c.id);
+const ADDS = [...new Set(Object.values(pack.stations).flatMap(s => s.steps.filter(x => x.kind === 'add').map(x => x.ing)))];
+
+test('every line is well formed, with unique ids per speaker', () => {
+  const seen = new Set();
+  for (const l of script.lines) {
+    assert.ok(l.id && l.who && l.moment && l.text, JSON.stringify(l));
+    const k = l.who + '/' + l.id;
+    assert.ok(!seen.has(k), 'twice: ' + k);
+    seen.add(k);
+    const blanks = (l.text.match(/\{(\w+)\}/g) || []).map(b => b.slice(1, -1));
+    if (blanks.length) assert.ok(l.each, k + ' has blanks but no each');
+    blanks.forEach(b => assert.ok(['ing', 'ings', 'want', 'name'].includes(b), k + ' unknown blank ' + b));
+    assert.ok(['customer', pack.manager.id, ...pack.regulars.map(c => c.id)].includes(l.who), k + ' unknown speaker');
+  }
+});
+
+test('the moments the game asks for all have lines', () => {
+  const need = ['shift.start', 'shift.end', 'greet', 'react.3', 'react.2', 'react.1', 'react.gross', 'complain.extra', 'complain.unasked',
+    'complain.missing', 'complain.tooMany', 'complain.tooFew', 'complain.done', 'complain.pick', 'complain.more',
+    'after.3', 'after.1', 'after.gross', 'nearly',
+    'tutorial.intro', 'tutorial.ticket', 'tutorial.grill', 'tutorial.cook', 'tutorial.board', 'tutorial.gross', 'tutorial.review', 'tutorial.serve',
+    'tutorial.warn.extra', 'tutorial.warn.unasked', 'tutorial.warn.missing', 'tutorial.warn.tooMany', 'tutorial.warn.tooFew', 'tutorial.warn.done',
+    'tutorial.warn.gross', 'tutorial.warn.grossSkip', 'tutorial.warn.pick']
+    .concat(pack.gross.map(g => 'gross.' + g.id)).concat(pack.gross.map(g => 'complain.gross.' + g.id));
+  for (const m of need) {
+    const speakers = m.startsWith('react') || m.startsWith('complain') || m === 'greet' ? customers : [pack.manager.id];
+    for (const sp of speakers) assert.ok(SC.candidates(script, sp, m, sp === pack.manager.id ? null : 'customer').length, sp + ' has nothing for ' + m);
+  }
+});
+
+test('lines are picked without repeats until a moment runs out, own lines first', () => {
+  const used = new Set();
+  let r = 0;
+  const rnd = () => ((r = (r * 9301 + 49297) % 233280) / 233280);
+  const got = [];
+  for (let k = 0; k < 6; k++) got.push(SC.pick(pack, script, 'marge', 'greet', {}, used, rnd, 'customer').line.id);
+  assert.deepStrictEqual([...new Set(got.slice(0, 3))].sort(), ['greet.1', 'greet.2', 'greet.3'], 'all three before a repeat');
+  const one = SC.pick(pack, script, 'vernon', 'complain.extra', { ing: 'pickles' }, new Set(), () => 0, 'customer');
+  assert.strictEqual(one.text, 'There are pickles on this. I said no pickles. I will be writing about this.');
+  assert.strictEqual(one.clip, 'vernon/extra.1.pickles');
+  const shared = SC.pick(pack, script, 'gus', 'complain.done', { want: 'mediumWell' }, new Set(), () => 0, 'customer');
+  assert.strictEqual(shared.text, 'I asked for medium well.');
+  assert.strictEqual(shared.clip, 'gus/customer.done.1.mediumWell', 'a shared line is filed under its kind');
+});
+
+test('a recording only plays while its words still match', () => {
+  const text = 'Hi, hon.';
+  const manifest = { 'marge/greet.1': { file: 'marge/greet.1.mp3', hash: SC.hash(text) } };
+  assert.strictEqual(SC.recording(manifest, 'marge/greet.1', text), 'marge/greet.1.mp3');
+  assert.strictEqual(SC.recording(manifest, 'marge/greet.1', 'Hi, hon!'), null);
+  assert.strictEqual(SC.recording(manifest, 'marge/greet.2', text), null);
+  assert.notStrictEqual(SC.hash('a'), SC.hash('b'));
+  assert.strictEqual(SC.hash('Hi, hon.'), SC.hash('Hi, hon.'));
+});
+
+test('the full clip list: every speaker, every value of a changing blank', () => {
+
+  const clips = SC.everyClip(pack, script, { customers });
+  const ids = new Set(clips.map(c => c.clip));
+  assert.ok(ids.has('vernon/extra.1.cheese') && ids.has('marge/missing.1.bacon'));
+  assert.ok(ids.has('mitch/hair.1.tomato') && ids.has('mitch/nearly.1.mediumWell'));
+  assert.ok(ids.has('gus/customer.done.1.rare'), 'Gus has no doneness complaints of his own, so he says the shared ones');
+  assert.ok(ids.has('vernon/customer.done.1.rare') && ids.has('vernon/done.1.rare'), 'one own line plus the shared ones, never colliding');
+  assert.ok(!ids.has('mitch/hair.1.patty') && !ids.has('mitch/customer.extra.1.patty') && ids.has('mitch/fly.1.bacon'), 'blank values come from the pack');
+  assert.ok(!ids.has('vernon/done.1.rare') || clips.find(c => c.clip === 'vernon/done.1.rare').text.includes('across the room'));
+  assert.ok(!clips.some(c => /\{|\}/.test(c.text)), 'every blank filled');
+  assert.strictEqual(clips.find(c => c.clip === 'bev/extra.1.onion').text, 'I said NO onions! This burger is running laps!');
+  console.log('clips to record:', clips.length, '(+ order parts:', W.allOrderParts(pack).length, 'per customer)');
+});

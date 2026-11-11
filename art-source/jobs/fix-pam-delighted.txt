@@ -1,0 +1,12 @@
+Use case: character pose set for a 2D game
+Asset type: full-body character poses on plain white, one image per pose
+Attached image 1 is the APPROVED model of this character in the neutral pose. Copy the character EXACTLY: the same
+face, hair, body shape and proportions, clothes, accessories, colours, outline weight and shading style. Change ONLY the
+pose and the facial expression. Each pose must read from its silhouette alone.
+Style: original 2D cartoon art for a comedy diner game, TV-cartoon look. Thick, clean, even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated proportions (big head, big hands, big expressive eyes and mouth); a strong, readable silhouette. Funny for adults: dry, deadpan comedy, never cute, never babyish. It is an ORIGINAL design and must not resemble any existing cartoon character, show or brand.
+Character: PAM, a frazzled mom running her kid's birthday party and ordering for twelve. About 40, wavy auburn hair escaping a ponytail, a crooked paper party crown, confetti stuck to her green cardigan, a bunch of balloons tied to one wrist, a tote bag overflowing with party bags and wrapping paper, a phone in her other hand. Cheerful, exhausted, talks in lists.
+Make 1 separate images:
+- New picture 1: DELIGHTED: overjoyed, both arms up in celebration but the balloon bunch held out to the SIDE at shoulder height (not overhead), eyes squeezed shut with joy, mouth wide open, one foot kicked up. Every balloon inside the frame. Draw the character at EXACTLY the same size as in the attached neutral model: the same head size and height, the planted foot on the same floor line near the bottom of the picture. Save as art-source/cast/pam/delighted.png (1024 x 1536).
+Framing: ONE character, full body from the top of the head to the shoes, standing, facing the viewer and turned very slightly toward the viewer's right. The figure fills about 88% of the image height, centred, with a clear margin all round; nothing is cropped (hands, hat and feet all inside the frame). Plain pure white background, no floor, no cast shadow, no border, no text other than what the character description asks for, no other objects except what the character holds.
+Also save the prompt as art-source/cast/pam/delighted-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the paths of the generated files.

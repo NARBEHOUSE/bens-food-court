@@ -1,0 +1,11 @@
+# Inferno — eating pose
+
+Use case: identity-preserve.
+Asset type: one full-body character pose for a 2D comedy diner game, 1024 x 1536 portrait.
+Image 1 is the APPROVED neutral model of INFERNO. Copy the character EXACTLY: same face, flame hair, stocky body shape and proportions, clothes, accessories, colours, outline weight and shading style. Change ONLY pose and facial expression.
+Original 2D TV-cartoon art. Thick clean even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; big head and hands; strong readable silhouette. Dry adult comedy, never cute or babyish. No resemblance to existing cartoon characters, shows or brands.
+INFERNO: about 40, stocky, permanently red face, flame-shaped tuft, brow sweat, red-tinted black-framed sunglasses, brown moustache and pointed beard. Black t-shirt with big red/yellow flame print, no words; khaki cargo shorts, belt and leather holster holding hot sauce bottle; black studded wristbands, white red-striped socks, black cream-toed sneakers. Wisps of smoke rise from ears. Preserve all these worn details exactly.
+EATING pose: sitting upright on an INVISIBLE seat, facing viewer turned very slightly toward viewer's right as in reference. One hand raises an EMPTY silver fork with a dark outline to his OPEN mouth, mid-bite. Cheeks slightly full, happy enjoyment, half-closed eyes behind his retained red sunglasses. Other forearm rests horizontally flat across front of body at waist height as though on invisible table edge.
+NO food anywhere: empty fork, no food in hands or visible mouth. NO plate, table, chair, cup or drink. Worn hot sauce bottle stays in belt holster, never in hand. No objects except the empty fork and existing worn accessories.
+Framing: EXACT same 1024 x 1536 canvas, head size and head height as reference; flame tip near y=85, head/neck bottom about y=550. Body centered same way. Hips bending at invisible seat about 56% down canvas. Thighs project toward viewer from seated hips, knees bent and lower legs hang down, shoes near bottom around y=1445. All anatomy fully visible, nothing cropped. Maintain neutral model's overall scale with upright torso, convincingly seated legs.
+Pure white #FFFFFF background, no floor, no cast shadow, border, text or additional objects.

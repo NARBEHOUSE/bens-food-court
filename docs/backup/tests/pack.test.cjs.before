@@ -1,0 +1,94 @@
+/** The packs check out, the rules know nothing about burgers, every screen fits the
+ *  five-choice limit, and every recipe can be made for 3 stars in both cooking modes. */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const fs = require('fs');
+const path = require('path');
+const { G, diner, pizza, L, S, schema, right, play } = require('./bot.cjs');
+
+test('the diner and the test pizzeria pass the schema', () => {
+  assert.deepStrictEqual(schema.validate(diner), []);
+  assert.deepStrictEqual(schema.validate(pizza), []);
+});
+
+test('the schema catches a broken pack', () => {
+  const broken = JSON.parse(JSON.stringify(diner));
+  broken.stations.board.steps.push({ kind: 'add', ing: 'anchovy' });
+  broken.recipes.hamburger.stations = ['grill'];
+  broken.stageSets.patty.choose.push('charred');
+  broken.gross.push({ id: 'x', on: ['plate'], say: 'x' });
+  const errs = schema.validate(broken).join('\n');
+  assert.match(errs, /unknown ingredient anchovy/);
+  assert.match(errs, /lettuce is not made by grill/);
+  assert.match(errs, /more than 4 doneness choices/);
+  assert.match(errs, /plate is never offered on an Add step/);
+});
+
+test('no rules module names an ingredient, station or recipe', () => {
+  const ids = [...Object.keys(diner.ingredients), ...Object.keys(diner.stations), ...Object.keys(diner.recipes)];
+  const dir = path.join(G, 'js', 'core');
+  for (const f of fs.readdirSync(dir)) {
+    const src = fs.readFileSync(path.join(dir, f), 'utf8');
+    for (const id of ids) assert.ok(!src.includes("'" + id + "'") && !src.includes('"' + id + '"'), f + ' names ' + id);
+  }
+});
+
+/** Every question of an order, answered the right way, in one cooking mode. */
+function questions(pack, recipe, cooking, grossIng) {
+  const s = S.create(pack, { seed: 3, settings: { cooking, shiftLength: 1 } });
+  const spec = require('./bot.cjs').O.resolve(pack, recipe, s, { change: 0 });
+  s.order = L.create(pack, { customer: { id: 'x', name: 'X' }, items: [spec] },
+    { settings: s.settings, gross: grossIng ? { item: 0, ing: grossIng, event: pack.gross.find(g => g.on.includes(grossIng)).id } : null });
+  const seen = [];
+  let guard = 0;
+  while (s.order.phase !== 'served' && guard++ < 500) {
+    const q = S.question(pack, s);
+    seen.push(q);
+    const id = right(pack, s.order, q);
+    if (id === null) { S.tick(pack, s, 1); continue; }
+    const r = S.answer(pack, s, id);
+    assert.ok(!r.refused && !r.warn, recipe + ': ' + id + ' was not taken');
+  }
+  return { seen, s };
+}
+
+for (const pack of [diner, pizza]) {
+  test(pack.id + ': every screen has at most four answers (five choices with Ticket)', () => {
+    for (const recipe of Object.keys(pack.recipes)) {
+      for (const cooking of ['simple', 'timed']) {
+        for (const q of questions(pack, recipe, cooking).seen) {
+          assert.ok(q.options.length <= L.MAX_ANSWERS, recipe + ' ' + q.kind + ' offers ' + q.options.length);
+          for (const o of q.options) if (o.row) assert.ok(o.row.length <= L.MAX_ANSWERS + 1, 'a row is too long');
+        }
+      }
+    }
+  });
+
+  test(pack.id + ': every recipe can be made for 3 stars, Simple and Timed', () => {
+    for (const recipe of Object.keys(pack.recipes)) {
+      for (const cooking of ['simple', 'timed']) {
+        const { s } = questions(pack, recipe, cooking);
+        const r = S.serve(pack, s);
+        assert.strictEqual(r.stars, 3, recipe + ' (' + cooking + '): ' + JSON.stringify(r.mistakes));
+      }
+    }
+  });
+}
+
+test('a whole shift plays on both packs with no engine change', () => {
+  for (const pack of [diner, pizza]) {
+    const s = S.create(pack, { seed: 11, settings: { shiftLength: 4 } });
+    while (!s.done) play(pack, s, (q, o) => right(pack, o, q));
+    assert.strictEqual(S.results(s).threeStars, 4, pack.id);
+  }
+});
+
+test('press counts per single item (Simple), as DESIGN.md "How many presses" says', () => {
+  const count = recipe => questions(diner, recipe, 'simple').seen.length;
+  // Grill: Add, Skip (or the last Add), cook; Board: nine; then Serve.
+  assert.strictEqual(count('hamburger'), 13);
+  assert.strictEqual(count('cheeseburger'), 13);
+  assert.strictEqual(count('doubleCheeseburger'), 14);
+  assert.strictEqual(count('tower'), 14);
+});

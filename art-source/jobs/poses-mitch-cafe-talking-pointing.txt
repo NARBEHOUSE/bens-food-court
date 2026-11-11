@@ -1,0 +1,14 @@
+Use case: character pose set for a 2D game (a costume variant)
+Asset type: full-body character poses on plain white, one image per pose
+Attached image 1 is MITCH in this restaurant's uniform (approved). Attached images 2 and 3 are the
+APPROVED Mitch in the poses to copy. For each new picture: the pose, hands, expression and framing from its pose image;
+the face, hair, body, the uniform, headset and badge from image 1. Nothing else changes. If a uniform item held in one
+hand (a cup) does not fit the pose, leave it out.
+Style: original 2D cartoon art for a comedy diner game, TV-cartoon look. Thick, clean, even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated proportions (big head, big hands, big expressive eyes and mouth); a strong, readable silhouette. Funny for adults: dry, deadpan comedy, never cute, never babyish. It is an ORIGINAL design and must not resemble any existing cartoon character, show or brand.
+Character: MITCH, the diner's assistant manager. About 30, lanky and gangly with long arms, eager and overconfident, a little sweaty. Messy swoop of brown hair, big nose, wide grin. Short-sleeved white dress shirt with a loose red tie and a pocket protector full of pens, khaki trousers, scuffed brown shoes. A phone headset with a boom microphone that he does not need. A name badge on his chest reading MANAGER, with a strip of masking tape across it on which ASST. is handwritten. AT THIS RESTAURANT he wears a brown barista apron over his shirt and tie, a knitted beanie, and a takeaway coffee cup in one hand with his name written on it spelled wrong: MICH.
+Make 2 separate images:
+- New picture 1: copy the POSE and EXPRESSION of attached image 2 (TALKING) exactly, dressed as in image 1. Save as art-source/cast/mitch-cafe/talking.png (1024 x 1536).
+- New picture 2: copy the POSE and EXPRESSION of attached image 3 (POINTING) exactly, dressed as in image 1. Save as art-source/cast/mitch-cafe/pointing.png (1024 x 1536).
+Framing: ONE character, full body from the top of the head to the shoes, standing, facing the viewer and turned very slightly toward the viewer's right. The figure fills about 88% of the image height, centred, with a clear margin all round; nothing is cropped (hands, hat and feet all inside the frame). Plain pure white background, no floor, no cast shadow, no border, no text other than what the character description asks for, no other objects except what the character holds.
+Also save the prompt as art-source/cast/mitch-cafe/talking-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the paths of the generated files.

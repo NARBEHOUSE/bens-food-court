@@ -1,0 +1,9 @@
+# Reginald — Laughing
+
+Generated using the built-in imagegen tool.
+
+Use case: identity-preserve. Asset: one full-body character pose for a 2D comedy diner game, 1024 x 1536 PNG.
+Image 1 is the APPROVED neutral model of REGINALD. Copy his character design EXACTLY: same face, swooping silver pompadour, curled silver moustache, pointed goatee, dramatic black eyebrows, age about 50, round grand body and proportions; same plum velvet blazer, purple waistcoat, cream shirt and pocket square, gold buttons, dark trousers, long burgundy/gold/cream striped silk scarf over his shoulder, silver tasting spoon on a chain, two-tone black and cream shoes, fancy notebook and fountain pen. Preserve colours, outline weight and shading style. Change ONLY pose and facial expression.
+Pose: LAUGHING. Standing on his feet but doubled over forward laughing, one hand pressing his belly and the other slapping his bent knee. Eyes squeezed tightly shut, tears of laughter, mouth open in a huge theatrical laugh. Pose must read instantly from silhouette; elbows separated and visible, torso strongly bent. Keep notebook tucked securely under his belly-side upper arm and fountain pen tucked into blazer pocket so both hands can perform the specified pose. Maintain all accessories.
+Style: original 2D TV-cartoon art, thick clean even black outlines, flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes and slightly exaggerated big head and hands. Adult dry comedy, never cute or babyish. Match approved reference closely, no resemblance to existing cartoon brands.
+Composition: ONE character, complete full body from top of hair to soles, facing viewer turned very slightly toward viewer's right. Figure occupies about 88 percent of image height, centered with clear white margins all around. Nothing cropped, all hair, scarf, hands, feet inside frame. Pure white background, no floor, no cast shadow, no border, no text, no additional objects.

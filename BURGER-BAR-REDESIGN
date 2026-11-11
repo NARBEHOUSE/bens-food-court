@@ -1,0 +1,55 @@
+Ben's Burger Bar: Simplified Redesign
+Notes from the Nov 7 design call with Ari, Bryan and Tabby. This replaces the free-roam station scan from M1 with a guided, phase-based flow. The hub rulebook, ACCESSIBILITY.md, still outranks everything here.
+Why we're changing it
+The M1 greybox works, but it asks too much of Ben. The board alone has around 14 stops, a cheeseburger takes about 29 selects, and a two-burger order measured 54 selects and 150 Space moves. Ben shouldn't have to go looking for each ingredient. Instead, the ingredients should come to him.
+The core idea: an assembly line
+The game walks the player through each order one step at a time. Each step shows one thing and asks one question, and the player answers with a single press.
+1. A customer walks up and says their order out loud (for example, "Bacon cheeseburger, medium, no onions").
+2. Grill phase. The game offers grill items one at a time: add a burger, add a second burger, and so on. Then it asks how to cook it.
+3. Board phase. Each ingredient comes down the line one by one, and the player picks Add or Skip for each one.
+4. Review. Before serving, the player can go back and fix anything.
+5. Serve. The customer reacts, the order is rated, and the next customer comes up.
+The player can still make mistakes. If the ticket says no cheese and Ben adds cheese, the customer will be annoyed. The point is that he has to remember and follow the order, but he never has to navigate to find anything.
+Tutorial mode
+An optional tutorial at the start walks the player through one full, typical order, from the customer's order through the grill, the board, the review and the serve. Players can choose to play it or skip it.
+During the tutorial, the game warns the player before a mistake lands, for example: "Hold on, they said no cheese. That's not the right one." Outside the tutorial there are no warnings like this, and mistakes show up in the customer's review.
+Choice limits
+Every screen has the dead zone (-1) and Pause, plus no more than about five choices, even on the most complex step. The phases are there to keep it that way.
+Cooking
+Flipping is no longer a choice. It happens automatically, as part of the animation.
+Simple mode (default). The player picks a doneness (four or five options, such as Rare, Medium, Medium Well, Well Done). The patty cooks to exactly that, with a short animation, an automatic flip and a sizzle sound. It always comes out as chosen.
+Timed mode (challenge). For players who can handle the timing. The patty cooks through the stages while the player watches, and they press to take it off at the right moment. This is the one place where you can mess up the cooking. Timing should be forgiving.
+Rating
+The rating is based on accuracy, never on time, and how to earn three stars has to be obvious.
+• 3 stars: everything matches the ticket.
+• 2 stars: one or two mistakes.
+• 1 star: more than that. There is no zero and no fail.
+The customer's review says exactly what was wrong, in words ("I said no cheese!"), so the player knows what to fix next time.
+Random gross-out events
+Now and then, there's a small chance something is wrong with an ingredient: a hair in the food, a fly, overcooked food, moldy cheese or bad lettuce. That's one or two per shift at most.
+The player has to be able to catch it, so it is flagged two ways:
+• Visually: for example, stink lines coming off the cheese, or the cheese turning green.
+• Mitch's voiceover: the assistant manager chimes in with a hint, like "Whoa, why is that cheese green? You nasty. Change that out."
+Catching it and swapping it out keeps the order clean. Missing it gets a funny, disgusted reaction from the customer.
+Look and feel: 2.5D
+• 3D (Three.js): the food, the ingredients and the cooking. Watching the food cook is the fun part.
+• 2D characters: cartoony and cel-shaded, in the spirit of SpongeBob and Bob's Burgers, but all original designs. No full animations. Each character gets about 10 static expression images (happy, neutral, disgusted, shocked and so on). Which expression goes with which moment is still to be worked out.
+• Final menus may be 2D.
+• Characters don't animate. Each expression image is a whole pose, body and arms included (for example, hands thrown up when they're angry), and it pops in when the emotion changes. A quick bounce or squash as it swaps would make the change feel alive without any animation. Each pose has its own clear silhouette, so the reaction reads from the outline alone. The camera keeps the character big on screen, large enough for a player with low vision to see who they are and how they're reacting.
+Backgrounds
+Each station has a static 2D cartoon backdrop that fits where it is in the restaurant. At the counter, there's a line of waiting customers slightly out of focus behind the current customer, and behind them the doors, artwork, and the tables and chairs where people sit. The kitchen stations get backdrops that match them. Every backdrop hides a few funny little details that are a treat for anyone who notices them.
+No floating UI
+Wherever possible, the interface is a real object in the diner. For example, the ticket is a spinning diner ticket wheel instead of a floating menu, and ringing up the customer happens at a cash register. Use whatever real object makes sense for each action. Labels stay large and the highlight stays obvious, so it's always clear what's selected.
+Voices
+• Pull down the new Voice Studio and replace the version that's on the system now.
+• Build out the cast and give each character its own voice in Voice Studio.
+• The voices need to be hilarious. Customers are written for adults, the jokes land on the customers rather than the player, and there's no baby talk.
+Built into the engine, not the burger
+The game stays modular, so the diner could become a pizza place or anything else just by swapping the content pack (the repo already has a test pizza pack). Everything in this doc belongs in the shared engine, not hard-coded for burgers: the assembly-line phases, the five-choice limit, Add or Skip, the end-of-order review, both cooking modes with the automatic flip, accuracy scoring, the tutorial warnings, the random gross-out events with their visual cues and Mitch's hints, the expression images, and the voices. A new pack only supplies its ingredients, recipes, stages, characters and lines, and it gets all of these features for free.
+Script file (later)
+Every line in the game (customer orders, reactions, complaints, Mitch's hints, gross-out jokes) lives in one editable script list per pack, with lots of variety for each moment so it doesn't get repetitive. We can tweak the script at any time and re-record just the changed lines in Voice Studio when needed. Until a line is recorded, it falls back to text to speech.
+Still open
+• Whether the pose swap gets a little bounce, or just cuts.
+• Mapping the roughly 10 expressions to game moments.
+• Whether the final menus are 2D or 3D.
+• The exact cast list and each character's personality.

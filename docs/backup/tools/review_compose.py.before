@@ -1,0 +1,351 @@
+"""Ben's Burger Bar - lay the 2D stage over each review frame, the way css/bb.css does (dev-only).
+
+  python tools/review_compose.py <frames dir>     (frames from: node tools/review-frames.cjs <frames dir>)
+
+Writes <n>-<moment>.png per frame and sheet.png. The geometry below mirrors css/bb.css at 1280 x 720 (1vw = 12.8 px,
+1vh = 7.2 px); keep the two in step when the layout changes. Text uses Arial; it is a review picture, not the game.
+"""
+import json
+import sys
+from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFont
+
+GAME = Path(__file__).resolve().parent.parent
+ART = GAME / 'packs' / 'diner' / 'art'
+W, H = 1280, 720
+VW, VH = W / 100, H / 100
+YELLOW = (255, 212, 0)
+
+
+def font(size, bold=True):
+    for name in (('ariblk.ttf', 'arialbd.ttf') if bold else ('arial.ttf',)):
+        try:
+            return ImageFont.truetype(name, size)
+        except OSError:
+            pass
+    return ImageFont.load_default()
+
+
+def cover(img, w, h):
+    s = max(w / img.width, h / img.height)
+    img = img.resize((round(img.width * s), round(img.height * s)), Image.LANCZOS)
+    x, y = (img.width - w) // 2, (img.height - h) // 2
+    return img.crop((x, y, x + w, y + h))
+
+
+def by_height(path, h):
+    im = Image.open(path).convert('RGBA')
+    return im.resize((round(im.width * h / im.height), round(h)), Image.LANCZOS)
+
+
+def by_width(path, w):
+    im = Image.open(path).convert('RGBA')
+    return im.resize((round(w), round(im.height * w / im.width)), Image.LANCZOS)
+
+
+def key_magenta(im):
+    """The 3D frame, with the magenta 'sky' made transparent (soft at anti-aliased edges)."""
+    im = im.convert('RGB')
+    px = im.load()
+    out = Image.new('RGBA', im.size)
+    po = out.load()
+    for y in range(im.height):
+        for x in range(im.width):
+            r, g, b = px[x, y]
+            d = (abs(r - 255) + g + abs(b - 255)) / 3
+            a = max(0, min(255, int(d * 4)))
+            po[x, y] = (r, g, b, a)
+    return out
+
+
+def label(d, xy, text, size, fill=(255, 255, 255), bg=(27, 18, 14), anchor='mm', pad=6):
+    f = font(size)
+    box = d.textbbox(xy, text, font=f, anchor=anchor)
+    d.rounded_rectangle((box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad), radius=8, fill=bg, outline=(255, 255, 255), width=2)
+    d.text(xy, text, font=f, fill=fill, anchor=anchor)
+
+
+def lit(d, box):
+    d.rounded_rectangle((box[0] - 8, box[1] - 8, box[2] + 8, box[3] + 8), radius=10, outline=YELLOW, width=7)
+
+
+def wrap(d, text, f, width):
+    words, lines, cur = text.split(), [], ''
+    for wd in words:
+        t = (cur + ' ' + wd).strip()
+        if d.textlength(t, font=f) > width and cur:
+            lines.append(cur); cur = wd
+        else:
+            cur = t
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def ticket_image(lines, tw, many=False):
+    """The order ticket as css/bb.css draws it: paper, a dashed top edge, the customer's name, then each item's
+    lines (its name in heavy type, the patties and how done, what goes on); numbered only when there are several."""
+    f, fh, fw = font_file('trebucbd.ttf', 18), font_file('ariblk.ttf', 17), font_file('ariblk.ttf', 16)
+    probe = ImageDraw.Draw(Image.new('RGBA', (8, 8)))
+    rows = [(lines[0], fw, False, (138, 42, 32))]
+    indent = 22 if many else 0
+    for n, item in enumerate(lines[1:], 1):
+        now = item.startswith('> ')
+        for k, part in enumerate((item[2:] if now else item).split(' | ')):
+            for j, l in enumerate(wrap(probe, part, fh if k == 0 else f, tw - 2 * 14 - indent - 6)):
+                lead = ('%d.' % n) if (many and k == 0 and j == 0) else ''
+                rows.append(((lead, l), fh if k == 0 else f, now and many, (27, 18, 14)))
+    th = round(8 + 10 + len(rows) * 23 + 12)
+    im = Image.new('RGBA', (round(tw), th), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle((0, 0, tw - 1, th - 1), radius=8, fill=(255, 250, 240), outline=(27, 18, 14), width=3)
+    for x in range(4, round(tw) - 4, 14):
+        d.line((x, 3, x + 8, 3), fill=(201, 193, 176), width=7)
+    y = 15
+    for text, fnt, hi, col in rows:
+        if hi:
+            d.rectangle((10, y - 2, tw - 10, y + 21), fill=(255, 242, 168))
+        if isinstance(text, tuple):
+            lead, l = text
+            if lead:
+                d.text((14, y), lead, font=f, fill=col)
+            d.text((14 + indent, y), l, font=fnt, fill=col)
+        else:
+            d.text((14, y), text, font=fnt, fill=col)
+        y += 23
+    return im
+
+
+def font_file(name, size):
+    try:
+        return ImageFont.truetype(name, size)
+    except OSError:
+        return font(size)
+
+
+def draw_wheel(canvas, wheel, ticket, lit, many=False):
+    """The ticket wheel from stage.js's own numbers: the rod, the ring and spokes, the clips, the order."""
+    d = ImageDraw.Draw(canvas)
+    cx, cy, R, ry, tw = wheel['cx'], wheel['cy'], wheel['R'], wheel['ry'], wheel['tw']
+    sw = max(5, R * 0.035)
+    ink, steel, dark = (27, 18, 14), (214, 220, 225), (154, 164, 173)
+
+    def arc(top, col, width, dy=0):
+        e = width / 2
+        d.arc((cx - R - e, cy - ry - e + dy, cx + R + e, cy + ry + e + dy), 180 if top else 0, 360 if top else 180, fill=col, width=max(1, round(width)))
+
+    def spokes(slots):
+        for p in slots:
+            d.line((cx, cy, p['x'], p['y']), fill=ink, width=round(sw * 0.5 + 4))
+        for p in slots:
+            d.line((cx, cy, p['x'], p['y']), fill=dark, width=round(sw * 0.5))
+
+    def slot(i, p):
+        k = max(0.02, abs(p['cz'])) * p['scale']
+        shade = p['shade'] if p['cz'] < 0.995 else 1
+        cw, ch = tw * 0.22 * k, tw * 0.12 * p['scale']
+        top = p['y'] - tw * 0.035 * p['scale']
+        clip = (p['x'] - cw / 2, top, p['x'] + cw / 2, top + ch)
+        if i == 0 and ticket and p['paper'] > 0:
+            im = ticket_image(ticket, tw, many)
+            im = im.resize((max(2, round(im.width * k)), max(2, round(im.height * p['scale']))), Image.LANCZOS)
+            if shade < 1 or p['paper'] < 1:
+                px = im.load()
+                for yy in range(im.height):
+                    for xx in range(im.width):
+                        r, g, b, a = px[xx, yy]
+                        px[xx, yy] = (round(r * shade), round(g * shade), round(b * shade), round(a * p['paper']))
+            tx, ty = round(p['x'] - im.width / 2), round(top + ch - tw * 0.04 * p['scale'])
+            canvas.alpha_composite(im, (tx, ty))
+            if lit:
+                d.rounded_rectangle((tx - 12, ty - 12, tx + im.width + 12, ty + im.height + 12), radius=10, outline=YELLOW, width=7)
+        col = tuple(round(c * shade) for c in (238, 241, 244))
+        d.rounded_rectangle(clip, radius=5, fill=col, outline=ink, width=3)
+        d.line((clip[0] + cw * 0.14, clip[3] - ch * 0.24, clip[2] - cw * 0.14, clip[3] - ch * 0.24), fill=ink, width=3)
+
+    slots = list(enumerate(wheel['slots']))
+    d.rectangle((cx - R * 0.025, -20, cx + R * 0.025, cy), fill=steel, outline=ink, width=3)
+    arc(True, ink, sw + 6)
+    arc(True, dark, sw)
+    spokes([p for _, p in slots if p['cz'] < 0])
+    d.ellipse((cx - R * 0.075, cy - R * 0.045, cx + R * 0.075, cy + R * 0.045), fill=steel, outline=ink, width=3)
+    spokes([p for _, p in slots if p['cz'] >= 0])
+    for i, p in sorted([s for s in slots if s[1]['cz'] < 0], key=lambda s: s[1]['cz']):
+        slot(i, p)
+    arc(False, ink, sw + 6)
+    arc(False, steel, sw)
+    arc(False, (255, 255, 255), sw * 0.25, -sw * 0.22)
+    for i, p in sorted([s for s in slots if s[1]['cz'] >= 0], key=lambda s: s[1]['cz']):
+        slot(i, p)
+
+
+def compose(frame3d, state):
+    canvas = Image.new('RGBA', (W, H), (233, 201, 154, 255))
+    if state.get('backdrop'):
+        canvas.alpha_composite(cover(Image.open(ART / 'backdrops' / (state['backdrop'] + '.webp')).convert('RGBA'), W, H))
+    counter = state.get('scene') == 'counter'
+    def place_char(src, x, y, h, right=None):
+        p = GAME / src
+        if not p.exists():
+            return
+        im = by_height(p, h)
+        if right is not None:
+            x = W - right - im.width
+        canvas.alpha_composite(im, (round(x), round(y)))
+    if state.get('customer') and counter:
+        place_char(state['customer'], 9 * VW, 3 * VH, 88 * VH)
+    if state.get('mitch') and counter:
+        place_char(state['mitch'], 0, 12 * VH, 78 * VH, right=-3 * VW)
+    if frame3d is not None:
+        canvas.alpha_composite(key_magenta(frame3d.resize((W, H))))
+    if state.get('mitch') and not counter:
+        place_char(state['mitch'], -4 * VW, 33 * VH, 78 * VH)                # the kitchen: from the left, below the wheel
+    lit_id = state.get('lit')
+    # The ticket wheel (the kitchen only), then the Back in 5 sign.
+    if state.get('wheel') and not counter:
+        draw_wheel(canvas, state['wheel'], state.get('ticket'), lit_id == 'ticket', state.get('ticketMany', False))
+    d = ImageDraw.Draw(canvas)
+    sign = by_width(ART / 'props' / 'back5.webp', min(12 * VW, 18 * VH))
+    sx, sy = 1.5 * VW, H - 5 * VH - sign.height
+    canvas.alpha_composite(sign, (round(sx), round(sy)))
+    label(d, (sx + sign.width / 2, sy + sign.height + 12), 'Pause', 15)
+    if lit_id == 'pause':
+        lit(d, (sx, sy, sx + sign.width, sy + sign.height + 24))
+    # The register and the bell (the counter only).
+    if counter and state['props'].get('register'):
+        reg = by_width(ART / 'props' / 'register.webp', min(25 * VW, 40 * VH))
+        rx, ry = W - 3 * VW - reg.width, H - 3 * VH - reg.height
+        canvas.alpha_composite(reg, (round(rx), round(ry)))
+        label(d, (rx + reg.width / 2, ry + reg.height - 6), 'Ring It Up', 20)
+        if lit_id == 'serve':
+            lit(d, (rx, ry, rx + reg.width, ry + reg.height))
+    if counter and state['props'].get('bell'):
+        bell = by_width(ART / 'props' / 'bell.webp', min(10 * VW, 16 * VH))
+        bx, by = W - 30 * VW - bell.width, H - 9 * VH - bell.height
+        canvas.alpha_composite(bell, (round(bx), round(by)))
+        label(d, (bx + bell.width / 2, by + bell.height + 4), 'Next Customer', 16)
+        if lit_id == 'next':
+            lit(d, (bx, by, bx + bell.width, by + bell.height + 18))
+    # The line's controls.
+    ctl = state.get('controls') or []
+    if ctl:
+        sizes = []
+        for c in ctl:
+            k = c['kind']
+            if k == 'btn':
+                sizes.append((min(12 * VW, 19 * VH),) * 2)
+            elif k == 'plate':
+                sizes.append((min(18 * VW, 27 * VH), min(12.5 * VH, 9 * VW)))
+            elif k == 'spatula':
+                sizes.append((min(16 * VW, 27 * VH),) * 2)
+            else:
+                low = 'ticketSlip' in c['cls']                     # the counter's Ticket slip is a short one
+                sizes.append((max(min(16 * VW, 26 * VH), d.textlength(c['label'], font=font(20)) + 30), min(9 * VH, 7 * VW) if low else min(13 * VH, 10 * VW)))
+        # css #controls: a column on the right, centred at 55% (higher on the counter, above the register)
+        gap = 1.6 * VH
+        colw = max(s[0] for s in sizes)
+        total = sum(s[1] for s in sizes) + gap * (len(sizes) - 1)
+        x_right = W - 2.5 * VW - 1.2 * VW
+        top = 14 * VH + 1.6 * VH if counter else 0.55 * H - total / 2
+        if not state.get('bare'):
+            d.rounded_rectangle((x_right - colw - 1.2 * VW, top - 1.6 * VH, x_right + 1.2 * VW, top + total + 1.6 * VH), radius=10,
+                                fill=(170, 179, 187), outline=(27, 18, 14), width=4)
+        y = top
+        colours = {'add': (47, 168, 79), 'skip': (139, 143, 150), 'swap': (255, 138, 28)}
+        for c, (cw, ch) in zip(ctl, sizes):
+            x = x_right - colw / 2 - cw / 2
+            box = (x, y, x + cw, y + ch)
+            k = c['kind']
+            if k == 'btn':
+                col = next((v for kk, v in colours.items() if kk in c['cls']), (136, 136, 136))
+                d.ellipse(box, fill=col, outline=(27, 18, 14), width=5)
+                d.text(((box[0] + box[2]) / 2, (box[1] + box[3]) / 2), c['label'], font=font(26), fill=(255, 255, 255), anchor='mm', stroke_width=2, stroke_fill=(0, 0, 0))
+            elif k == 'spatula':
+                sp = by_width(ART / 'props' / 'spatula.webp', cw * 0.8)
+                canvas.alpha_composite(sp, (round(x + cw * 0.1), round(y)))
+                label(d, ((box[0] + box[2]) / 2, box[3] - 18), c['label'], 20)
+            else:
+                d.rounded_rectangle(box, radius=10, fill=(242, 244, 246) if k == 'plate' else (255, 250, 240), outline=(27, 18, 14), width=4)
+                if 'ticketSlip' in c['cls']:
+                    for xx in range(round(box[0]) + 8, round(box[2]) - 8, 14):
+                        d.line((xx, box[1] + 4, xx + 8, box[1] + 4), fill=(201, 193, 176), width=7)
+                lines = wrap(d, c['label'], font(20), cw - 16)
+                for i, l in enumerate(lines):
+                    d.text(((box[0] + box[2]) / 2, (box[1] + box[3]) / 2 + (i - (len(lines) - 1) / 2) * 24 + (14 if k == 'plate' else 0)), l, font=font(20), fill=(27, 18, 14), anchor='mm')
+                if k == 'plate':
+                    marks = c['label'] and {'Rare': 1, 'Medium': 2, 'Medium Well': 3, 'Well Done': 4}.get(c['label'], 0)
+                    for m in range(marks):
+                        d.line((box[0] + cw / 2 - marks * 8 + m * 16, box[1] + 14, box[0] + cw / 2 - marks * 8 + m * 16 + 6, box[1] + 34), fill=(70, 40, 20), width=5)
+            if c.get('lit') or lit_id == c['id']:
+                lit(d, box)
+            y += ch + gap
+    # The Timed gauge.
+    if state.get('gauge'):
+        f = font(18)
+        parts = state['gauge']
+        widths = [d.textlength(p['t'], font=f) + 20 for p in parts]
+        tw = sum(widths) + 8 * (len(parts) + 1)
+        gx, gy = 0.42 * W - tw / 2, 53 * VH
+        d.rounded_rectangle((gx, gy, gx + tw, gy + 44), radius=10, fill=(27, 18, 14), outline=(255, 255, 255), width=3)
+        x = gx + 8
+        for p, wdt in zip(parts, widths):
+            if p['now']:
+                d.rounded_rectangle((x, gy + 6, x + wdt, gy + 38), radius=6, fill=(74, 45, 28), outline=YELLOW, width=3)
+            d.text((x + wdt / 2, gy + 22), p['t'], font=f, fill=(255, 255, 255) if p['now'] else (150, 140, 130), anchor='mm')
+            if p['want']:
+                d.line((x + 8, gy + 34, x + wdt - 8, gy + 34), fill=(255, 255, 255), width=3)
+            x += wdt + 8
+    # The speech bubble and the receipt.
+    b = state.get('bubble')
+    if b:
+        f, fn = font(21, bold=False), font(15)
+        lines = wrap(d, b['text'], f, 34 * VW - 30)
+        bw = min(34 * VW, max(d.textlength(l, font=f) for l in lines) + 30)
+        bh = 40 + len(lines) * 27
+        bx = 34 * VW if b['kind'] == 'customer' else (W - 22 * VW - bw if counter else 22 * VW)
+        by = (8 if b['kind'] == 'customer' else 14 if counter else 31) * VH
+        d.rounded_rectangle((bx, by, bx + bw, by + bh), radius=22, fill=(255, 255, 255), outline=(27, 18, 14), width=4)
+        d.text((bx + 15, by + 10), b['name'], font=fn, fill=(176, 48, 36))
+        for i, l in enumerate(lines):
+            d.text((bx + 15, by + 32 + i * 27), l, font=f, fill=(27, 18, 14))
+    if state.get('receipt'):
+        f = font(15, bold=False)
+        rw = min(30 * VW, 46 * VH)
+        rx, ry = W / 2 - rw / 2, 27 * VH
+        lines = wrap(d, state['receipt'].replace('★', '* '), f, rw - 24)
+        d.rectangle((rx, ry, rx + rw, ry + 24 + len(lines) * 20), fill=(255, 250, 240), outline=(27, 18, 14), width=3)
+        for i, l in enumerate(lines):
+            d.text((rx + 12, ry + 12 + i * 20), l, font=f, fill=(27, 18, 14))
+    if state.get('hud'):
+        label(d, (W - 1.5 * VW, 1.5 * VH + 12), state['hud'], 15, anchor='rm')
+    return canvas.convert('RGB')
+
+
+def main():
+    out = Path(sys.argv[1])
+    tiles = []
+    for js in sorted(out.glob('*.json')):
+        state = json.loads(js.read_text(encoding='utf-8'))
+        p3 = js.with_name(js.stem + '.3d.png')
+        frame = Image.open(p3) if p3.exists() else None
+        img = compose(frame, state)
+        dst = js.with_name(js.stem + '.png')
+        img.save(dst)
+        tiles.append((js.stem, img))
+        print('composed', dst.name)
+    if tiles:
+        cols = 2
+        tw, th = W // 2, H // 2
+        sheet = Image.new('RGB', (cols * tw, ((len(tiles) + cols - 1) // cols) * (th + 24)), (40, 40, 44))
+        d = ImageDraw.Draw(sheet)
+        for k, (name, img) in enumerate(tiles):
+            x, y = (k % cols) * tw, (k // cols) * (th + 24)
+            sheet.paste(img.resize((tw, th), Image.LANCZOS), (x, y + 24))
+            d.text((x + 6, y + 3), name, font=font(16), fill=(255, 255, 255))
+        sheet.save(out / 'sheet.png')
+        print('sheet', sheet.size)
+
+
+if __name__ == '__main__':
+    main()

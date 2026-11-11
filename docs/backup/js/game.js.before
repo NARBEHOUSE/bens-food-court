@@ -1,0 +1,548 @@
+/** Ben's Burger Bar - the shift, between the rules and the screens (DESIGN.md "What the player sees").
+ *
+ *  BB.shift (js/core/) is the whole shift as plain JSON; this file plays it out: a customer
+ *  walks up and orders, the ticket goes up on the wheel, the food comes down the line one
+ *  step at a time, the review, the serve, the customer's reaction and the receipt.
+ *  Speech never gets cut off by the next scene: every playout waits for its line to end
+ *  (BB.audio.say resolves then), and the scan is suspended while anything plays.
+ */
+(function () {
+  'use strict';
+  const pack = BBPacks.diner, script = BBScripts.diner;
+  const W = BB.words, L = BB.line, S = BB.shift, SC = BB.script;
+  const MILESTONE = 2;                      // the recipes on offer in this build (DESIGN.md "Recipes")
+  const POSE = pack.poses.customer, MPOSE = pack.poses.manager;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const reduced = () => document.body.dataset.motion === 'reduced';
+
+  let s = null;                             // the shift
+  let busy = false;                         // a playout is running
+  let screen = 'none';                      // arrive | line | review | receipt
+  let paused = false, blurred = false;
+  let used = new Set();                     // the lines said this shift (no repeats)
+  let spotted = new Set();                  // gross-outs Mitch has already pointed at
+  let joked = false;                        // one joke per customer at most
+  let lastReview = [];                      // what the customer said about the last order (Hear It Again)
+  let lastResult = null;
+  let clock = null, clockAt = 0;
+
+  const rnd = () => Math.random();          // which variant of a line: presentation only; the rules keep their own rng
+  const person = id => (pack.manager.id === id ? pack.manager : pack.regulars.find(c => c.id === id));
+  const isManager = id => id === pack.manager.id;
+  const customer = () => s && (s.order ? person(s.order.ticket.customer.id) : s.last ? person(s.last.order.ticket.customer.id) : null);
+  const managerSays = kind => {
+    if (s && s.tutorial) return true;
+    const m = BB.save.get('manager');
+    return m !== 'off' && (kind !== 'joke' || m === 'hintsJokes');
+  };
+  function settings() {
+    const a = BB.save.all();
+    return { cooking: a.cooking, speed: a.speed, orders: a.orders, shiftLength: +a.shiftLength };
+  }
+  const save = () => { if (s && !s.tutorial) { if (s.done) BB.save.shift.clear(); else BB.save.shift.save(s); } };
+
+  /* ── characters speak ───────────────────────────────────────────────────── */
+  /** A line for a moment, in a speaker's voice. */
+  function lineFor(who, moment, vars) {
+    return SC.pick(pack, script, who, moment, vars || {}, used, rnd, isManager(who) ? null : 'customer');
+  }
+  /** Show and say it: the pose, the bubble, the voice. Resolves once it has been said. */
+  async function speakAs(who, text, clip, pose, parts) {
+    const P = person(who);
+    if (!P || !text) return;
+    if (isManager(who)) BB.stage.mitch(pose || MPOSE.talk);
+    else if (pose) BB.stage.customer(P.art, pose);
+    BB.stage.bubble(isManager(who) ? 'mitch' : 'customer', P.name, text);
+    await BB.audio.say({ who, text, clip, parts });
+    BB.stage.bubble(null);
+  }
+  async function talk(who, moment, vars, pose) {
+    const l = lineFor(who, moment, vars);
+    if (l) { await speakAs(who, l.text, l.clip, pose); return l; }
+    return null;
+  }
+  /** The game's own voice (the scan voice), for the ticket: waits for it to finish. */
+  function narrate(text) {
+    const v = window.NarbeVoiceManager;
+    if (!v || !v.getSettings().ttsEnabled) return wait(400);
+    const t = v.speak(text);
+    return Promise.race([t.finished, wait(12000)]);
+  }
+
+  /* ── starting and leaving ───────────────────────────────────────────────── */
+  function startShift(skipOffer) {
+    const P = BB.save.progress();
+    if (!skipOffer && !P.tutorialOffered) {
+      P.tutorialOffered = true; BB.save.saveProgress();
+      BB.ui.openCard('tutorialOffer');
+      return;
+    }
+    BB.save.shift.clear();
+    begin(S.create(pack, { seed: (Date.now() % 1000000007) + 1, settings: settings(), milestone: MILESTONE }), false);
+  }
+  function startTutorial() {
+    const P = BB.save.progress();
+    P.tutorialOffered = true; BB.save.saveProgress();
+    begin(S.create(pack, { seed: 1, tutorial: true, settings: Object.assign(settings(), { cooking: 'simple' }) }), false);
+  }
+  function continueShift() {
+    const saved = BB.save.shift.load();
+    if (saved && !saved.done) begin(saved, true); else startShift(true);
+  }
+  const savedShift = () => { const x = BB.save.shift.load(); return x && !x.done ? x : null; };
+
+  async function begin(shift, resumed) {
+    s = shift; used = new Set(); spotted = new Set(); paused = false; busy = true; screen = 'arrive';
+    BB.ui.closeCard(); BB.ui.suspend(); BB.ui.context = 'none';
+    BB.stage.receipt(null); BB.stage.ticket(null); BB.stage.gauge(null); BB.stage.clearControls();
+    await BB.stage.setScene('counter');
+    BB.world.showCounter([]);
+    hud();
+    if (!resumed && s.tutorial) await talk(pack.manager.id, 'tutorial.intro', {}, MPOSE.talk);
+    else if (!resumed && managerSays('joke')) await talk(pack.manager.id, 'shift.start', {}, MPOSE.talk);
+    BB.stage.mitch(null);
+    busy = false;
+    if (s.order && s.order.phase !== 'served') { BB.stage.ticket(s.order, s.order.phase === 'line' ? s.order.at.item : -1); return step(true); }
+    if (s.order && s.order.phase === 'served') return serveNow();
+    nextCustomer();
+  }
+  function quit() {
+    stopClock(); BB.audio.stop(); save();
+    s = null; screen = 'none'; busy = false;
+    BB.ui.suspend();
+    BB.stage.customer(null); BB.stage.mitch(null); BB.stage.bubble(null); BB.stage.receipt(null); BB.stage.ticket(null);
+    BB.stage.gauge(null); BB.stage.clearControls(); BB.stage.show('register', false); BB.stage.show('bell', false);
+    BB.stage.setScene('counter').then(() => BB.world.showCounter([]));
+    hud();
+    BB.ui.openCard('title');
+  }
+  function hud() {
+    if (!s) { BB.stage.hud(''); return; }
+    BB.stage.hud(s.tutorial ? 'Tutorial' : 'Customer ' + Math.min(s.n + 1, s.length) + ' of ' + s.length + ' · ' + s.coins + ' coins');
+  }
+
+  /* ── a customer walks up ────────────────────────────────────────────────── */
+  async function nextCustomer() {
+    if (s.done) return finish();
+    busy = true; screen = 'arrive'; joked = false; spotted = new Set();
+    BB.ui.suspend();
+    S.next(pack, s);
+    save();
+    hud();
+    const o = s.order, C = person(o.ticket.customer.id);
+    BB.stage.receipt(null); BB.stage.clearControls(); BB.stage.ticket(null);
+    BB.stage.show('register', false); BB.stage.show('bell', false);
+    await BB.stage.setScene('counter');
+    BB.world.showCounter([]);
+    BB.stage.customer(C.art, POSE.arrive);
+    await wait(reduced() ? 100 : 450);
+    const g = lineFor(C.id, 'greet');
+    if (g) await speakAs(C.id, g.text, g.clip, POSE.order);
+    // "The usual, hon": said when the order is exactly the usual. The ticket says the rest.
+    const isUsual = C.usual && o.items.length === C.usual.length && o.items.every((it, i) => it.spec.recipe === C.usual[i].recipe) && SC.candidates(script, C.id, 'order.usual', null).length;
+    if (isUsual) await talk(C.id, 'order.usual', {}, POSE.order);
+    else {
+      // The customer orders the way people do ("no onions"); the ticket then spells it all out.
+      const parts = W.orderParts(pack, o.ticket).map(p => ({ clip: C.id + '/order.' + p.id, text: p.text }));
+      await speakAs(C.id, W.said(pack, o.ticket), null, POSE.order, parts);
+      // Something this customer never takes was left off: they may say why, in their own words.
+      const disliked = (C.dislikes || []).find(d => o.items.some(it => (it.spec.holds || []).includes(d)));
+      if (disliked && SC.candidates(script, C.id, 'order.dislike', null).length) await talk(C.id, 'order.dislike', { ing: disliked }, POSE.order);
+    }
+    if (o.items.length > 1 && JSON.stringify(o.items[0].spec) === JSON.stringify(o.items[1].spec)) await talk(C.id, 'order.twin', {}, POSE.order);
+    BB.stage.customer(C.art, POSE.arrive);
+    // The ticket goes up on the wheel, which hangs in the kitchen: over to the line's first station,
+    // and the order comes round the wheel from the left while it is read out.
+    const q0 = S.question(pack, s);
+    if (q0 && q0.station) { await BB.stage.setScene(q0.station); showStation(o, q0); }
+    BB.stage.ticket(o, 0, true);
+    BB.audio.sfx('flip', 0.25);
+    await narrate('Ticket. ' + W.ticket(pack, o.ticket));
+    if (s.tutorial) await talk(pack.manager.id, 'tutorial.ticket', {}, MPOSE.teach);
+    BB.stage.mitch(null);
+    busy = false;
+    step(true);
+  }
+
+  /* ── the line ───────────────────────────────────────────────────────────── */
+  /** Draw the current step on its station and hand it to the scan. */
+  async function step(forceFresh) {
+    if (!s || !s.order) return;
+    const o = s.order, q = S.question(pack, s);
+    if (!q) return;
+    if (q.kind === 'review') return review(q, forceFresh);
+    screen = 'line';
+    busy = true;
+    BB.ui.suspend();
+    const fresh = q.fresh || forceFresh;
+    BB.stage.receipt(null); BB.stage.show('register', false); BB.stage.show('bell', false);
+    await BB.stage.setScene(q.station);
+    BB.stage.ticket(o, q.item);
+    showStation(o, q);
+    if (fresh && s.tutorial) await tutorialIntro(q);
+    if (q.gross && !spotted.has(q.key + ':' + q.gross.event)) await spotGross(q);
+    BB.stage.mitch(null);
+    if (q.kind === 'cook' && q.timed) startClock(); else stopClock();
+    busy = false;
+    present(q, fresh);
+  }
+
+  /** What the station shows for a step. */
+  function showStation(o, q) {
+    BB.stage.gauge(null);
+    if (q.station && pack.stations[q.station].steps.some(st => st.kind === 'cook' && st.ing)) {
+      const cook = pack.stations[q.station].steps.find(st => st.kind === 'cook');
+      const n = q.kind === 'add' ? q.have : q.count;
+      BB.world.showGrill(cook.ing, n, q.kind === 'cook' && q.timed ? stageIdx(q.ing, q.stage) : 0);
+      if (q.kind === 'cook' && q.timed) gauge(q);
+      return;
+    }
+    const m = L.made(pack, o, q.item);
+    const parts = m.parts.filter(p => p.layer !== 'top');
+    BB.world.showBoard(parts, q.kind === 'add' ? { ing: q.ing, gross: q.gross ? q.gross.event : undefined } : null);
+    if (q.gross && q.gross.event === 'fly') BB.audio.sfx('buzz', 0.25);
+  }
+  const stageIdx = (ing, stage) => { const I = pack.ingredients[ing]; return I && I.stages ? pack.stageSets[I.stages].stages.indexOf(stage) : 0; };
+  function gauge(q) {
+    const I = pack.ingredients[q.ing], list = pack.stageSets[I.stages].stages.slice(1);
+    const want = L.expected(pack, s.order.items[q.item], q.station, q.step);
+    BB.stage.gauge(list, list.indexOf(q.stage), want);
+  }
+
+  /** The scan's items for a step: its answers on the station's real objects, the ticket, Pause. */
+  function present(q, fresh) {
+    const o = s.order;
+    const entries = q.options.map(opt => {
+      const w = W.option(pack, q, opt, o);
+      return { id: opt.id, say: w.say, label: w.label, ref: Object.assign({ kind: 'answer' }, opt), opt };
+    });
+    const draw = () => {
+      const els = BB.stage.controls(entries.map(e => control(q, e)), q.kind === 'cook' && q.timed);
+      return els;
+    };
+    const root = rootContext('line:' + o.ticket.customer.id + ':' + s.n + ':' + q.item + ':' + q.station, entries, draw);
+    BB.ui.line(root, fresh, W.prompt(pack, q, o));
+  }
+  /** How an answer looks: an enamel button, a dial plate, the spatula, a slip. */
+  function control(q, e) {
+    const id = e.id;
+    if (q.kind === 'add') return { id, kind: 'btn', cls: id, label: e.label, icon: id === 'add' ? '＋' : id === 'swap' ? '♻' : '✕' };
+    if (q.kind === 'cook' && q.timed) return { id, kind: 'spatula', label: e.label };
+    if (q.kind === 'cook') {
+      const k = stageIdx(q.ing, e.opt.value);
+      return { id, kind: 'plate', label: e.label, marks: Math.min(k, 4), swatch: BB.world.colourOf(q.ing, k) };
+    }
+    return { id, kind: 'tile', cls: e.opt.row ? 'more' : '', label: e.label };
+  }
+  /** A line context: the step's entries, then Ticket and Pause on their real objects (Ticket: the order on
+   *  the kitchen's wheel, or at the counter the order's slip, which the step's draw puts on the panel). */
+  function rootContext(key, entries, draw, extra, noTicket) {
+    const wheel = document.getElementById('wheel'), back5 = document.getElementById('back5');
+    wheel.dataset.id = noTicket ? '' : 'ticket'; back5.dataset.id = 'pause';
+    const items = [];
+    const root = { key, items };
+    const fill = els => {
+      items.length = 0;
+      entries.forEach(e => items.push({ id: e.id, label: () => e.say, element: (extra && extra[e.id]) || els[e.id], ref: e.ref }));
+      if (!noTicket) items.push({ id: 'ticket', label: () => 'Ticket', element: els.ticket || BB.stage.ticketEl(), ref: { kind: 'ticket' } });
+      items.push({ id: 'pause', label: () => 'Pause', element: back5, ref: { kind: 'pause' } });
+    };
+    fill(draw());
+    root.redraw = () => { const els = draw(); items.forEach(it => { if (els[it.id]) it.element = els[it.id]; }); };
+    return root;
+  }
+
+  /* ── Mitch: gross-outs and the tutorial ─────────────────────────────────── */
+  async function spotGross(q) {
+    spotted.add(q.key + ':' + q.gross.event);
+    if (!managerSays('hint')) return;
+    BB.stage.mitch(MPOSE.grossSpot);
+    await wait(reduced() ? 50 : 250);
+    await talk(pack.manager.id, 'gross.' + q.gross.event, { ing: q.ing }, MPOSE.grossNasty);
+    if (s.tutorial) await talk(pack.manager.id, 'tutorial.gross', {}, MPOSE.teach);
+  }
+  async function tutorialIntro(q) {
+    const moment = q.kind === 'cook' ? 'tutorial.cook' : q.station === 'grill' || pack.stations[q.station].steps[0].max > 1 ? 'tutorial.grill' : 'tutorial.board';
+    if (used.has('tutorial:' + moment)) return;
+    used.add('tutorial:' + moment);
+    await talk(pack.manager.id, moment, {}, MPOSE.teach);
+  }
+  /** The tutorial caught a mistake before it landed: Mitch says what is wrong, the step asks again. */
+  async function warn(w) {
+    busy = true;
+    BB.ui.suspend();
+    const map = { tooMany: 'tutorial.warn.tooMany', tooFew: 'tutorial.warn.tooFew', extra: 'tutorial.warn.extra', missing: 'tutorial.warn.missing',
+      done: 'tutorial.warn.done', gross: 'tutorial.warn.gross', grossSkip: 'tutorial.warn.grossSkip', pick: 'tutorial.warn.pick' };
+    // An extra she never mentioned is "not on the ticket", not "she said no".
+    const moment = w.kind === 'extra' && !w.held ? 'tutorial.warn.unasked' : map[w.kind] || 'tutorial.warn.pick';
+    await talk(pack.manager.id, moment, { ing: w.ing, want: w.want, got: w.got }, MPOSE.teach);
+    BB.stage.mitch(null);
+    busy = false;
+    step(false);
+  }
+
+  /* ── answering ──────────────────────────────────────────────────────────── */
+  async function onChoice(ref) {
+    if (busy || !s) return;
+    if (ref.kind === 'pause') return pause();
+    if (ref.kind === 'ticket') {
+      BB.stage.ticket(s.order || (s.last && s.last.order), s.order && s.order.phase === 'line' ? s.order.at.item : -1, true);
+      const o = s.order || (s.last && s.last.order);
+      if (o) BB.ui.announce('Ticket. ' + W.ticket(pack, o.ticket));
+      return;
+    }
+    if (ref.kind === 'next') { BB.audio.sfx('ding', 0.4); return nextCustomer(); }
+    if (ref.kind === 'again') return hearAgain();
+    const r = S.answer(pack, s, ref.id);
+    if (r.refused) return;
+    if (r.warn) return warn(r.warn);
+    busy = true;
+    BB.ui.suspend();
+    stopClock();
+    await playout(r.events);
+    save();
+    busy = false;
+    if (s.order.phase === 'served') return serveNow();
+    step(false);
+  }
+
+  /** What an answer looks like happening: short, and skipped with Motion Reduced. */
+  async function playout(events) {
+    for (const e of events) {
+      if (e.type === 'added') {
+        if (pack.ingredients[e.ing].sauce) {
+          // The bottle squirts it on: the sound starts with the sauce (at once, when nothing is animated).
+          let heard = false;
+          const squish = () => { if (!heard) { heard = true; BB.audio.sfx('squirt', 0.3); } };
+          await BB.world.lineOutcome('add', { onSquirt: squish });
+          squish();
+          continue;
+        }
+        BB.audio.sfx('plop', 0.4);
+        if (pack.ingredients[e.ing].stages) await BB.world.dropOnGrill(e.ing, e.n);
+        else await BB.world.lineOutcome('add');
+      } else if (e.type === 'skipped') { BB.audio.sfx('swoosh', 0.3); await BB.world.lineOutcome('skip'); }
+      else if (e.type === 'swapped') { BB.audio.sfx('toss', 0.4); await BB.world.lineOutcome('swap'); }
+      else if (e.type === 'cooked') {
+        const k = stageIdx(e.ing, e.stage);
+        BB.audio.sfx('sizzle', 0.35);
+        setTimeout(() => BB.audio.sfx('flip', 0.3), reduced() ? 0 : 900);
+        if (e.ing && document.body.dataset.scene === 'grill') await BB.world.cookGrill(k, s.settings.cooking === 'timed' ? 700 : 1800);
+      } else if (e.type === 'phaseDone' && pack.stations[e.station].builds && pack.stations[e.station].builds.cap) {
+        BB.world.showBoard(L.made(pack, s.order, e.item).parts, null);
+        BB.audio.sfx('plop', 0.4);
+        await wait(reduced() ? 0 : 450);
+      }
+    }
+  }
+
+  /* ── Timed cooking: the clock (it never touches the scan) ───────────────── */
+  function startClock() {
+    stopClock();
+    clockAt = performance.now();
+    clock = setInterval(() => {
+      const now = performance.now(), dt = (now - clockAt) / 1000;
+      clockAt = now;
+      // Frozen while Pause, Settings or a card is open, the window is hidden or has lost focus.
+      if (!s || !s.order || paused || blurred || busy || document.hidden || BB.ui.context !== 'line') return;
+      const ev = S.tick(pack, s, dt);
+      for (const e of ev) {
+        if (e.type === 'stage') {
+          const q = S.question(pack, s);
+          BB.world.grillStage(stageIdx(e.ing, e.stage));
+          gauge(q);
+          BB.audio.sfx('tick', 0.3);
+          BB.ui.announce(W.stage(pack, e.stage));
+        } else if (e.type === 'nearly' && managerSays('hint')) nearly(e);
+      }
+    }, 250);
+  }
+  function stopClock() { clearInterval(clock); clock = null; }
+  /** Mitch's heads-up: spoken only when recorded (it never cuts off the scan's own speech);
+   *  otherwise a caption with his worried pose. */
+  function nearly(e) {
+    const l = lineFor(pack.manager.id, 'nearly', { want: e.stage });
+    if (!l) return;
+    BB.stage.mitch(MPOSE.nearly);
+    BB.stage.bubble('mitch', pack.manager.name, l.text);
+    const recorded = BB.audio.recorded(l.clip, l.text);
+    const done = () => { BB.stage.bubble(null); BB.stage.mitch(null); };
+    if (recorded) BB.audio.say({ who: pack.manager.id, text: l.text, clip: l.clip }).then(done);
+    else setTimeout(done, 3500);
+  }
+
+  /* ── the review ─────────────────────────────────────────────────────────── */
+  async function review(q, forceFresh) {
+    screen = 'review';
+    busy = true;
+    BB.ui.suspend();
+    stopClock();
+    const o = s.order, C = person(o.ticket.customer.id);
+    BB.stage.gauge(null);
+    await BB.stage.setScene('counter');
+    BB.stage.ticket(o, -1);
+    BB.world.showCounter(o.items.map((it, i) => L.made(pack, o, i)));
+    BB.stage.customer(C.art, POSE.wait);
+    const register = BB.stage.show('register', true);
+    register.dataset.id = 'serve';
+    if ((q.fresh || forceFresh) && s.tutorial) await talk(pack.manager.id, 'tutorial.review', {}, MPOSE.teach);
+    BB.stage.mitch(null);
+    busy = false;
+    const said = o.items.map((it, i) => W.made(pack, L.made(pack, o, i), it.spec)).join(' ');
+    const entries = q.options.map(opt => {
+      const w = W.option(pack, q, opt, o);
+      const ref = Object.assign({ kind: 'answer' }, opt);
+      if (opt.row) ref.rowItems = () => rowEntries(q, opt.row);
+      return { id: opt.id, say: w.say, label: w.label, ref, opt };
+    });
+    // The wheel stays in the kitchen: here the Ticket is the order's slip, on the panel under the redo slips.
+    const draw = () => BB.stage.controls(entries.filter(e => e.id !== 'serve').map(e => ({ id: e.id, kind: 'slip', label: e.label, cls: e.opt.row ? 'more' : '' }))
+      .concat([{ id: 'ticket', kind: 'slip', cls: 'ticketSlip', label: 'Ticket' }]));
+    const root = rootContext('review:' + s.n + ':' + o.items.length, entries, draw, { serve: register });
+    BB.ui.line(root, q.fresh || forceFresh, 'Here it is. ' + said);
+  }
+  /** A row of redo choices (and an item's own stations, a row inside it). */
+  function rowEntries(q, row) {
+    const o = s.order;
+    const list = row.map(opt => {
+      const w = W.option(pack, q, opt, o);
+      const ref = Object.assign({ kind: 'answer' }, opt);
+      if (opt.row) ref.rowItems = () => rowEntries(q, opt.row);
+      return { id: opt.id, say: w.say, label: w.label, ref, opt };
+    });
+    const els = BB.stage.controls(list.map(e => ({ id: e.id, kind: 'slip', label: e.label })));
+    return list.map(e => ({ id: e.id, label: () => e.say, element: els[e.id], ref: e.ref }));
+  }
+
+  /* ── the serve ──────────────────────────────────────────────────────────── */
+  async function serveNow() {
+    busy = true;
+    screen = 'receipt';
+    BB.ui.suspend();
+    BB.stage.clearControls();
+    BB.audio.sfx('kaching', 0.45);
+    await BB.world.serveOut();
+    const r = s.order && s.order.phase === 'served' ? S.serve(pack, s) : lastResult;
+    lastResult = r;
+    save();
+    hud();
+    const C = person(r.customer);
+    const grossM = r.mistakes.find(m => m.kind === 'gross');
+    const pose = grossM ? POSE.gross : r.stars === 3 ? (r.favourite ? POSE.favourite : POSE.stars3) : r.stars === 2 ? POSE.stars2 : POSE.stars1;
+    BB.stage.customer(C.art, pose);
+    lastReview = [];
+    const sayIt = async (moment, vars) => { const l = await talk(C.id, moment, vars, pose); if (l) lastReview.push(l); };
+    if (grossM) {
+      BB.audio.sfx('ew', 0.4);
+      await sayIt('react.gross', {});
+      await sayIt('complain.gross.' + grossM.event, { ing: grossM.ing });
+    } else if (r.stars === 3 && r.favourite && SC.candidates(script, C.id, 'react.favourite', 'customer').length) await sayIt('react.favourite', {});
+    else await sayIt('react.' + r.stars, {});
+    const rest = r.mistakes.filter(m => m !== grossM);
+    for (const m of rest.slice(0, grossM ? 1 : 2)) await sayIt(complaintMoment(m), { ing: m.ing, want: m.want, got: m.got });
+    if (rest.length > (grossM ? 1 : 2)) await sayIt('complain.more', {});
+    // Mitch has his say before the receipt comes down, so nothing covers him or it.
+    if (s.tutorial) await talk(pack.manager.id, 'tutorial.serve', {}, MPOSE.good);
+    else if (!joked && managerSays('joke') && (grossM || r.stars === 1 || (r.stars === 3 && rnd() < 0.5))) {
+      joked = true;
+      await talk(pack.manager.id, grossM ? 'after.gross' : 'after.' + (r.stars === 3 ? 3 : 1), {}, grossM ? MPOSE.shrug : r.stars === 3 ? MPOSE.good : MPOSE.bad);
+    }
+    BB.stage.mitch(null);
+    BB.stage.ticket(null);
+    BB.stage.receipt(r);
+    BB.audio.sfx('stars', 0.35);
+    busy = false;
+    receiptChoices(true);
+  }
+  function complaintMoment(m) {
+    if (m.kind === 'count') return m.want > m.got ? 'complain.tooFew' : 'complain.tooMany';
+    // "I said no onions!" only when they did; otherwise "I didn't ask for onions."
+    if (m.kind === 'extra' && !m.held) return 'complain.unasked';
+    return 'complain.' + m.kind;
+  }
+  /** After the serve: the bell for the next customer, Hear It Again, Pause. */
+  function receiptChoices(fresh) {
+    screen = 'receipt';
+    const bell = BB.stage.show('bell', true);
+    bell.dataset.id = 'next';
+    const last = s.done;
+    const entries = [
+      { id: 'next', say: last ? (s.tutorial ? 'Finish the tutorial' : 'Shift results') : 'Next customer', ref: { kind: 'next' } },
+      { id: 'again', say: 'Hear it again', label: 'Hear It Again', ref: { kind: 'again' } },
+    ];
+    const draw = () => BB.stage.controls([{ id: 'again', kind: 'slip', label: 'Hear It Again' }]);
+    const root = rootContext('receipt:' + s.n, entries, draw, { next: bell }, true);
+    BB.stage.bell = bell;
+    bell.querySelector('.lb').textContent = last ? (s.tutorial ? 'Finish' : 'Results') : 'Next Customer';
+    const r = lastResult;
+    BB.ui.line(root, fresh, r ? r.stars + (r.stars === 1 ? ' star.' : ' stars.') + ' Tip, ' + r.tip + ' coins.' : '');
+  }
+  async function hearAgain() {
+    if (!lastResult) return;
+    busy = true;
+    BB.ui.suspend();
+    const C = person(lastResult.customer);
+    for (const l of lastReview) await speakAs(C.id, l.text, l.clip, null);
+    const lines = lastResult.mistakes.map(m => W.mistake(pack, m));
+    await narrate(lastResult.stars + ' stars. ' + (lines.length ? lines.join('. ') : 'Everything as ordered') + '.');
+    busy = false;
+    receiptChoices(false);
+  }
+  /** The end of the shift: Mitch signs off (said in full first, so the results board's own
+   *  announcement never cuts him off), then the results board. */
+  async function finish() {
+    stopClock();
+    busy = true;
+    BB.ui.suspend();
+    const res = S.results(s);
+    const P = BB.save.progress();
+    if (!s.tutorial) { P.coins = (P.coins || 0) + res.coins; P.shifts = (P.shifts || 0) + 1; }
+    else P.tutorialDone = true;
+    BB.save.saveProgress();
+    BB.save.shift.clear();
+    const tut = s.tutorial;
+    BB.stage.show('bell', false); BB.stage.show('register', false); BB.stage.receipt(null); BB.stage.clearControls();
+    BB.stage.customer(null);
+    if (!tut && managerSays('joke')) await talk(pack.manager.id, 'shift.end', {}, MPOSE.good);
+    BB.stage.mitch(null);
+    s = null; screen = 'none'; busy = false;
+    BB.ui.openCard('results', Object.assign({ tutorial: tut }, res));
+  }
+
+  /* ── Pause ──────────────────────────────────────────────────────────────── */
+  function pause() {
+    if (!s) return;
+    paused = true;
+    BB.audio.stop();
+    BB.ui.openCard('pause');
+  }
+  function resume() {
+    paused = false;
+    BB.ui.closeCard();
+    if (!s) return BB.ui.openCard('title');
+    if (screen === 'receipt' && lastResult) return receiptChoices(true);
+    if (screen === 'arrive') return nextCustomerResume();
+    return step(true);
+  }
+  /** Paused during an arrival: the order is already on the ticket, so the line begins. */
+  function nextCustomerResume() {
+    if (s && s.order) { BB.stage.ticket(s.order, 0); return step(true); }
+    return nextCustomer();
+  }
+  function help() {
+    return 'Each customer orders out loud, and the order goes up on the ticket wheel. The food comes to you one step at a time. ' +
+      'On the grill, add one patty for each one on the ticket, then pick how done. On the board, add what the ticket says and skip the rest. ' +
+      'If something looks or smells nasty, Swap It gets a fresh one. Check the burger, then ring it up. ' +
+      'Every mistake costs you, and the customer will tell you exactly what it was. Three stars means everything matched.';
+  }
+
+  BB.game = {
+    startShift, startTutorial, continueShift, savedShift, quit, resume, pause, help, onChoice,
+    inShift: () => !!s && !s.done,
+    blur() { blurred = true; },
+    focus() { blurred = false; },
+    /** For the jsdom checks. */
+    shift: () => s, get busy() { return busy; }, get screen() { return screen; },
+  };
+  window.addEventListener('focus', () => { blurred = false; });
+})();

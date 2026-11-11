@@ -1,0 +1,870 @@
+# Ben's Burger Bar — design
+
+An original cooking game in a cartoon diner. Talking customers order at the counter, and
+the player makes each order on an assembly line: the food comes to the player one step at
+a time, and every step is one question with one press to answer it. Watching the food cook
+is the fun part, and the customers' reactions are the payoff. The game copies no names,
+art, characters or mechanics from any other game.
+
+The hub rulebook, `ACCESSIBILITY.md` (hub root), outranks this file. Where the two
+disagree, this file is wrong.
+
+This file folds in the **Nov 7 design call** (Ari, Bryan and Tabby; their notes are in
+`BURGER-BAR-REDESIGN` beside this file). The call replaced the M1 free-roam station scan
+with a guided, phase-based flow. Where the call and the earlier design disagree, the call
+wins; [What the redesign changed](#what-the-redesign-changed) lists every reconciled
+point, and [Open questions](#open-questions) lists what is still to decide.
+
+**Ben's Food Court (2026-11-08).** The game is now Ben's Food Court: a mall food court of
+seven restaurants, each its own game on this engine as a pack, and **Ben's Burger Bar is the
+first restaurant and the template for the others**. The folder was renamed from
+`BENSBURGERBAR` to `BENSFOODCOURT` (game id `bensfoodcourt`). The proposal for the court, its
+restaurants and its build order is `BENS-FOOD-COURT` beside this file (a starting point for
+Ari, Bryan and Tabby, with its own open questions). This file stays the Burger Bar's design:
+the pattern every restaurant pack follows.
+
+## Status
+
+| Milestone | State |
+|---|---|
+| M0 design doc + rules engine | built 2026-11-02 (Bryan); its order generator, words, saves and pack data carry over |
+| M1 free-roam greybox | built 2026-11-02 (Bryan); **superseded by the Nov 7 redesign**, archived at `archives/games/2026-11-07/BENSBURGERBAR-M1` |
+| M2 the guided line | built 2026-11-07: rules, 50 Node tests and whole shifts played by switch presses in jsdom pass (see [M2 notes](#m2-notes)) |
+| M3 first art and voice pass, playtest | art done 2026-11-07 (three backdrops, Mitch and four customers with ten poses each, five props); voices designed, 510 of 708 lines recorded, then **recording stopped** for a voice quality test (see [Voice quality test](#voice-quality-test)); the ticket wheel and the sauce squirt redone after the first look (2026-11-07); voice test round 1 picked (Mitch approved, four voices sent back) and Sal added with ten poses (2026-11-08); **round 2 of the voice test waiting for picks**; recording moved to the final pass by the Food Court pivot (2026-11-08); waiting for the player's playtest |
+| M4 fryer, drinks, timed cooking polish | not started |
+| M5 shake bar, griddle, the rest of the cast | not started |
+| M6 progression and Free Cook | not started |
+| M7 ship (listed in the hub after test and approval) | not started |
+
+Nothing goes into `games.json` until the game is tested and approved. Until then it opens by
+direct link only: `bennyshub/apps/games/BENSFOODCOURT/index.html`.
+
+## Why the redesign
+
+The M1 greybox worked, but it asked too much of Ben. The board alone had about 14 stops, a
+cheeseburger took about 29 selects, and a two-burger order measured 54 selects and 150
+Space moves. The player should not have to go looking for each ingredient: **the
+ingredients come to him.** He still has to remember and follow the order, and he can still
+get it wrong, but he never has to navigate to find anything.
+
+## What the player sees
+
+**Main menu:** Start Shift · Tutorial · Settings · Exit Game. My Diner and Free Cook join it
+in M6.
+
+### An order, step by step
+
+1. **Order.** A customer walks up to the counter and says the order out loud, the way people
+   order: "Evening! Bacon cheeseburger, medium, no onions." Then it is over to the kitchen,
+   where the ticket comes round the ticket wheel and the game reads it once in its own voice.
+   **The ticket spells out the whole order** (see [The ticket](#the-ticket)): "Ticket. Bacon
+   Cheeseburger: one patty, medium, with cheese, bacon, lettuce, tomato and ketchup." So a
+   customer's accent, a "the usual, hon" or a "no onions" never hides what goes on, and
+   nobody has to know what a menu item comes with. It stays in view in the kitchen for the
+   whole order.
+2. **Grill.** The game offers patties one at a time: add a patty, add a second patty, and so
+   on. Then it asks how to cook them. The patties cook, flip by themselves and come off.
+3. **Board.** The burger is started for the player (bottom bun, then the patties). Each
+   ingredient then comes down the line one by one, and the player picks Add or Skip for
+   each. The top bun goes on by itself.
+4. **Review.** The finished order sits on the pass, and the game says what was made, in
+   plain words. The player can serve it, or go back and redo the grill or the toppings.
+5. **Serve.** The player rings it up at the cash register. The customer reacts, the order is
+   rated, the customer says exactly what was wrong if anything was (up to two things, then
+   "and that is not even everything"), and a receipt shows the stars, every mistake in words
+   and the tip. Its choices: the counter bell (Next Customer), Hear It Again, Pause.
+
+Orders with more than one item run the line once per item, in the ticket's order, then one
+review and one serve for the whole order.
+
+A shift is a set number of customers (Shift Length). Then a results card shows the stars
+and tips, and the player can start another shift or go to the main menu.
+
+### The ticket
+
+Decided 2026-11-07 after the first playtest: the ticket said "no pickles, no ketchup", the
+player put everything else on, and the customer got mad, because a cheeseburger as written
+has no onion, mustard or mayo, and nothing said so. So the ticket now **lists everything**:
+for each item its name, how many patties and how done, then everything that goes on, in the
+order the line brings it ("Cheeseburger: one patty, medium, with cheese, lettuce, tomato,
+pickles and ketchup"; "nothing else on it" when there is nothing). The rule is always the
+same and needs no menu knowledge: **add what's on the ticket, skip what isn't.** With more
+than one item, the item being made is spelt out on the wheel and the others wait as their
+names; the read-out ("Ticket. ...") says every item in full. The customer still orders the
+natural way ("no onions"), in their own recorded voice; the ticket is the one to follow.
+`words.js` builds both (`said()` for the customer, `ticket()`/`item()` for the ticket), and a
+test checks over hundreds of random orders that the ticket lists exactly what the line wants.
+
+### Mistakes
+
+The player can still make mistakes. If the ticket has no cheese and Ben adds cheese, the
+customer is annoyed. Nothing before the serve says something is wrong (except in the
+tutorial), and every mistake is named afterwards in the customer's review.
+
+### Choice limits
+
+Every screen has the blank -1 and Pause, plus no more than five choices, even on the most
+complex step. The phases are there to keep it that way. Ticket is one of the five, so a step
+offers at most four answers; a step with more (six shake flavours, one day) shows three and
+a "More…" row.
+
+### Writing tone
+
+The customers are funny and a bit absurd, written for adults (ACCESSIBILITY §1). No baby
+talk, no "great job!" after every press, no talking down. The joke lands on the customer,
+never on the player, and nothing ever comments on the player's speed or skill.
+
+## The assembly line
+
+### Phases
+
+Each recipe names the stations it goes through, and each station is a **phase**: a short
+list of steps. Every step is one of three kinds, and these are all the line needs:
+
+| Step | What the player sees | Answers |
+|---|---|---|
+| **Add** | One ingredient, offered on its own. A step can offer the same thing again up to a limit ("Add a second patty?") | Add · Skip, plus Swap It when the ingredient is bad ([Gross-outs](#gross-outs)) |
+| **Cook** | The food on the heat | Simple: the doneness options. Timed: Take It Off |
+| **Pick** | One choice of a few: fries or onion rings, a cup size, a soda | The options, up to five |
+
+Every screen also has **Ticket** (in the kitchen it turns the ticket wheel once round and says
+the order again; at the counter it is the order's own slip on the panel; the highlight stays
+on it) and **Pause** (always last).
+
+| Station | Steps, in order (first release in bold) |
+|---|---|
+| **Grill** | **Add patty (up to 3) → Cook** |
+| **Board** | **Bottom bun and patties go on by themselves → Add or Skip: cheese, bacon, lettuce, tomato, pickles, onion, ketchup, mustard, mayo → top bun by itself** |
+| Fryer | Pick fries or onion rings → Cook → Add salt |
+| Drinks | Pick the cup size → Add ice → Pick the drink |
+| Shake Bar | Pick the flavour → Pick 1, 2 or 3 scoops → Add whipped cream, cherry, sprinkles (it blends by itself) |
+| Griddle | Pancakes and grilled cheese, as Add and Cook steps (M5) |
+
+- **The stack order is the line's order,** so it is never something to get wrong.
+- **Sauces are Add or Skip.** The amount is always a normal squeeze, so tickets no longer ask
+  for "a dab" or "a line". A sauce comes down the line in its squeeze bottle (red ketchup,
+  yellow mustard, white mayo); Add turns the bottle over above the burger and squirts a
+  zigzag line across it (about a second and a half, with a soft squirt sound; Motion Reduced
+  just puts the sauce on). Skip slides the bottle on down the line.
+- **Bacon is a board ingredient** (pre-cooked, from the warmer), so the grill phase is
+  patties only. This gives the "overcooked food" gross-out its home: charred bacon.
+- **After a choice, the highlight stays on the same answer** as the next ingredient arrives
+  (the label changes, "Add lettuce" → "Add tomato", and is spoken). Three Adds in a row are
+  three presses. A new phase opens fresh on the blank -1.
+
+### Review and fixing
+
+The review screen shows the order on the pass beside the ticket. It says what was made, in
+plain words ("Cheeseburger: patty medium, cheese, lettuce, tomato, ketchup"). That is a
+description, not a verdict: comparing it with the ticket is the player's job.
+
+Its choices: **Serve** (ring it up) · **Redo the Grill** · **Redo the Toppings** · Ticket ·
+Pause. With more than one item, Redo… is a row of the items, each with its phases. A redo
+runs that phase again from its first step, and the review comes back after it.
+
+### Cooking
+
+Flipping is no longer a choice: it happens by itself, as part of the animation.
+
+- **Simple** (default). The player picks a doneness: Rare, Medium, Medium Well or Well Done.
+  The patty cooks to exactly that, with a short animation, an automatic flip and a sizzle.
+  It always comes out as chosen.
+- **Timed** (challenge). The patty cooks through Raw → Rare → Medium → Medium Well → Well Done
+  → Charred while the player watches, and they press Take It Off at the right moment. This
+  is the one place the cooking can go wrong. The timing is forgiving:
+  - **Cooking Speed** (Very Slow by default) sets the stage length; the stage the ticket
+    asks for lasts twice as long, so there is a wide window.
+  - Every stage change is shown on the grill's doneness gauge (a word and a mark), changes
+    the sizzle, and its name is spoken. Nothing depends on colour or on sight alone.
+  - Mitch gives a heads-up one stage early ("Nearly medium."), under his speaking rules.
+  - The clock never moves the highlight or changes the choices, only the labels. It freezes
+    whenever Pause, Settings or a card is open, or the window loses focus. There is no
+    deadline: food left on stops at Charred, which costs one mistake.
+
+Timed mode is a choice scan over a slowly changing world, as Ari approved on 2026-11-01:
+Take It Off is selected like any other choice, on release, so a held switch is fine.
+
+## Rating
+
+The rating is based on accuracy, never on time, and how to earn three stars is obvious:
+
+- **3 stars:** everything matches the ticket.
+- **2 stars:** one or two mistakes.
+- **1 star:** more than that. There is no zero and no fail.
+
+One mistake is any one of these: a topping or sauce added that is not on the ticket, or
+skipped that is; one patty too many or too few; the wrong doneness; a wrong pick (size,
+drink, fries for onion rings); a bad ingredient served ([Gross-outs](#gross-outs)).
+
+The customer's review says exactly what was wrong, in words and in their own voice, so the
+player knows what to fix next time. An extra topping is said two ways: "I said no cheese!"
+only when the customer did say no to it, and "I didn't ask for onions." when it simply was not
+on the ticket (`complain.unasked`; the tutorial's warning splits the same way). A receipt slip
+shows the same list in words with the stars and the tip. With no mistakes, the customer just
+enjoys it.
+
+**Tips:** price × (0.6 + 0.2 × stars), at least 1 coin. A customer's favourite (Dale's extra
+crispy rings) adds a bonus tip and a happy line, and never changes the stars, so the stars
+stay purely about following the ticket.
+
+## Tutorial
+
+An optional tutorial walks the player through one full, typical order: the customer's
+order, the grill, the board, the review and the serve. It is on the main menu, and the
+first Start Shift on a new save offers it (Play the Tutorial · Skip It).
+
+During the tutorial only, the game warns before a mistake lands. The choice is not applied;
+Mitch says what is wrong ("Hold on, they said no onions. That's not the right one.") and
+the step asks again. Outside the tutorial there are no warnings like this, and mistakes show
+up in the customer's review.
+
+The tutorial order includes one gross-out (green cheese), so the player meets Swap It once
+with Mitch there to explain it.
+
+## Gross-outs
+
+Now and then something is wrong with an ingredient: a hair in it, a fly on it, mouldy
+cheese, bad lettuce, or overcooked (charred) bacon. That's one or two per shift at most,
+never two on one order, and only ever on an Add step.
+
+The player has to be able to catch it, so it is flagged three ways:
+
+- **Visually:** stink lines off the cheese, the cheese turning green, a fly circling, a hair
+  across the tomato, smoke off the bacon.
+- **Mitch's voiceover:** "Whoa, why is that cheese green? You nasty. Change that out."
+- **The spoken label names it:** "Add the green cheese". This is the call's two flags plus
+  one, because ACCESSIBILITY §9 does not allow a cue that needs sight, and Mitch can be
+  switched off.
+
+That step gains a third answer, **Swap It**, which brings a fresh one and asks again.
+Catching it keeps the order clean. Missing it counts as one mistake and gets a funny,
+disgusted reaction from the customer.
+
+## Customers and cast
+
+The cast list and each character's personality are still open (see [Open
+questions](#open-questions)). The working cast is the one drafted on 2026-11-01, so that
+art and voices can start:
+
+| Customer | Who they are | Voice | Usually orders | Quirk |
+|---|---|---|---|---|
+| Marge | Retired school-bus driver, cardigan, reading glasses on a chain | Warm, unhurried | "The usual, hon": cheeseburger, medium, iced tea | Says "the usual" and expects the player to know. The ticket shows it anyway |
+| Dale | Wiry mechanic in grease-spotted overalls | Gravelly drawl | Onion rings, extra crispy, with anything | The onion-ring guy |
+| Priya | Night-shift nurse in scrubs, coffee-deprived | Dry, quick | Pancakes at any hour | Orders breakfast at dinner time and refuses to discuss it |
+| Coach Bev | Whistle, tracksuit, clipboard | Low, butch and booming (voice test, 2026-11-08) | Double bacon cheeseburger | Counts the pickles out loud on serve |
+| Professor Oakes | Tweed jacket, bow tie, pocket protector | Nasal, nerdy, slightly too fast | Grilled cheese, lemonade | Hates onions, with a new over-researched reason each visit |
+| Gus | Long-haul trucker, huge beard, trucker cap | Deep and friendly, with a Western drawl, not slow (voice test) | Two of one thing: "One for now, one for the road." | Big tips. Never in a hurry |
+| Reginald | Self-declared food critic, scarf in all weather | Theatrical, sweeping | Whatever is newest on the menu | Reviews every order like a five-course meal |
+| Tasha | Teenage skateboarder, deeply unimpressed | Flat, deadpan | Milkshakes | Pretends not to care, cheers quietly on a 3-star shake |
+| Kai | Ten years old, notebook under one arm, Reginald's biggest fan | Bright, very serious | A small burger and a small drink | Copies Reginald's reviews but gets to the point |
+| Vernon | Runs a burger-review blog with eleven followers; arms permanently folded | Foppish, fussy and refined, with theatrical sighs (voice test: was deep and droning) | Very exact orders: "Cheeseburger. Medium. No pickles. I will know." | Picky about the food, never the player. 1 star: "I've had warmer welcomes from a vending machine." 3 stars, after a long pause: "…Acceptable." |
+| Sal | Runs the hot-dog cart out front and never eats his own hot dogs: flat cap, walrus moustache, mustard-stained apron, coin changer (added 2026-11-08) | Gruff, loud New Yorker, a bit crude | Bacon cheeseburgers (his favourite), doubles, now and then the Tower; **never lettuce** | Every order leaves off the lettuce, then: "Lettuce is for rabbits. Do I look like a rabbit?" The crude jokes land on him, his hot dogs and the food |
+
+Rules that still hold for every customer:
+
+- **Order size follows the Orders setting,** whoever is ordering. A personality changes what
+  they order, never how many presses it takes.
+- **The ticket always shows the whole order,** in pictures and words.
+- **No customer brings a new mechanic,** changes their mind, leaves or hurries the player.
+- **Snark aims at the food, never at the player.**
+
+**First art and voice pass (proposed):** Mitch, Marge, Gus, Coach Bev and Vernon. All four
+customers order burgers, and their voices are as different as the cast gets. **Sal** joined
+them on 2026-11-08 (the user asked for a gruff, crude New Yorker; an original character, not a
+copy of any show's): ten poses, his own lines, and a line when an order leaves off something
+a customer never takes (`order.dislike`, the moment Professor Oakes's onion reasons will use).
+
+**Walk-ins** (one-off customers built from parts, M5 in the old plan) do not fit whole-pose
+expression images, which cannot be assembled from parts. They become a pool of extra drawn
+customers later, each with its own images and voice (open question).
+
+### Mitch, the assistant manager
+
+Mitch narrates the diner, teaches the tutorial and spots gross-outs, in the same voice as
+everything else: funny, but there to help. Short-sleeved shirt and tie, a headset he does
+not need, and a name badge where "ASST." is a strip of tape over "MANAGER". He appears as a
+portrait in a corner, never over a scan target.
+
+| When | Example |
+|---|---|
+| A shift starts | "Doors are open. Try not to set anything on fire." |
+| The tutorial, each phase | "This is the grill. One patty per burger, unless they say double." |
+| The tutorial, before a mistake lands | "Hold on, they said no onions. That's not the right one." |
+| A gross-out comes down the line | "Whoa, why is that cheese green? You nasty. Change that out." |
+| Timed: one stage before the ticket's stage | "Nearly medium. That's what Marge wanted." |
+| After a customer's reaction | Sometimes a one-liner, never instead of them |
+
+**When he talks** (these protect the scan, ACCESSIBILITY §4):
+
+- **Scan speech always wins.** He never cuts off a scan label and never holds the scanner's
+  speech ticket.
+- **He speaks into silence.** Parked time is his time; in two-switch play he speaks between
+  presses. If no silence comes within a few seconds, a heads-up becomes a caption and a
+  sound cue. A line that is no longer true by then is dropped. A gross-out line is the
+  exception: it is a step's own announcement, so it is said when the bad ingredient arrives,
+  before the step's label.
+- **Priority:** gross-outs and heads-ups, then tutorial lines, then jokes. At most one joke
+  per customer, and no line repeats in a shift.
+- **Silent** while Pause, Settings or a card is open.
+- **Never comments on how long anything took,** or on the player's speed or skill.
+
+The **Assistant Manager** setting: Hints and Jokes (default) / Hints Only / Off. Hints Only
+keeps gross-out lines and heads-ups. Off silences him; the gross-out still shows and its
+label still names it.
+
+## Look and feel: 2.5D
+
+- **3D (Three.js): the food, the ingredients and the cooking.** Chunky, cel-shaded food in
+  close-up: patties sizzle and flip, cheese drapes, toppings drop onto the stack.
+- **2D characters:** cartoony and cel-shaded, in the spirit of SpongeBob and Bob's Burgers,
+  but all original designs. No animation. Each character has about ten static expression
+  images, each a **whole pose**, body and arms included (hands thrown up when angry), with
+  its own clear silhouette so the reaction reads from the outline alone. When the emotion
+  changes, the new pose pops in, with a quick squash-and-bounce on Full motion and a plain
+  cut on Reduced (proposal; bounce or cut is open). The camera keeps the character big
+  (about half the screen height at the counter), large enough for a player with low vision
+  to see who they are and how they are reacting.
+- **Backdrops:** each station has a static 2D cartoon backdrop that fits where it is in the
+  restaurant. At the counter, a line of waiting customers stands behind the current one
+  (sharp like the rest of the picture: the soft blur once put on them was taken out on
+  2026-11-07), and behind them the doors, artwork, and the tables and chairs. The
+  kitchen stations get backdrops that match them. Every backdrop hides a few funny little
+  details for anyone who notices them.
+- **Final menus** (title, settings, pause, results) are 2D diner boards (proposal; 2D or 3D
+  is open).
+
+### Expressions (proposal; the mapping is open)
+
+| Customer pose | When |
+|---|---|
+| neutral | walks up, waits |
+| talking | says the order, says a line |
+| waiting | while the order is made (seen from the review) |
+| happy | 3 stars |
+| delighted | 3 stars and a favourite |
+| annoyed | 2 stars |
+| angry | 1 star ("I said no cheese!") |
+| disgusted | a gross-out was served |
+| shocked | a surprise (a charred patty) |
+| laughing | a joke line |
+
+Mitch's ten: neutral, talking, pointing (tutorial), thumbs up, shocked and disgusted
+(gross-outs), facepalm, laughing, worried (timed heads-up), shrug.
+
+### No floating UI
+
+Wherever possible, the interface is a real object in the diner:
+
+| Choice | Real object |
+|---|---|
+| Ticket | the order on the ticket wheel (kitchen); the order's slip on the panel (counter) |
+| Add · Skip · Swap It | big enamel push-buttons on the line's control box, under the ingredient |
+| Doneness | the plates on the grill's dial |
+| Take It Off | the spatula hanging at the grill |
+| Serve | the cash register: "Ring It Up" |
+| Next Customer | the counter bell |
+| Pause | the "Back in 5" sign on its hook |
+
+Labels stay large and the highlight stays obvious (colour and thickness, never colour alone,
+at least 64 px), so it is always clear what is selected. Doneness always shows as a word and
+a mark (grill lines per stage), never colour alone.
+
+**Where things sit** (settled by the M2 review frames): the food is low and left of centre on
+the 3D work surface, which starts where the backdrop's painted surface does, so the wall and
+its gags stay in view; the line's control panel is a column on the right; the "Back in 5"
+sign is bottom left, where every backdrop is plain (the gags live in the top corners). The
+scan therefore runs answers, Ticket, Pause. In the kitchen Mitch steps in from the left,
+standing low enough that the wheel never covers his face; at the counter he stands behind it
+on the right.
+
+**The ticket wheel** (changed 2026-11-07 after the first look): a diner order wheel hung flat
+from the ceiling, seen from the front, in the kitchen's top-left corner and partly off the
+screen (the rod, the far side and the left of the ring are out of view). The order hangs
+from the front clip, square on and readable; the other clips are empty. It turns left to
+right: a new order comes round from the left as it is read out, and Ticket turns it once all
+the way round. It is drawn in code (`js/stage.js`), not painted, so the words stay sharp at
+every text size; the ticket gets wider with Large and Extra Large text. The counter has no
+wheel: there, Ticket is the order's slip on the panel (it came down with the plate).
+
+## Voices and the script
+
+- **Voice Studio:** the new version (Bryan's `brosenberg99/voice-studio`, `main` at
+  9ef89d5, 2026-11-02) replaced the copy at `F:\PROJECT FILES\TOOLS\voice-studio-main` on
+  2026-11-07; the old copy is beside it as `voice-studio-main.backup-20261107`. That folder
+  is now a clone of Bryan's repo, so `git pull` there brings in his updates.
+- **Every character gets its own voice,** made in Voice Studio from a description (Describe a
+  voice). The voices need to be hilarious: adult jokes on the customers, no baby talk.
+- **One script per pack** (`packs/diner/script.js`): every line in the game (orders,
+  reactions, complaints, Mitch's hints, tutorial lines, gross-out jokes), with several
+  variants for each moment so it does not get repetitive. A line is `{ id, who, moment,
+  text }`; the game picks among a moment's variants and never repeats one in a shift.
+- **Orders are spoken from parts** in the customer's own voice ("Bacon cheeseburger" ·
+  "medium" · "no onions"), since every order is different. Complaints are written per
+  ingredient ("I said no cheese!"), so each is a whole recorded line.
+- **Recorded lines** are bundled files listed in `packs/diner/voice/manifest.js` with a hash of
+  the text they were recorded from. **Until a line is recorded, or after its text is edited,
+  it falls back to text to speech**, so the script can be tweaked at any time and only the
+  changed lines need re-recording. An order with any part unrecorded is spoken entirely by
+  text to speech, so one sentence never mixes two voices.
+- **Character Voices** setting: Voices and Captions (default) / Captions Only / Off. Scan
+  labels always follow Text to Speech.
+
+### Voice quality test
+
+Recording stopped on 2026-11-07 at 510 of 708 lines (all 110 of Mitch's; most of each
+customer's) so the voices can be checked before the rest are made. `tools/voice-test.py` makes
+one line per character in twelve versions: the take in the game, two more takes, more render
+steps, guidance 3.0 and 1.5, a take that carries on from the voice's own sample, two delivery
+experiments per character (other delivery notes, "hun" for "hon", a [laughing] or [sigh] tag
+left out), and the game's take slowed, made clearer or pitched. They are on a listening page,
+`voice-source/quality-test/index.html` (open it from the folder), with thumbs up and down, a
+star for the best and notes per character; "Save my picks" downloads
+`burger-bar-voice-picks.json`. The picks decide the recording settings and script changes
+before the remaining lines are recorded (and whether the recorded ones are redone).
+
+**Round 1 picks (2026-11-08,** `voice-source/burger-bar-voice-picks.json`; the page and clips
+moved to `voice-source/quality-test/round1/`):
+
+| Voice | Verdict | What changes |
+|---|---|---|
+| Mitch | Approved; best: another take (seed 2, 176 Hz); also liked: closest to the sample, clearer; down: the game's take (232 Hz) and "Higher" | His voice stays; the intro line is now the starred take. His own voice clip is 179 Hz, but his recorded lines' median is 210 Hz: the 33 more than 25% above it (the range thumbed down) are listed in `voice-source/takes/mitch/replaced-2026-11-08/replaced.json`, to record again with the pitch-aware recorder in the final voice pass; his 11 newest lines play as text to speech until then |
+| Marge | Every version down: "Deliver on hon with comma sounds unnatural. it's still distorted. let's reprompt with some different styles to choose from." | New voices in four styles; the model is given "hun" with no comma before it (captions keep "hon") |
+| Gus | Every version down: "needs more western drawl and slightly faster cadence" | New voices with a Western, Southern, Texas or country drawl, not slow |
+| Coach Bev | Every version down: "too high pitch. distorted. needs a butch female sounding character." | New low, butch voices. Her lines reach the voice model calm (full stops for "!", no capitals: `calm` in `tools/voices.json`; captions unchanged) and her delivery notes ask for firm, not loud: with "!" every clone shouted up to 220-360 Hz |
+| Vernon | Every version down: "a foppish fem male voice similar to Frasier or his brother Niles" | New foppish, fussy, refined voices (described in words; no actor's voice is copied); his delivery notes lose "droning" |
+
+**The distortion is measurable.** Voice Studio's clarity score (SQUIM, a PESQ estimate: about 1
+distorted, 4.5 clean) averaged 3.7 for Mitch's approved voice and 2.0 to 2.3 for the others in
+round 1 (Coach Bev 2.0, Marge 2.1); the designs had asked for rasp, which came out as
+distortion. Round 2's descriptions avoid rasp and gravel words, and candidates are ranked by
+it (`clarity()` in `tools/voices.py`).
+
+**Round 2** (`tools/voice-styles.py` with `tools/voice-styles.json`): for Marge, Gus, Coach Bev,
+Vernon and Sal, four styles each, every style designed with four seeds (six for Bev and Sal); the
+best two of each style (heard right, a pitch near the character's, then the clearest) say the
+character's test line cloned from that design, as the game records lines, with no delivery note,
+the take kept within 15% of the voice's own pitch where one is. The first wording for Bev and Sal
+asked for loudness ("loud", "barks orders", "loud-mouthed") and the model shouted, 200 to 390 Hz
+for voices meant to be low; they were redone asking for low-pitched voices that speak steadily. Same page
+address, `voice-source/quality-test/index.html`; each row also plays the sample the voice was
+designed from; "Save my picks" downloads `burger-bar-voice-picks-2.json`. Candidates are in
+`voice-source/design2/<character>/` with a report of every one made. The starred voice becomes
+the character's Voice Studio voice and their lines are recorded again.
+
+**Recording waits for the final pass.** The Food Court proposal (2026-11-08, build order 1)
+plays the whole script through text to speech while the restaurants are built and records
+voices last, once the script is settled; the Burger Bar's remaining lines wait too. The
+round-2 picks can come any time; nothing more is recorded until the final pass. (A Mitch
+re-record started that day was stopped at its first clips and undone.)
+
+## Controls and scanning
+
+### Contexts (ACCESSIBILITY §4)
+
+| Context | What is on screen | Classification |
+|---|---|---|
+| card | Main menu, Settings, Pause, tutorial offer, results, confirmations | CHOICE |
+| line | One step of the line: its answers on real objects, Ticket, Pause | CHOICE; Timed cooking is a CHOICE scan over a slowly changing world |
+| playout | A short animation of a choice already applied: a patty flipping, an ingredient dropping, a customer reacting | Not scanned; then the scan resumes |
+
+All the rules of §4 apply: every root opens on the blank -1, rows are entered with
+`enterGroup(children, {wrap:true, backStop:true})` and have no Back buttons, choices act on
+release, and Parking, Loops, Space Brake and Wait for Speech live only in Hub Settings.
+
+- **Stable ids:** `add`, `skip`, `swap`, `cook:<stage>`, `takeOff`, `pick:<value>`, `serve`,
+  `redo:<item>:<phase>`, `ticket`, `pause`. A redraw keeps the highlight on the same id; if
+  the id is gone, the scan clears to -1.
+- **Scenes breathe.** The customer's order, a reaction and a review are said in full before
+  the next screen takes over (with a cap, so a stuck speech engine never freezes play).
+- **Pause** is the last item on every line screen and on every card that is not itself
+  Pause. Holding Enter for 5 seconds also opens it (a ring shows from 2 seconds). Pause holds
+  the standard items (§7): Continue · Restart Shift · Settings · Main Menu · Exit Game.
+  Restart Shift, Main Menu and Exit Game each ask first, with Cancel first.
+- **Mouse and touch** work everywhere, in parallel.
+
+### How many presses
+
+| Order | Choices (Simple) |
+|---|---|
+| Hamburger or cheeseburger, as written | Grill 3 (Add, Skip, Medium) + Board 9 + Serve 1 + Next Customer 1 = 14 |
+| Double cheeseburger | Grill 4 + Board 9 + Serve 1 + Next Customer 1 = 15 |
+
+The order screen needs no press: the line starts when the customer has finished speaking.
+
+With the highlight staying on the last answer, a run of Adds costs one Enter each with two
+switches. The M1 numbers for the same cheeseburger were 29 selects and about 85 Space moves.
+The playtest judges the real numbers.
+
+## Settings
+
+In the canonical order (ACCESSIBILITY §7), from the main menu and from Pause. Labels say what
+changes, not who it is for.
+
+| # | Setting | Values (default first) |
+|---|---|---|
+| 1 | Text to Speech | On / Off |
+| 2 | Voice | cycles available voices |
+| 3 | Cooking | Simple / Timed |
+| 4 | Cooking Speed | Very Slow / Slow / Normal (disabled with Simple) |
+| 5 | Shift Length | 5 / 3 / 8 customers |
+| 6 | Orders | Usual / Simple / Fancy |
+| 7 | Assistant Manager | Hints and Jokes / Hints Only / Off |
+| 8 | Character Voices | Voices and Captions / Captions Only / Off |
+| 9 | Colour Profile | Standard / High Contrast |
+| 10 | Motion | Full / Reduced |
+| 11 | Text Size | Normal / Large / Extra Large |
+| 12 | Graphics Quality | Use Hub Setting / High / Standard / Low |
+| 13 | Auto Scan | Off — Two Switches / On — One Switch |
+| 14 | Scan Speed | 1 s to 5 s; default 2 s |
+| 15 | Sound Effects | On / Off |
+| 16 | Music | On / Off |
+| 17 | Reset Progress | two-step confirm |
+| 18 | Back | |
+
+Gone with the redesign: Pouring, Burning, Customers at Once, Mistake Warnings and Next-Step
+Star ([What the redesign changed](#what-the-redesign-changed)). Text to Speech, Voice, Auto
+Scan and Scan Speed stay even though the Hub has them, because the game is also played
+outside the Hub.
+
+## Recipes
+
+Starting prices are in coins, tuned in M6. "Starter" means unlocked from the first shift.
+
+| Recipe | Stations | Unlock | Price | Milestone |
+|---|---|---|---|---|
+| Hamburger | Grill, Board | Starter | 6 | M2 |
+| Cheeseburger | Grill, Board | Starter | 7 | M2 |
+| Bacon Cheeseburger | Grill, Board | 40 | 9 | M2 |
+| Double Cheeseburger | Grill, Board | 60 | 10 | M2 |
+| Fries | Fryer | Starter | 3 | M4 |
+| Fountain drink (cola, lemon-lime, orange) | Drinks | Starter | 2 | M4 |
+| Onion Rings | Fryer | 40 | 4 | M4 |
+| Lemonade and iced tea | Drinks | 30 | 3 | M4 |
+| Milkshake (chocolate, vanilla, strawberry) | Shake Bar | 60 | 5 | M5 |
+| Grilled Cheese | Griddle | 50 | 5 | M5 |
+| Pancake Stack | Griddle | 80 | 6 | M5 |
+| Breakfast Plate (pancakes + bacon) | Griddle | 100 | 9 | M5 |
+| Root Beer Float | Drinks, Shake Bar | 80 | 5 | M5 |
+| More shake flavours (banana, cookies and cream, mint chip) | Shake Bar | 50 each | 5 | M5 |
+| The Diner Tower (triple, bacon, everything) | Grill, Board | 150 | 14 | M2 |
+
+Until progression arrives (M6), every recipe of the milestone in play is unlocked. An order is
+one to three items, to match the Orders setting: Simple is one burger with up to two changes
+from the recipe; Usual is one or two items; Fancy changes more.
+
+## Saves
+
+Saved to `localStorage` as things happen.
+
+| Key | Holds |
+|---|---|
+| `bb-settings` | the settings above (version 2; version 1 saves are upgraded and the removed settings dropped) |
+| `bb-progress:diner` | coins, unlocks, best orders, whether the tutorial has been offered |
+| `bb-shift:diner` | the shift in progress, so it can be continued |
+
+Each holds `{v, pack, packVersion, …}`. A save from a newer version is never overwritten. If
+the pack has changed since the save, only the shift in progress is dropped.
+
+## How it is built
+
+### Built into the engine, not the burger
+
+The game stays modular: the diner could become a pizza place, or anything else, by swapping
+the content pack (`tests/packs/test-pizza` proves it). **The shared engine** holds the
+assembly-line phases and their three step kinds, the five-choice limit, Add/Skip/Swap It,
+the review with redo, both cooking modes with the automatic flip, accuracy scoring, the
+tutorial and its warnings, gross-outs with their cues and Mitch's hints, the expression
+images, the script and the voices. **A pack only supplies** its ingredients, recipes, stations
+(as lists of steps), stages, gross-outs, characters, backdrops and lines, and gets every
+feature for free.
+
+### Three layers
+
+1. **Rules, in `js/core/`.** No DOM, no THREE, no timers, seeded random numbers; every module
+   also loads under Node, so every rule is tested without a browser. Kept from M0: `rng`,
+   `orders`, `progress`, `savefmt`, and the ticket wording in `words`. New: `line` (the phases
+   and steps of one order, the review and redo, Timed cooking, the tutorial's warnings),
+   `judge` (mistakes, stars, tips), `shift` (who comes in, where gross-outs fall, the
+   tutorial's order), `script` (picking lines, recordings that match their words) and
+   `schema`. The free-roam modules (`items`, `kitchen`, `verbs`, `menus`, `planner`,
+   `scoring` and the old `shift`) stay in the M1 archive.
+2. **The diner, as data:** `packs/diner/pack.js` (ingredients, stations, recipes, cast,
+   gross-outs), `packs/diner/script.js` (every line), `packs/diner/art/` and
+   `packs/diner/voice/`.
+3. **Presentation, in `js/`:** the 2D stage (backdrops, characters, real-object controls),
+   the 3D food (Three.js, cel-shaded), cards, audio and voice, and switch input through the
+   Hub's shared choice scanner (`NarbeChoiceScanAdapter`).
+
+### Graphics quality
+
+Follows `GRAPHICS-QUALITY.md` (hub root). Load `shared/platform.js`, then
+`shared/graphics-quality.js`, before any renderer code; open the game with the stable id
+`bensfoodcourt` (was `bensburgerbar` until the 2026-11-08 rename) and wait for `ready` before
+creating the renderer. The setting has the stable
+id `graphics-quality`. Low turns off shadows and antialiasing and caps the renderer at
+1280 × 720; food, doneness marks, characters, the scan frame and all text stay the same. Low
+never changes rules, timing, input or random results.
+
+### Offline
+
+Every dependency is local: Three.js in `js/vendor/` with its licence, art, sound and recorded
+voices. No CDN links. Text to speech uses the device's own voices; recorded voices always work
+offline. When the game is later copied to the website, its offline-manifest step applies
+there.
+
+### Files
+
+```
+BENSFOODCOURT/              (BENSBURGERBAR until 2026-11-08)
+  DESIGN.md                 this file: Ben's Burger Bar, the template restaurant
+  BENS-FOOD-COURT           the Ben's Food Court proposal (the court, seven restaurants, build order)
+  BURGER-BAR-REDESIGN       the Nov 7 call's notes
+  index.html
+  js/core/*.js              rules (Node-testable)
+  js/*.js                   presentation
+  js/vendor/                pinned Three.js and its licence
+  packs/diner/pack.js       the diner's data
+  packs/diner/script.js     every line, with variants
+  packs/diner/art/          backdrops, characters (one folder each), props, manifest.js
+  packs/diner/voice/        recorded lines and manifest.js
+  packs/diner/sound/        sound effects (synthesised by tools/make-sounds.cjs)
+  tests/*.test.cjs          node --test "bennyshub/apps/games/BENSFOODCOURT/tests/*.test.cjs"
+  tests/packs/test-pizza/   test-only proof pack (never published)
+  tools/                    art and voice build scripts
+  art-source/               raw generated art, its prompts and jobs (never loaded, never published)
+  voice-source/             voice candidates and takes (never loaded, never published)
+```
+
+Everything for the game lives here, in Benny's PC Hub, while it is made and tested; it goes to
+the website's copy on `F:` only after it is approved. That includes the working files:
+`art-source/` holds the raw generated art, the ChatGPT (Codex) prompts and jobs that made it
+and the review sheets, and `voice-source/` holds the voice candidates and takes. The game never
+loads either; `tools/build_art.py` makes the finished, optimised images in `packs/diner/art/`,
+and `tools/voices.py` the recorded lines in `packs/diner/voice/`. Neither folder goes to the
+website. Every image is checked before it goes in.
+
+### Testing on this PC
+
+Node only: the rules under `node --test`, the whole page under jsdom driven by Space and
+Enter like a switch interface, and 3D frames drawn on the CPU for review. No browser or
+Electron window is opened for testing here; the final look is checked by a person.
+
+## Milestones
+
+| M | What gets built | Done when |
+|---|---|---|
+| M2 | The guided line: rules (`line`, `judge`, `gross`, `script`, `tutorial`, `shift`) for burgers; the test pizzeria on the same engine; the 2.5D stage with first art; the script with text to speech; the tutorial | Node tests: never more than five choices on a screen, every step a single press, every recipe can be made for 3 stars, the judge counts every kind of mistake, at most two gross-outs per shift and never two on one order, tutorial warnings only in the tutorial, the pizza pack needs no engine change, a shift saves and restores exactly. A jsdom run plays a whole shift with Space and Enter, two-switch and one-switch |
+| M3 | Backdrops (counter, grill, board), Mitch and the first four customers with ten expressions each, cel-shaded food, voices for those five in Voice Studio | Every line those five say is recorded or falls back cleanly; Wait for Speech waits on recorded lines. **The player tries it:** presses per order, fatigue, is it fun? |
+| M4 | Fryer and drinks; Timed cooking polish; more of the cast | Second playtest |
+| M5 | Shake bar, griddle, the rest of the cast, walk-in pool, more script variety | |
+| M6 | My Diner (coins, unlocks, decor), Free Cook, visitors' book, naming regulars | Coins never go negative; every unlock is reachable |
+| M7 | Listed in the hub, after test and approval | ACCESSIBILITY §10 checklist; the player goes hub → game → shift → pause → settings → hub alone with their own switch setup |
+
+## What the redesign changed
+
+How the Nov 7 call and the earlier design were reconciled. "Call" is the call's notes;
+"proposal" marks a point the call left open, with a default written in for review.
+
+| Earlier design | Now | Source |
+|---|---|---|
+| Free-roam stations: Go To, bins, slots, Take, Put Down, Send, holding things | The assembly line: each step offers one thing | Call |
+| Flip as a choice | Automatic, part of the animation | Call |
+| Pick the Doneness / Time It Yourself | Simple (default) / Timed (challenge) | Call |
+| Patty stages Raw → Blue Rare → Rare → Medium → Well Done → Extra Crispy, two sides scored separately | Rare / Medium / Medium Well / Well Done to pick; Timed runs on to Charred; one doneness per patty | Call (four options); proposal (Charred, one per patty) |
+| Burning setting (food can burn) | Gone: in Timed, Charred is the end and costs one mistake | Proposal |
+| Stack order scored | The line's order is the stack's order | Proposal |
+| Sauce amounts (dab, line, lots); Auto-Fill and Hold to Pour | Add or Skip, always a normal squeeze; the Pouring setting is gone | Call (Add or Skip) |
+| Bacon cooked on the grill (chewy or crispy) | Pre-cooked bacon on the board line; charred bacon is a gross-out | Proposal |
+| Order card after each serve, checks scored 0.4 to 1, stars from the average | Stars by mistakes (none, one or two, more); the customer's review names each mistake; a receipt slip lists them | Call |
+| Hidden favourites add to the score | They add a bonus tip and a line, never stars | Proposal (keeps three stars obvious) |
+| Mistake Warnings setting | Warnings only in the tutorial, before the mistake lands | Call |
+| Next-Step Star | Gone: the line only ever asks the next thing | Call |
+| Customers at Once, Tickets row, one tray per order | One customer at a time; more at once moves to Later (a day at the diner) | Call (flow) |
+| Check the Tray, remaking | The review, with Redo the Grill and Redo the Toppings | Call |
+| — | Tutorial | Call |
+| — | Gross-outs with Swap It | Call; the spoken label is a proposal |
+| 3D toon customers, `worldui` choice plates | 2D characters with about ten whole-pose images each; real-object controls | Call |
+| Box-art kitchen | 2D backdrops per station, 3D food | Call |
+| Walk-ins built from parts | A pool of extra drawn customers, later | Proposal |
+| `content/voice-lines.json` (M4) | `packs/diner/script.js` with variants, recorded lines with text hashes, text-to-speech fallback | Call |
+| Main menu: Start Shift · Free Cook · My Diner · How to Play · Settings · Exit | Start Shift · Tutorial · Settings · Exit Game; My Diner and Free Cook return in M6 | Proposal |
+| Mitch speaks only into silence | Still, except a gross-out line, said as the bad ingredient arrives | Proposal |
+| Website paths (`bennyshub/ACCESSIBILITY.md`, `docs/development/…`, `npm run audit:release`, `D:\Projects\Assets\`) | PC hub paths: `ACCESSIBILITY.md` and `GRAPHICS-QUALITY.md` at the hub root; working art and voices in the game's `art-source/` and `voice-source/` | This PC |
+
+**Kept as they were:** the writing tone; the cast as drafted; Mitch, his look and his rules
+for when he talks; tips; no zero and no fail; never scoring time; Pause last plus the
+5-second hold; the Settings rows that wrap the Hub's managers; the save format; the
+seeded, Node-tested rules and the test pizzeria; Graphics Quality; offline; an unlisted first
+release; My Diner, Free Cook and naming regulars as later work.
+
+## Later
+
+- **A day at the diner** (Ari): from quiet hours with one customer to a rush with more, with
+  no deadlines. Brings back more than one customer at once.
+- **My Diner and Free Cook** (M6): recipes, decor and upgrades bought with tips (upgrades add
+  room or flair, never speed); every ingredient with no tickets, and Feed Someone.
+- **Naming regulars:** a walk-in served three times becomes a regular, named from
+  suggestions or spelled with the Pet Pals keyboard (`NARBEPETPALS/js/game.js`).
+- **Caregiver mode:** a menu editor and a favourite-customer editor, behind the spoken
+  warning before any mouse-only screen (ACCESSIBILITY §7). The pack format already holds
+  recipes, customers and lines as data.
+
+## Open questions
+
+From the Nov 7 call:
+
+1. **Pose swap:** a quick bounce, or just a cut? *Proposal: bounce on Full motion, cut on
+   Reduced.*
+2. **The roughly ten expressions:** which goes with which moment? *Proposal: the
+   [Expressions](#expressions-proposal-the-mapping-is-open) table.*
+3. **Final menus:** 2D or 3D? *Proposal: 2D diner boards.*
+4. **The cast list and each character's personality.** *Proposal: start with the cast
+   drafted on 2026-11-01; first art and voices for Mitch, Marge, Gus, Coach Bev and Vernon.*
+
+From the reconcile, for Ari, Bryan and Tabby:
+
+5. Bacon moves to the board line (pre-cooked), so the grill is patties only and charred bacon
+   is the "overcooked" gross-out. OK?
+6. Four doneness options (Rare, Medium, Medium Well, Well Done), or five with Medium Rare?
+7. Swap It appears only on a bad ingredient, and its spoken label names the problem ("Add the
+   green cheese"), so the cue never depends on sight or on Mitch alone. OK?
+8. The tutorial order includes one gross-out, to teach Swap It. OK?
+9. Sauce amounts and "extra pickles" leave the tickets (Add or Skip has no amount). Coach
+   Bev's favourite becomes a line about the pickles. OK?
+10. Settings removed: Pouring, Burning, Customers at Once, Mistake Warnings, Next-Step Star.
+    OK?
+11. Walk-ins become a pool of extra drawn customers. OK?
+
+## Decided
+
+**Ben's Food Court (2026-11-08)**
+
+- The game pivots to Ben's Food Court, and this restaurant is the template for the others
+  (proposal: `BENS-FOOD-COURT` in this folder). The folder is `BENSFOODCOURT`, the id
+  `bensfoodcourt`. Not yet built: the court, its menu and the other restaurants.
+
+**Voice test, round 1 (2026-11-08)**
+
+- Mitch's voice is approved; Marge, Gus, Coach Bev and Vernon get new voices
+  ([Voice quality test](#voice-quality-test)): Gus with a Western drawl and a quicker pace, Bev
+  low and butch, Vernon foppish and fussy, Marge in a choice of styles with a natural "hon".
+- A new customer, **Sal**: a gruff, crude New Yorker who runs the hot-dog cart and never takes
+  lettuce ([Customers and cast](#customers-and-cast)).
+
+**First playtest (2026-11-07)**
+
+- The ticket spells out every patty and everything that goes on ([The ticket](#the-ticket)).
+- The ticket wheel is a front view of a flat diner order wheel in the kitchen's top-left
+  corner, turning left to right; none at the counter ([No floating UI](#no-floating-ui)).
+- Sauces are squirted from their squeeze bottles.
+- Nothing in a backdrop is out of focus (the counter queue's blur is gone).
+- Voice recording waits for the [voice quality test](#voice-quality-test).
+
+**Nov 7 design call (Ari, Bryan, Tabby)**
+
+- The guided, phase-based assembly line replaces the free-roam station scan: order, grill,
+  board, review, serve. The ingredients come to the player.
+- Every screen: -1, Pause, and no more than about five choices.
+- Flipping is automatic. Cooking is Simple (default; four or five doneness options, always
+  comes out as chosen) or Timed (a forgiving challenge, the one place cooking can go wrong).
+- Rating by accuracy, never time: 3 stars for everything right, 2 for one or two mistakes,
+  1 for more; no zero, no fail. The customer's review says exactly what was wrong.
+- An optional tutorial, with warnings before a mistake lands; no warnings outside it.
+- Random gross-outs, one or two per shift at most, flagged visually and by Mitch; catching
+  one keeps the order clean, missing it gets a disgusted reaction.
+- 2.5D: 3D food and cooking; 2D cel-shaded original characters with about ten whole-pose
+  expression images, big on screen; 2D backdrops per station with hidden funny details;
+  final menus may be 2D.
+- No floating UI: real objects in the diner (the ticket wheel, the cash register).
+- Pull the new Voice Studio and replace the old one; every character gets its own voice;
+  the voices are hilarious, adult, with the jokes on the customers.
+- Everything above lives in the shared engine; a pack only supplies content.
+- One editable script per pack, with variety; re-record only changed lines; text to speech
+  until a line is recorded.
+
+**Ari's review (2026-11-01)**, as it stands after the redesign
+
+1. Cooking has two modes; timed cooking is very forgiving, and everything works with single
+   presses.
+2. Customers at Once was approved; with one customer at a time on the line, it moves to
+   Later.
+3. Pause: approved.
+4. Editors: room left for them; caregiver editors come later.
+5. Mitch: approved; he talks while the scan is parked.
+
+**Bryan (2026-11-01 and 11-02)**
+
+- **Title:** Ben's Burger Bar. The folder `BENSBURGERBAR` and the id `bensburgerbar` are final.
+  *(Superseded 2026-11-08: the game became Ben's Food Court, folder `BENSFOODCOURT`, id
+  `bensfoodcourt`; Ben's Burger Bar is its first restaurant.)*
+- **Shift Length** stays at 5 customers by default until the playtests.
+- **Cast changes:** Gus orders two of one thing; Oakes sounds nasal and nerdy; Dale is the
+  onion-ring guy; add Kai and Vernon; add walk-ins for variety.
+- **Help without giving the answer:** reminders of what the customer wants stay on (the
+  ticket is always in view and Ticket says it again); saying something is wrong does not,
+  except in the tutorial.
+- **Review, redo, then learn:** the player may check and redo before serving; a messed-up
+  order is served as made and the review says what went wrong.
+
+## M2 notes
+
+Built 2026-11-07, in Benny's PC Hub only (not on the website, not in `games.json`).
+
+- **Rules** (`js/core/`): `line` (phases, the three step kinds, the review and redo, Timed
+  cooking's clock), `judge`, `shift` (who comes in, where gross-outs fall), `script`, `words`,
+  `schema`, plus Bryan's `orders`, `rng`, `progress` and `savefmt` (settings version 2). The
+  test pizzeria runs on the same engine. `node --test "bennyshub/apps/games/BENSFOODCOURT/tests/*.test.cjs"`
+  (Node 22 wants the pattern, not the folder) runs 53 tests, among them 600 bot shifts across
+  every setting, 600 seeds of gross-out placement, and 120 shifts checking Sal never gets lettuce. Press counts measured by the tests: 13 line choices for a hamburger or
+  cheeseburger, 14 for a double or the Tower (plus Next Customer).
+- **The page** (`js/`): `stage` (2D layers and real-object controls), `world` (3D food,
+  cel-shaded; the game still plays if WebGL will not start), `ui` (the hub's choice scanner,
+  keys, menu boards), `game` (the flow), `audio` (sound effects and voices), `save`.
+- **Played through the real page** with the hub's real scanner, by Space and Enter only, in
+  jsdom (`tests/dom-play.cjs`): the tutorial (every deliberate mistake was warned, none
+  landed), shifts with two switches, one switch (Auto Scan), Timed cooking, Fancy orders with
+  captions only and Mitch off, Pause, Settings, Main Menu and Continue Shift, and an
+  eight-customer shift that serves the whole cast (it fails if an order leaves off a customer's
+  dislike and their `order.dislike` line is not said).
+- **Art:** made with ChatGPT through Codex (`art-source/jobs/`, prompts by
+  `write_prompts.py`); cut out with BiRefNet and exported by `tools/build_art.py`. Review
+  frames without a browser: `tools/review-frames.cjs` draws the real 3D scene on the CPU and
+  `tools/review_compose.py` lays the 2D stage over it (`art-source/review/frames/`). Sal was
+  made the same way on 2026-11-08 (`write_prompts.py models sal`, then `poses sal`; sheet
+  `art-source/review/sal-poses.png`); `node tools/review-frames.cjs <out> sal` shoots only his
+  session (ordering, the lettuce line, the reaction).
+- **Voices:** designed in Voice Studio from `tools/voices.json` (`tools/voices.py design`):
+  the picks are in Voice Studio's library as "Burger Bar: Mitch", "…: Marge", "…: Gus",
+  "…: Coach Bev" and "…: Vernon", and every candidate is in `voice-source/design/`. Lines are
+  recorded with `node tools/voice-clips.cjs voice-source/clips.json` then
+  `tools/voices.py record voice-source/clips.json` (708 clips: the script's lines and every
+  order part for each customer); a clip whose words change is recorded again and plays as
+  text to speech until then. Stopped at 510 for the [voice quality test](#voice-quality-test):
+  do not record the rest until the picks are in. Round 2's new voices come from
+  `tools/voice-styles.py`; with Sal the script needs 852 line clips plus 57 order parts per customer
+  (1042 clips in all). Since 2026-11-08 the recorder gives the voice model each character's
+  respellings (`respell` in `tools/voices.json`: Marge's "hon" becomes "hun"), and keeps a take only
+  near the voice's own pitch (15%, 25% with a delivery note) and clear, else the nearest of four;
+  `voices.py use <character> <candidate>` makes a round-2 pick the character's voice and takes
+  their old recordings out of the manifest.
+- **Sounds** are synthesised by `tools/make-sounds.cjs` (soft and short for anything heard
+  every step); `node tools/make-sounds.cjs squirt` writes just the named ones.
+- **Motion:** `tests/dom-play.cjs` has a Motion Full shift that checks the wheel turns and
+  stops square on, the bottles squirt, and Ticket works in the kitchen and at the counter. The
+  review frames include the wheel mid-turn and the bottle mid-squirt.
+- **Not verified here:** how it looks and runs in a real browser (browsers are not opened for
+  testing on this PC; the review frames are an approximation), the voices by ear, and the
+  timing of real speech. The player's playtest is the check.
+
+## History
+
+**M0 (2026-11-02, Bryan).** The rules engine: seeded, Node-tested, no ingredient names in the
+rules, one stage process for cooking, a test pizzeria that needed no rules changes, saves
+that restore exactly. Its order generator, words, progress and save format carry into M2;
+its kitchen, verbs, menu builder and planner bot were the free-roam flow.
+
+**M1 (2026-11-02, Bryan).** The free-roam greybox: grill, board and counter with the scan on
+the kitchen itself. Measured in the browser: 54 selects and 150 Space moves for a two-burger
+order, 28 selects for a plain hamburger. Those numbers led to the Nov 7 redesign. The build
+is archived at `archives/games/2026-11-07/BENSBURGERBAR-M1` (Bryan's `burger-bar` branch,
+4c12eff3).

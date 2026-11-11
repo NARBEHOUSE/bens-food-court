@@ -1,0 +1,10 @@
+Use case: stylized-concept; character model for a 2D comedy diner game.
+Asset type: ONE full-body character neutral model pose on plain pure white. 1024 x 1536 pixels, portrait.
+Style: original 2D cartoon art, TV-cartoon look. Thick, clean, even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated proportions (big head, big hands, big expressive eyes and mouth); strong readable silhouette. Funny for adults: dry, deadpan comedy, never cute, never babyish. ORIGINAL design, must not resemble any existing cartoon character, show or brand.
+Character: GUS, a long-haul trucker. About 50, huge and broad, a gentle giant. An enormous bushy brown beard down to his chest, a mesh-back trucker cap with a plain round patch (no writing), a red-and-black flannel shirt with rolled sleeves under a puffy green vest, jeans, big work boots. Friendly, slow and kind.
+Pose: NEUTRAL, standing relaxed and natural, calm pleasant face, hands at rest. This is the character's model pose.
+Framing: ONE character, full body from top of head to shoes, standing, facing the viewer and turned very slightly toward the viewer's right. Figure fills about 88% of image height, centred, clear margin all round; nothing cropped, hands, hat and feet all inside frame.
+Background and constraints: plain pure white background, no floor, no cast shadow, no border, no text, no other objects. No gradients, soft shading, texture rendering or 3D.
+
+Refinement prompt:
+Keep this exact Gus character design, clothing, neutral pose and slight turn to viewer's right. Correct only framing and shading: 1024 x 1536 portrait. Scale entire character uniformly to occupy 88% of canvas height, with 6% pure white margin above cap and below boots, centred. Plain pure #FFFFFF background. Remove ALL gradients and texture from every area, use strictly uniform flat colour fills plus ONE solid hard-edged cel-shadow colour per base colour. Preserve clean thick even black outlines. No floor or cast shadow, no text.

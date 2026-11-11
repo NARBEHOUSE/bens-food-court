@@ -1,0 +1,118 @@
+/** Built by tools/build_art.py: the pictures that exist, and its counter picture's layout (the game never asks for a missing one). */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else ((root.BBArt = root.BBArt || {}).diner = data);
+})(typeof window === 'undefined' ? globalThis : window, {
+  "cast": {
+    "bev": [
+      "angry",
+      "annoyed",
+      "delighted",
+      "disgusted",
+      "happy",
+      "laughing",
+      "neutral",
+      "shocked",
+      "talking",
+      "waiting"
+    ],
+    "gus": [
+      "angry",
+      "annoyed",
+      "delighted",
+      "disgusted",
+      "happy",
+      "laughing",
+      "neutral",
+      "shocked",
+      "talking",
+      "waiting"
+    ],
+    "marge": [
+      "angry",
+      "annoyed",
+      "delighted",
+      "disgusted",
+      "happy",
+      "laughing",
+      "neutral",
+      "shocked",
+      "talking",
+      "waiting"
+    ],
+    "mitch": [
+      "disgusted",
+      "facepalm",
+      "laughing",
+      "neutral",
+      "pointing",
+      "shocked",
+      "shrug",
+      "talking",
+      "thumbsUp",
+      "worried"
+    ],
+    "sal": [
+      "angry",
+      "annoyed",
+      "delighted",
+      "disgusted",
+      "happy",
+      "laughing",
+      "neutral",
+      "shocked",
+      "talking",
+      "waiting"
+    ],
+    "vernon": [
+      "angry",
+      "annoyed",
+      "delighted",
+      "disgusted",
+      "happy",
+      "laughing",
+      "neutral",
+      "shocked",
+      "talking",
+      "waiting"
+    ]
+  },
+  "backdrops": [
+    "board",
+    "counter",
+    "drinks",
+    "fryer",
+    "grill"
+  ],
+  "props": [
+    "back5",
+    "bell",
+    "register",
+    "spatula",
+    "ticketWheel"
+  ],
+  "castSize": [
+    768,
+    1152
+  ],
+  "backdropSize": [
+    1536,
+    1024
+  ],
+  "counter": {
+    "queue": [
+      0.513,
+      0.77
+    ],
+    "heads": 0.45,
+    "feet": 0.763,
+    "eyes": 0.495,
+    "horizon": 0.48,
+    "sign": [
+      0.296,
+      0.056,
+      0.703,
+      0.143
+    ]
+  }
+});

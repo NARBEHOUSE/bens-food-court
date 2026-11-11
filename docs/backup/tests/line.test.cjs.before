@@ -1,0 +1,184 @@
+/** The assembly line: steps, Add/Skip/Swap It, cooking, the review and redo, what was made. */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const { diner: pack, O, L, R } = require('./bot.cjs');
+
+const SIMPLE = { cooking: 'simple' };
+function order(recipe, opts) {
+  opts = opts || {};
+  const s = { rng: R.seed(5) };
+  const spec = O.resolve(pack, recipe, s, { change: 0, set: opts.set });
+  if (opts.hold) O.hold(spec, opts.hold);
+  return L.create(pack, { customer: { id: 'marge', name: 'Marge' }, items: [spec].concat(opts.more || []) },
+    { gross: opts.gross, tutorial: opts.tutorial, settings: opts.settings || SIMPLE });
+}
+const q = (o, st) => L.question(pack, o, st || SIMPLE);
+const say = (o, id, st) => L.answer(pack, o, id, st || SIMPLE);
+/** Answer the board's nine steps: add the listed ingredients, skip the rest. */
+function board(o, adds) {
+  for (let k = 0; k < 9; k++) { const x = q(o); say(o, adds.includes(x.ing) ? 'add' : 'skip'); }
+}
+
+test('the grill offers patties one at a time, up to three', () => {
+  const o = order('tower');
+  let x = q(o);
+  assert.deepStrictEqual([x.kind, x.station, x.ing, x.offer, x.fresh], ['add', 'grill', 'patty', 1, true]);
+  say(o, 'add'); x = q(o);
+  assert.deepStrictEqual([x.offer, x.have, x.fresh], [2, 1, false]);
+  say(o, 'add'); say(o, 'add');
+  x = q(o);
+  assert.strictEqual(x.kind, 'cook', 'after the third patty the grill moves on by itself');
+  assert.deepStrictEqual(x.options.map(z => z.id), ['cook:rare', 'cook:medium', 'cook:mediumWell', 'cook:well']);
+  assert.strictEqual(x.count, 3);
+});
+
+test('Skip ends the patties early; no patty means nothing to cook', () => {
+  const o = order('hamburger');
+  const r = say(o, 'skip');
+  assert.ok(r.events.some(e => e.type === 'nothingToCook'));
+  const x = q(o);
+  assert.deepStrictEqual([x.station, x.ing, x.fresh], ['board', 'cheese', true]);
+});
+
+test('Simple cooking takes only its offered stages; Timed only Take It Off', () => {
+  const o = order('hamburger');
+  say(o, 'add'); say(o, 'skip');
+  assert.ok(say(o, 'cook:charred').refused);
+  assert.ok(say(o, 'takeOff').refused);
+  const r = say(o, 'cook:well');
+  assert.ok(r.events.some(e => e.type === 'cooked' && e.stage === 'well'));
+  assert.ok(r.events.some(e => e.type === 'phase' && e.station === 'board'));
+});
+
+test('Swap It is only offered on a bad ingredient, and brings a fresh one', () => {
+  const o = order('cheeseburger', { gross: { item: 0, ing: 'cheese', event: 'mouldy' } });
+  say(o, 'add'); say(o, 'skip'); say(o, 'cook:medium');
+  let x = q(o);
+  assert.strictEqual(x.ing, 'cheese');
+  assert.deepStrictEqual(x.gross, { event: 'mouldy' });
+  assert.deepStrictEqual(x.options.map(z => z.id), ['add', 'skip', 'swap']);
+  const r = say(o, 'swap');
+  assert.ok(r.events.some(e => e.type === 'swapped'));
+  x = q(o);
+  assert.deepStrictEqual([x.ing, x.gross, x.fresh], ['cheese', null, false]);
+  assert.deepStrictEqual(x.options.map(z => z.id), ['add', 'skip']);
+  assert.ok(say(o, 'swap').refused);
+});
+
+test('adding the bad one serves it', () => {
+  const o = order('cheeseburger', { gross: { item: 0, ing: 'cheese', event: 'mouldy' } });
+  say(o, 'add'); say(o, 'skip'); say(o, 'cook:medium');
+  const r = say(o, 'add');
+  assert.ok(r.events.some(e => e.type === 'grossServed' && e.event === 'mouldy'));
+  assert.strictEqual(o.items[0].gross.length, 1);
+  assert.strictEqual(L.made(pack, o, 0).parts.find(p => p.ing === 'cheese').gross, 'mouldy');
+});
+
+test('the review offers Serve and a redo of each station; a redo comes straight back', () => {
+  const o = order('cheeseburger');
+  say(o, 'add'); say(o, 'skip'); say(o, 'cook:rare');
+  board(o, ['cheese', 'lettuce']);
+  let x = q(o);
+  assert.strictEqual(x.kind, 'review');
+  assert.deepStrictEqual(x.options.map(z => z.id), ['serve', 'redo:0:grill', 'redo:0:board']);
+  say(o, 'redo:0:grill');
+  x = q(o);
+  assert.deepStrictEqual([x.station, x.ing, x.offer, x.fresh], ['grill', 'patty', 1, true]);
+  say(o, 'add'); say(o, 'add'); say(o, 'skip'); say(o, 'cook:well');
+  x = q(o);
+  assert.strictEqual(x.kind, 'review', 'after the grill, the review, not the board again');
+  const m = L.made(pack, o, 0);
+  assert.deepStrictEqual(m.parts.map(p => p.ing), ['bun', 'patty', 'cheese', 'patty', 'cheese', 'lettuce', 'bun']);
+  assert.ok(m.parts.filter(p => p.ing === 'patty').every(p => p.done === 'well'));
+  assert.ok(say(o, 'serve').events.some(e => e.type === 'served'));
+  assert.strictEqual(o.phase, 'served');
+});
+
+test('what was made stacks in the line order: bun, patties with their cheese, toppings, bun', () => {
+  const o = order('baconCheeseburger');
+  say(o, 'add'); say(o, 'skip'); say(o, 'cook:medium');
+  board(o, ['cheese', 'bacon', 'tomato', 'ketchup', 'mayo']);
+  assert.deepStrictEqual(L.made(pack, o, 0).parts.map(p => p.ing), ['bun', 'patty', 'cheese', 'bacon', 'tomato', 'ketchup', 'mayo', 'bun']);
+});
+
+test('more than three redo choices go in a row of the items', () => {
+  const two = O.resolve(pack, 'hamburger', { rng: R.seed(2) }, { change: 0 });
+  const o = order('cheeseburger', { more: [two] });
+  for (let k = 0; k < 2; k++) { say(o, 'add'); say(o, 'skip'); say(o, 'cook:medium'); board(o, []); }
+  const x = q(o);
+  assert.deepStrictEqual(x.options.map(z => z.id), ['serve', 'redo']);
+  assert.deepStrictEqual(x.options[1].row.map(z => z.id), ['redo:0', 'redo:1']);
+  assert.deepStrictEqual(x.options[1].row[1].row.map(z => z.id), ['redo:1:grill', 'redo:1:board']);
+});
+
+test('unknown answers are refused and change nothing', () => {
+  const o = order('hamburger');
+  const before = JSON.stringify(o);
+  assert.ok(say(o, 'nonsense').refused);
+  assert.ok(say(o, 'serve').refused);
+  assert.strictEqual(JSON.stringify(o), before);
+});
+
+test('Timed: the food moves through its stages, and the ticket\'s stage lasts twice as long', () => {
+  const T = { cooking: 'timed', speed: 'normal' };          // 5 s a stage
+  const o = order('hamburger', { set: { doneness: 'medium' }, settings: T });
+  say(o, 'add', T);
+  const r = say(o, 'skip', T);
+  assert.ok(r.events.some(e => e.type === 'cooking' && e.stage === 'raw'));
+  let x = q(o, T);
+  assert.deepStrictEqual([x.timed, x.stage, x.options.map(z => z.id)], [true, 'raw', ['takeOff']]);
+  const stages = [];
+  const nearly = [];
+  for (let t = 0; t < 60; t++) L.tick(pack, o, 1, T).forEach(e => (e.type === 'stage' ? stages.push([t + 1, e.stage]) : e.type === 'nearly' && nearly.push(t + 1)));
+  // raw 5 s, rare 5 s, medium (wanted) 10 s, medium well 5 s, well done 5 s, then charred and stop.
+  assert.deepStrictEqual(stages, [[5, 'rare'], [10, 'medium'], [20, 'mediumWell'], [25, 'well'], [30, 'charred']]);
+  assert.deepStrictEqual(nearly, [5], 'a heads-up one stage before the ticket\'s');
+  x = q(o, T);
+  assert.strictEqual(x.stage, 'charred');
+  const done = say(o, 'takeOff', T);
+  assert.ok(done.events.some(e => e.type === 'cooked' && e.stage === 'charred'));
+});
+
+test('Timed: the clock only moves when ticked (it freezes on Pause, cards and blur)', () => {
+  const T = { cooking: 'timed', speed: 'slow' };
+  const o = order('hamburger', { settings: T });
+  say(o, 'add', T); say(o, 'skip', T);
+  const snap = JSON.stringify(o.timer);
+  assert.strictEqual(JSON.stringify(o.timer), snap);
+  L.tick(pack, o, 0, T);
+  assert.strictEqual(JSON.stringify(o.timer), snap);
+});
+
+test('the tutorial warns before a mistake lands, and applies nothing', () => {
+  const o = order('baconCheeseburger', { set: { doneness: 'medium' }, hold: ['onion'], tutorial: true, gross: { item: 0, ing: 'cheese', event: 'mouldy' } });
+  assert.deepStrictEqual(say(o, 'skip').warn.kind, 'tooFew');
+  say(o, 'add');
+  assert.deepStrictEqual(say(o, 'add').warn.kind, 'tooMany');
+  say(o, 'skip');
+  const w = say(o, 'cook:well').warn;
+  assert.deepStrictEqual([w.kind, w.want, w.got], ['done', 'medium', 'well']);
+  say(o, 'cook:medium');
+  assert.strictEqual(say(o, 'add').warn.kind, 'gross');
+  assert.strictEqual(say(o, 'skip').warn.kind, 'grossSkip');
+  say(o, 'swap'); say(o, 'add');                       // fresh cheese
+  say(o, 'add');                                       // bacon
+  say(o, 'add'); say(o, 'add');                        // lettuce, tomato
+  say(o, 'skip');                                      // pickles (not on it)
+  const onion = say(o, 'add').warn;
+  assert.deepStrictEqual([onion.kind, onion.ing, onion.held], ['extra', 'onion', true]);   // she said "no onions"
+  say(o, 'skip');
+  assert.strictEqual(say(o, 'skip').warn.kind, 'missing');   // ketchup is wanted
+  say(o, 'add');                                       // ketchup
+  const mustard = say(o, 'add').warn;                  // never mentioned: simply not on the ticket
+  assert.deepStrictEqual([mustard.kind, mustard.ing, mustard.held], ['extra', 'mustard', false]);
+});
+
+test('the tutorial always cooks Simple, even with Timed set', () => {
+  const T = { cooking: 'timed' };
+  const o = order('hamburger', { tutorial: true, settings: T, set: { doneness: 'rare' } });
+  say(o, 'add', T); say(o, 'skip', T);
+  const x = q(o, T);
+  assert.ok(!x.timed);
+  assert.ok(x.options.some(z => z.id === 'cook:rare'));
+});

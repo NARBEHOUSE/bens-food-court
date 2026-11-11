@@ -1,0 +1,8 @@
+# Lulu — laughing
+
+Generated with the built-in image generation tool.
+
+Use case: identity-preserve. Asset: one full-body character pose for a 2D comedy diner game, portrait PNG 1024 x 1536.
+Reference image 1 is the APPROVED neutral model of the user's original character LITTLE LULU. Copy this specific design exactly; change ONLY pose and facial expression. Preserve her face and head design, orange-red hair with two bouncy pigtails, pink bow at viewer left and yellow bow at viewer right, freckles, small seven-year-old body and proportions, blue dungarees with yellow fasteners and rolled cuffs, magenta-and-white striped shirt and socks, rainbow sneakers, pink straps and ice cream cone backpack with vanilla scoop, sprinkles and cherry. Keep identical colours, thick clean even black outline weight, bold shapes, and one hard-edged cel-shadow tone per colour.
+LAUGHING pose: doubled over laughing, bent forward at the waist while standing on her feet, knees bent, one hand on her belly and the other hand slapping her knee. Clearly separate the arms so the action reads instantly from the silhouette. Eyes squeezed shut with visible tears of laughter and a big open laughing mouth. Broad comedic laughter, never babyish or saccharine.
+Composition: ONE character, full body from top of hair and bows to soles of shoes; facing viewer and turned very slightly toward viewer's right. Figure fills about 88 percent of canvas height, centred with clear white margins all around. Both hands, pigtails, bows, backpack and feet fully inside frame. Pure white background, no floor, no cast shadow, no border, no text, no additional objects. Original TV-cartoon game art; preserve the supplied original design without importing the design of any existing character or brand.

@@ -1,0 +1,1308 @@
+/* Built by tools/voice-styles.py for index.html (round 2). */
+window.VOICE_TEST = {
+ "round": 2,
+ "made": "2026-11-08 11:45",
+ "approved": [
+  {
+   "id": "mitch",
+   "name": "Mitch",
+   "pick": "Another take"
+  }
+ ],
+ "voices": [
+  {
+   "id": "marge",
+   "name": "Marge",
+   "clip": "marge/react2.1",
+   "line": "It's fine, hon. I was married forty years. I know fine.",
+   "say": "It's fine hun. I was married forty years. I know fine.",
+   "asked": "Deliver on hon with comma sounds unnatural. it's still distorted. let's reprompt with some different styles to choose from.",
+   "sampleLine": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+   "groups": [
+    "Sweet grandma",
+    "Southern charm",
+    "Brassy and dry",
+    "Chatty Midwest"
+   ],
+   "portrait": "../../packs/diner/art/cast/marge/neutral.webp",
+   "variants": [
+    {
+     "id": "sweet-s1",
+     "group": "Sweet grandma",
+     "style": "sweet",
+     "label": "Sweet grandma \u00b7 voice 1",
+     "what": "An elderly woman around seventy, a retired school-bus driver. A warm, smooth, gentle voice, medium pitch. Unhurried, sweet and kind, with a dry, knowing sense of humor. Clear studio recording.",
+     "file": "marge/sweet-s1.mp3",
+     "sample": "marge/sweet-s1-sample.mp3",
+     "settings": {
+      "design_seed": 1,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It's fine hun. I was married forty years. I know fine.",
+     "heard": "It's fine, hun. I was married forty years. I know fine.",
+     "diffs": [],
+     "clarity": 3.94,
+     "pitch": 192,
+     "rate": 2.59,
+     "voice": {
+      "heard": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+      "diffs": [],
+      "clarity": 3.96,
+      "pitch": 200,
+      "rate": 3.15
+     }
+    },
+    {
+     "id": "sweet-s4",
+     "group": "Sweet grandma",
+     "style": "sweet",
+     "label": "Sweet grandma \u00b7 voice 2",
+     "what": "An elderly woman around seventy, a retired school-bus driver. A warm, smooth, gentle voice, medium pitch. Unhurried, sweet and kind, with a dry, knowing sense of humor. Clear studio recording.",
+     "file": "marge/sweet-s4.mp3",
+     "sample": "marge/sweet-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It's fine hun. I was married forty years. I know fine.",
+     "heard": "It's fine, hun. I was married forty years. I know fine.",
+     "diffs": [],
+     "clarity": 3.67,
+     "pitch": 161,
+     "rate": 2.37,
+     "voice": {
+      "heard": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+      "diffs": [],
+      "clarity": 3.99,
+      "pitch": 148,
+      "rate": 3.47
+     }
+    },
+    {
+     "id": "southern-s4",
+     "group": "Southern charm",
+     "style": "southern",
+     "label": "Southern charm \u00b7 voice 1",
+     "what": "An elderly woman around seventy from Georgia with a light Southern accent. A warm, smooth, honeyed voice. Sweet, unhurried and gently teasing. Clear studio recording.",
+     "file": "marge/southern-s4.mp3",
+     "sample": "marge/southern-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 3,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It's fine hun. I was married forty years. I know fine.",
+     "heard": "It's fine, hun. I was married forty years. I know fine.",
+     "diffs": [],
+     "clarity": 3.87,
+     "pitch": 182,
+     "rate": 2.2,
+     "voice": {
+      "heard": "Hi hun, the usual, please. You know how I like it, and I know you'll get it right.",
+      "diffs": [],
+      "clarity": 4.09,
+      "pitch": 168,
+      "rate": 3.73
+     }
+    },
+    {
+     "id": "southern-s1",
+     "group": "Southern charm",
+     "style": "southern",
+     "label": "Southern charm \u00b7 voice 2",
+     "what": "An elderly woman around seventy from Georgia with a light Southern accent. A warm, smooth, honeyed voice. Sweet, unhurried and gently teasing. Clear studio recording.",
+     "file": "marge/southern-s1.mp3",
+     "sample": "marge/southern-s1-sample.mp3",
+     "settings": {
+      "design_seed": 1,
+      "line_seed": 4,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It's fine hun. I was married forty years. I know fine.",
+     "heard": "It's fine, hun. I was married forty years. I know fine.",
+     "diffs": [],
+     "clarity": 3.33,
+     "pitch": 231,
+     "rate": 2.8,
+     "voice": {
+      "heard": "Hi, hun, the usual, please. You know how I like it, and I know you'll get it right.",
+      "diffs": [],
+      "clarity": 3.78,
+      "pitch": 206,
+      "rate": 2.97
+     }
+    },
+    {
+     "id": "brassy-s1",
+     "group": "Brassy and dry",
+     "style": "brassy",
+     "label": "Brassy and dry \u00b7 voice 1",
+     "what": "An older woman around seventy, a no-nonsense retired bus driver. A clear, confident, brassy voice. Dry, deadpan and wisecracking, but warm underneath. Clear studio recording.",
+     "file": "marge/brassy-s1.mp3",
+     "sample": "marge/brassy-s1-sample.mp3",
+     "settings": {
+      "design_seed": 1,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It's fine hun. I was married forty years. I know fine.",
+     "heard": "It's fine, hun. I was married forty years. I know fine.",
+     "diffs": [],
+     "clarity": 3.95,
+     "pitch": 227,
+     "rate": 3.19,
+     "voice": {
+      "heard": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+      "diffs": [],
+      "clarity": 3.88,
+      "pitch": 227,
+      "rate": 3.3
+     }
+    },
+    {
+     "id": "brassy-s4",
+     "group": "Brassy and dry",
+     "style": "brassy",
+     "label": "Brassy and dry \u00b7 voice 2",
+     "what": "An older woman around seventy, a no-nonsense retired bus driver. A clear, confident, brassy voice. Dry, deadpan and wisecracking, but warm underneath. Clear studio recording.",
+     "file": "marge/brassy-s4.mp3",
+     "sample": "marge/brassy-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It's fine hun. I was married forty years. I know fine.",
+     "heard": "It's fine, hun. I was married forty years. I know fine.",
+     "diffs": [],
+     "clarity": 3.93,
+     "pitch": 194,
+     "rate": 3.21,
+     "voice": {
+      "heard": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+      "diffs": [],
+      "clarity": 3.92,
+      "pitch": 174,
+      "rate": 3.84
+     }
+    },
+    {
+     "id": "midwest-s3",
+     "group": "Chatty Midwest",
+     "style": "midwest",
+     "label": "Chatty Midwest \u00b7 voice 1",
+     "what": "A cheerful elderly woman around seventy from Minnesota with a Midwestern accent. A bright, friendly, clear voice. Chatty, polite and sweet as pie. Clear studio recording.",
+     "file": "marge/midwest-s3.mp3",
+     "sample": "marge/midwest-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It's fine hun. I was married forty years. I know fine.",
+     "heard": "It's fine, hun. I was married forty years. I know fine.",
+     "diffs": [],
+     "clarity": 3.69,
+     "pitch": 212,
+     "rate": 2.8,
+     "voice": {
+      "heard": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+      "diffs": [],
+      "clarity": 4.23,
+      "pitch": 200,
+      "rate": 2.99
+     }
+    },
+    {
+     "id": "midwest-s4",
+     "group": "Chatty Midwest",
+     "style": "midwest",
+     "label": "Chatty Midwest \u00b7 voice 2",
+     "what": "A cheerful elderly woman around seventy from Minnesota with a Midwestern accent. A bright, friendly, clear voice. Chatty, polite and sweet as pie. Clear studio recording.",
+     "file": "marge/midwest-s4.mp3",
+     "sample": "marge/midwest-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 3,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It's fine hun. I was married forty years. I know fine.",
+     "heard": "It's fine, hun. I was married forty years. I know fine.",
+     "diffs": [],
+     "clarity": 3.43,
+     "pitch": 188,
+     "rate": 2.57,
+     "voice": {
+      "heard": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+      "diffs": [],
+      "clarity": 4.2,
+      "pitch": 180,
+      "rate": 3.9
+     }
+    }
+   ]
+  },
+  {
+   "id": "gus",
+   "name": "Gus",
+   "clip": "gus/react2.1",
+   "line": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+   "say": "",
+   "asked": "needs more western drawl and slightly faster cadence",
+   "sampleLine": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+   "groups": [
+    "Texas drawl",
+    "Southern drawl",
+    "Cowboy",
+    "Country"
+   ],
+   "portrait": "../../packs/diner/art/cast/gus/neutral.webp",
+   "variants": [
+    {
+     "id": "texas-s4",
+     "group": "Texas drawl",
+     "style": "texas",
+     "label": "Texas drawl \u00b7 voice 1",
+     "what": "A big, friendly long-haul trucker around fifty with a heavy Texas accent and a Western drawl. A deep, warm voice. Easygoing and friendly, at an easy, steady pace. Clear studio recording.",
+     "file": "gus/texas-s4.mp3",
+     "sample": "gus/texas-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "heard": "It'll do, buddy. I've eaten worse at truck stops\u2014way worse.",
+     "diffs": [],
+     "clarity": 3.26,
+     "pitch": 128,
+     "rate": 2.85,
+     "voice": {
+      "heard": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+      "diffs": [],
+      "clarity": 4.06,
+      "pitch": 136,
+      "rate": 3.43
+     }
+    },
+    {
+     "id": "texas-s3",
+     "group": "Texas drawl",
+     "style": "texas",
+     "label": "Texas drawl \u00b7 voice 2",
+     "what": "A big, friendly long-haul trucker around fifty with a heavy Texas accent and a Western drawl. A deep, warm voice. Easygoing and friendly, at an easy, steady pace. Clear studio recording.",
+     "file": "gus/texas-s3.mp3",
+     "sample": "gus/texas-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "heard": "It'll do, buddy. I've eaten worse at truck stops\u2014way worse.",
+     "diffs": [],
+     "clarity": 3.0,
+     "pitch": 132,
+     "rate": 3.1,
+     "voice": {
+      "heard": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+      "diffs": [],
+      "clarity": 3.34,
+      "pitch": 125,
+      "rate": 2.99
+     }
+    },
+    {
+     "id": "southern-s1",
+     "group": "Southern drawl",
+     "style": "southern",
+     "label": "Southern drawl \u00b7 voice 1",
+     "what": "A big, burly trucker around fifty from Tennessee with a heavy Southern drawl. A deep, warm, friendly voice. Relaxed but lively, at a steady pace. Clear studio recording.",
+     "file": "gus/southern-s1.mp3",
+     "sample": "gus/southern-s1-sample.mp3",
+     "settings": {
+      "design_seed": 1,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "heard": "It'll do, buddy. I've eaten worse at truck stops, way worse.",
+     "diffs": [],
+     "clarity": 3.57,
+     "pitch": 119,
+     "rate": 2.82,
+     "voice": {
+      "heard": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+      "diffs": [],
+      "clarity": 3.64,
+      "pitch": 113,
+      "rate": 2.87
+     }
+    },
+    {
+     "id": "southern-s3",
+     "group": "Southern drawl",
+     "style": "southern",
+     "label": "Southern drawl \u00b7 voice 2",
+     "what": "A big, burly trucker around fifty from Tennessee with a heavy Southern drawl. A deep, warm, friendly voice. Relaxed but lively, at a steady pace. Clear studio recording.",
+     "file": "gus/southern-s3.mp3",
+     "sample": "gus/southern-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "heard": "It'll do, buddy. I've eaten worse at truck stops\u2014way worse.",
+     "diffs": [],
+     "clarity": 3.22,
+     "pitch": 124,
+     "rate": 3.48,
+     "voice": {
+      "heard": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+      "diffs": [],
+      "clarity": 3.33,
+      "pitch": 121,
+      "rate": 2.83
+     }
+    },
+    {
+     "id": "cowboy-s4",
+     "group": "Cowboy",
+     "style": "cowboy",
+     "label": "Cowboy \u00b7 voice 1",
+     "what": "A weathered cowboy around fifty from Wyoming with a Western drawl. A low, warm, friendly voice. Laid-back and good-humored, but not slow. Clear studio recording.",
+     "file": "gus/cowboy-s4.mp3",
+     "sample": "gus/cowboy-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "heard": "It'll do, buddy. I've eaten worse at truck stops\u2014way worse.",
+     "diffs": [],
+     "clarity": 4.12,
+     "pitch": 151,
+     "rate": 2.86,
+     "voice": {
+      "heard": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+      "diffs": [],
+      "clarity": 4.06,
+      "pitch": 145,
+      "rate": 3.12
+     }
+    },
+    {
+     "id": "cowboy-s2",
+     "group": "Cowboy",
+     "style": "cowboy",
+     "label": "Cowboy \u00b7 voice 2",
+     "what": "A weathered cowboy around fifty from Wyoming with a Western drawl. A low, warm, friendly voice. Laid-back and good-humored, but not slow. Clear studio recording.",
+     "file": "gus/cowboy-s2.mp3",
+     "sample": "gus/cowboy-s2-sample.mp3",
+     "settings": {
+      "design_seed": 2,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "heard": "It'll do, buddy. I've eaten worse at truck stops\u2014way worse.",
+     "diffs": [],
+     "clarity": 3.96,
+     "pitch": 91,
+     "rate": 2.98,
+     "voice": {
+      "heard": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+      "diffs": [],
+      "clarity": 3.5,
+      "pitch": 107,
+      "rate": 3.3
+     }
+    },
+    {
+     "id": "country-s3",
+     "group": "Country",
+     "style": "country",
+     "label": "Country \u00b7 voice 1",
+     "what": "A friendly country trucker around fifty from Oklahoma with a heavy country accent. A deep, warm, rumbling voice. Chatty and good-natured, at a natural pace. Clear studio recording.",
+     "file": "gus/country-s3.mp3",
+     "sample": "gus/country-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "heard": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "diffs": [],
+     "clarity": 4.03,
+     "pitch": 101,
+     "rate": 2.53,
+     "voice": {
+      "heard": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+      "diffs": [],
+      "clarity": 4.43,
+      "pitch": 112,
+      "rate": 2.72
+     }
+    },
+    {
+     "id": "country-s4",
+     "group": "Country",
+     "style": "country",
+     "label": "Country \u00b7 voice 2",
+     "what": "A friendly country trucker around fifty from Oklahoma with a heavy country accent. A deep, warm, rumbling voice. Chatty and good-natured, at a natural pace. Clear studio recording.",
+     "file": "gus/country-s4.mp3",
+     "sample": "gus/country-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "heard": "It'll do, buddy. I've eaten worse at truck stops. Way worse.",
+     "diffs": [],
+     "clarity": 4.0,
+     "pitch": 145,
+     "rate": 2.78,
+     "voice": {
+      "heard": "Hattie, buddy, eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+      "diffs": [
+       "replace: 'howdy' -> 'hattie'"
+      ],
+      "clarity": 4.36,
+      "pitch": 165,
+      "rate": 3.4
+     }
+    }
+   ]
+  },
+  {
+   "id": "bev",
+   "name": "Coach Bev",
+   "clip": "bev/greet.2",
+   "line": "Hustle, hustle! I've got practice in twenty!",
+   "say": "Hustle, hustle. I've got practice in twenty.",
+   "asked": "too high pitch. distorted. needs a butch female sounding character.",
+   "sampleLine": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+   "groups": [
+    "Butch coach",
+    "Drill sergeant",
+    "Softball coach",
+    "Boston coach"
+   ],
+   "portrait": "../../packs/diner/art/cast/bev/neutral.webp",
+   "variants": [
+    {
+     "id": "butch-s4",
+     "group": "Butch coach",
+     "style": "butch",
+     "label": "Butch coach \u00b7 voice 1",
+     "what": "A tough, butch woman in her forties, a high-school gym coach. A low-pitched, deep voice for a woman, almost masculine. Firm, blunt and no-nonsense, speaking steadily rather than shouting. Clear studio recording.",
+     "file": "bev/butch-s4.mp3",
+     "sample": "bev/butch-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 3,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Hustle, hustle. I've got practice in twenty.",
+     "heard": "Hustle, hustle! I've got practice in twenty.",
+     "diffs": [],
+     "clarity": 3.6,
+     "pitch": 192,
+     "rate": 3.83,
+     "voice": {
+      "heard": "Yes. All right. Listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+      "diffs": [
+       "replace: 'alright' -> 'yes all right'"
+      ],
+      "clarity": 3.7,
+      "pitch": 191,
+      "rate": 4.31
+     }
+    },
+    {
+     "id": "butch-s5",
+     "group": "Butch coach",
+     "style": "butch",
+     "label": "Butch coach \u00b7 voice 2",
+     "what": "A tough, butch woman in her forties, a high-school gym coach. A low-pitched, deep voice for a woman, almost masculine. Firm, blunt and no-nonsense, speaking steadily rather than shouting. Clear studio recording.",
+     "file": "bev/butch-s5.mp3",
+     "sample": "bev/butch-s5-sample.mp3",
+     "settings": {
+      "design_seed": 5,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Hustle, hustle. I've got practice in twenty.",
+     "heard": "Hustle, hustle! I've got practice in twenty.",
+     "diffs": [],
+     "clarity": 3.05,
+     "pitch": 201,
+     "rate": 2.21,
+     "voice": {
+      "heard": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+      "diffs": [
+       "replace: 'alright' -> 'all right'"
+      ],
+      "clarity": 3.45,
+      "pitch": 192,
+      "rate": 3.08
+     }
+    },
+    {
+     "id": "sergeant-s2",
+     "group": "Drill sergeant",
+     "style": "sergeant",
+     "label": "Drill sergeant \u00b7 voice 1",
+     "what": "A burly, muscular woman in her forties, a retired army drill sergeant who now coaches gym. A deep, low-pitched, powerful alto voice. Firm and intense, but calm. Clear studio recording.",
+     "file": "bev/sergeant-s2.mp3",
+     "sample": "bev/sergeant-s2-sample.mp3",
+     "settings": {
+      "design_seed": 2,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Hustle, hustle. I've got practice in twenty.",
+     "heard": "Hustle, hustle! I've got practice in twenty.",
+     "diffs": [],
+     "clarity": 3.85,
+     "pitch": 182,
+     "rate": 2.36,
+     "voice": {
+      "heard": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+      "diffs": [
+       "replace: 'alright' -> 'all right'"
+      ],
+      "clarity": 3.82,
+      "pitch": 173,
+      "rate": 3.28
+     }
+    },
+    {
+     "id": "sergeant-s3",
+     "group": "Drill sergeant",
+     "style": "sergeant",
+     "label": "Drill sergeant \u00b7 voice 2",
+     "what": "A burly, muscular woman in her forties, a retired army drill sergeant who now coaches gym. A deep, low-pitched, powerful alto voice. Firm and intense, but calm. Clear studio recording.",
+     "file": "bev/sergeant-s3.mp3",
+     "sample": "bev/sergeant-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 3,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Hustle, hustle. I've got practice in twenty.",
+     "heard": "Hustle, hustle! I've got practice in twenty.",
+     "diffs": [],
+     "clarity": 2.72,
+     "pitch": 151,
+     "rate": 2.52,
+     "voice": {
+      "heard": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+      "diffs": [
+       "replace: 'alright' -> 'all right'"
+      ],
+      "clarity": 3.7,
+      "pitch": 154,
+      "rate": 3.46
+     }
+    },
+    {
+     "id": "softball-s4",
+     "group": "Softball coach",
+     "style": "softball",
+     "label": "Softball coach \u00b7 voice 1",
+     "what": "A stocky woman softball coach in her forties. A deep, low-pitched alto voice, confident and gruff. Matter-of-fact and competitive. Clear studio recording.",
+     "file": "bev/softball-s4.mp3",
+     "sample": "bev/softball-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Hustle, hustle. I've got practice in twenty.",
+     "heard": "Hustle, hustle! I've got practice in twenty.",
+     "diffs": [],
+     "clarity": 3.99,
+     "pitch": 191,
+     "rate": 2.67,
+     "voice": {
+      "heard": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+      "diffs": [
+       "replace: 'alright' -> 'all right'"
+      ],
+      "clarity": 3.98,
+      "pitch": 178,
+      "rate": 3.82
+     }
+    },
+    {
+     "id": "softball-s2",
+     "group": "Softball coach",
+     "style": "softball",
+     "label": "Softball coach \u00b7 voice 2",
+     "what": "A stocky woman softball coach in her forties. A deep, low-pitched alto voice, confident and gruff. Matter-of-fact and competitive. Clear studio recording.",
+     "file": "bev/softball-s2.mp3",
+     "sample": "bev/softball-s2-sample.mp3",
+     "settings": {
+      "design_seed": 2,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Hustle, hustle. I've got practice in twenty.",
+     "heard": "Hustle, hustle! I've got practice in twenty.",
+     "diffs": [],
+     "clarity": 3.64,
+     "pitch": 154,
+     "rate": 1.77,
+     "voice": {
+      "heard": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+      "diffs": [
+       "replace: 'alright' -> 'all right'"
+      ],
+      "clarity": 3.91,
+      "pitch": 178,
+      "rate": 2.86
+     }
+    },
+    {
+     "id": "boston-s4",
+     "group": "Boston coach",
+     "style": "boston",
+     "label": "Boston coach \u00b7 voice 1",
+     "what": "A tough woman gym coach in her forties from Boston with a Boston accent. A low-pitched, deep voice. Blunt and competitive, talking steadily. Clear studio recording.",
+     "file": "bev/boston-s4.mp3",
+     "sample": "bev/boston-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Hustle, hustle. I've got practice in twenty.",
+     "heard": "Hustle, hustle! I've got practice in twenty.",
+     "diffs": [],
+     "clarity": 3.9,
+     "pitch": 193,
+     "rate": 2.69,
+     "voice": {
+      "heard": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+      "diffs": [
+       "replace: 'alright' -> 'all right'"
+      ],
+      "clarity": 3.63,
+      "pitch": 182,
+      "rate": 3.3
+     }
+    },
+    {
+     "id": "boston-s3",
+     "group": "Boston coach",
+     "style": "boston",
+     "label": "Boston coach \u00b7 voice 2",
+     "what": "A tough woman gym coach in her forties from Boston with a Boston accent. A low-pitched, deep voice. Blunt and competitive, talking steadily. Clear studio recording.",
+     "file": "bev/boston-s3.mp3",
+     "sample": "bev/boston-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Hustle, hustle. I've got practice in twenty.",
+     "heard": "Hustle, hustle! I've got practice in twenty.",
+     "diffs": [],
+     "clarity": 3.71,
+     "pitch": 149,
+     "rate": 2.64,
+     "voice": {
+      "heard": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+      "diffs": [
+       "replace: 'alright' -> 'all right'"
+      ],
+      "clarity": 3.49,
+      "pitch": 149,
+      "rate": 3.22
+     }
+    }
+   ]
+  },
+  {
+   "id": "vernon",
+   "name": "Vernon",
+   "clip": "vernon/greet.2",
+   "line": "[sigh] Ah. You again. My eleven followers are waiting.",
+   "say": "",
+   "asked": "this character needs to have a foppish fem male voice similar to Frasier or his brother niles.",
+   "sampleLine": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+   "groups": [
+    "Fussy snob",
+    "Effete and theatrical",
+    "Mid-Atlantic",
+    "Prissy and high-strung"
+   ],
+   "portrait": "../../packs/diner/art/cast/vernon/neutral.webp",
+   "variants": [
+    {
+     "id": "fussy-s4",
+     "group": "Fussy snob",
+     "style": "fussy",
+     "label": "Fussy snob \u00b7 voice 1",
+     "what": "A fussy, foppish man around forty, a snobbish food blogger. A light, refined tenor voice with crisp, precise, over-enunciated diction and a haughty, slightly nasal tone. Prissy and pompous. Clear studio recording.",
+     "file": "vernon/fussy-s4.mp3",
+     "sample": "vernon/fussy-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "[sigh] Ah. You again. My eleven followers are waiting.",
+     "heard": "You again! My eleven followers are waiting.",
+     "diffs": [],
+     "clarity": 3.5,
+     "pitch": 112,
+     "rate": 2.0,
+     "voice": {
+      "heard": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+      "diffs": [],
+      "clarity": 3.78,
+      "pitch": 133,
+      "rate": 2.55
+     }
+    },
+    {
+     "id": "fussy-s3",
+     "group": "Fussy snob",
+     "style": "fussy",
+     "label": "Fussy snob \u00b7 voice 2",
+     "what": "A fussy, foppish man around forty, a snobbish food blogger. A light, refined tenor voice with crisp, precise, over-enunciated diction and a haughty, slightly nasal tone. Prissy and pompous. Clear studio recording.",
+     "file": "vernon/fussy-s3.mp3",
+     "sample": "vernon/fussy-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "[sigh] Ah. You again. My eleven followers are waiting.",
+     "heard": "Ah, you again! My eleven followers are waiting.",
+     "diffs": [],
+     "clarity": 3.52,
+     "pitch": 183,
+     "rate": 2.08,
+     "voice": {
+      "heard": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+      "diffs": [],
+      "clarity": 3.39,
+      "pitch": 174,
+      "rate": 2.55
+     }
+    },
+    {
+     "id": "effete-s4",
+     "group": "Effete and theatrical",
+     "style": "effete",
+     "label": "Effete and theatrical \u00b7 voice 1",
+     "what": "An effete, delicate, upper-class man around forty. A soft, light, airy voice, theatrical and easily offended, savouring every word. Clear studio recording.",
+     "file": "vernon/effete-s4.mp3",
+     "sample": "vernon/effete-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 4,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "[sigh] Ah. You again. My eleven followers are waiting.",
+     "heard": "You again! My eleven followers are waiting.",
+     "diffs": [],
+     "clarity": 3.76,
+     "pitch": 109,
+     "rate": 2.12,
+     "voice": {
+      "heard": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+      "diffs": [],
+      "clarity": 4.07,
+      "pitch": 128,
+      "rate": 2.82
+     }
+    },
+    {
+     "id": "effete-s1",
+     "group": "Effete and theatrical",
+     "style": "effete",
+     "label": "Effete and theatrical \u00b7 voice 2",
+     "what": "An effete, delicate, upper-class man around forty. A soft, light, airy voice, theatrical and easily offended, savouring every word. Clear studio recording.",
+     "file": "vernon/effete-s1.mp3",
+     "sample": "vernon/effete-s1-sample.mp3",
+     "settings": {
+      "design_seed": 1,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "[sigh] Ah. You again. My eleven followers are waiting.",
+     "heard": "You again! My eleven followers are waiting.",
+     "diffs": [],
+     "clarity": 3.52,
+     "pitch": 142,
+     "rate": 1.57,
+     "voice": {
+      "heard": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+      "diffs": [],
+      "clarity": 3.91,
+      "pitch": 177,
+      "rate": 2.47
+     }
+    },
+    {
+     "id": "atlantic-s3",
+     "group": "Mid-Atlantic",
+     "style": "atlantic",
+     "label": "Mid-Atlantic \u00b7 voice 1",
+     "what": "A pompous, over-educated man around forty with a polished mid-Atlantic accent. A smooth, refined tenor voice, precise and fastidious, every word chosen with great care. Clear studio recording.",
+     "file": "vernon/atlantic-s3.mp3",
+     "sample": "vernon/atlantic-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 4,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "[sigh] Ah. You again. My eleven followers are waiting.",
+     "heard": "You again! My eleven followers are waiting.",
+     "diffs": [],
+     "clarity": 3.68,
+     "pitch": 163,
+     "rate": 2.35,
+     "voice": {
+      "heard": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+      "diffs": [],
+      "clarity": 3.79,
+      "pitch": 189,
+      "rate": 3.12
+     }
+    },
+    {
+     "id": "atlantic-s2",
+     "group": "Mid-Atlantic",
+     "style": "atlantic",
+     "label": "Mid-Atlantic \u00b7 voice 2",
+     "what": "A pompous, over-educated man around forty with a polished mid-Atlantic accent. A smooth, refined tenor voice, precise and fastidious, every word chosen with great care. Clear studio recording.",
+     "file": "vernon/atlantic-s2.mp3",
+     "sample": "vernon/atlantic-s2-sample.mp3",
+     "settings": {
+      "design_seed": 2,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "[sigh] Ah. You again. My eleven followers are waiting.",
+     "heard": "Ah, you again! My eleven followers are waiting.",
+     "diffs": [],
+     "clarity": 3.72,
+     "pitch": 187,
+     "rate": 2.36,
+     "voice": {
+      "heard": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+      "diffs": [],
+      "clarity": 3.66,
+      "pitch": 182,
+      "rate": 3.26
+     }
+    },
+    {
+     "id": "prissy-s2",
+     "group": "Prissy and high-strung",
+     "style": "prissy",
+     "label": "Prissy and high-strung \u00b7 voice 1",
+     "what": "A prim, high-strung, finicky man around forty. A thin, slightly high, nasal voice, fluttery and dramatic, fussing over every detail. Clear studio recording.",
+     "file": "vernon/prissy-s2.mp3",
+     "sample": "vernon/prissy-s2-sample.mp3",
+     "settings": {
+      "design_seed": 2,
+      "line_seed": 4,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "[sigh] Ah. You again. My eleven followers are waiting.",
+     "heard": "You again! My eleven followers are waiting.",
+     "diffs": [],
+     "clarity": 3.67,
+     "pitch": 157,
+     "rate": 2.04,
+     "voice": {
+      "heard": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+      "diffs": [],
+      "clarity": 3.28,
+      "pitch": 180,
+      "rate": 2.88
+     }
+    },
+    {
+     "id": "prissy-s4",
+     "group": "Prissy and high-strung",
+     "style": "prissy",
+     "label": "Prissy and high-strung \u00b7 voice 2",
+     "what": "A prim, high-strung, finicky man around forty. A thin, slightly high, nasal voice, fluttery and dramatic, fussing over every detail. Clear studio recording.",
+     "file": "vernon/prissy-s4.mp3",
+     "sample": "vernon/prissy-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 4,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "[sigh] Ah. You again. My eleven followers are waiting.",
+     "heard": "Ah, you again! My eleven followers are waiting.",
+     "diffs": [],
+     "clarity": 3.52,
+     "pitch": 126,
+     "rate": 1.54,
+     "voice": {
+      "heard": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+      "diffs": [],
+      "clarity": 3.1,
+      "pitch": 141,
+      "rate": 2.48
+     }
+    }
+   ]
+  },
+  {
+   "id": "sal",
+   "name": "Sal",
+   "clip": "sal/greet.2",
+   "line": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+   "say": "",
+   "asked": "add a character like Carl from aqua teen with a similar new york gruff crude speaking style",
+   "sampleLine": "Yo. I been standin' at that hot dog cart since six in the mornin', and my feet are killin' me. Gimme a burger.",
+   "groups": [
+    "The Bronx",
+    "Brooklyn",
+    "Queens",
+    "Jersey"
+   ],
+   "portrait": "../../packs/diner/art/cast/sal/neutral.webp",
+   "variants": [
+    {
+     "id": "bronx-s3",
+     "group": "The Bronx",
+     "style": "bronx",
+     "label": "The Bronx \u00b7 voice 1",
+     "what": "A heavyset man in his fifties from the Bronx with a heavy New York accent. A low-pitched, deep, gruff voice. Blunt, grumpy and crude, grumbling rather than shouting. Clear studio recording.",
+     "file": "sal/bronx-s3.mp3",
+     "sample": "sal/bronx-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 3,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "heard": "I, twelve hours selling hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "diffs": [],
+     "clarity": 3.82,
+     "pitch": 145,
+     "rate": 3.35,
+     "voice": {
+      "heard": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+      "diffs": [
+       "replace: 'i' -> 'i've'",
+       "replace: 'gimme' -> 'give me'"
+      ],
+      "clarity": 4.02,
+      "pitch": 130,
+      "rate": 3.96
+     }
+    },
+    {
+     "id": "bronx-s4",
+     "group": "The Bronx",
+     "style": "bronx",
+     "label": "The Bronx \u00b7 voice 2",
+     "what": "A heavyset man in his fifties from the Bronx with a heavy New York accent. A low-pitched, deep, gruff voice. Blunt, grumpy and crude, grumbling rather than shouting. Clear studio recording.",
+     "file": "sal/bronx-s4.mp3",
+     "sample": "sal/bronx-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "heard": "Ah, twelve hours selling hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "diffs": [],
+     "clarity": 3.76,
+     "pitch": 159,
+     "rate": 2.95,
+     "voice": {
+      "heard": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+      "diffs": [
+       "replace: 'i' -> 'i've'",
+       "replace: 'gimme' -> 'give me'"
+      ],
+      "clarity": 3.92,
+      "pitch": 151,
+      "rate": 2.98
+     }
+    },
+    {
+     "id": "brooklyn-s2",
+     "group": "Brooklyn",
+     "style": "brooklyn",
+     "label": "Brooklyn \u00b7 voice 1",
+     "what": "A big, burly hot-dog vendor in his fifties from Brooklyn with a thick Brooklyn accent. A deep, low-pitched, chesty voice. Sarcastic and grumpy, talking out of the side of his mouth. Clear studio recording.",
+     "file": "sal/brooklyn-s2.mp3",
+     "sample": "sal/brooklyn-s2-sample.mp3",
+     "settings": {
+      "design_seed": 2,
+      "line_seed": 4,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "heard": "I twelve hours selling hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "diffs": [],
+     "clarity": 3.71,
+     "pitch": 146,
+     "rate": 3.69,
+     "voice": {
+      "heard": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+      "diffs": [
+       "replace: 'i' -> 'i've'",
+       "replace: 'gimme' -> 'give me'"
+      ],
+      "clarity": 3.85,
+      "pitch": 152,
+      "rate": 3.14
+     }
+    },
+    {
+     "id": "brooklyn-s3",
+     "group": "Brooklyn",
+     "style": "brooklyn",
+     "label": "Brooklyn \u00b7 voice 2",
+     "what": "A big, burly hot-dog vendor in his fifties from Brooklyn with a thick Brooklyn accent. A deep, low-pitched, chesty voice. Sarcastic and grumpy, talking out of the side of his mouth. Clear studio recording.",
+     "file": "sal/brooklyn-s3.mp3",
+     "sample": "sal/brooklyn-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "heard": "Right, twelve hours selling hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "diffs": [
+      "replace: 'ay' -> 'right'"
+     ],
+     "clarity": 3.72,
+     "pitch": 145,
+     "rate": 4.07,
+     "voice": {
+      "heard": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+      "diffs": [
+       "replace: 'i' -> 'i've'",
+       "replace: 'gimme' -> 'give me'"
+      ],
+      "clarity": 3.81,
+      "pitch": 127,
+      "rate": 3.92
+     }
+    },
+    {
+     "id": "queens-s2",
+     "group": "Queens",
+     "style": "queens",
+     "label": "Queens \u00b7 voice 1",
+     "what": "A grouchy, heavyset man around sixty from Queens, New York, with a strong New York accent. A deep, low, gruff voice. Impatient and wisecracking, in a gruff mutter. Clear studio recording.",
+     "file": "sal/queens-s2.mp3",
+     "sample": "sal/queens-s2-sample.mp3",
+     "settings": {
+      "design_seed": 2,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "heard": "I twelve hours selling hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "diffs": [],
+     "clarity": 3.03,
+     "pitch": 188,
+     "rate": 3.02,
+     "voice": {
+      "heard": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+      "diffs": [
+       "replace: 'i' -> 'i've'",
+       "replace: 'gimme' -> 'give me'"
+      ],
+      "clarity": 3.93,
+      "pitch": 167,
+      "rate": 3.35
+     }
+    },
+    {
+     "id": "queens-s3",
+     "group": "Queens",
+     "style": "queens",
+     "label": "Queens \u00b7 voice 2",
+     "what": "A grouchy, heavyset man around sixty from Queens, New York, with a strong New York accent. A deep, low, gruff voice. Impatient and wisecracking, in a gruff mutter. Clear studio recording.",
+     "file": "sal/queens-s3.mp3",
+     "sample": "sal/queens-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 2,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "heard": "I, twelve hours selling hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "diffs": [],
+     "clarity": 3.85,
+     "pitch": 183,
+     "rate": 3.35,
+     "voice": {
+      "heard": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+      "diffs": [
+       "replace: 'i' -> 'i've'",
+       "replace: 'gimme' -> 'give me'"
+      ],
+      "clarity": 3.92,
+      "pitch": 157,
+      "rate": 3.77
+     }
+    },
+    {
+     "id": "jersey-s3",
+     "group": "Jersey",
+     "style": "jersey",
+     "label": "Jersey \u00b7 voice 1",
+     "what": "A heavyset, crude man in his fifties from New Jersey with a heavy New Jersey accent. A deep, low-pitched voice. Lazy, cranky and blunt. Clear studio recording.",
+     "file": "sal/jersey-s3.mp3",
+     "sample": "sal/jersey-s3-sample.mp3",
+     "settings": {
+      "design_seed": 3,
+      "line_seed": 1,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "heard": "I twelve hours selling hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "diffs": [],
+     "clarity": 4.17,
+     "pitch": 162,
+     "rate": 3.44,
+     "voice": {
+      "heard": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+      "diffs": [
+       "replace: 'i' -> 'i've'",
+       "replace: 'gimme' -> 'give me'"
+      ],
+      "clarity": 4.2,
+      "pitch": 156,
+      "rate": 3.92
+     }
+    },
+    {
+     "id": "jersey-s4",
+     "group": "Jersey",
+     "style": "jersey",
+     "label": "Jersey \u00b7 voice 2",
+     "what": "A heavyset, crude man in his fifties from New Jersey with a heavy New Jersey accent. A deep, low-pitched voice. Lazy, cranky and blunt. Clear studio recording.",
+     "file": "sal/jersey-s4.mp3",
+     "sample": "sal/jersey-s4-sample.mp3",
+     "settings": {
+      "design_seed": 4,
+      "line_seed": 3,
+      "steps": 24,
+      "cfg": 2.0,
+      "mode": "clone"
+     },
+     "text": "Ay. Twelve hours sellin' hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "heard": "I, twelve hours selling hot dogs. You know what's in a hot dog? I do. That's why I'm here.",
+     "diffs": [],
+     "clarity": 3.95,
+     "pitch": 173,
+     "rate": 2.64,
+     "voice": {
+      "heard": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+      "diffs": [
+       "replace: 'i' -> 'i've'",
+       "replace: 'gimme' -> 'give me'"
+      ],
+      "clarity": 3.97,
+      "pitch": 151,
+      "rate": 2.97
+     }
+    }
+   ]
+  }
+ ]
+};

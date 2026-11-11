@@ -1,0 +1,42 @@
+{
+  "_about": "Each character's voice for Voice Studio's 'Describe a voice' (VoxCPM2): who, how it sounds, how it speaks. pitch: the median pitch range (Hz) a candidate should fall in; rate: words per second it should roughly speak at. tools/voices.py design reads this. These were the FIRST designs: after the voice test (2026-11-08) Mitch's stands, and Marge, Gus, Coach Bev, Vernon and Sal get their voices from tools/voice-styles.json (round 2) via `voices.py use`. respell: what the voice model is given instead of the script's words, for every recorded line.",
+  "mitch": {
+    "name": "Mitch",
+    "describe": "A man in his early thirties, an eager, overconfident diner assistant manager. Medium-high, slightly nasal voice, a little strained. Fast, chatty and upbeat, with a smug, sarcastic edge, like he has had four coffees. Clear studio recording.",
+    "sample": "Doors are open. Try not to set anything on fire. I'll be supervising.",
+    "pitch": [115, 185],
+    "rate": [2.6, 4.2]
+  },
+  "marge": {
+    "name": "Marge",
+    "describe": "An elderly woman around seventy, a retired school-bus driver. A warm, slightly raspy older voice. Unhurried, sweet but dry and knowing, a grandmother who has seen everything twice. Clear studio recording.",
+    "sample": "Hi, hon. The usual. You know how I like it.",
+    "pitch": [160, 270],
+    "rate": [1.6, 3.2],
+    "respell": [[",\\s*hon\\b", " hun"], ["\\bhon\\b", "hun"]],
+    "_respell": "Voice test round 1: 'hon' after a comma sounded unnatural and was heard as 'Aunt'; 'hun' with no comma is what the model gets (captions keep 'hon')."
+  },
+  "gus": {
+    "name": "Gus",
+    "describe": "A big, burly man around fifty, a long-haul trucker. A very low, deep, rumbling voice. Slow, relaxed and friendly, a kind gentle giant. Clear studio recording.",
+    "sample": "Howdy, buddy. Eleven hours of highway, and I am hungry.",
+    "pitch": [70, 118],
+    "rate": [1.6, 3.0]
+  },
+  "bev": {
+    "name": "Coach Bev",
+    "describe": "A woman in her forties, a high-school gym coach. A loud, booming, energetic voice with a bit of rasp. Shouting like she is on the sidelines, intense and enthusiastic. Clear studio recording.",
+    "sample": "Let's go! I'm starving! Hustle, hustle, I've got practice in twenty!",
+    "pitch": [165, 300],
+    "rate": [2.4, 4.4],
+    "calm": true,
+    "_calm": "Voice test (2026-11-08): with '!' and ALL CAPS the model shouted every clone of Bev's line up to 220-360 Hz, 'too high pitch, distorted'; it gets full stops and lower case, and her low voice carries the coach."
+  },
+  "vernon": {
+    "name": "Vernon",
+    "describe": "A man around forty, a pompous burger-review blogger. A deep, slow, droning, nasal monotone. Deeply bored and unimpressed, pretentious, sighing between words. Clear studio recording.",
+    "sample": "Good evening. I will be reviewing tonight. My eleven followers are waiting.",
+    "pitch": [72, 128],
+    "rate": [1.4, 2.6]
+  }
+}

@@ -1,0 +1,17 @@
+# Kai pose prompts
+
+Generated using the built-in image_gen tool with neutral.png as the approved reference.
+
+## annoyed.png
+
+Use case: identity-preserve. Asset type: full-body character pose for a 2D comedy diner game, one character per image, portrait 1024 x 1536 pixels.
+Input image: approved neutral KAI model, identity and design reference. Copy this character EXACTLY: same face structure, side-parted brown hair silhouette, big round black glasses, small ten-year-old body proportions, burgundy sweater vest over cream collared long-sleeve shirt, burgundy and golden-yellow striped short scarf, tan shorts, cream knee socks with burgundy stripes, brown shoes, green spiral notebook and yellow pencil. Same colours, thick clean even black outlines, and shading style. Change ONLY pose and facial expression. Original TV-cartoon look, flat bright colours with ONE hard-edged cel-shadow tone per colour, simple bold shapes, big head and hands. Dry deadpan adult comedy, never cute or babyish. Do not introduce any branding or other character design.
+Framing: ONE full-body standing character from hair to shoes, facing the viewer turned very slightly toward the viewer's right. Centred, fills about 88% of image height, clear margins on every side, nothing cropped. Plain pure white background, no floor, no cast shadow, no border, no text, no other objects. Strong readable silhouette. Preserve notebook and pencil by tucking notebook securely under an arm and pencil into notebook spiral so hands can perform pose.
+Pose ANNOYED: both hands on hips, elbows sticking outward clearly, leaning back slightly, flat unimpressed frown, one eyebrow raised high, half-lidded very serious unimpressed eyes.
+
+## angry.png
+
+Use case: identity-preserve. Asset type: full-body character pose for a 2D comedy diner game, one character per image, portrait 1024 x 1536 pixels.
+Input image: approved neutral KAI model, identity and design reference. Copy this character EXACTLY: same face structure, side-parted brown hair silhouette, big round black glasses, small ten-year-old body proportions, burgundy sweater vest over cream collared long-sleeve shirt, burgundy and golden-yellow striped short scarf, tan shorts, cream knee socks with burgundy stripes, brown shoes, green spiral notebook and yellow pencil. Same colours, thick clean even black outlines, and shading style. Change ONLY pose and facial expression. Original TV-cartoon look, flat bright colours with ONE hard-edged cel-shadow tone per colour, simple bold shapes, big head and hands. Dry deadpan adult comedy, never cute or babyish. Do not introduce any branding or other character design.
+Framing: ONE full-body standing character from hair to shoes, facing the viewer turned very slightly toward the viewer's right. Centred, fills about 88% of image height, clear margins on every side, nothing cropped. Plain pure white background, no floor, no cast shadow, no border, no text, no other objects. Strong readable silhouette. Preserve notebook and pencil by tucking notebook securely under an arm and pencil into notebook spiral so hands can perform pose.
+Pose ANGRY: furious, leaning forward, one arm extended pointing an accusing index finger straight at the viewer with clear foreshortening, the other hand a tightly clenched fist. Face flushed red with anger, brows fiercely furrowed, open mouth shouting, one visible cartoon vein on the forehead. Keep him recognizably the exact approved Kai.

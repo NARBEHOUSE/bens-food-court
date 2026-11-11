@@ -1,0 +1,11 @@
+# Mitch smoothie — shrug
+
+Generated with the built-in image_gen tool.
+
+Use case: identity-preserve
+Asset type: full-body character costume-variant pose for a 2D comedy diner game. One image, 1024 x 1536 pixels.
+Input image 1 (mitch-smoothie/neutral.png): approved identity and tropical costume reference. Input image 2 (mitch/shrug.png): approved SHRUG pose and expression target.
+Primary request: Recreate image 2's pose, hands, expression and framing exactly, dressed in image 1's uniform. Preserve the raised shoulders, bent elbows, outward open palms, finger shapes, nervous wide toothy grin, raised worried eyebrows, half-lidded eyes, sweat drops, leg positions and shoes placement from image 2. Use image 1's face identity, messy swooping brown hair, lanky body proportions, headset with boom microphone, badge and tropical uniform. Nothing else changes.
+Character: MITCH, about 30, lanky and gangly with long arms, big nose, eager and overconfident, a little sweaty. Loud turquoise tropical Hawaiian shirt with bright pink/red and yellow flowers and green leaves, worn OPEN over the short-sleeved white dress shirt and loose red tie. A multicoloured flower lei around his neck and yellow-framed sunglasses pushed up on his head, matching image 1. Khaki trousers, belt and scuffed brown shoes. Preserve pocket protector pens where visible. Chest badge reads "MANAGER", with masking tape over it reading "ASST." The lei must not obscure the badge text.
+Style: original 2D TV-cartoon art, thick clean even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour, simple bold shapes, slightly exaggerated big head, big hands, expressive eyes and mouth. Dry deadpan adult comedy, never cute or babyish. Preserve the approved original design; do not introduce resemblance to existing cartoon shows, characters or brands.
+Framing: ONE full-body standing character facing viewer, turned very slightly toward viewer's right. Copy image 2 framing exactly, figure about 88% image height, centred, clear margins all round. Both spread hands, all hair and shoes fully inside canvas. Pure white background; no floor, no cast shadow, no border, no extra text, no extra objects. Empty hands.

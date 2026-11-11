@@ -1,0 +1,11 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Scene: a big domed brick pizza oven, as seen by the cook standing at it. The camera looks slightly downward.
+Composition (percent of the image):
+- Top 65%: the wall behind the station: the oven's brick dome and arched mouth with a warm orange glow inside, a long wooden pizza peel and oven tools on hooks, a neat stack of firewood, a big thermometer dial.
+- Bottom 35%: the stone hearth in front of the oven mouth, dark and plain, plain and simple (the game draws the food and the work surface on top of this part).
+Hidden funny details, small but findable: a marshmallow on a stick poking out of the woodpile; a smoke detector wearing a tiny fireman's helmet; a chalk tally on the bricks labelled BURNT.
+Everything sharp. No text anywhere except what the details ask for. No border.
+Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; no real logos.
+Save as art-source/backdrops/pizza-oven.png (1536 x 1024) and the prompt as art-source/backdrops/pizza-oven-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

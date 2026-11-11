@@ -1,0 +1,13 @@
+Use case: character pose set for a 2D game
+Asset type: full-body character poses on plain white, one image per pose
+Attached image 1 is the APPROVED model of this character in the neutral pose. Copy the character EXACTLY: the same
+face, hair, body shape and proportions, clothes, accessories, colours, outline weight and shading style. Change ONLY the
+pose and the facial expression. Each pose must read from its silhouette alone.
+Style: original 2D cartoon art for a comedy diner game, TV-cartoon look. Thick, clean, even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated proportions (big head, big hands, big expressive eyes and mouth); a strong, readable silhouette. Funny for adults: dry, deadpan comedy, never cute, never babyish. It is an ORIGINAL design and must not resemble any existing cartoon character, show or brand.
+Character: MITCH, the diner's assistant manager. About 30, lanky and gangly with long arms, eager and overconfident, a little sweaty. Messy swoop of brown hair, big nose, wide grin. Short-sleeved white dress shirt with a loose red tie and a pocket protector full of pens, khaki trousers, scuffed brown shoes. A phone headset with a boom microphone that he does not need. A name badge on his chest reading MANAGER, with a strip of masking tape across it on which ASST. is handwritten.
+Make 2 separate images:
+- New picture 1: THUMBS UP: a cocky grin and a wink, both thumbs up, chest puffed out. Save as art-source/cast/mitch/thumbsUp.png (1024 x 1536).
+- New picture 2: SHOCKED: jaw dropped, eyes popping, both hands thrown up beside the head, headset knocked crooked. Save as art-source/cast/mitch/shocked.png (1024 x 1536).
+Framing: ONE character, full body from the top of the head to the shoes, standing, facing the viewer and turned very slightly toward the viewer's right. The figure fills about 88% of the image height, centred, with a clear margin all round; nothing is cropped (hands, hat and feet all inside the frame). Plain pure white background, no floor, no cast shadow, no border, no text other than what the character description asks for, no other objects except what the character holds.
+Also save the prompt as art-source/cast/mitch/thumbsUp-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the paths of the generated files.

@@ -1,0 +1,229 @@
+Ben's Food Court: Game Design Proposal
+A proposal for the bigger game built around Ben's Burger Bar. Everything here is a starting point for Ari, Bryan and Tabby to decide on. The hub rulebook, ACCESSIBILITY.md, still outranks everything.
+The big picture
+Ben's Food Court is a mall food court seen from above. Each storefront is its own restaurant game, built like the Burger Bar. The player picks a restaurant, works shifts there, and earns stars. The goal is to get every restaurant to five stars and packed with customers.
+The restaurants:
+1. Ben's Burger Bar
+2. Ben's Pizza Parlor
+3. Ben's Smoothie Shack
+4. Ben's Cafe (coffee and donuts)
+5. Ben's Sushi
+6. Ben's Burritos
+7. Ben's Ice Cream Emporium
+All seven are in. The Burger Bar, Pizza Parlor and Cafe are open from the start, and the other four open one at a time as ratings improve (see Unlocking restaurants).
+The food court screen
+A top-down cartoon view of the court, in the same cel-shaded style as the games. Each storefront shows its status at a glance, using real objects rather than floating UI, as in the Burger Bar.
+• Stars: a star sign above each storefront (one to five stars).
+• Popularity: shown by the crowd. A quiet restaurant has one or two people wandering past; a popular one has a line out the door and full tables. This reads at a glance and doesn't need numbers.
+• Status: a restaurant that isn't open yet has its shutter down with a "Coming Soon" sign, a newly opened one gets a "Grand Opening" banner, and one at five stars gets a gold sign.
+• The goal: when all seven restaurants reach five stars, the whole court throws a big celebration.
+There is one main menu for the whole food court, and it replaces the Burger Bar's current main menu. Selecting a restaurant zooms into it and goes straight to the counter view, with no separate menu for each restaurant.
+Scanning the court
+See Food court layout for how the U-shaped court is scanned.
+How stars and popularity work
+These follow the Burger Bar rule: accuracy counts, speed never does.
+• Stars come from how well orders match their tickets. A restaurant's star rating rises as the player finishes good shifts there. It never goes down.
+• Popularity grows with each good shift and decides how busy the restaurant looks on the court. It doesn't fade while the player is away, so nothing is lost by playing one restaurant for a while or taking a break.
+• Stars and popularity are the same track: as a restaurant's stars go up, so does its crowd on the court.
+The shared engine
+Every restaurant runs on the Burger Bar engine as its own pack. That means each one gets the assembly line, the five-choice limit, Add or Skip, the end-of-order review, Simple and Timed cooking with automatic actions, accuracy scoring, the tutorial, gross-outs with visual cues and a manager's warning, expression poses, voices and the script file.
+Each restaurant changes only its ingredients, its "cooking" step and its cast.
+Restaurant
+Build line
+The cooking step
+Burger Bar
+Bun, patty, cheese, toppings, sauces
+Grill to a doneness
+Pizza Parlor
+Crust, sauce, cheese, toppings
+Oven to a doneness (light, golden, crispy)
+Smoothie Shack
+Cup size, base, fruits, extras
+Blender to a thickness
+Cafe
+Coffee: size, milk, shots, flavor. Donuts: dough, glaze, toppings
+Espresso shot or fryer
+Sushi
+Rice, seaweed, fish, fillings
+Roll and slice (number of pieces)
+Burritos
+Tortilla, rice, beans, protein, toppings
+Wrap, then grill press
+Ice Cream Emporium
+Cone or cup, scoops, toppings
+Scoop size or the shake blender
+In Timed mode, the cooking step is where the challenge is: watching the oven, the blender or the fryer and stopping at the right moment.
+Shared UI, each restaurant's own look
+The interface pieces are shared across every restaurant, so once Ben learns them at the Burger Bar they work the same way everywhere. That includes the spinning ticket carousel, the Pause sign, the Add or Skip controls, the review, the register and the star card. Each restaurant re-skins them in its own color theme (red and white for pizza, tropical teal for smoothies, pastel pink for ice cream, and so on), while their size, position and behavior stay the same.
+The restaurants themselves each have their own look: their own backdrops, counters, props, food and decorations.
+Progression in each restaurant
+Every restaurant follows the same ladder, so once the player learns one, they know how the others go. Complexity grows through longer tickets and sillier situations, never through more choices on one screen.
+1. Tutorial: one guided order with the manager warning before mistakes.
+2. One star: simple orders, one item each, a calm pace.
+3. Two stars: more menu items and longer tickets ("no this, extra that").
+4. Three stars: orders with two items, such as a burger and a side, or two pizzas. Gross-outs start showing up.
+5. Four stars: ridiculous orders and special visitors, such as a food critic, a customer with a bizarre combo, a rush of a sports team, or a celebrity.
+6. Five stars: the restaurant's signature chaos event (for example, a pizza for a wedding, a giant sundae, a sushi boat), and the restaurant gets its gold sign on the court.
+The ridiculous parts come from the customers and the situations: absurd requests, over-the-top reactions and running jokes, with Simple mode always staying safe and predictable for the player.
+The cast
+Shared regulars visit every restaurant: Marge, Gus, Coach Bev, Vernon and Sal from the Burger Bar. Each keeps the same personality, likes and dislikes everywhere, so Sal hating lettuce turns into Sal picking it out of his burrito and complaining about the sushi garnish. Seeing familiar faces in a new place is part of the fun, and their art and voices get reused.
+Mitch is the assistant manager everywhere. He runs the tutorial and gives the gross-out warnings in every restaurant, wearing a different uniform in each one (a paper hat at the Burger Bar, an apron at the Pizza Parlor, a Hawaiian shirt at the Smoothie Shack, and so on). His voice and personality stay the same, so only his uniform poses need new art.
+One or two unique customers per restaurant, who only show up there. For example, a surfer at the Smoothie Shack or a jittery regular at the Cafe.
+Running jokes across the court: a regular could mention another restaurant ("The sushi place got my order wrong again"), or a character from one restaurant could show up as a customer in another.
+Main menu and settings
+The food court has the only main menu, replacing the Burger Bar's. Proposal, since this is still open: settings live here and apply to every restaurant, so Ben sets things up once.
+The main menu offers Play (opens the court), Tutorial, Settings and Exit. Settings covers Simple or Timed cooking, Auto Scan, scan speed, Motion (Full or Reduced), captions, and sound and music volume.
+The first time a player enters any restaurant, its tutorial runs automatically (and can be skipped). After that, Tutorial on the main menu lets them replay any restaurant's tutorial.
+Inside a restaurant, Pause offers Resume, Ticket, Settings, Back to Food Court and Exit. Leaving partway through a shift keeps what's been earned so far.
+Text to speech until the voice pass. The full script is written now and played with text to speech, with each character given their own TTS voice (a different voice, pitch and speed) so they're easy to tell apart. Recorded voices are the final pass.
+Food court layout
+The court is a top-down cartoon mall floor shaped like a U, with the seven storefronts around the outside and a seating area in the middle. Shoppers wander through, and each restaurant's crowd grows with its popularity.
+Proposed placement: the three starting restaurants sit along the bottom of the U, facing the player, with the four to unlock up the two arms.
+• Left arm: Smoothie Shack, Burritos.
+• Bottom: Pizza Parlor, Burger Bar, Cafe.
+• Right arm: Sushi, Ice Cream Emporium.
+Only open restaurants are scanned. While there are four or fewer, the scan is just those restaurants plus Pause. Once five or more are open, the first scan is Left, Bottom, Right and Pause, then the restaurants in that part plus Back, so no scan goes over five choices. Each storefront speaks its name and stars when highlighted (for example, "Pizza Parlor, three stars").
+A progress board in the middle of the court (a real object, like the ticket wheel) shows the overall goal: how many restaurants are at five stars and fully busy.
+Unlocking restaurants
+The Burger Bar, Pizza Parlor and Cafe are open from the start. The rest open one at a time, each time every open restaurant reaches the next star level:
+1. 4th restaurant: all three starting restaurants at three stars.
+2. 5th restaurant: all four open restaurants at four stars.
+3. 6th restaurant: all five open restaurants at five stars.
+4. 7th restaurant: all six open restaurants at five stars.
+5. The grand celebration: all seven at five stars.
+Proposed unlock order: Smoothie Shack, Burritos, Sushi, Ice Cream Emporium (so the sweetest one comes last).
+The progress board in the middle of the court always shows what the next restaurant needs, and Mitch says it out loud when the player returns to the court ("Get all three to three stars and the Smoothie Shack opens"). When a restaurant opens, its shutter rolls up with a "Grand Opening" banner, and its tutorial runs the first time the player goes in.
+The grand celebration (proposal): fireworks over the court, every regular comes out to cheer, and Mitch finally gets promoted, peeling the "ASST." tape off his badge.
+The restaurants
+Each restaurant below follows the same layout: what's on the menu, the line, the cooking step, the gross-outs, Mitch's uniform, the unique customers, the ridiculous orders that appear at four stars, and the five-star event. Every step stays at five choices or fewer.
+Ben's Burger Bar
+The game already built. Its main menu goes away, and selecting it on the court opens straight to the counter. Its settings move to the food court menu. Everything else stays as built.
+• Mitch's uniform: red diner shirt and paper hat.
+• Ridiculous orders: the Tower (a five-patty burger), a burger "with everything except anything green," a customer who wants the bun on the inside.
+• Five-star event: the Burger Eating Contest. Coach Bev's team orders a giant stack of burgers at once.
+Ben's Pizza Parlor
+A red-and-white checkered pizzeria with a brick oven and a pizza-spinning counter.
+• Menu: cheese, pepperoni, veggie and "build your own" pizzas; garlic knots as a side from two stars.
+• The line: Crust (Thin, Regular, Deep Dish) → Sauce (Red, White, None) → Cheese (Add or Skip) → toppings one at a time, Add or Skip (pepperoni, sausage, mushrooms, peppers, onions, olives, pineapple).
+• Cooking step: the oven. Simple: Light, Golden, Crispy. Timed: watch the cheese bubble and pull it out.
+• Slicing: after the oven, choose 4, 6 or 8 slices, which some customers ask for.
+• Gross-outs: a burnt crust, moldy mushrooms, a hair in the cheese, a fly on the pepperoni.
+• Mitch's uniform: flour-dusted apron and a pizza-box hat.
+• Unique customers: Tony, a loud pizza purist who's offended by pineapple, and a kid's birthday party mom who orders for twelve.
+• Ridiculous orders: pineapple and anchovies on half, "just the crust, no pizza," a pizza shaped like a heart for a proposal.
+• Five-star event: the Pizza Party. A whole wedding party orders at once, ending with a heart-shaped pizza for the bride and groom.
+Ben's Smoothie Shack
+A beach shack with a surfboard counter, tiki torches and a row of loud blenders.
+• Menu: fruit smoothies, green smoothies, and protein shakes; acai bowls from three stars.
+• The line: Cup size (Small, Medium, Large) → Base (Juice, Milk, Yogurt, Oat Milk) → fruits one at a time, Add or Skip (strawberry, banana, mango, pineapple, blueberry) → extras, Add or Skip (spinach, protein, honey, ice).
+• Cooking step: the blender. Simple: Chunky, Smooth, Super Smooth. Timed: watch it swirl and stop it at the right thickness.
+• Gross-outs: a brown banana, moldy strawberries, a bug in the ice, a sock in the blender.
+• Mitch's uniform: Hawaiian shirt, lei and sunglasses on his head.
+• Unique customers: Breeze, a laid-back surfer who takes a very long, very relaxed time to say a very simple order, and a gym bro who wants "all the protein."
+• Ridiculous orders: a smoothie with every fruit, a "green smoothie but not green," a protein shake for a dog.
+• Five-star event: the Beach Volleyball Tournament, where both teams order between games.
+Ben's Cafe
+A cozy coffee and donut shop with a giant donut sign on the roof and a hissing espresso machine.
+• Menu: coffee drinks and donuts. Orders start as one or the other, and at three stars they become a coffee and a donut together.
+• Coffee line: Size (Small, Medium, Large) → Drink (Drip, Latte, Cappuccino, Hot Chocolate) → Milk (Whole, Oat, Skim, None) → extras, Add or Skip (extra shot, vanilla, caramel, whipped cream).
+• Donut line: Dough (Classic, Chocolate, Jelly-filled) → Glaze (Sugar, Chocolate, Strawberry, None) → toppings, Add or Skip (sprinkles, coconut, nuts).
+• Cooking step: the fryer for donuts (Simple: Golden, Dark Golden; Timed: flip and pull), and the espresso shot for coffee (Timed: stop the pour at the line).
+• Gross-outs: spoiled milk, a stale donut, a fly in the sprinkles, burnt coffee.
+• Mitch's uniform: barista apron, beanie, and a coffee cup with his name spelled wrong.
+• Unique customers: Jitters, a regular who has clearly had too much coffee already. Priya, the night-shift nurse from the Burger Bar cast, is the Cafe's most loyal regular.
+• Ridiculous orders: a coffee that's "half decaf, half extra caffeine," a donut with a coffee inside it, a latte with seven extra shots for Jitters.
+• Five-star event: the Morning Rush, when the whole office building next door comes in before work.
+Ben's Sushi
+A sushi bar with a little conveyor belt running around it, paper lanterns and a lucky cat that waves.
+• Menu: rolls (California, spicy tuna, veggie, "build your own"), plus miso soup as a side from two stars.
+• The line: Roll type (Regular, Inside-Out, Hand Roll) → Rice (White, Brown) → fillings one at a time, Add or Skip (salmon, tuna, crab, cucumber, avocado, cream cheese) → toppings, Add or Skip (sesame seeds, spicy mayo, eel sauce).
+• Cooking step: rolling and slicing. Simple: choose 6, 8 or 10 pieces and it rolls and slices with a flourish. Timed: stop the knife on each cut line.
+• Gross-outs: fish that smells off (stink lines again), a hair in the rice, soggy seaweed, a fish that winks at you.
+• Mitch's uniform: a headband, a sushi chef's jacket and a very serious face.
+• Unique customers: Chef Hiro, the stern sushi master who comes in to judge, and a nervous first-timer who has never had sushi.
+• Ridiculous orders: a roll with no fish and no rice, a "sushi burrito" (which is supposed to be at the burrito place), a customer who only wants the ginger.
+• Five-star event: the Sushi Boat. Chef Hiro orders a giant boat of rolls, and his approval gives the gold sign.
+Ben's Burritos
+A bright taco-truck-style counter with papel picado banners, a big griddle and a wall of hot sauces.
+• Menu: burritos, burrito bowls and tacos; chips and salsa as a side from two stars.
+• The line: Style (Burrito, Bowl, Tacos) → Rice (White, Brown, None) → Beans (Black, Pinto, None) → protein (Chicken, Steak, Veggie) → toppings one at a time, Add or Skip (cheese, lettuce, pico, corn, sour cream, guacamole) → Hot sauce (Mild, Medium, Hot, None).
+• Cooking step: the griddle, for the protein and to toast the wrapped burrito. Simple: Lightly Toasted, Toasted, Extra Crispy. Timed: press and lift at the right moment.
+• Wrapping: automatic, with a satisfying roll animation (and a chance of an over-stuffed burrito exploding as a gross-out).
+• Gross-outs: brown guacamole, a hair in the beans, a burrito that bursts, a fly in the salsa.
+• Mitch's uniform: a bandana, an apron and a hot-sauce-stained name tag.
+• Unique customers: Inferno, who wants everything hotter until smoke comes out of his ears, and a construction worker who orders "one of everything."
+• Ridiculous orders: a burrito wrapped inside another burrito, guacamole with "no avocado," the hottest sauce on a burrito for someone who then cries.
+• Five-star event: the Burrito Challenge. Inferno takes on the giant burrito with every sauce.
+Ben's Ice Cream Emporium
+An old-fashioned pink-and-white parlor with a long freezer case, a swirly sign and a shake machine.
+• Menu: cones, cups and sundaes; milkshakes from two stars; banana splits from three.
+• The line: Holder (Cone, Waffle Cone, Cup) → scoops, one at a time, choosing the flavor from up to five at a time (vanilla, chocolate, strawberry, mint chip, cookie dough, and later rocky road and bubblegum) → toppings one at a time, Add or Skip (sprinkles, hot fudge, caramel, whipped cream, nuts, cherry).
+• Cooking step: the scoop. Simple: Small, Regular, Huge. Timed: stop the scoop when it's round and full. Shakes use the shake machine like the smoothie blender.
+• Gross-outs: freezer-burned ice cream, a melted puddle, a hair in the sprinkles, a cherry that's actually a tomato.
+• Mitch's uniform: a striped shirt, bow tie and a paper soda-jerk hat.
+• Unique customers: Little Lulu, a kid who agonizes out loud over every flavor before landing on vanilla (the ticket always shows her final pick), and Grandpa Walt, who wants it "the way they made it in 1955."
+• Ridiculous orders: a ten-scoop tower, an ice cream with ketchup, a sundae that's "just the cherry."
+• Five-star event: the Kitchen Sink, a giant sundae served in an actual sink for the whole Little League team.
+Regulars across the court
+The Burger Bar regulars visit every restaurant and keep their personalities everywhere. The Burger Bar's customer rules hold in every restaurant: a personality changes what they order, never how many presses it takes; the ticket always shows the whole order; no customer brings a new mechanic, changes their mind, leaves or hurries the player; and the snark aims at the food, never at the player. In the same way, Mitch keeps his shirt-and-tie look under each uniform, along with the tape over "MANAGER" on his badge.
+Regular
+Pizza Parlor
+Smoothie Shack
+Cafe
+Sushi
+Burritos
+Ice Cream
+Marge
+"The usual, hon": plain cheese
+Strawberry banana
+Coffee, cream, two sugars
+California roll, "nothing raw, hon"
+Bean and cheese
+Vanilla in a cup
+Gus
+Two larges, "one for the road"
+Two shakes, same deal
+Two coffees and a dozen donuts
+Two of every roll
+Two burritos
+Two cones
+Coach Bev
+Meat lover's
+Protein shake
+Black coffee
+Spicy tuna
+Steak burrito, counts the pickled jalapeños out loud
+A sundae "for the team"
+Vernon
+Exact: thin crust, light, cut in eight. "I will know."
+Very specific blend
+Oat latte, extra hot
+Judges it alongside Chef Hiro
+Bowl, nothing touching
+Single scoop, exact
+Sal
+Pepperoni, his favorite after bacon
+Refuses, then orders anyway
+Plain coffee, black
+Asks if there's a hot dog roll
+Steak, never lettuce
+Chocolate, "no rabbit food"
+The other drafted customers (Dale, Priya, Professor Oakes, Reginald, Tasha and Kai) join the court as their art is made. Reginald and Kai review every restaurant, Tasha lives at the Smoothie Shack and Ice Cream Emporium, and Professor Oakes brings a new reason to hate onions to every menu that has them.
+The script
+The script is written in full now, so the game is funny from the first playable build. It's extensive, so lines rarely repeat, and it lives in each pack's editable script file, so lines can be rewritten at any time before the voices are recorded.
+Every character gets lines for every moment they can be in, with several variations each:
+• Customers: greetings, ordering (including their usual and their running gags), small talk while the food is made, reactions for three, two and one stars, naming exactly what was wrong, spotting a gross-out that got through, and saying goodbye. The regulars also get lines specific to each restaurant, and the occasional mention of another restaurant on the court.
+• Mitch: shift openers, tutorial lines for every phase in every restaurant, warnings before mistakes in the tutorial, a gross-out line for every gross-out, Timed-mode heads-ups, one-liners after reactions, five-star celebrations, and jokes about his uniform in each restaurant.
+• Unique customers: a full set for their own restaurant, built around their gag (Tony and pineapple, Inferno and hot sauce, Jitters and caffeine, and so on).
+• The court: shoppers' chatter, storefront announcements, and the celebration when a restaurant earns its gold sign.
+The Burger Bar's existing rules for when Mitch talks still apply everywhere: scan speech always wins, he speaks into silence, no line repeats in a shift, and nobody ever comments on the player's speed or skill.
+Build order
+1. Everything is built with the full script played through per-character text to speech. Recording the voices is the final pass, once the script is settled. The Burger Bar's remaining voice recording waits until then too.
+2. Build the food court: the main menu, shared settings, the top-down U-shaped court, stars and crowds, unlocking, and the Burger Bar moved under it so it opens straight to the counter.
+3. Build the six new restaurants as packs on the engine, with art for each (backdrops, props, food, unique customers and Mitch's uniform poses), starting with the Pizza Parlor since the engine already has a test pizza pack. The regulars need no new art.
+4. Ben playtests the court and each restaurant, and the press counts and timing get tuned from that.
+Open questions
+1. The unlock order of the last four (proposed: Smoothie Shack, Burritos, Sushi, Ice Cream Emporium).
+2. The grand celebration (proposed: fireworks, the regulars cheer, and Mitch gets promoted).
+3. Settings on the food court main menu, applying to every restaurant (proposed).
+4. Mitch's uniform for each restaurant (first ideas are in each restaurant's section).

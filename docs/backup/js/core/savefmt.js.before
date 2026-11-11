@@ -1,0 +1,92 @@
+/** Ben's Burger Bar - save format, settings defaults and migrations.
+ *
+ *  Keys (DESIGN.md "Saves"): bb-settings, bb-progress:<pack>, bb-shift:<pack>. Each holds
+ *  { v, kind, pack, packVersion, data }. Older saves are upgraded one version at a time.
+ *  A save from a newer version is never overwritten. If the pack changed since the save,
+ *  only the shift in progress is dropped; coins and unlocks are kept.
+ *
+ *  Pure: this builds and reads the records. js/save.js does the localStorage calls.
+ *  Auto Scan, Scan Speed, Parking, the voice and Text to Speech belong to the Hub's shared
+ *  managers and follow the player into every game, so they are not saved here.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else (root.BB = root.BB || {}).savefmt = factory();
+})(typeof window === 'undefined' ? globalThis : window, function () {
+  'use strict';
+
+  const VERSIONS = { settings: 2, progress: 1, shift: 1 };
+  const key = (kind, pack) => (kind === 'settings' ? 'bb-settings' : 'bb-' + kind + ':' + pack.id);
+
+  /** Settings, in the canonical order of DESIGN.md "Settings" (Hub-owned ones left out). */
+  const DEFAULT_SETTINGS = {
+    cooking: 'simple',           // simple | timed
+    speed: 'verySlow',           // verySlow | slow | normal (Timed only)
+    shiftLength: 5,              // 5 | 3 | 8
+    orders: 'usual',             // usual | simple | fancy
+    manager: 'hintsJokes',       // the Assistant Manager: hintsJokes | hints | off
+    characterVoices: 'voices',   // voices | captions | off
+    theme: 'standard',           // standard | contrast
+    motion: 'full',              // full | reduced
+    textSize: 'normal',          // normal | large | xlarge
+    graphics: 'hub',             // hub | high | standard | low
+    sfx: true,
+    music: true,
+  };
+
+  /** v -> v + 1 steps, per kind. Settings 1 -> 2: the redesign (DESIGN.md "What the
+   *  redesign changed") renamed the cooking modes and dropped five settings. */
+  const MIGRATIONS = {
+    settings: {
+      1: d => {
+        const out = Object.assign({}, d);
+        out.cooking = d.cooking === 'timed' ? 'timed' : 'simple';
+        if (d.mitch !== undefined) { out.manager = d.mitch; delete out.mitch; }
+        ['tts', 'burning', 'pouring', 'customersAtOnce', 'mistakeWarnings', 'star'].forEach(k => { delete out[k]; });
+        return out;
+      },
+    },
+    progress: {},
+    shift: {},
+  };
+
+  function wrap(kind, pack, data) {
+    return { v: VERSIONS[kind], kind, pack: pack.id, packVersion: pack.version, data };
+  }
+
+  /** Read a stored record. -> { ok, data } or { ok: false, reason, keep }.
+   *  keep: true means leave the stored record alone (it is from a newer game). */
+  function read(kind, raw, pack) {
+    let rec = raw;
+    if (typeof raw === 'string') { try { rec = JSON.parse(raw); } catch (e) { return { ok: false, reason: 'corrupt', keep: false }; } }
+    if (!rec || typeof rec !== 'object' || rec.data === undefined) return { ok: false, reason: 'missing', keep: false };
+    if (rec.kind && rec.kind !== kind) return { ok: false, reason: 'kind', keep: true };
+    if (rec.v > VERSIONS[kind]) return { ok: false, reason: 'newer', keep: true };
+    let data = JSON.parse(JSON.stringify(rec.data));
+    for (let v = rec.v || 1; v < VERSIONS[kind]; v++) data = MIGRATIONS[kind][v](data);
+    if (kind === 'settings') {
+      const out = Object.assign({}, DEFAULT_SETTINGS);
+      Object.keys(DEFAULT_SETTINGS).forEach(k => { if (data[k] !== undefined) out[k] = data[k]; });
+      return { ok: true, data: out };
+    }
+    if (rec.pack !== pack.id) return { ok: false, reason: 'pack', keep: true };
+    if (rec.packVersion !== pack.version) {
+      if (kind === 'shift') return { ok: false, reason: 'packVersion', keep: false };
+      // Progress survives a pack change: keep coins and whatever still exists.
+      const known = new Set(Object.keys(pack.recipes));
+      data.unlocked = (data.unlocked || []).filter(id => known.has(id));
+      data.order = (data.order || []).filter(id => known.has(id));
+      return { ok: true, data, upgraded: true };
+    }
+    return { ok: true, data };
+  }
+
+  /** May this record be written over what is stored? Never over a newer save. */
+  function canWrite(kind, stored) {
+    let rec = stored;
+    if (typeof stored === 'string') { try { rec = JSON.parse(stored); } catch (e) { return true; } }
+    return !rec || !(rec.v > VERSIONS[kind]);
+  }
+
+  return { VERSIONS, key, DEFAULT_SETTINGS, MIGRATIONS, wrap, read, canWrite };
+});

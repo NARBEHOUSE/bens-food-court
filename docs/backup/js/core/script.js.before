@@ -1,0 +1,125 @@
+/** Ben's Burger Bar - the script: what a character says, and whether it has been recorded
+ *  (DESIGN.md "Voices and the script").
+ *
+ *  A pack's script is a list of lines { id, who, moment, text, each? }:
+ *    who     a character id, 'customer' (any customer), or the manager's id
+ *    moment  when it is said: 'greet', 'react.3', 'complain.extra', 'gross.mouldy'...
+ *    text    with blanks filled in when said: {ing} (cheese), {ings} (pickles, the plural),
+ *            {want} and {got} (stages: medium), {name} (the customer)
+ *    each    the blank that changes the words, so each value is its own recording
+ *            ('ing', 'want' or 'event'); the voice tool records one clip per value
+ *  A recording is a clip id, "<speaker>/<line id>[.<value>]", listed in the pack's voice
+ *  manifest with the hash of the words it was made from. Edited words no longer match, so
+ *  the line falls back to text to speech until it is recorded again.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./words.js'));
+  else (root.BB = root.BB || {}).script = factory(root.BB.words);
+})(typeof window === 'undefined' ? globalThis : window, function (W) {
+  'use strict';
+
+  /** FNV-1a, 32 bits, as 8 hex digits: the fingerprint of a line's words. */
+  function hash(text) {
+    let h = 0x811c9dc5;
+    const s = String(text);
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+    return ('0000000' + h.toString(16)).slice(-8);
+  }
+
+  /** The words without sound tags ("[sigh]", "[laughing]"): what captions show and text
+   *  to speech says. Recordings are made from the tagged words, so the voice sighs. */
+  const clean = text => String(text).replace(/\[[^\]]*\]/g, ' ').replace(/\s{2,}/g, ' ').trim();
+
+  /** Fill the blanks. vars = { ing, want, got, name, count, event } (ids, not words). */
+  function fill(pack, text, vars) {
+    vars = vars || {};
+    return String(text).replace(/\{(\w+)\}/g, (m, k) => {
+      switch (k) {
+        case 'ing': return vars.ing ? W.lower(W.name(pack, vars.ing)) : m;
+        case 'ings': return vars.ing ? W.lower(W.plural(pack, vars.ing)) : m;
+        case 'want': return vars.want ? W.lower(W.stage(pack, vars.want)) : m;
+        case 'got': return vars.got ? W.lower(W.stage(pack, vars.got)) : m;
+        case 'name': return vars.name || m;
+        case 'count': return vars.count !== undefined ? W.NUMBER[vars.count] || String(vars.count) : m;
+        default: return vars[k] !== undefined ? String(vars[k]) : m;
+      }
+    });
+  }
+
+  /** The lines a speaker can say at a moment: their own, plus the shared ones for their
+   *  kind when they have fewer than two of their own. */
+  function candidates(script, who, moment, kind) {
+    const all = (script && script.lines) || [];
+    const own = all.filter(l => l.moment === moment && l.who === who);
+    if (own.length >= 2 || !kind || kind === who) return own.length ? own : all.filter(l => l.moment === moment && l.who === kind);
+    return own.concat(all.filter(l => l.moment === moment && l.who === kind));
+  }
+
+  /** The clip id for a line said by a speaker with these blanks. A shared line is filed
+   *  under its kind ("vernon/customer.done.1.rare"), so it never collides with the
+   *  speaker's own line of the same id. */
+  function clipId(line, speaker, vars) {
+    const v = line.each && vars ? vars[line.each] : null;
+    return speaker + '/' + (line.who === speaker ? '' : line.who + '.') + line.id + (v ? '.' + v : '');
+  }
+
+  /** The values a line's changing blank can take, from the pack: a gross-out's own
+   *  ingredients; otherwise every ingredient offered once on an Add step; every doneness a
+   *  cook step offers. */
+  function valuesFor(pack, line) {
+    if (line.each === 'want') return [...new Set(Object.values(pack.stageSets).flatMap(s => s.choose || []))];
+    if (line.each !== 'ing') return [];
+    const g = /gross\.(\w+)$/.exec(line.moment);
+    const E = g && (pack.gross || []).find(x => x.id === g[1]);
+    if (E) return E.on.slice();
+    return [...new Set(Object.values(pack.stations).flatMap(st => st.steps.filter(x => x.kind === 'add' && (x.max || 1) === 1).map(x => x.ing)))];
+  }
+
+  /** Choose a line. used: the line ids already said this shift (none repeats until a
+   *  moment runs out). rnd: () => [0, 1). -> { line, text, clip } or null */
+  function pick(pack, script, who, moment, vars, used, rnd, kind) {
+    const list = candidates(script, who, moment, kind);
+    if (!list.length) return null;
+    let fresh = list.filter(l => !used || !used.has(clipId(l, who, vars)));
+    if (!fresh.length) { list.forEach(l => used && used.delete(clipId(l, who, vars))); fresh = list; }
+    const line = fresh[Math.floor((rnd ? rnd() : 0) * fresh.length) % fresh.length];
+    const clip = clipId(line, who, vars);
+    if (used) used.add(clip);
+    return { line, text: fill(pack, line.text, Object.assign({}, vars)), clip };
+  }
+
+  /** The recorded file for a clip, if its recording was made from these exact words. */
+  function recording(manifest, clip, text) {
+    const r = manifest && manifest[clip];
+    return r && r.hash === hash(text) ? r.file : null;
+  }
+
+  /** Every clip a pack's cast needs recorded: authored lines with each blank's values,
+   *  plus the order parts every customer must be able to say. -> [{ clip, speaker, text }] */
+  function everyClip(pack, script, speakers) {
+    const out = [];
+    const seen = new Set();
+    let line = null;
+    const add = (clip, speaker, text) => {
+      if (seen.has(clip)) return;
+      seen.add(clip);
+      out.push(Object.assign({ clip, speaker, text, moment: line.moment }, line.delivery ? { delivery: line.delivery } : {}));
+    };
+    for (const each of (script && script.lines) || []) {
+      line = each;
+      const who = line.who === 'customer' ? speakers.customers : [line.who];
+      for (const sp of who) {
+        // A shared line is only needed by speakers with fewer than two of their own.
+        const theirs = candidates(script, sp, line.moment, 'customer');
+        if (line.who === 'customer' && theirs.length && theirs.every(l => l.who === sp)) continue;
+        const person = (pack.regulars || []).concat(pack.manager ? [pack.manager] : []).find(c => c.id === sp);
+        const base = { name: person ? person.name : sp };
+        if (line.each) for (const v of valuesFor(pack, line)) add(clipId(line, sp, { [line.each]: v }), sp, fill(pack, line.text, Object.assign({}, base, { [line.each]: v })));
+        else add(clipId(line, sp, {}), sp, fill(pack, line.text, base));
+      }
+    }
+    return out;
+  }
+
+  return { hash, clean, fill, candidates, clipId, valuesFor, pick, recording, everyClip };
+});

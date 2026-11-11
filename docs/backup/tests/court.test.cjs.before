@@ -1,0 +1,585 @@
+/** The court's rules (js/core/court.js) on the court's data (packs/court/court.js): stars,
+ *  popularity, unlocks, the five-star event, the celebration, the scan, the words, and the
+ *  bb-court save (docs/FOODCOURT-BUILD.md 4.1, 6.2, 7; docs/api/court-rules.md). */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const fs = require('fs');
+const path = require('path');
+
+const G = path.join(__dirname, '..');
+const R = require(path.join(G, 'js', 'core', 'court.js'));
+const C = require(path.join(G, 'packs', 'court', 'court.js'));
+const clone = x => JSON.parse(JSON.stringify(x));
+const IDS = C.restaurants.map(r => r.pack);
+
+/** A shift result, as core-b returns it (spec 4.1). */
+function res(pack, stars, extra) {
+  const avg = stars.length ? stars.reduce((a, b) => a + b, 0) / stars.length : 0;
+  return Object.assign({ pack, level: 1, event: null, tutorial: false, orders: stars.length, stars, avgStars: avg, coins: 12 }, extra);
+}
+const GOOD = [3, 2, 2];   // average 2.33
+const BAD = [2, 2, 1];    // average 1.67
+const shift = (g, id, stars, extra) => R.addShift(C, g, id, res(id, stars || GOOD, extra));
+function good(g, id, n) { let out; for (let i = 0; i < (n || 1); i++) out = shift(g, id, GOOD); return out; }
+const event = (g, id, stars) => shift(g, id, stars || GOOD, { event: 'five', level: 4 });
+/** Good shifts until the event is due, then a good event shift: five stars and the gold sign. */
+function toGold(g, id) {
+  let guard = 0;
+  while (!R.eventDue(C, g, id)) { good(g, id); assert.ok(guard++ < 20, id + ': the event never came due'); }
+  return event(g, id);
+}
+const st = (g, id) => g.restaurants[id];
+const openIds = g => R.openShops(C, g).map(r => r.pack);
+
+test('BBCourt is spec 2.1, 4.1 and 6.2, in scan order round the U', () => {
+  assert.strictEqual(C.recordedVoices, false);
+  assert.strictEqual(typeof C.version, 'number');
+  assert.deepStrictEqual(C.restaurants.map(r => [r.pack, r.name, r.short, r.arm, r.slot, r.start, r.unlock]), [
+    ['burrito', "Ben's Burritos", 'Burritos', 'left', 2, false, 2],
+    ['smoothie', "Ben's Smoothie Shack", 'Smoothie Shack', 'left', 1, false, 1],
+    ['pizza', "Ben's Pizza Parlor", 'Pizza Parlor', 'top', 1, true, null],
+    ['diner', "Ben's Burger Bar", 'Burger Bar', 'top', 2, true, null],
+    ['cafe', "Ben's Cafe", 'Cafe', 'top', 3, true, null],
+    ['sushi', "Ben's Sushi", 'Sushi', 'right', 1, false, 3],
+    ['icecream', "Ben's Ice Cream Emporium", 'Ice Cream Emporium', 'right', 2, false, 4],
+  ]);
+  assert.deepStrictEqual(C.arms.map(a => [a.id, a.name]), [['left', 'Left'], ['top', 'Top'], ['right', 'Right']]);
+  assert.deepStrictEqual(C.unlocks, [{ pack: 'smoothie', stars: 3 }, { pack: 'burrito', stars: 4 },
+    { pack: 'sushi', stars: 5 }, { pack: 'icecream', stars: 5 }]);
+  assert.deepStrictEqual(C.rules, { good: 2.0, popularityMax: 10,
+    stars: [{ popularity: 0, stars: 1 }, { popularity: 1, stars: 2 }, { popularity: 3, stars: 3 }, { popularity: 5, stars: 4 }],
+    event: { popularity: 7, stars: 4, gives: 5 } });
+  // The upside-down U (2026-11-08): signs and plinth measured from the second court picture.
+  const boxes = {
+    burrito: [[5.5, 62.2, 20.1, 69.6], [0, 57, 24, 89]],
+    smoothie: [[6.3, 31.1, 18.8, 38.5], [0, 19, 25, 57]],
+    pizza: [[19.9, 10.5, 33.5, 15.6], [14, 0, 36.5, 35]],
+    diner: [[41.5, 10.9, 58.6, 15.5], [36.5, 0, 63.5, 34.5]],
+    cafe: [[66.3, 10.7, 80.3, 16.0], [63.5, 0, 86, 35]],
+    sushi: [[81.5, 31.1, 93.9, 38.4], [75, 21, 100, 57]],
+    icecream: [[79.2, 62.5, 94.5, 69.8], [75, 57, 100, 89]],
+  };
+  for (const [id, [sign, store]] of Object.entries(boxes)) {
+    assert.deepStrictEqual(C.layout.stores[id].sign, sign, id + ' sign');
+    assert.deepStrictEqual(C.layout.stores[id].store, store, id + ' store');
+  }
+  assert.deepStrictEqual(C.layout.board, [43.9, 47.6, 56.1, 55.1]);
+  assert.deepStrictEqual(C.layout.picture, { w: 1536, h: 1024 });
+  // Spec 6.2's crowd: 0-2 passing, 3-6 a short queue, 7-9 out the door with diners, 10 full.
+  assert.deepStrictEqual(C.crowd.map(r => r.tier), ['quiet', 'quiet', 'quiet', 'shortQueue', 'shortQueue', 'shortQueue',
+    'shortQueue', 'outTheDoor', 'outTheDoor', 'outTheDoor', 'full']);
+});
+
+test('BBCourt passes its own check, and the check catches broken data', () => {
+  assert.deepStrictEqual(R.check(C), []);
+  const b = clone(C);
+  b.restaurants[0].arm = 'middle';
+  b.restaurants[1].pack = 'pizza';
+  b.unlocks.reverse();
+  b.rules.event.gives = 6;
+  b.crowd.pop();
+  b.crowd[3].queue = -1;
+  b.layout.stores.cafe.queue = [[80, 99]];
+  b.layout.stores.diner.seats.push(b.layout.stores.pizza.seats[0].slice());
+  b.layout.stores.sushi.sign = [90, 10, 80, 20];
+  delete b.layout.stores.icecream;
+  b.recordedVoices = 'no';
+  const errs = R.check(b).join('\n');
+  for (const want of [/burrito stands on an unknown arm/, /pizza is listed twice/, /unlocks must open each later restaurant once/,
+    /the event gives the next star/, /crowd needs one row for each popularity/, /crowd row 3: queue must be a count/,
+    /cafe has fewer queue spots/, /belongs to both pizza and diner/, /sushi.sign must be/, /layout.stores.icecream is missing/,
+    /recordedVoices must be true or false/]) assert.match(errs, want);
+  assert.deepStrictEqual(R.check(null), ['the court data is missing']);
+});
+
+test('js/core/court.js names no restaurant, arm or crowd tier: it reads them all from BBCourt', () => {
+  const src = fs.readFileSync(path.join(G, 'js', 'core', 'court.js'), 'utf8');
+  const ids = new Set([...IDS, ...C.arms.map(a => a.id), ...C.crowd.map(r => r.tier)]);
+  for (const id of ids) assert.ok(!new RegExp('[\'"`]' + id + '[\'"`]').test(src), 'court.js names ' + id);
+  for (const r of C.restaurants) assert.ok(!src.includes(r.short), 'court.js names ' + r.short);
+});
+
+test('every function wants BBCourt first, and says so', () => {
+  const g = R.create(C);
+  assert.throws(() => R.crowd(g, 'pizza'), /BBCourt/);
+  assert.throws(() => R.addShift(g, 'pizza', res('pizza', GOOD)), /BBCourt/);
+  assert.throws(() => R.nextGoal(), /BBCourt/);
+  assert.throws(() => R.addShift(C, null, 'pizza', res('pizza', GOOD)), /state/);
+});
+
+test('a new court: the three start restaurants open at one star, the other four shut, nothing earned', () => {
+  const g = R.create(C);
+  assert.deepStrictEqual(openIds(g), ['pizza', 'diner', 'cafe']);
+  for (const r of C.restaurants) {
+    assert.deepStrictEqual(st(g, r.pack), { popularity: 0, stars: 1, opened: r.start, grandOpeningSeen: r.start,
+      gold: false, goldSeen: false, tutorialDone: false, shifts: 0 });
+    assert.strictEqual(R.level(C, g, r.pack), 1);
+    assert.strictEqual(R.isOpen(C, g, r.pack), r.start);
+    assert.strictEqual(R.eventDue(C, g, r.pack), false);
+  }
+  assert.strictEqual(g.celebrated, false);
+  assert.strictEqual(g.celebrationSeen, false);
+  assert.deepStrictEqual(R.news(C, g), [], 'the start restaurants have no grand opening');
+  assert.strictEqual(R.level(C, g, 'test-pizza'), 1, 'a pack the court does not know plays level 1');
+  assert.strictEqual(R.isOpen(C, g, 'test-pizza'), false);
+});
+
+test('the 2.0 average rule: a finished shift is good at an average of 2.0 or more', () => {
+  const cases = [[[2, 2, 2], true], [[3, 1], true], [[3, 3, 3, 3, 2, 1, 1, 1], true], [[2, 2, 1], false],
+    [[3, 1, 1], false], [[3, 3, 1, 1, 1], false], [[1], false], [[2], true], [[3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1], false]];
+  for (const [stars, want] of cases) {
+    const g = R.create(C);
+    const out = shift(g, 'pizza', stars);
+    assert.strictEqual(out.good, want, JSON.stringify(stars));
+    assert.strictEqual(out.counted, true);
+    assert.strictEqual(st(g, 'pizza').popularity, want ? 1 : 0);
+  }
+  // Without the per-order stars, orders and avgStars decide.
+  const g = R.create(C);
+  assert.strictEqual(R.addShift(C, g, 'cafe', { pack: 'cafe', orders: 5, avgStars: 2.0 }).good, true);
+  assert.strictEqual(R.addShift(C, g, 'cafe', { pack: 'cafe', orders: 5, avgStars: 1.99 }).good, false);
+  // An average that is 2.0 but for float error (a running mean) is still 2.0.
+  assert.strictEqual(R.addShift(C, g, 'cafe', { pack: 'cafe', orders: 3, avgStars: 1.9999999999999998 }).good, true);
+  // With them, the per-order stars decide, whatever avgStars says.
+  assert.strictEqual(R.addShift(C, g, 'cafe', { pack: 'cafe', orders: 3, stars: [1, 1, 1], avgStars: 3 }).good, false);
+  assert.strictEqual(st(g, 'cafe').shifts, 4);
+});
+
+test('tutorials never count, nor empty shifts, shut restaurants or another restaurant\'s results', () => {
+  const g = R.create(C);
+  const before = clone(g);
+  const out = R.addShift(C, g, 'diner', res('diner', [3], { tutorial: true }));
+  assert.deepStrictEqual([out.counted, out.good, out.starsUp, out.popularity, out.stars], [false, false, false, 0, 1]);
+  assert.strictEqual(st(g, 'diner').tutorialDone, true, 'a finished tutorial counts as the first visit');
+  assert.strictEqual(st(g, 'diner').shifts, 0);
+  st(g, 'diner').tutorialDone = false;
+  assert.deepStrictEqual(g, before);
+  for (const [id, r] of [['pizza', res('pizza', [])], ['pizza', { pack: 'pizza', orders: 0, avgStars: null }],
+    ['sushi', res('sushi', GOOD)], ['pizza', res('diner', GOOD)], ['tacos', res('tacos', GOOD)], ['pizza', null]]) {
+    const o = R.addShift(C, g, id, r);
+    assert.strictEqual(o.counted, false, id + ' ' + JSON.stringify(r));
+    assert.deepStrictEqual(o.opened, []);
+  }
+  assert.deepStrictEqual(g, before);
+});
+
+test('popularity: one per good shift, never down, at most 10; a bad shift changes nothing but the count', () => {
+  const g = R.create(C);
+  const seen = [];
+  for (let i = 0; i < 14; i++) {
+    const out = shift(g, 'pizza', i % 3 === 2 ? BAD : GOOD);
+    seen.push(out.popularity);
+    assert.strictEqual(out.popularity, st(g, 'pizza').popularity);
+  }
+  assert.deepStrictEqual(seen, [1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10]);
+  for (let i = 0; i < 5; i++) assert.strictEqual(good(g, 'pizza').popularity, 10);
+  assert.strictEqual(st(g, 'pizza').shifts, 19);
+  assert.strictEqual(R.storefront(C, g, 'pizza').busy, true);
+});
+
+test('stars follow popularity, 1 at 0, 2 at 1, 3 at 3, 4 at 5, and only the event gives the fifth', () => {
+  const g = R.create(C);
+  const ladder = [];
+  for (let p = 1; p <= 10; p++) {
+    const out = good(g, 'diner');
+    ladder.push(out.stars);
+    assert.strictEqual(out.starsUp, [1, 3, 5].includes(p), 'popularity ' + p);
+    assert.strictEqual(R.starsFor(C, p), Math.min(4, out.stars));
+  }
+  assert.deepStrictEqual(ladder, [2, 2, 3, 3, 4, 4, 4, 4, 4, 4]);
+  assert.strictEqual(R.starsFor(C, 0), 1);
+  assert.strictEqual(R.level(C, g, 'diner'), 4);
+  assert.strictEqual(st(g, 'diner').gold, false);
+});
+
+test('stars never go down, whatever the shifts', () => {
+  const g = R.create(C);
+  good(g, 'cafe', 5);
+  for (let i = 0; i < 20; i++) {
+    const out = shift(g, 'cafe', [1, 1, 1]);
+    assert.strictEqual(out.stars, 4);
+    assert.strictEqual(out.starsUp, false);
+    assert.strictEqual(out.popularity, 5);
+  }
+  // A save that says less than its popularity earns is raised, never the other way.
+  const h = R.normalize(C, { restaurants: { cafe: { popularity: 5, stars: 2 } } });
+  assert.strictEqual(st(h, 'cafe').stars, 4);
+  const k = R.normalize(C, { restaurants: { cafe: { popularity: 0, stars: 4 } } });
+  assert.strictEqual(st(k, 'cafe').stars, 4);
+});
+
+test('the event: due at popularity 7 with four stars; a good event shift gives the fifth star and the gold sign', () => {
+  const g = R.create(C);
+  good(g, 'pizza', 6);
+  assert.strictEqual(R.eventDue(C, g, 'pizza'), false, 'popularity 6 is not enough');
+  const seventh = good(g, 'pizza');
+  assert.strictEqual(seventh.eventDue, true);
+  assert.strictEqual(R.eventDue(C, g, 'pizza'), true);
+  assert.match(R.label(C, g, 'pizza'), /^Pizza Parlor, four stars, five-star event next$/);
+  const out = event(g, 'pizza');
+  assert.deepStrictEqual([out.good, out.event, out.gold, out.starsUp, out.stars, out.popularity, out.eventDue],
+    [true, 'won', true, true, 5, 8, false]);
+  assert.deepStrictEqual(st(g, 'pizza'), Object.assign({}, st(g, 'pizza'), { stars: 5, gold: true, goldSeen: false }));
+  assert.strictEqual(R.level(C, g, 'pizza'), 5);
+  assert.strictEqual(R.label(C, g, 'pizza'), 'Pizza Parlor, five stars');
+  // After five stars, popularity keeps growing to fully busy, and the stars stay.
+  for (let i = 0; i < 3; i++) good(g, 'pizza');
+  assert.deepStrictEqual([st(g, 'pizza').popularity, st(g, 'pizza').stars], [10, 5]);
+  // Another event result now is just a good shift.
+  const again = event(g, 'pizza');
+  assert.deepStrictEqual([again.event, again.gold, again.stars], [null, false, 5]);
+});
+
+test('a failed event shift can be tried again', () => {
+  const g = R.create(C);
+  good(g, 'cafe', 7);
+  for (let i = 0; i < 3; i++) {
+    const out = event(g, 'cafe', BAD);
+    assert.deepStrictEqual([out.counted, out.good, out.event, out.gold, out.stars, out.popularity, out.eventDue],
+      [true, false, 'failed', false, 4, 7, true]);
+  }
+  const won = event(g, 'cafe');
+  assert.deepStrictEqual([won.event, won.gold, won.stars], ['won', true, 5]);
+});
+
+test('a normal shift while the event is due grows popularity but never changes stars', () => {
+  const g = R.create(C);
+  good(g, 'diner', 7);
+  for (let p = 8; p <= 12; p++) {
+    const out = good(g, 'diner');
+    assert.deepStrictEqual([out.good, out.stars, out.starsUp, out.gold, out.event, out.eventDue], [true, 4, false, false, null, true]);
+    assert.strictEqual(out.popularity, Math.min(p, 10));
+  }
+  // An event result that comes in before the event is due is a normal shift.
+  const h = R.create(C);
+  good(h, 'diner', 5);
+  const early = event(h, 'diner');
+  assert.deepStrictEqual([early.event, early.gold, early.stars, early.popularity], [null, false, 4, 6]);
+});
+
+test('unlock order and thresholds: Smoothie Shack at 3 stars, Burritos at 4, Sushi and Ice Cream at 5', () => {
+  const g = R.create(C);
+  // The 4th: every open restaurant at three stars, and not one shift before.
+  good(g, 'pizza', 3);
+  good(g, 'diner', 3);
+  good(g, 'cafe', 2);
+  assert.deepStrictEqual(openIds(g), ['pizza', 'diner', 'cafe']);
+  let out = good(g, 'cafe');
+  assert.deepStrictEqual(out.opened, ['smoothie']);
+  assert.deepStrictEqual(openIds(g), ['smoothie', 'pizza', 'diner', 'cafe']);
+  assert.strictEqual(st(g, 'smoothie').grandOpeningSeen, false);
+  assert.strictEqual(st(g, 'smoothie').stars, 1);
+  // The 5th: all four at four stars (the new one included).
+  good(g, 'pizza', 2);
+  good(g, 'diner', 2);
+  good(g, 'cafe', 2);
+  good(g, 'smoothie', 4);
+  assert.strictEqual(R.isOpen(C, g, 'burrito'), false);
+  out = good(g, 'smoothie');
+  assert.deepStrictEqual(out.opened, ['burrito']);
+  // The 6th: all five at five stars, which only events give.
+  for (const id of ['pizza', 'diner', 'cafe', 'smoothie']) assert.deepStrictEqual(toGold(g, id).opened, []);
+  good(g, 'burrito', 7);
+  assert.strictEqual(R.isOpen(C, g, 'sushi'), false, 'four stars is not five');
+  out = event(g, 'burrito');
+  assert.deepStrictEqual(out.opened, ['sushi']);
+  assert.strictEqual(out.celebrate, false);
+  // The 7th: all six at five stars.
+  good(g, 'sushi', 7);
+  assert.strictEqual(R.isOpen(C, g, 'icecream'), false);
+  out = event(g, 'sushi');
+  assert.deepStrictEqual(out.opened, ['icecream']);
+  assert.deepStrictEqual(openIds(g), IDS);
+  assert.strictEqual(out.celebrate, false, 'the seventh is not at five stars yet');
+});
+
+test('the grand celebration: when all seven reach five stars, once', () => {
+  const g = R.create(C);
+  let fired = 0;
+  const count = out => { if (out.celebrate) fired += 1; return out; };
+  for (const id of ['pizza', 'diner', 'cafe']) { while (!R.eventDue(C, g, id)) count(good(g, id)); count(event(g, id)); }
+  for (const u of C.unlocks) {
+    assert.ok(R.isOpen(C, g, u.pack), u.pack + ' opened');
+    while (!R.eventDue(C, g, u.pack)) count(good(g, u.pack));
+    const out = count(event(g, u.pack));
+    assert.strictEqual(out.celebrate, u.pack === 'icecream', u.pack);
+  }
+  assert.strictEqual(fired, 1);
+  assert.deepStrictEqual([g.celebrated, g.celebrationSeen], [true, false]);
+  for (const id of IDS) for (let i = 0; i < 3; i++) assert.strictEqual(count(good(g, id)).celebrate, false);
+  assert.strictEqual(fired, 1);
+  // A save already celebrated never celebrates again.
+  const h = R.migrate(C, JSON.stringify(R.record(g)));
+  for (const id of IDS) assert.strictEqual(good(h, id).celebrate, false);
+});
+
+test('nextGoal: the words and blanks for each stage', () => {
+  const g = R.create(C);
+  let goal = R.nextGoal(C, g);
+  assert.deepStrictEqual([goal.stage, goal.goal, goal.words, goal.name, goal.need, goal.left, goal.count], ['unlock',
+    'get all three to three stars and the Smoothie Shack opens', 'Get all three to three stars and the Smoothie Shack opens.',
+    "Ben's Smoothie Shack", 3, ['pizza', 'diner', 'cafe'], 3]);
+  assert.deepStrictEqual(goal.board, ['Get all three to three stars and the Smoothie Shack opens.', 'Five stars: 0 of 7', 'Fully busy: 0 of 7']);
+  assert.deepStrictEqual(goal.blanks, { goal: goal.goal, name: "Ben's Smoothie Shack", count: 3 });
+  const keys = new Set([goal.key]);
+  const now = () => { const n = R.nextGoal(C, g); keys.add(n.key); return n; };
+  const words = () => now().words;
+  good(g, 'pizza', 3);
+  assert.strictEqual(words(), 'Get the Burger Bar and the Cafe to three stars and the Smoothie Shack opens.');
+  good(g, 'diner', 3);
+  assert.strictEqual(words(), 'Get the Cafe to three stars and the Smoothie Shack opens.');
+  const k = R.nextGoal(C, g).key;
+  good(g, 'pizza');
+  assert.strictEqual(R.nextGoal(C, g).key, k, 'a shift that changes nothing the goal says keeps the key');
+  good(g, 'cafe', 3);
+  assert.strictEqual(words(), "Get all four to four stars and Ben's Burritos opens.");
+  good(g, 'pizza');
+  assert.strictEqual(words(), "Get three more to four stars and Ben's Burritos opens.");
+  good(g, 'smoothie', 5);
+  good(g, 'cafe', 2);
+  assert.strictEqual(words(), "Get the Burger Bar to four stars and Ben's Burritos opens.");
+  good(g, 'diner', 2);
+  assert.strictEqual(words(), "Get all five to five stars and Ben's Sushi opens.");
+  for (const id of ['pizza', 'diner', 'cafe', 'smoothie']) toGold(g, id);
+  assert.strictEqual(words(), "Get Ben's Burritos to five stars and Ben's Sushi opens.");
+  toGold(g, 'burrito');
+  assert.strictEqual(words(), "Get Ben's Sushi to five stars and the Ice Cream Emporium opens.");
+  toGold(g, 'sushi');
+  goal = now();
+  assert.deepStrictEqual([goal.stage, goal.words, goal.name, goal.count], ['fiveStars',
+    'Get the Ice Cream Emporium to five stars and the whole court celebrates.', '', 1]);
+  assert.deepStrictEqual(goal.board.slice(1), ['Five stars: 6 of 7', 'Fully busy: 0 of 7']);
+  toGold(g, 'icecream');
+  goal = now();
+  assert.deepStrictEqual([goal.stage, goal.words], ['fullyBusy', 'Get all seven fully busy.']);
+  assert.deepStrictEqual(goal.board, ['All seven at five stars', 'Get all seven fully busy.', 'Fully busy: 0 of 7']);
+  for (const id of IDS) while (st(g, id).popularity < 10 && !['icecream', 'sushi'].includes(id)) good(g, id);
+  assert.strictEqual(words(), "Get Ben's Sushi and the Ice Cream Emporium fully busy.");
+  good(g, 'icecream', 3);
+  good(g, 'sushi', 3);
+  goal = now();
+  assert.deepStrictEqual([goal.stage, goal.goal, goal.words, goal.left], ['complete', '', 'All seven at five stars and fully busy.', []]);
+  assert.deepStrictEqual(goal.board, ['All seven at five stars', 'All seven fully busy']);
+  assert.strictEqual(keys.size, 13, 'every new goal had a new key');
+});
+
+test('the scan: four or fewer open is flat; more go by parts; a part with one open shop is that shop; at most five stops a level', () => {
+  const opened = n => R.normalize(C, { restaurants: Object.fromEntries(C.unlocks.slice(0, n).map(u => [u.pack, { opened: true }])) });
+  const ids = g => R.stops(C, g).map(s => s.id);
+  assert.deepStrictEqual(ids(opened(0)), ['shop:pizza', 'shop:diner', 'shop:cafe']);
+  assert.deepStrictEqual(ids(opened(1)), ['shop:smoothie', 'shop:pizza', 'shop:diner', 'shop:cafe']);
+  assert.deepStrictEqual(ids(opened(2)), ['part:left', 'part:top']);
+  assert.deepStrictEqual(ids(opened(3)), ['part:left', 'part:top', 'shop:sushi']);
+  assert.deepStrictEqual(ids(opened(4)), ['part:left', 'part:top', 'part:right']);
+  const all = R.stops(C, opened(4));
+  assert.deepStrictEqual(all.map(s => s.label), ['Left. Burritos, Smoothie Shack.', 'Top. Pizza Parlor, Burger Bar, Cafe.',
+    'Right. Sushi, Ice Cream Emporium.']);
+  assert.deepStrictEqual(all[0].stops.map(s => s.id), ['shop:burrito', 'shop:smoothie'], 'the left arm scans from its lower shop up');
+  assert.deepStrictEqual(all[2].stops.map(s => s.id), ['shop:sushi', 'shop:icecream'], 'the right arm scans from its upper shop down');
+  assert.deepStrictEqual(R.parts(C, opened(3)).map(p => [p.arm, p.shops.map(r => r.pack)]),
+    [['left', ['burrito', 'smoothie']], ['top', ['pizza', 'diner', 'cafe']], ['right', ['sushi']]]);
+  for (let n = 0; n <= 4; n++) {
+    const root = R.stops(C, opened(n));
+    assert.ok(root.length + 1 <= 5, n + ' unlocked: the root with Pause has ' + (root.length + 1) + ' stops');
+    for (const s of root) if (s.kind === 'part') assert.ok(s.stops.length + 1 <= 5 && s.stops.length >= 2, s.id);
+    const flat = [].concat(...root.map(s => (s.kind === 'part' ? s.stops : [s]))).map(s => s.pack);
+    assert.deepStrictEqual(flat, R.openShops(C, opened(n)).map(r => r.pack), 'the same U order at every depth');
+    assert.ok(flat.every(id => R.isOpen(C, opened(n), id)), 'shut shops are never scanned');
+  }
+});
+
+test('labels: the scan name and stars, plus a shift in progress and the event', () => {
+  const g = R.create(C);
+  assert.strictEqual(R.label(C, g, 'cafe'), 'Cafe, one star');
+  good(g, 'pizza', 3);
+  assert.strictEqual(R.label(C, g, 'pizza'), 'Pizza Parlor, three stars');
+  assert.strictEqual(R.label(C, g, 'pizza', { saved: { pizza: true } }), 'Pizza Parlor, three stars, shift in progress');
+  assert.strictEqual(R.label(C, g, 'pizza', { saved: ['pizza'] }), 'Pizza Parlor, three stars, shift in progress');
+  assert.strictEqual(R.label(C, g, 'pizza', { saved: id => id === 'diner' }), 'Pizza Parlor, three stars');
+  good(g, 'diner', 7);
+  assert.strictEqual(R.label(C, g, 'diner', { saved: { diner: 1 } }), 'Burger Bar, four stars, shift in progress, five-star event next');
+  assert.strictEqual(R.stops(C, g, { saved: { cafe: true } })[2].label, 'Cafe, one star, shift in progress');
+  assert.strictEqual(R.label(C, g, 'tacos'), '');
+});
+
+test('the crowd follows spec 6.2 and stands on the layout\'s spots', () => {
+  const at = p => R.normalize(C, { restaurants: { diner: { popularity: p } } });
+  const L = C.layout.stores.diner;
+  // Popularity 10 seats everyone the store has seats for.
+  const want = [[1, 0, 0], [2, 0, 0], [2, 0, 0], [0, 2, 0], [0, 2, 0], [0, 3, 0], [0, 3, 0], [0, 5, 1], [0, 5, 2], [0, 5, 3], [0, 5, L.seats.length]];
+  for (let p = 0; p <= 10; p++) {
+    const c = R.crowd(C, at(p), 'diner');
+    assert.strictEqual(c.tier, C.crowd[p].tier, 'popularity ' + p);
+    assert.strictEqual(c.popularity, p);
+    assert.deepStrictEqual([c.passing, c.queue, c.seated], want[p], 'popularity ' + p);
+    assert.deepStrictEqual(c.spots, { passing: L.passing.slice(0, c.passing), queue: L.queue.slice(0, c.queue), seats: L.seats.slice(0, c.seated) });
+  }
+  // Popularity 10 fills every seat the store has.
+  for (const id of IDS) {
+    const g = R.normalize(C, { restaurants: { [id]: { popularity: 10, opened: true } } });
+    assert.strictEqual(R.crowd(C, g, id).seated, C.layout.stores[id].seats.length, id);
+    assert.strictEqual(R.storefront(C, g, id).crowd.tier, 'full');
+  }
+  assert.strictEqual(R.crowd(C, R.create(C), 'tacos').queue, 0);
+});
+
+test('court moments: gold signs, grand openings and the celebration wait until seen; the storefront shows the rest', () => {
+  const g = R.create(C);
+  assert.deepStrictEqual(R.storefront(C, g, 'smoothie'), { pack: 'smoothie', open: false, stars: 1, popularity: 0, eventDue: false,
+    busy: false, shutter: true, banner: false, goldSign: false, tutorialDone: false, crowd: R.crowd(C, g, 'smoothie') });
+  assert.strictEqual(R.storefront(C, g, 'tacos'), null);
+  assert.deepStrictEqual([R.storefront(C, g, 'pizza').shutter, R.storefront(C, g, 'pizza').banner], [false, false]);
+  for (const id of ['pizza', 'diner', 'cafe']) good(g, id, 3);
+  let news = R.news(C, g);
+  assert.deepStrictEqual(news, [{ kind: 'grandOpening', pack: 'smoothie', name: "Ben's Smoothie Shack", words: "Ben's Smoothie Shack is open." }]);
+  assert.strictEqual(R.storefront(C, g, 'smoothie').shutter, true, 'the shutter rolls up in its moment');
+  R.seen(C, g, news[0]);
+  assert.deepStrictEqual(R.news(C, g), []);
+  let front = R.storefront(C, g, 'smoothie');
+  assert.deepStrictEqual([front.open, front.shutter, front.banner], [true, false, true]);
+  R.setTutorialDone(C, g, 'smoothie');   // the first visit's tutorial offer, answered
+  assert.deepStrictEqual([R.storefront(C, g, 'smoothie').banner, R.storefront(C, g, 'smoothie').tutorialDone], [false, true],
+    'the banner stays until the first visit');
+  R.setTutorialDone(C, g, 'tacos');
+  assert.strictEqual(g.restaurants.tacos, undefined);
+  toGold(g, 'pizza');
+  news = R.news(C, g);
+  assert.deepStrictEqual(news.map(n => [n.kind, n.pack, n.words]), [['goldSign', 'pizza', "Ben's Pizza Parlor has five stars and its gold sign."]]);
+  assert.strictEqual(R.storefront(C, g, 'pizza').goldSign, false, 'the sign drops on in its moment');
+  R.seen(C, g, news[0]);
+  assert.strictEqual(R.storefront(C, g, 'pizza').goldSign, true);
+  // Earned in the same shift: the gold sign plays before the grand opening.
+  const h = R.normalize(C, { restaurants: Object.fromEntries(['pizza', 'diner', 'cafe', 'smoothie', 'burrito'].map(id =>
+    [id, { opened: true, popularity: 8, stars: id === 'burrito' ? 4 : 5 }])) });
+  R.news(C, h).forEach(n => R.seen(C, h, n));
+  const out = event(h, 'burrito');
+  assert.deepStrictEqual([out.gold, out.opened], [true, ['sushi']]);
+  assert.deepStrictEqual(R.news(C, h).map(n => n.kind + ':' + n.pack), ['goldSign:burrito', 'grandOpening:sushi']);
+  // The celebration comes last, once.
+  const all = R.normalize(C, { restaurants: Object.fromEntries(IDS.map(id => [id, { opened: true, stars: 5, goldSeen: true, grandOpeningSeen: true }])) });
+  news = R.news(C, all);
+  assert.deepStrictEqual(news.map(n => [n.kind, n.words]), [['celebration', 'All seven restaurants have five stars.']]);
+  R.seen(C, all, news[0]);
+  assert.deepStrictEqual([all.celebrated, all.celebrationSeen, R.news(C, all).length], [true, true, 0]);
+  R.seen(C, all, { kind: 'goldSign', pack: 'tacos' });
+  R.seen(C, all, null);
+});
+
+test('words for the results card and for Help', () => {
+  const g = R.create(C);
+  assert.deepStrictEqual(R.shiftWords(C, 'cafe', shift(g, 'cafe', BAD)), []);
+  assert.deepStrictEqual(R.shiftWords(C, 'cafe', good(g, 'cafe')), ['The Cafe is up to two stars.']);
+  good(g, 'pizza', 3);
+  good(g, 'diner', 3);
+  assert.deepStrictEqual(R.shiftWords(C, 'cafe', good(g, 'cafe', 2)), ['The Cafe is up to three stars.', "Ben's Smoothie Shack is open."]);
+  good(g, 'pizza', 4);
+  assert.deepStrictEqual(R.shiftWords(C, 'pizza', event(g, 'pizza')), ["Ben's Pizza Parlor has five stars and its gold sign."]);
+  assert.deepStrictEqual(R.shiftWords(C, 'pizza', { celebrate: true, opened: [] }), ['All seven restaurants have five stars.']);
+  assert.strictEqual(R.help(C, g, { saved: { diner: true } }),
+    'Smoothie Shack, one star. Pizza Parlor, five stars. Burger Bar, three stars, shift in progress. Cafe, three stars. ' +
+    "Get three more to four stars and Ben's Burritos opens.");
+  good(g, 'pizza', 2);
+  assert.match(R.help(C, g), /^Smoothie Shack, one star\. Pizza Parlor, five stars, fully busy\. /);
+});
+
+test('migrate: an empty, broken or old record becomes a sound court', () => {
+  const fresh = R.create(C);
+  for (const raw of [undefined, null, '', 'not json', '{}', '[]', 42, [], { v: 1, kind: 'court' }, { v: 1, kind: 'progress', pack: 'diner', data: {} }]) {
+    assert.deepStrictEqual(R.migrate(C, raw), fresh, JSON.stringify(raw));
+  }
+  // A whole record, and the bare state, read back as they were.
+  const g = R.create(C);
+  for (const id of ['pizza', 'diner', 'cafe']) good(g, id, 3);
+  R.news(C, g).forEach(n => R.seen(C, g, n));
+  assert.deepStrictEqual(R.migrate(C, JSON.stringify(R.record(g))), g);
+  assert.deepStrictEqual(R.migrate(C, R.record(g)), g);
+  assert.deepStrictEqual(R.migrate(C, clone(g)), g);
+  assert.deepStrictEqual(R.record(g), { v: R.VERSION, kind: 'court', data: g });
+  // An old, partial or damaged record is repaired by the rules.
+  const old = { v: 1, kind: 'court', data: { restaurants: {
+    diner: { popularity: 4 },
+    pizza: { popularity: 99, stars: 2, opened: false, shifts: -4, tutorialDone: 'yes' },
+    cafe: { popularity: 'lots', stars: 5, goldSeen: true },
+    sushi: { opened: true, grandOpeningSeen: true, gold: true },
+    tacos: { popularity: 3, note: 'a newer game\'s restaurant' },
+  }, celebrationSeen: true } };
+  const before = clone(old);
+  const m = R.migrate(C, old);
+  assert.deepStrictEqual(old, before, 'the input is never changed');
+  assert.deepStrictEqual(st(m, 'diner'), { popularity: 4, stars: 3, opened: true, grandOpeningSeen: true, gold: false, goldSeen: false, tutorialDone: false, shifts: 0 });
+  assert.deepStrictEqual(st(m, 'pizza'), { popularity: 10, stars: 4, opened: true, grandOpeningSeen: true, gold: false, goldSeen: false, tutorialDone: false, shifts: 0 });
+  assert.deepStrictEqual(st(m, 'cafe'), { popularity: 0, stars: 5, opened: true, grandOpeningSeen: true, gold: true, goldSeen: true, tutorialDone: false, shifts: 0 });
+  assert.deepStrictEqual([st(m, 'sushi').opened, st(m, 'sushi').stars, st(m, 'sushi').gold, st(m, 'sushi').goldSeen], [true, 5, true, false]);
+  for (const id of ['smoothie', 'burrito']) {
+    assert.deepStrictEqual([st(m, id).opened, st(m, id).grandOpeningSeen], [true, false], id + ' opens before sushi');
+  }
+  assert.strictEqual(st(m, 'icecream').opened, false);
+  assert.deepStrictEqual(st(m, 'tacos'), { popularity: 3, note: 'a newer game\'s restaurant' });
+  assert.deepStrictEqual([m.celebrated, m.celebrationSeen], [false, false]);
+  assert.deepStrictEqual(R.check(C), []);
+  // All seven at five stars in a save that never celebrated: the celebration is earned, not yet seen.
+  const five = R.migrate(C, { restaurants: Object.fromEntries(IDS.map(id => [id, { stars: 5, opened: true }])) });
+  assert.deepStrictEqual([five.celebrated, five.celebrationSeen], [true, false]);
+  // The Burger Bar kept its tutorial in bb-progress:diner (Play and Skip both offered it).
+  const bar = R.migrate(C, null, { progress: { diner: { coins: 40, tutorialOffered: true }, pizza: { tutorialOffered: false }, cafe: null } });
+  assert.deepStrictEqual(IDS.filter(id => st(bar, id).tutorialDone), ['diner']);
+  // Never write over a newer game's save.
+  assert.strictEqual(R.canWrite(JSON.stringify({ v: R.VERSION + 1, kind: 'court', data: {} })), false);
+  assert.strictEqual(R.canWrite(JSON.stringify(R.record(g))), true);
+  assert.strictEqual(R.canWrite(null), true);
+  assert.strictEqual(R.canWrite('garbage'), true);
+  assert.strictEqual(R.KEY, 'bb-court');
+});
+
+test('a hand-built or partial state is read and changed as if it had been normalized', () => {
+  const g = { restaurants: { pizza: { popularity: 3 }, diner: 'junk' } };
+  assert.strictEqual(R.level(C, g, 'pizza'), 3);
+  assert.strictEqual(R.isOpen(C, g, 'diner'), true, 'a start restaurant is open whatever the save says');
+  const out = good(g, 'pizza');
+  assert.deepStrictEqual([out.counted, out.was.stars, out.stars, out.popularity], [true, 3, 3, 4]);
+  assert.deepStrictEqual(g.restaurants.pizza, { popularity: 4, stars: 3, opened: true, grandOpeningSeen: true, gold: false,
+    goldSeen: false, tutorialDone: true, shifts: 1 });
+  assert.strictEqual(good({}, 'cafe').popularity, 1, 'an empty object is a new court');
+});
+
+test('a long random walk keeps every rule: nothing goes down, unlocks in order, one celebration', () => {
+  let seed = 20261108;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  for (let run = 0; run < 40; run++) {
+    let g = R.create(C);
+    let fired = 0;
+    for (let i = 0; i < 400; i++) {
+      const open = R.openShops(C, g).map(r => r.pack);
+      const id = rnd() < 0.05 ? IDS[Math.floor(rnd() * IDS.length)] : open[Math.floor(rnd() * open.length)];
+      const n = 1 + Math.floor(rnd() * 8);
+      const stars = Array.from({ length: n }, () => (rnd() < 0.75 ? 3 : 1 + Math.floor(rnd() * 3)));
+      const was = clone(g), wasDue = R.eventDue(C, g, id);
+      const out = shift(g, id, stars, { event: rnd() < 0.3 ? 'five' : null, tutorial: rnd() < 0.05 });
+      if (out.celebrate) fired += 1;
+      for (const x of IDS) {
+        const a = was.restaurants[x], b = st(g, x);
+        assert.ok(b.stars >= a.stars && b.popularity >= a.popularity, x + ' went down');
+        assert.ok(b.popularity <= 10 && b.stars <= 5 && b.stars >= R.starsFor(C, b.popularity));
+        assert.strictEqual(b.gold, b.stars === 5);
+        assert.ok(!a.opened || b.opened, x + ' shut again');
+        if (x !== id) assert.ok(b.stars === a.stars && b.popularity === a.popularity, 'another restaurant moved');
+      }
+      if (st(g, id) && st(g, id).stars === 5 && was.restaurants[id].stars < 5) assert.ok(wasDue && out.event === 'won', 'a fifth star without the event');
+      const openNow = C.unlocks.map(u => st(g, u.pack).opened);
+      assert.ok(openNow.every((o, k) => !o || openNow.slice(0, k).every(Boolean)), 'unlocked out of order');
+      for (const p of out.opened) {
+        const u = C.unlocks.find(x => x.pack === p);
+        for (const x of IDS) if (x !== p && st(g, x).opened) assert.ok(st(g, x).stars >= u.stars, p + ' opened too soon');
+      }
+      assert.strictEqual(g.celebrated, IDS.every(x => st(g, x).stars === 5));
+      if (out.counted) assert.deepStrictEqual([out.stars, out.popularity], [st(g, id).stars, st(g, id).popularity]);
+      if (i % 50 === 0) {
+        const back = R.migrate(C, JSON.stringify(R.record(g)));
+        assert.deepStrictEqual(back, g, 'a save reads back the same');
+        g = back;
+      }
+    }
+    assert.ok(fired <= 1, 'celebrated ' + fired + ' times');
+  }
+});

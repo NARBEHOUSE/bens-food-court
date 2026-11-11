@@ -1,0 +1,11 @@
+# Mitch Pizza — Shrug
+
+Built-in image_gen tool.
+
+Use case: identity-preserve.
+Asset type: ONE full-body character pose for a 2D comedy diner game, costume variant, 1024 x 1536 PNG.
+Input image 1 (mitch-pizza/neutral.png) is the approved identity and pizza restaurant costume reference. Input image 2 (mitch/shrug.png) is the approved exact SHRUG pose and expression reference.
+Create Mitch wearing the exact pizza uniform from image 1 while copying the pose, hands, expression and framing of image 2 as closely as possible. Keep image 2's raised hunched shoulders, bent elbows, both outward-open palms, finger shapes, arm positions, anxious raised eyebrows, half-lidded eyes, wide toothy grin, sweat, head direction, long legs and feet stance. Preserve Mitch's face, messy brown hair, lanky proportions, headset with boom mic, shirt, tie, pens, badge, khaki trousers and scuffed brown shoes from image 1. Add the identical folded pizza-box hat with red checker pattern, flour-dusted white apron with front pocket and side-tied bow covering shirt and tie, flour on his big nose and BOTH open hands. Adapt apron naturally to shrug. Do not substitute image 1's neutral arm pose or facial expression.
+Character: about 30, lanky and gangly, long arms, eager and overconfident, a little sweaty, big nose and wide grin. Short-sleeved white dress shirt, loose red tie, pocket protector full of pens. Chest badge reads "MANAGER" with masking tape above reading handwritten "ASST." Exact text; no other lettering.
+Style: match approved original 2D TV-cartoon artwork. Thick clean even black outlines, flat bright colours with ONE hard-edged cel-shadow tone per colour, simple bold shapes, big head/hands/expressive eyes and mouth, strong readable silhouette. Adult dry deadpan comedy, never cute or babyish. Original character, no resemblance to existing cartoons, shows or brands.
+Framing: ONE character standing, full body including entire hat and shoes, facing viewer turned very slightly toward viewer's right. Centred filling about 88% of image height; retain clear margin all around, accommodate hat without cropping hands or feet. Plain PURE WHITE background, no floor, no cast shadow, no border, no extra objects, no extra text. Nothing else changes.

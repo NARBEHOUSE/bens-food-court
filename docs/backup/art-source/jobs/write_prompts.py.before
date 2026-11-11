@@ -1,0 +1,619 @@
+"""Writes the Astra (Codex image generation) prompt files for Ben's Food Court art (Ben's Burger Bar first).
+
+  python write_prompts.py models [char...]  one neutral "model" pose per character (the reference for the rest);
+                                            mitch-<venue> is Mitch in that restaurant's uniform, drawn from his model
+  python write_prompts.py poses <char...>   the other nine poses, two per job, with the model as reference
+  python write_prompts.py backdrops         the station backdrops
+Prompts land in jobs/<name>.txt; a jobs list (name<TAB>references) is printed for run_jobs.sh.
+Art lands in art-source/cast/<char>/<pose>.png and art-source/backdrops/<name>.png (raw; the game gets optimised copies).
+"""
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+
+STYLE = (
+    "Style: original 2D cartoon art for a comedy diner game, TV-cartoon look. Thick, clean, even black outlines; "
+    "flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated "
+    "proportions (big head, big hands, big expressive eyes and mouth); a strong, readable silhouette. Funny for adults: "
+    "dry, deadpan comedy, never cute, never babyish. It is an ORIGINAL design and must not resemble any existing "
+    "cartoon character, show or brand."
+)
+FIGURE = (
+    "Framing: ONE character, full body from the top of the head to the shoes, standing, facing the viewer and turned "
+    "very slightly toward the viewer's right. The figure fills about 88% of the image height, centred, with a clear "
+    "margin all round; nothing is cropped (hands, hat and feet all inside the frame). Plain pure white background, no "
+    "floor, no cast shadow, no border, no text other than what the character description asks for, no other objects except what the character holds."
+)
+
+CAST = {
+    'mitch': "MITCH, the diner's assistant manager. About 30, lanky and gangly with long arms, eager and overconfident, "
+             "a little sweaty. Messy swoop of brown hair, big nose, wide grin. Short-sleeved white dress shirt with a "
+             "loose red tie and a pocket protector full of pens, khaki trousers, scuffed brown shoes. A phone headset "
+             "with a boom microphone that he does not need. A name badge on his chest reading MANAGER, with a strip of "
+             "masking tape across it on which ASST. is handwritten.",
+    'marge': "MARGE, a retired school-bus driver and the diner's most loyal regular. About 68, short and round, "
+             "permed lavender-grey curls, cat-eye reading glasses on a beaded chain, a pastel-pink cardigan over a "
+             "floral blouse, a long tan skirt, a big boxy handbag on one arm, sensible shoes. Warm, unhurried and "
+             "knowing: she has seen everything twice.",
+    'gus': "GUS, a long-haul trucker. About 50, huge and broad, a gentle giant. An enormous bushy brown beard down to "
+           "his chest, a mesh-back trucker cap with a plain round patch (no writing), a red-and-black flannel shirt "
+           "with rolled sleeves under a puffy green vest, jeans, big work boots. Friendly, slow and kind.",
+    'bev': "COACH BEV, a high-school gym coach. About 45, sturdy and athletic, short spiky blonde hair, a silver "
+           "whistle on a lanyard round her neck, a zip-up teal tracksuit with white stripes, white sneakers, a "
+           "clipboard tucked under one arm. Intense and loud: every moment is the fourth quarter.",
+    'vernon': "VERNON, a burger-review blogger with eleven followers. About 40, tall and pear-shaped, arms folded "
+              "across his chest, a slicked comb-over, a thin pencil moustache, half-lidded unimpressed eyes, a mustard "
+              "sweater vest over a pale blue collared shirt, a tiny notebook and pen in the shirt pocket, grey slacks, "
+              "polished loafers. Deeply, permanently unimpressed.",
+    # Added 2026-11-08: the user asked for a gruff, crude New Yorker. An original design (no tank top, no gold chain).
+    'sal': "SAL, the guy who runs the hot-dog cart outside the diner and never eats his own hot dogs. About 55, short, "
+           "stocky and barrel-chested with a big round belly and thick hairy forearms. A huge bushy black-and-grey walrus "
+           "moustache, heavy stubble, thick eyebrows, a big nose, a flat grey newsboy cap, and a wooden toothpick tucked "
+           "behind one ear. A short-sleeved mustard-yellow bowling shirt with a ketchup stain, a white vendor's apron smeared "
+           "with mustard over it, a chrome coin-changer clipped to the apron's belt, baggy brown trousers, scuffed white "
+           "sneakers. Gruff, loud and crude: he complains about everything, talks with his hands, and secretly loves a good "
+           "burger.",
+
+    # ── Ben's Food Court (2026-11-08): the recurring cast drafted in DESIGN.md, now drawn ──────────────────────────
+    'dale': "DALE, a mechanic from the garage down the road and the court's onion-ring fanatic. About 45, tall and wiry "
+            "with long arms, a buzz cut, a thin scruffy goatee and squinty, friendly eyes. Grease-spotted blue coveralls "
+            "with the sleeves rolled up, a plain oval name patch (no writing), a red shop rag hanging from the back pocket, "
+            "a wrench in the chest pocket, scuffed steel-toe boots. Laid-back and never in a hurry.",
+    'priya': "PRIYA, a night-shift nurse who has not slept. About 35, a South Asian woman, slim, dark hair in a messy bun "
+             "held up by a pen, heavy dark circles under her eyes, a dry half-smile. Teal hospital scrubs, a lanyard with a "
+             "blank ID badge, a nurse's watch pinned to her pocket, comfy purple clogs, holding a huge empty travel mug. "
+             "Dry, quick and deadpan.",
+    'oakes': "PROFESSOR OAKES, a food-science professor with endless opinions about onions. About 60, very tall and thin, "
+             "wild white hair, round wire glasses, a long nose. A brown tweed jacket with elbow patches, a red bow tie, a "
+             "pocket protector full of pens, corduroy trousers, brogues, a thick book tucked under one arm. Nasal, nerdy "
+             "and slightly too eager.",
+    'reginald': "REGINALD, a self-declared food critic who reviews every order like a five-course meal. About 50, round "
+                "and grand, a swooping silver pompadour, a pointed goatee, dramatic raised eyebrows. A plum velvet "
+                "blazer, a long striped silk scarf flung over one shoulder (he wears it in all weather), a silver tasting "
+                "spoon on a chain round his neck, two-tone shoes, a fancy notebook and fountain pen. Theatrical and "
+                "sweeping.",
+    'tasha': "TASHA, a teenage skateboarder who is deeply unimpressed by everything. About 16, a Black teenage girl, "
+             "braids under a slouchy beanie, an oversized hoodie, ripped jeans, high-top sneakers covered in doodles, "
+             "wired earbuds round her neck, a skateboard under one arm. Flat, deadpan, half-lidded eyes.",
+    # Changed after the pose review: round glasses with a maroon-and-gold scarf read too close to a famous boy wizard.
+    'kai': "KAI, a ten-year-old food reviewer and Reginald's biggest fan. About 10, small, neat side-parted hair, "
+           "rectangular glasses with thick dark frames, a very serious face. A sweater vest over a collared shirt, a small "
+           "scarf copied from Reginald's (wide cream stripes between plum and gold), shorts, knee socks, a spiral notebook "
+           "and a pencil held at the ready. Bright and very serious.",
+
+    # ── each restaurant's own customers (Food Court proposal) ──────────────────────────────────────────────────
+    'tony': "TONY, a retired opera tenor and pizza purist who is offended by pineapple. About 65, a huge barrel chest on "
+            "short legs, slicked-back black hair grey at the temples, a big proud chin, bushy eyebrows. A black tuxedo "
+            "waistcoat over a white shirt with rolled sleeves, a burgundy cravat, a checked napkin already tucked into his "
+            "collar, shiny black shoes. Loud and operatic: every complaint is a performance.",
+    'pam': "PAM, a frazzled mom running her kid's birthday party and ordering for twelve. About 40, wavy auburn hair "
+           "escaping a ponytail, a crooked paper party crown, confetti stuck to her green cardigan, a bunch of balloons "
+           "tied to one wrist, a tote bag overflowing with party bags and wrapping paper, a phone in her other hand. "
+           "Cheerful, exhausted, talks in lists.",
+    'breeze': "BREEZE, a laid-back surfer who takes forever to say anything. About 25, sun-bleached shaggy blond hair, a "
+              "deep tan, a dreamy half-smile, sunglasses pushed up on his head. A sleeveless tank top with a faded wave "
+              "print (no words), board shorts, a puka-shell necklace, flip-flops, a surfboard tucked under one arm. "
+              "Extremely relaxed and slow.",
+    'brock': "BROCK, a gym bro who wants all the protein. About 28, an enormous muscular chest and arms on comically "
+             "skinny legs, a small head with a buzz cut and a sweatband, a big confident grin. A stringer tank top, gym "
+             "shorts, high socks, lifting gloves, a giant protein shaker bottle in one hand and a gym bag over his "
+             "shoulder. Loud, eager and friendly.",
+    'jitters': "JITTERS, a cafe regular who has clearly had far too much coffee already. About 30, wiry, hair standing "
+               "straight up, huge wide twitchy eyes, a fixed jittery grin. A rumpled office shirt with a crooked tie, "
+               "mismatched socks, one shoe untied, a takeaway coffee cup in EACH hand, little motion lines showing he is "
+               "vibrating. Talks very fast.",
+    'hiro': "CHEF HIRO, a stern, dignified master sushi chef who comes in to judge. About 65, a Japanese man, short grey "
+            "hair, a neat grey moustache, sharp observant eyes, one eyebrow raised. A crisp dark indigo chef's jacket, a "
+            "white apron, simple wooden sandals with socks, holding a pair of long cooking chopsticks like a judge's "
+            "gavel. Calm, exacting and quietly funny. Drawn with respect: no caricature.",
+    'dennis': "DENNIS, a nervous first-timer who has never eaten sushi. About 35, pale and a little sweaty, thinning "
+              "hair combed very neatly, glasses slipping down his nose. A short-sleeved button-up shirt with a clip-on "
+              "tie, khakis, white sneakers, clutching a fork in front of him like a shield and a small pocket guidebook. "
+              "Anxious, polite, easily alarmed.",
+    'inferno': "INFERNO, a hot-sauce fanatic who wants everything hotter. About 40, stocky, a permanently red face, a "
+               "flame-shaped tuft of hair, sweat on his brow, red-tinted sunglasses. A black t-shirt with a big flame "
+               "print (no words), cargo shorts, a leather holster on his belt holding a bottle of hot sauce, little wisps "
+               "of smoke rising from his ears. Intense and proud.",
+    'rita': "RITA, a construction worker who orders one of everything. About 45, a tall, broad-shouldered woman, a "
+            "sunburned nose, a long brown braid under a yellow hard hat. A hi-vis orange vest over a flannel shirt, a "
+            "tool belt, jeans with dusty knees, steel-toe work boots, a big lunch cooler in one hand. Hearty and always "
+            "hungry.",
+    'lulu': "LITTLE LULU, a seven-year-old who agonises over every ice cream flavour and always picks vanilla. About 7, "
+            "small, two bouncy pigtails tied with mismatched bows, freckles, big dramatic eyes. Dungarees over a striped "
+            "shirt, rainbow sneakers, a backpack shaped like an ice cream cone. Her joke is the drama of deciding, not "
+            "cuteness.",
+    'walt': "GRANDPA WALT, who wants everything the way they made it in 1955. About 85, small and stooped, a big "
+            "friendly smile, a hearing aid, bushy white eyebrows. A faded vintage letterman jacket from his school days "
+            "over a checked shirt, suspenders, a straw boater hat, a wooden cane, bright white sneakers that are far too "
+            "new. Cheerful and nostalgic.",
+
+    # ── shoppers who wander the court (background extras, no poses) ────────────────────────────────────────────
+    'shopper1': "A teenager carrying three shopping bags and looking at a phone. Background extra.",
+    'shopper2': "A mom pushing a stroller with a baby holding a balloon. Background extra.",
+    'shopper3': "An old man with a cane and a folded newspaper under his arm. Background extra.",
+    'shopper4': "A businesswoman in a suit walking fast with a coffee and a briefcase. Background extra.",
+    'shopper5': "A dad carrying a small kid on his shoulders; the kid holds a pretzel. Background extra.",
+    'shopper6': "A mall security guard riding a tiny two-wheeled scooter, very serious. Background extra.",
+}
+
+# Mitch works in every restaurant, in a different uniform over his usual shirt and tie (Food Court proposal).
+UNIFORMS = {
+    'burger': "a red diner work shirt with white piping worn open over his white shirt and red tie, and a white folded "
+              "paper diner hat",
+    'pizza': "a flour-dusted white apron over his shirt and tie, flour on his nose and hands, and a hat folded from a "
+             "pizza box",
+    'smoothie': "a loud tropical Hawaiian shirt worn open over his white shirt and red tie, a flower lei, and sunglasses "
+                "pushed up on his head",
+    'cafe': "a brown barista apron over his shirt and tie, a knitted beanie, and a takeaway coffee cup in one hand with "
+            "his name written on it spelled wrong: MICH",
+    'sushi': "a white sushi chef's jacket over his shirt (the red tie peeking out at the collar), a white headband tied "
+             "round his forehead, and a very serious face",
+    'burrito': "a red bandana tied on his head, a dark green apron over his shirt and tie, and a name tag splattered with "
+               "hot sauce",
+    'icecream': "a red-and-white candy-striped apron over his shirt, a red bow tie clipped on over his tie, and a white "
+                "paper soda-jerk hat",
+}
+for _venue, _outfit in UNIFORMS.items():
+    CAST['mitch-' + _venue] = CAST['mitch'] + " AT THIS RESTAURANT he wears " + _outfit + "."
+EXTRAS = {k for k in CAST if k.startswith('shopper')}
+
+# Ten whole-body poses, each with its own clear silhouette (DESIGN.md "Expressions").
+POSES = {
+    'neutral':   "NEUTRAL: standing relaxed and natural, a calm, pleasant face, hands at rest. This is the character's model pose.",
+    'talking':   "TALKING: mid-sentence, mouth open, one hand raised beside the face gesturing as they order, eyebrows up.",
+    'waiting':   "WAITING: patiently waiting, weight on one leg, glancing up and to the side, fingers drumming on the other arm or checking a wristwatch.",
+    'happy':     "HAPPY: a big satisfied smile, eyes bright, giving a thumbs up with one hand, the other hand on the belly.",
+    'delighted': "DELIGHTED: overjoyed, both arms thrown straight up in celebration, eyes squeezed shut with joy, mouth wide open, one foot kicked up.",
+    'annoyed':   "ANNOYED: both hands on hips, a flat unimpressed frown, one eyebrow raised high, leaning back slightly.",
+    'angry':     "ANGRY: furious, leaning forward, one arm out pointing an accusing finger straight at the viewer, the other fist clenched, face red, shouting, a vein on the forehead.",
+    'disgusted': "DISGUSTED: recoiling backwards, one hand over the mouth as if about to gag, the other hand pushing away, tongue half out, face tinged green, eyes watering.",
+    'shocked':   "SHOCKED: jaw dropped to the chest, eyes popping, both hands on the cheeks, hair standing on end, knees bent in alarm.",
+    'laughing':  "LAUGHING: doubled over laughing, one hand on the belly and the other slapping the knee, eyes squeezed shut with tears of laughter.",
+}
+MITCH_POSES = {
+    'neutral':   POSES['neutral'],
+    'talking':   "TALKING: explaining something, mouth open, one hand raised palm-up beside the face, eyebrows up, confident.",
+    'pointing':  "POINTING: pointing with one long arm straight out to the viewer's LEFT at something important, looking that way, the other hand on the headset mic, mid-sentence.",
+    'thumbsUp':  "THUMBS UP: a cocky grin and a wink, both thumbs up, chest puffed out.",
+    'shocked':   "SHOCKED: jaw dropped, eyes popping, both hands thrown up beside the head, headset knocked crooked.",
+    'disgusted': "DISGUSTED: leaning back with his whole body, nose wrinkled, tongue out, one hand pinching his nose and the other waving away a smell.",
+    'facepalm':  "FACEPALM: one hand slapped over his face, head tipped back, the other hand hanging limp, a long-suffering slump.",
+    'laughing':  POSES['laughing'],
+    'worried':   "WORRIED: biting his nails with both hands at his mouth, eyebrows up and together, sweat drops flying, knees together.",
+    'shrug':     "SHRUG: a big exaggerated shrug, both palms up, shoulders to the ears, eyebrows raised, a sheepish 'what can you do' smile.",
+}
+# Poses only one character has: `python write_prompts.py extra <char> <pose>` (Food Court spec 2.2).
+EXTRA_POSES = {
+    'mitch': {
+        'promoted': "PROMOTED: the proudest moment of his life: standing tall with his chest puffed out, peeling the "
+                    "strip of masking tape off his name badge with one hand so the badge now reads just MANAGER, the "
+                    "peeled tape held up in the other hand like a trophy, tears of joy, a huge grin.",
+    },
+}
+# Vernon keeps his arms folded whenever the pose allows it: it is his silhouette.
+VERNON_NOTE = ("Vernon keeps his arms FOLDED across his chest in every pose where the description allows it; when a pose "
+               "needs a hand (pointing, gagging), only that hand comes out.")
+
+
+def poses_for(char):
+    return MITCH_POSES if char == 'mitch' or char.startswith('mitch-') else POSES
+
+
+def uniform_pose_prompt(char, poses):
+    """Mitch's poses in a uniform: the costume from his uniform model (image 1), each pose from his APPROVED pose
+    pictures (images 2 and 3), so the uniformed Mitch moves exactly like the Mitch already in the game."""
+    items = '\n'.join(f"- New picture {i + 1}: copy the POSE and EXPRESSION of attached image {i + 2} "
+                      f"({MITCH_POSES[p].split(':')[0]}) exactly, dressed as in image 1. "
+                      f"Save as art-source/cast/{char}/{p}.png (1024 x 1536)." for i, p in enumerate(poses))
+    return f"""Use case: character pose set for a 2D game (a costume variant)
+Asset type: full-body character poses on plain white, one image per pose
+Attached image 1 is MITCH in this restaurant's uniform (approved). Attached images 2{' and 3' if len(poses) > 1 else ''} are the
+APPROVED Mitch in the poses to copy. For each new picture: the pose, hands, expression and framing from its pose image;
+the face, hair, body, the uniform, headset and badge from image 1. Nothing else changes. If a uniform item held in one
+hand (a cup) does not fit the pose, leave it out.
+{STYLE}
+Character: {CAST[char]}
+Make {len(poses)} separate images:
+{items}
+{FIGURE}
+Also save the prompt as art-source/cast/{char}/{poses[0]}-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the paths of the generated files."""
+
+
+def uniform_prompt(char):
+    """Mitch in a restaurant's uniform: the approved Mitch is the reference, only his outfit changes."""
+    venue = char.split('-', 1)[1]
+    return f"""Use case: character model for a 2D game (a costume variant)
+Asset type: full-body character pose on plain white
+Attached image 1 is MITCH, the APPROVED character. Draw the SAME character: copy his face, hair, body shape and
+proportions, skin, colours, outline weight and shading style exactly. Change ONLY his outfit: he now wears
+{UNIFORMS[venue]}. Keep his phone headset with the boom microphone, and his name badge reading MANAGER with a strip of
+masking tape across it on which ASST. is handwritten.
+{STYLE}
+Pose: {MITCH_POSES['neutral']}
+{FIGURE}
+Save as art-source/cast/{char}/neutral.png (1024 x 1536, portrait) and the prompt as art-source/cast/{char}/neutral-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file."""
+
+
+def write(name, text):
+    (HERE / (name + '.txt')).write_text(text.strip() + '\n', encoding='utf-8')
+
+
+def model_prompt(char):
+    pose = poses_for(char)['neutral']
+    extra = ('\n' + VERNON_NOTE) if char == 'vernon' else ''
+    return f"""Use case: character model for a 2D game
+Asset type: full-body character pose on plain white
+{STYLE}
+Character: {CAST[char]}{extra}
+Pose: {pose}
+{FIGURE}
+Save as art-source/cast/{char}/neutral.png (1024 x 1536, portrait) and the prompt as art-source/cast/{char}/neutral-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file."""
+
+
+def pose_prompt(char, poses, texts=None):
+    extra = ('\n' + VERNON_NOTE) if char == 'vernon' else ''
+    texts = texts or poses_for(char)
+    items = '\n'.join(f"- New picture {i + 1}: {texts[p]} Save as art-source/cast/{char}/{p}.png (1024 x 1536)."
+                      for i, p in enumerate(poses))
+    return f"""Use case: character pose set for a 2D game
+Asset type: full-body character poses on plain white, one image per pose
+Attached image 1 is the APPROVED model of this character in the neutral pose. Copy the character EXACTLY: the same
+face, hair, body shape and proportions, clothes, accessories, colours, outline weight and shading style. Change ONLY the
+pose and the facial expression. Each pose must read from its silhouette alone.
+{STYLE}
+Character: {CAST[char]}{extra}
+Make {len(poses)} separate images:
+{items}
+{FIGURE}
+Also save the prompt as art-source/cast/{char}/{poses[0]}-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the paths of the generated files."""
+
+
+BACKDROP_STYLE = (
+    "Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark "
+    "outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly "
+    "absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; "
+    "no real logos."
+)
+BACKDROPS = {
+    'counter': """Asset type: game backdrop, 1536 x 1024, landscape
+Scene: the inside of a retro American diner, seen from BEHIND the serving counter, looking out across the dining room
+toward the front doors, eye level about 1.6 m. A cheerful 1950s-style room: a black-and-white checkerboard floor,
+red vinyl booths with chrome trim, a few small tables and chairs, pendant lamps, a long window with blinds.
+Composition (percent of the image):
+- Left 10% to 55%: keep this area visually quiet (the dining room wall and a booth far back), because the game draws the
+  current customer standing here, large, on top of the picture.
+- Right 55% to 85%, middle distance: a short queue of three waiting customers standing in line, small and SLIGHTLY OUT OF
+  FOCUS (soft blur, as if the camera focuses on the counter): a bored man in a bowling shirt reading a newspaper, a
+  jogger in a sweatband staring at her watch, and an old man holding a huge empty takeout bag. Original, funny designs.
+- Behind them: glass double doors with a little bell over them, framed artwork on the walls, two booths with a couple
+  of seated diners in the far background.
+- Bottom 22%: just the floor and the lower part of the room (the game draws the counter top here, on top of the picture).
+Hidden funny details, small but findable: an "EMPLOYEE OF THE MONTH" frame whose photo is a pickle; a mounted fish on the
+wall wearing tiny sunglasses; a ceiling fan with a sock stuck on one blade; a sign by the door that reads "NO SHIRT, NO
+SHOES, NO PROBLEM"; a framed painting of a cheeseburger in a dramatic heroic sunset.
+No text anywhere except those two signs. No border.""",
+    'grill': """Asset type: game backdrop, 1536 x 1024, landscape
+Scene: the back wall of a diner kitchen right above a big flat-top grill, as seen by the cook standing at it. The camera
+looks slightly downward.
+Composition (percent of the image):
+- Top 65%: the wall: white subway tiles with a little grease, a big stainless-steel extractor hood across the top with a
+  greasy filter, a rail of hanging spatulas, tongs and a ladle, a shelf with salt and pepper shakers and a cracked
+  egg-timer, a small kitchen radio, an order bell.
+- Bottom 35%: the far back edge of the grill's dark steel cooking surface, plain and dark with a soft heat shimmer (the
+  game draws the cooking surface and the food on top of this part, so keep it simple and dark).
+Hidden funny details, small but findable: a sign reading "DAYS WITHOUT A GREASE FIRE: 0"; a smoke detector with a sock
+pulled over it; a fly swatter mounted on a wooden plaque like a trophy; a tiny framed photo of a patty in a graduation cap.
+No text anywhere except that one sign. No border.""",
+    'board': """Asset type: game backdrop, 1536 x 1024, landscape
+Scene: a diner's burger assembly station, as seen by the cook standing at it. The camera looks slightly downward.
+Composition (percent of the image):
+- Top 62%: the wall behind the station: open shelves with clear tubs of sliced cheese, lettuce, tomatoes, pickles and
+  onion rings, a row of squeeze bottles (red ketchup, yellow mustard, white mayo), a stack of burger buns, a heat lamp
+  glowing orange, a ticket rail with a few blank paper order tickets clipped to it.
+- Bottom 38%: the back edge of a wooden butcher-block work surface, plain (the game draws the work surface, the burger
+  and the ingredients on top of this part, so keep it simple).
+Hidden funny details, small but findable: a framed "PICKLE OF THE MONTH" certificate with a photo of a smug pickle; a
+tomato with googly eyes stuck on it sitting on a shelf; a hand-written sign reading "WASH YOUR HANDS (YES, YOU)"; a
+lettuce leaf pinned to a cork board like a wanted poster.
+No text anywhere except those two signs. No border.""",
+}
+
+
+# ── Ben's Food Court (2026-11-08): every restaurant's counter and stations, laid out like the Burger Bar's ──────────
+# SUPERSEDED for the seven counters (2026-11-09): the user asked that each counter scene match its storefront in the
+# court picture, so the counters (the diner's 'counter' too) now come from jobs/write_counters.py, which attaches the
+# storefront crop and the court picture as references. Don't redraw a counter from the entries below; the station
+# backdrops (prep, oven, blender...) still come from here.
+def counter_scene(stall, decor, queue, details):
+    return f"""Asset type: game backdrop, 1536 x 1024, landscape
+Scene: inside {stall}, one of the restaurants in a cheerful shopping-mall food court, seen from BEHIND its serving counter,
+looking out past the counter at the food court: tables and chairs, other storefronts far away, a big skylight, eye level
+about 1.6 m. Restaurant decor framing the view: {decor}
+Composition (percent of the image):
+- Left 10% to 55%: keep this area visually quiet (a plain wall and an empty table far back), because the game draws the
+  current customer standing here, large, on top of the picture.
+- Right 55% to 85%, middle distance: a short queue of three waiting customers, small, SHARP and in focus like everything
+  else: {queue}. Original, funny designs.
+- Bottom 22%: just the floor (the game draws the counter top here, on top of the picture).
+Hidden funny details, small but findable: {details}
+Everything sharp, nothing blurred. No text anywhere except what the details ask for. No border."""
+
+
+def station_scene(what, wall, surface, details, top=62):
+    return f"""Asset type: game backdrop, 1536 x 1024, landscape
+Scene: {what}, as seen by the cook standing at it. The camera looks slightly downward.
+Composition (percent of the image):
+- Top {top}%: the wall behind the station: {wall}
+- Bottom {100 - top}%: {surface} plain and simple (the game draws the food and the work surface on top of this part).
+Hidden funny details, small but findable: {details}
+Everything sharp. No text anywhere except what the details ask for. No border."""
+
+
+BACKDROPS.update({
+    # Burger Bar: the fryer and the drinks, for its bigger menu from two stars
+    'diner-fryer': station_scene(
+        "the Burger Bar's deep-fryer station", "stainless steel and white tiles, wire fry baskets hanging on hooks, a heat "
+        "lamp glowing over a fry-dump tray, a salt shaker the size of a fire extinguisher, paper fry cones in a rack.",
+        "the far back edge of a dark steel fryer with a soft golden glow of hot oil,",
+        "a fry wearing a tiny crown on the shelf; a fire blanket in a frame labelled IN CASE OF ONION RINGS; a rubber "
+        "chicken hanging with the baskets.", 65),
+    'diner-drinks': station_scene(
+        "the Burger Bar's soda fountain", "a chrome soda fountain with five plain taps (no logos), cup dispensers in "
+        "three sizes, an ice bin, a lemonade dispenser and an iced tea urn, a straw holder.",
+        "the back edge of a red drink counter,",
+        "a straw sculpture of a giraffe; an ice cube with a tiny face stuck to the fountain; a framed photo of a "
+        "lemon labelled LEMON OF THE YEAR."),
+    # Pizza Parlor
+    'pizza-counter': counter_scene(
+        "Ben's Pizza Parlor, a red-and-white checkered pizzeria stall", "red-and-white checked tiles, a striped awning "
+        "edge across the top, hanging garlic braids, a chalkboard menu with little drawings of pizzas (no words).",
+        "a man in a tracksuit squinting at the menu, a woman with shopping bags checking her watch, a kid holding a "
+        "balloon", "a sign reading NO PINEAPPLE with a tiny pineapple in sunglasses sneaking past it; a dough ball stuck "
+        "to the ceiling; a garden gnome holding a pizza slice; a framed photo of a pizza in a graduation cap."),
+    'pizza-prep': station_scene(
+        "the pizza prep counter", "red-and-white tiles, shelves with tubs of shredded cheese, pepperoni, sliced "
+        "mushrooms, green peppers, onions, black olives and pineapple chunks, jars of red and white sauce, a flour sack, "
+        "a rack of rolling pins, a ticket rail with blank tickets.", "the back edge of a floury white marble work surface,",
+        "a mushroom wearing a tiny hat; a flour handprint on the wall; a toy delivery car parked on a shelf; a framed "
+        "portrait of a single pepperoni."),
+    'pizza-oven': station_scene(
+        "a big domed brick pizza oven", "the oven's brick dome and arched mouth with a warm orange glow inside, a long "
+        "wooden pizza peel and oven tools on hooks, a neat stack of firewood, a big thermometer dial.",
+        "the stone hearth in front of the oven mouth, dark and plain,", "a marshmallow on a stick poking out of the "
+        "woodpile; a smoke detector wearing a tiny fireman's helmet; a chalk tally on the bricks labelled BURNT.", 65),
+    # Smoothie Shack
+    'smoothie-counter': counter_scene(
+        "Ben's Smoothie Shack, a beach-shack smoothie stall", "bamboo poles, a thatched palm roof edge across the top, "
+        "surfboards on the walls, strings of shell lights, a counter front made from a giant surfboard.",
+        "a jogger stretching, a grandma in a sun hat, a teenager in flip-flops", "a crab in sunglasses on a shelf; an "
+        "inflatable flamingo stuck in the rafters; a coconut with a face drawn on it; a surf-report board showing one "
+        "tiny wave."),
+    'smoothie-prep': station_scene(
+        "the smoothie fruit bar", "bamboo shelves with baskets of strawberries, bananas, mangoes, pineapples and "
+        "blueberries, jugs of juice, milk, yogurt and oat milk, a tub of spinach, a tub of protein powder, a honey jar, "
+        "an ice bin, stacks of cups in three sizes.", "the back edge of a bamboo countertop,",
+        "a banana wearing a tiny surf leash; a sand bucket full of blueberries; a framed photo of a pineapple on a "
+        "surfboard; a seashell telephone."),
+    'smoothie-blender': station_scene(
+        "the smoothie blender station", "tropical tiles, a row of four chunky blenders on a shelf in bright colours, a "
+        "rack of blender jugs, earmuffs hanging on a hook, a ukulele on the wall.", "the back edge of a teal counter,",
+        "a blender wearing earmuffs; a lost flip-flop on the shelf; a sticky note with a drawing of a tornado; a "
+        "pineapple in a tiny hard hat.", 65),
+    # Cafe
+    'cafe-counter': counter_scene(
+        "Ben's Cafe, a cozy coffee and donut stall with a giant donut on its roof", "warm wood, exposed brick, hanging "
+        "bulb lights, a glass pastry case edge, a chalk menu with drawings of cups and donuts (no words).",
+        "a sleepy office worker yawning, a student with a laptop bag, a man walking a tiny dog in a sweater",
+        "a coffee cup with a bandage on it; a donut hanging from the light like a mobile; a framed portrait of a "
+        "coffee bean wearing a crown; a sign reading DECAF IS A LIFESTYLE."),
+    'cafe-coffee': station_scene(
+        "the cafe's espresso bar", "a big shiny chrome espresso machine with steam wands and pressure gauges, coffee "
+        "grinders, syrup bottles (vanilla and caramel), milk jugs (whole, oat, skim), stacks of cups in three sizes, a "
+        "whipped cream canister.", "the back edge of a dark wood bar,", "a sleeping cat-shaped teapot; a tiny "
+        "coffee-bean snowman; a frame holding one perfect latte heart; a mug that says MONDAY with a black eye.", 65),
+    'cafe-donuts': station_scene(
+        "the cafe's donut station", "cream tiles, a fryer set into the back counter glowing golden, cooling racks of "
+        "plain donuts, bowls of glaze (sugar, chocolate, strawberry), jars of sprinkles, coconut and chopped nuts.",
+        "the back edge of a pale counter,", "a donut used as a life ring on a hook; a sprinkle jar with a tiny lifeguard; "
+        "a framed donut wearing glasses; a squirrel peeking from a sack of flour."),
+    # Sushi
+    'sushi-counter': counter_scene(
+        "Ben's Sushi, a sushi bar stall with a little conveyor belt running round it", "paper lanterns, a waving lucky "
+        "cat on a shelf, wooden slats, a navy fabric curtain at the top, little plates riding the conveyor belt.",
+        "a businessman checking his tie, a couple sharing an umbrella, a teenager taking a photo of the lanterns",
+        "a rubber duck riding the conveyor belt; a lucky cat holding a tiny fish; a goldfish bowl with a goldfish "
+        "looking nervous; a framed drawing of a very proud cucumber."),
+    'sushi-prep': station_scene(
+        "the sushi prep counter", "pale wood shelves with a rice cooker, stacked sheets of nori, bowls of salmon, tuna, "
+        "crab, cucumber, avocado and cream cheese, sesame seeds, bottles of spicy mayo and eel sauce, a bamboo mat on a "
+        "hook.", "the back edge of a pale wooden cutting counter,", "a rice grain sculpture of a tiny mountain; a "
+        "cucumber in a tiny headband; a framed photo of a very serious salmon; a rubber octopus on the shelf."),
+    'sushi-roll': station_scene(
+        "the sushi rolling and slicing station", "the conveyor belt passing behind at the top with little plates, a "
+        "hanging bamboo rolling mat, a bowl of water, little dishes of ginger and wasabi, a wooden knife block (cartoon, "
+        "not menacing).", "the back edge of a wide pale wooden board,", "a wasabi blob with a tiny warning sign; a "
+        "lucky cat waving at the conveyor; a framed ginger slice; a paper crane on the shelf.", 60),
+    # Burritos
+    'burrito-counter': counter_scene(
+        "Ben's Burritos, a bright taco-truck-style burrito stall", "papel picado banners in bright colours, a wall of hot "
+        "sauce bottles, a striped serape draped on the counter edge, cactus pots, a chalk menu with drawings (no words).",
+        "a construction worker with a lunchbox, a woman in a sun hat, a man fanning his mouth after hot sauce",
+        "a cactus wearing a tiny sombrero hat; a fire extinguisher next to the hottest sauce; a chili pepper with a "
+        "smoke cloud above it; a pinata shaped like an avocado."),
+    'burrito-prep': station_scene(
+        "the burrito line", "steel shelves of steam-table pans: white rice, brown rice, black beans, pinto beans, "
+        "chicken, steak and grilled veggies; tubs of cheese, lettuce, pico de gallo, corn, sour cream and guacamole; a "
+        "stack of big flour tortillas; hot sauce bottles in four heat levels marked by one to four chili icons.",
+        "the back edge of a stainless steel prep counter,", "a guacamole tub with a tiny flag on top; a chili pepper in "
+        "sunglasses; a framed photo of a very large burrito; a fire alarm with a tiny mustache."),
+    'burrito-griddle': station_scene(
+        "the burrito griddle", "tiles with a chili pattern, a big hinged press hanging above, spatulas and tongs on a "
+        "rail, rolls of foil, a jar of jalapenos.", "the far back edge of a dark steel griddle with a soft heat shimmer,",
+        "a tortilla used as a wall clock; a chili pepper doing push-ups; a smoke detector wearing a sombrero; a "
+        "framed photo of a perfect grill mark.", 65),
+    # Ice Cream Emporium
+    'icecream-counter': counter_scene(
+        "Ben's Ice Cream Emporium, an old-fashioned pink-and-white ice cream parlor stall", "pink-and-white stripes, a "
+        "swirly sign shape with no words, a long glass freezer case edge, a jar of waffle cones, little heart-backed "
+        "chairs.", "a little league kid in a baseball uniform, a grandma with a poodle, a teenager with a skateboard",
+        "a snowman melting in a frame; a cone wearing sunglasses; a cherry with a tiny crown; a sign reading BRAIN "
+        "FREEZE SAFETY ZONE."),
+    'icecream-scoop': station_scene(
+        "the ice cream scooping station", "pink tiles, dispensers of cones, waffle cones and cups, a scoop rinse well, "
+        "a row of framed photos of famous sundaes, a cold mist drifting from below.", "the top edge of a long glass "
+        "freezer case with open tubs of vanilla, chocolate, strawberry, mint chip, cookie dough, rocky road and "
+        "bubblegum ice cream,", "a penguin figurine wearing earmuffs; a scoop sticking out of the wall like a coat "
+        "hook; a framed ice cube; a tiny igloo on the shelf."),
+    'icecream-toppings': station_scene(
+        "the ice cream toppings bar and shake machine", "jars of rainbow sprinkles, a hot fudge warmer, caramel, a "
+        "whipped cream canister, chopped nuts, a jar of cherries, and a green milkshake mixer with a spindle.",
+        "the back edge of a white marble counter,", "a cherry stem tied in a knot on display; a sprinkle-covered rubber "
+        "duck; a framed spoon; a gumball machine with one gumball left."),
+    # The court itself (the game writes names and stars on the blank signs, and adds the shoppers)
+    'court': """Asset type: game backdrop, 1536 x 1024, landscape
+Scene: BEN'S FOOD COURT, a bright shopping-mall food court seen from high above at a steep three-quarter overhead angle,
+like a cosy tycoon game. The seven restaurants stand round THREE sides of the court like an upside-down U: a row of three
+storefronts along the TOP, two more down the LEFT side and two down the RIGHT side. The BOTTOM side is OPEN: the seating
+area of tables, chairs and potted plants fills the middle and runs down to the bottom edge of the picture, where the open
+mall concourse is, so nothing closes the seating off. One empty round stone plinth sits in the centre of the seating (the
+game puts a progress board there). Every storefront faces INTO the court, toward the seating: its open counter front, its
+stools and its blank sign board all face the middle.
+Layout (percent of the image width x height):
+- Top row, facing down toward the seating and the viewer: three storefronts side by side along the top edge, at about
+  22-41%, 41-60% and 60-79% x, 2-32% y: a pizza parlor (red-and-white checks, brick oven), a retro burger diner (red and
+  chrome, the biggest, in the middle), and a cosy cafe (brown and cream, a giant donut on its roof). Their counters and
+  stools run along their bottom edges, facing the seating.
+- Left arm, facing right: two storefronts stacked on the left edge, the upper one at about 3-22% x 34-60% y (a beach-shack
+  smoothie bar, teal and bamboo) and the lower one at about 3-22% x 62-90% y (a burrito stall, orange with papel picado).
+- Right arm, facing left: two storefronts stacked on the right edge, mirroring the left: the upper one at about 78-97% x
+  34-60% y (a sushi bar, navy with paper lanterns) and the lower one at about 78-97% x 62-90% y (an ice cream parlor,
+  pink and white with a swirly roof).
+- Each storefront has ONE BLANK sign board: a WIDE horizontal board, about three times as wide as it is tall, mounted
+  flat on the front of its roof edge so it faces the viewer squarely, on the four side stalls too (never a tall,
+  narrow or vertical sign, never a sign on the side of a stall). The game writes the names on these boards. Below the
+  board, an open counter front with stools.
+- The middle 25-75% x, 33-90% y: the seating area, paths between the tables, a few planters, the round plinth at about
+  50% x, 62% y; keep the floor paths open (the game draws small shoppers walking there).
+- The bottom edge, 90-100% y, is the open concourse floor: no wall, no shops and no railing across it, at most a potted
+  palm in each bottom corner. Nothing stands between the seating and the bottom edge.
+No people anywhere. No text anywhere. Everything sharp. No border.""",
+})
+
+
+PROP_STYLE = (
+    "Style: original 2D cartoon prop for a comedy diner game, matching a TV-cartoon look: thick, clean, even black "
+    "outlines; flat bright colours with one hard-edged cel-shadow tone; chunky, slightly exaggerated shapes. ONE object, "
+    "centred, filling about 80% of the image, nothing cropped. Plain pure white background, no floor, no cast shadow, "
+    "no border, no other objects. Original: no real brand or logo."
+)
+PROPS = {
+    'register': "A chunky retro diner cash register: cream enamel body with chrome trim, a row of big round chrome-ringed "
+                "keys, one big red key, a pop-up price window on top showing a few blank white flags, and a cash drawer "
+                "at the bottom. Seen from the front, turned slightly toward the viewer's left. No writing anywhere.",
+    'ticketWheel': "A diner order-ticket wheel: a round polished chrome carousel with ten small spring clips around its "
+                   "rim, on a short bracket from above, seen straight from the front. All the clips are empty. No writing.",
+    'bell': "A shiny silver service bell (a counter bell, the kind you tap), dome on a round black base, seen from the "
+            "front and a little above. No writing.",
+    'back5': "A small wooden sign hanging from a nail by a piece of string, cartoon wood grain. Painted on it in big, "
+             "friendly hand-painted letters: BACK IN 5. Seen from the front.",
+    'spatula': "A big stainless-steel diner spatula (a flat grill turner) with a short wooden handle and a few slots in "
+               "the blade, pointing up and to the right at a 45 degree angle, a little greasy.",
+    # Food Court Timed-cooking tools (spec 5.3: each cook station names its control prop; jobs/write_tools.py)
+    'peel': "A wooden pizza peel: a wide, flat, rounded paddle of pale wood with a long wooden handle, pointing up and to "
+            "the right at a 45 degree angle, a light dusting of flour on the blade.",
+    'fryerBasket': "A deep-fryer basket: a rectangular stainless wire-mesh basket with a long black handle and a hook, "
+                   "pointing up and to the right at a 45 degree angle, a few golden drops of oil dripping off the bottom.",
+    # Not a white plate: the cut-out (BiRefNet) punched holes in white areas against the white background (2026-11-08).
+    'blenderSwitch': "The oversized power switch of a commercial smoothie blender: a chunky chrome toggle lever with a "
+                     "big round teal knob, on a rounded medium-grey control plate with a darker grey rim and two screws, "
+                     "seen from the front, the lever tilted up. The plate is solid grey, not white. No writing anywhere.",
+    'scoop': "An ice-cream scoop: a polished chrome scoop with a curved thumb lever and a thick pastel-pink rubber "
+             "handle, pointing up and to the right at a 45 degree angle, a little curl of vanilla ice cream in the bowl.",
+    'espressoLever': "The pull lever of an old-fashioned espresso machine: a long chrome arm with a round black ball "
+                     "knob on the end, on a short chrome mount, seen from the side, the lever raised. No writing.",
+    'grillPress': "A heavy cast-iron grill press: a flat rectangular black iron plate with a curved wooden handle "
+                  "on top, seen from the front and a little above, a small wisp of steam rising from one edge.",
+    # Food Court storefront status (the game writes names and stars itself)
+    # No painted words: the game writes "Coming Soon" and "Grand Opening" itself, at the player's text size (spec 6.2).
+    'shutter': "A rolled-down corrugated metal shop shutter, pale grey with a little dent, seen straight from the front, "
+               "with a BLANK piece of brown cardboard taped to its middle by four strips of tape. No writing anywhere.",
+    'grandOpening': "A long festive ribbon banner, red with gold edges and a BLANK cream middle panel, with a bunch of "
+                    "balloons tied at each end, seen from the front. No writing anywhere.",
+    'goldSign': "An ornate shiny gold sign plaque with a big gold star on top, an empty flat panel in the middle (no "
+                "writing), little sparkles round it, seen from the front.",
+    'progressBoard': "A big freestanding chalkboard on a wooden easel stand, the board itself empty and dark green (no "
+                     "writing), a little chalk tray with chalk, seen from the front.",
+}
+
+
+def prop_prompt(name):
+    return f"""Use case: game prop for a 2D game
+Asset type: one object on plain white, 1024 x 1024
+Object: {PROPS[name]}
+{PROP_STYLE}
+Save as art-source/props/{name}.png (1024 x 1024) and the prompt as art-source/props/{name}-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file."""
+
+
+def backdrop_prompt(name):
+    return f"""Use case: background painting for a 2D game
+{BACKDROPS[name]}
+{BACKDROP_STYLE}
+Save as art-source/backdrops/{name}.png (1536 x 1024) and the prompt as art-source/backdrops/{name}-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file."""
+
+
+def main():
+    what = sys.argv[1] if len(sys.argv) > 1 else ''
+    jobs = []
+    if what == 'models':
+        chars = sys.argv[2:] or list(CAST)
+        for c in chars:
+            name = f'model-{c}'
+            if c.startswith('mitch-'):   # a uniform: the approved Mitch is the reference
+                write(name, uniform_prompt(c))
+                jobs.append((name, 'art-source/cast/mitch/neutral.png'))
+                continue
+            write(name, model_prompt(c))
+            jobs.append((name, ''))
+    elif what == 'poses':
+        for c in sys.argv[2:]:
+            rest = [p for p in poses_for(c) if p != 'neutral']
+            for i in range(0, len(rest), 2):
+                group = rest[i:i + 2]
+                name = f'poses-{c}-{"-".join(group)}'
+                if c.startswith('mitch-'):     # uniform: costume from its model, poses from the approved Mitch
+                    write(name, uniform_pose_prompt(c, group))
+                    jobs.append((name, ' '.join([f'art-source/cast/{c}/neutral.png'] +
+                                                [f'art-source/cast/mitch/{p}.png' for p in group])))
+                    continue
+                write(name, pose_prompt(c, group))
+                jobs.append((name, f'art-source/cast/{c}/neutral.png'))
+    elif what == 'extra':
+        c, p = sys.argv[2], sys.argv[3]
+        name = f'poses-{c}-{p}'
+        write(name, pose_prompt(c, [p], EXTRA_POSES[c]))
+        jobs.append((name, f'art-source/cast/{c}/neutral.png'))
+    elif what == 'backdrops':
+        for b in (sys.argv[2:] or list(BACKDROPS)):
+            name = f'backdrop-{b}'
+            write(name, backdrop_prompt(b))
+            jobs.append((name, ''))
+    elif what == 'props':
+        for p in (sys.argv[2:] or list(PROPS)):
+            name = f'prop-{p}'
+            write(name, prop_prompt(p))
+            jobs.append((name, ''))
+    else:
+        sys.exit(__doc__)
+    for name, refs in jobs:
+        print(f'{name}\t{refs}')
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,488 @@
+'use strict';
+/* Ben's Food Court - a restaurant's 3D food drawn on the CPU, over its real backdrops, with no browser (dev-only;
+ * browsers are off-limits on this PC). For every food agent: look at the food before handing it over.
+ *
+ *   node tools/food-frames.cjs <pack> [out dir] [filters...]
+ *
+ *   <pack>     a pack id (pizza, diner, ...): packs/<pack>/pack.js and js/food/<pack>.js (a pack without its own
+ *              module borrows the diner's, as the game does)
+ *   [out dir]  where the PNGs go; a path (with a slash or a dot). Default: art-source/review/food-<pack>/
+ *   [filters]  words: only frames whose name contains one are drawn (line, cook, timed, gross, reduced, giant,
+ *              counter, low, or part of a name such as pepperoni). Flags: `guides` draws the backdrop's measured
+ *              surface line (green) and, at the counter, where the customer stands (cyan); `nosheet` skips the
+ *              contact sheets.
+ *
+ * It runs the real frame (js/world.js) and the real line (js/core/line.js) in Node with a stub window: every
+ * sample order is walked step by step as game.js would (goTo, showStep, outcome, showCounter), and at the moments
+ * worth looking at the scene is rendered by NARBE Racer's tools/node_render.cjs at each set's solved camera, keyed
+ * over the backdrop picture (art-source/backdrops/<pack>-<set>.png; the diner's are unprefixed). Frames:
+ *   line-*      every station: the item so far and what waits on the line, before and after each step (each
+ *               ingredient and each slot value once), the flourishes mid-air, then the order on the counter
+ *   cook-*      every cooking set: waiting, every stage on the heat, Simple's run (going in, baking, done)
+ *   timed-*     the Timed view: on the heat from the start
+ *   gross-*     every gross-out: on the line (Full motion, the fly mid-orbit), served, on the counter
+ *   reduced-*   the same gross-outs with Motion Reduced (fx sit still)
+ *   giant-*     every event recipe on its line and on the counter, and the event's finale on the counter
+ *   counter-*   one item, a main with a side, two mains
+ *   low-*       Graphics Quality Low: the fullest item on the line, on the heat and on the counter
+ * Then sheet-<n>.png: contact sheets of every frame, 12 to a sheet, and index.txt listing them.
+ */
+const path = require('path'), fs = require('fs'), zlib = require('zlib');
+const GAME = path.join(__dirname, '..');
+const HUB = path.join(GAME, '..', '..', '..');
+const NR = require(path.join(HUB, 'apps', 'games', 'NARBEKART', 'tools', 'node_render.cjs'));
+const W = 1280, H = 720;
+
+/* ── arguments ── */
+const argv = process.argv.slice(2);
+const packId = argv[0];
+if (!packId || !fs.existsSync(path.join(GAME, 'packs', packId, 'pack.js'))) {
+  console.log('usage: node tools/food-frames.cjs <pack> [out dir] [filters...]   (packs: ' +
+    fs.readdirSync(path.join(GAME, 'packs')).filter(id => fs.existsSync(path.join(GAME, 'packs', id, 'pack.js'))).join(', ') + ')');
+  process.exit(1);
+}
+const isPath = s => /[\\/.]/.test(s);
+const OUT = path.resolve(argv[1] && isPath(argv[1]) ? argv[1] : path.join(GAME, 'art-source', 'review', 'food-' + packId));
+const words = argv.slice(argv[1] && isPath(argv[1]) ? 2 : 1);
+const GUIDES = words.includes('guides'), NOSHEET = words.includes('nosheet');
+const FILTERS = words.filter(w => w !== 'guides' && w !== 'nosheet');
+const wanted = name => !FILTERS.length || FILTERS.some(f => name.includes(f));
+fs.mkdirSync(OUT, { recursive: true });
+
+/* ── a stub window for js/world.js: no DOM, no WebGL, a frame clock we step by hand ── */
+const quiet = fn => { const w = console.warn; console.warn = () => {}; try { return fn(); } finally { console.warn = w; } };
+const clock = { now: 0 };
+let raf = null, LOW = false;
+const motion = { value: 'full' };
+globalThis.window = globalThis; globalThis.self = globalThis;
+globalThis.innerWidth = W; globalThis.innerHeight = H; globalThis.devicePixelRatio = 1;
+globalThis.addEventListener = () => {}; globalThis.removeEventListener = () => {};
+globalThis.requestAnimationFrame = cb => { raf = cb; return 1; };
+globalThis.cancelAnimationFrame = () => {};
+try { globalThis.performance.now = () => clock.now; } catch (e) { Object.defineProperty(globalThis, 'performance', { value: { now: () => clock.now } }); }
+globalThis.document = {
+  body: { dataset: { get motion() { return motion.value; } } },
+  getElementById: () => ({ appendChild() {}, style: {} }),
+  createElement: () => ({ style: {}, appendChild() {} }),
+};
+globalThis.NarbeGraphics = {
+  openGame: () => ({ ready: Promise.resolve(), isLightweight: () => LOW, rendererOptions: o => o, pixelRatio: r => r, subscribe: () => () => {},
+    frame() {}, label: () => (LOW ? 'Low' : 'High'), cycle() {}, setChoice() {}, get: () => ({ choice: LOW ? 'low' : 'high' }), dispose() {} }),
+};
+const THREE = quiet(() => require(path.join(GAME, 'js/vendor/three.min.js')));
+let lastRender = null;
+THREE.WebGLRenderer = class FakeRenderer {
+  constructor() { this.domElement = { style: {} }; }
+  setPixelRatio() {} setSize() {} setClearColor() {} dispose() {}
+  render(scene, camera) { lastRender = { scene, camera }; }
+};
+globalThis.THREE = THREE;
+const FOOD = require(path.join(GAME, 'js/food/kit.js'));
+globalThis.BB = { food: FOOD };
+require(path.join(GAME, 'js/food/diner.js'));
+const P = require(path.join(GAME, 'packs', packId, 'pack.js'));
+const moduleFile = path.join(GAME, 'js', 'food', ((P.world && P.world.module) || P.id) + '.js');
+if (fs.existsSync(moduleFile)) require(moduleFile);
+else console.log('note: no ' + path.relative(GAME, moduleFile) + ' yet: the diner module draws this pack');
+quiet(() => require(path.join(GAME, 'js/world.js')));
+const L = require(path.join(GAME, 'js/core/line.js'));
+const world = BB.world;
+
+/* ── the frame clock ── */
+function tick(ms) { clock.now += ms || 16.7; const cb = raf; raf = null; if (cb) cb(clock.now); }
+const yieldNow = () => new Promise(r => setImmediate(r));
+/** Step frames until the promise settles (snapAt: [{ ms, name }] takes pictures on the way). */
+async function drive(p, opts) {
+  let done = false;
+  Promise.resolve(p).then(() => { done = true; }, e => { done = true; console.log('  playout failed: ' + (e && e.stack || e)); });
+  const t0 = clock.now, snaps = (opts && opts.snapAt) || [];
+  for (let i = 0; !done && i < 6000; i++) {
+    tick(16.7);
+    for (const s of snaps) if (!s.done && clock.now - t0 >= s.ms) { s.done = true; await snap(s.name); }
+    await yieldNow();
+  }
+  for (const s of snaps) if (!s.done) { s.done = true; await snap(s.name); }
+}
+/** Let things that keep moving (a fly, bubbles) move on by `ms`. */
+function advance(ms) { for (let t = 0; t < ms; t += 16.7) tick(16.7); }
+
+/* ── pictures: PNG in, cover-scaled backdrop, the 3D keyed over it, PNG out ── */
+function readPNG(file) {
+  const buf = fs.readFileSync(file);
+  let pos = 8, w = 0, h = 0, depth = 0, ctype = 0, interlace = 0;
+  const idat = [];
+  while (pos + 8 <= buf.length) {
+    const len = buf.readUInt32BE(pos), type = buf.toString('ascii', pos + 4, pos + 8), data = buf.subarray(pos + 8, pos + 8 + len);
+    if (type === 'IHDR') { w = data.readUInt32BE(0); h = data.readUInt32BE(4); depth = data[8]; ctype = data[9]; interlace = data[12]; }
+    else if (type === 'IDAT') idat.push(data);
+    else if (type === 'IEND') break;
+    pos += 12 + len;
+  }
+  const ch = { 0: 1, 2: 3, 4: 2, 6: 4 }[ctype];
+  if (depth !== 8 || interlace || !ch) throw new Error('readPNG: only 8-bit, non-interlaced, non-palette PNGs: ' + file);
+  const raw = zlib.inflateSync(Buffer.concat(idat)), stride = w * ch, out = Buffer.alloc(w * h * ch);
+  let prev = Buffer.alloc(stride);
+  for (let y = 0; y < h; y++) {
+    const f = raw[y * (stride + 1)], row = raw.subarray(y * (stride + 1) + 1, (y + 1) * (stride + 1)), cur = out.subarray(y * stride, (y + 1) * stride);
+    for (let i = 0; i < stride; i++) {
+      const a = i >= ch ? cur[i - ch] : 0, b = prev[i], c = i >= ch ? prev[i - ch] : 0;
+      let v = row[i];
+      if (f === 1) v += a; else if (f === 2) v += b; else if (f === 3) v += (a + b) >> 1;
+      else if (f === 4) { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c; }
+      cur[i] = v & 255;
+    }
+    prev = cur;
+  }
+  return { W: w, H: h, ch, data: out };
+}
+/** The picture drawn with CSS `cover` into W x H, as RGB (bilinear). */
+function cover(img, W2, H2) {
+  const s = Math.max(W2 / img.W, H2 / img.H), ox = (img.W * s - W2) / 2, oy = (img.H * s - H2) / 2, out = Buffer.alloc(W2 * H2 * 3), ch = img.ch;
+  const px = (x, y, c) => { x = Math.max(0, Math.min(img.W - 1, x)); y = Math.max(0, Math.min(img.H - 1, y)); const o = (y * img.W + x) * ch; return ch < 3 ? img.data[o] : img.data[o + c]; };
+  for (let y = 0; y < H2; y++) for (let x = 0; x < W2; x++) {
+    const sx = (x + 0.5 + ox) / s - 0.5, sy = (y + 0.5 + oy) / s - 0.5, x0 = Math.floor(sx), y0 = Math.floor(sy), fx = sx - x0, fy = sy - y0;
+    for (let c = 0; c < 3; c++) {
+      const v = px(x0, y0, c) * (1 - fx) * (1 - fy) + px(x0 + 1, y0, c) * fx * (1 - fy) + px(x0, y0 + 1, c) * (1 - fx) * fy + px(x0 + 1, y0 + 1, c) * fx * fy;
+      out[(y * W2 + x) * 3 + c] = Math.round(v);
+    }
+  }
+  return { W: W2, H: H2, data: out };
+}
+const backdrops = {};
+/** The backdrop for a set, by its backdrop name: <pack>-<name>.png, else <name>.png, else the theme's flat colour. */
+function backdropFor(name) {
+  if (backdrops[name] !== undefined) return backdrops[name];
+  const dir = path.join(GAME, 'art-source', 'backdrops');
+  const file = [packId + '-' + name + '.png', name + '.png'].map(f => path.join(dir, f)).find(f => fs.existsSync(f));
+  let bg;
+  if (file) { const img = readPNG(file); bg = cover(img, W, H); bg.picture = img.W / img.H; bg.file = path.basename(file); }
+  else {
+    const hex = ((P.theme && P.theme.pageBg) || '#444444').replace('#', ''), r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
+    bg = { W, H, data: Buffer.alloc(W * H * 3) };
+    for (let i = 0; i < W * H; i++) { bg.data[i * 3] = r; bg.data[i * 3 + 1] = g; bg.data[i * 3 + 2] = b; }
+    bg.picture = FOOD.PICTURE; bg.file = null;
+    console.log('  no backdrop picture for "' + name + '": a flat colour');
+  }
+  return (backdrops[name] = bg);
+}
+/** The 3D scene as the game shows it now: the outline shader hulls hidden (the CPU renderer cannot run them), a
+ *  part-drawn geometry cut to what is drawn, magenta where nothing is. */
+function render3d() {
+  const { scene, camera } = world.__scene();
+  const hidden = [], cut = [];
+  scene.traverse(o => {
+    if (o.isMesh && o.material && o.material.isShaderMaterial && o.visible) { o.visible = false; hidden.push(o); }
+    else if (o.isMesh && o.geometry.index && o.geometry.drawRange.count < o.geometry.index.count) {
+      const g = o.geometry.clone(), n = Math.max(0, o.geometry.drawRange.count);
+      g.setIndex(Array.from(o.geometry.index.array.slice(0, n)));
+      cut.push([o, o.geometry]);
+      o.geometry = g;
+    }
+  });
+  const img = NR.render(THREE, scene, camera, W, H, { ss: 2, sky: ['#ff00ff', '#ff00ff', '#ff00ff'] });
+  hidden.forEach(o => { o.visible = true; });
+  cut.forEach(([o, g]) => { o.geometry = g; });
+  return img;
+}
+function composite(bg, img) {
+  const out = { W, H, data: Buffer.from(bg.data) }, d = img.data, o = out.data;
+  for (let i = 0; i < W * H; i++) {
+    const r = d[i * 3], g = d[i * 3 + 1], b = d[i * 3 + 2];
+    const a = Math.min(1, ((255 - r) + g + (255 - b)) / 3 * 4 / 255);   // magenta is the empty sky
+    if (a <= 0) continue;
+    o[i * 3] = Math.round(o[i * 3] + (r - o[i * 3]) * a);
+    o[i * 3 + 1] = Math.round(o[i * 3 + 1] + (g - o[i * 3 + 1]) * a);
+    o[i * 3 + 2] = Math.round(o[i * 3 + 2] + (b - o[i * 3 + 2]) * a);
+  }
+  return out;
+}
+function hline(img, y, colour, dash) {
+  if (y < 0 || y >= img.H) return;
+  for (let x = 0; x < img.W; x++) { if (dash && Math.floor(x / dash) % 2) continue; const o = (y * img.W + x) * 3; img.data[o] = colour[0]; img.data[o + 1] = colour[1]; img.data[o + 2] = colour[2]; }
+}
+function rect(img, x0, y0, x1, y1, colour) {
+  for (let x = x0; x <= x1; x++) [y0, y1].forEach(y => { if (x >= 0 && x < img.W && y >= 0 && y < img.H) { const o = (y * img.W + x) * 3; img.data[o] = colour[0]; img.data[o + 1] = colour[1]; img.data[o + 2] = colour[2]; } });
+  for (let y = y0; y <= y1; y++) [x0, x1].forEach(x => { if (x >= 0 && x < img.W && y >= 0 && y < img.H) { const o = (y * img.W + x) * 3; img.data[o] = colour[0]; img.data[o + 1] = colour[1]; img.data[o + 2] = colour[2]; } });
+}
+/** Half size, for the contact sheets. */
+function half(img) {
+  const w = img.W >> 1, h = img.H >> 1, out = { W: w, H: h, data: Buffer.alloc(w * h * 3) };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) for (let c = 0; c < 3; c++) {
+    const o = ((2 * y) * img.W + 2 * x) * 3 + c;
+    out.data[(y * w + x) * 3 + c] = (img.data[o] + img.data[o + 3] + img.data[o + img.W * 3] + img.data[o + img.W * 3 + 3]) >> 2;
+  }
+  return out;
+}
+
+/* ── taking a picture ── */
+let n = 0, tiles = [], sheets = 0;
+const index = [];
+async function snap(name) {
+  if (!wanted(name)) return;
+  tick(1);                                  // one frame, so what changed is rendered
+  if (!lastRender) { console.log('  nothing rendered yet for ' + name); return; }
+  const setName = world.set;
+  const img = composite(backdropFor(setName || 'counter'), render3d());
+  const def = setName && world.__kit.find('sets', setName);
+  if (GUIDES && def) {
+    if (def.line !== null && def.line !== undefined) {
+      const y = Math.round(FOOD.lineOnScreen(def.line, W / H, def.picture || backdropFor(setName).picture) * H);
+      hline(img, y, [40, 255, 60], 14);
+      NR.text(img, W - 250, y - 22, 'LINE ' + (def.line * 100).toFixed(1) + '%', 2, [40, 255, 60], [0, 0, 0]);
+    }
+    if (setName === 'counter') {
+      // Where the page puts the customer (css/bb.css): 88vh tall, top 3vh, left 9vw, drawn on a 2:3 canvas.
+      const hgt = H * 0.88, wid = hgt * 1024 / 1536, x0 = Math.round(W * 0.09), y0 = Math.round(H * 0.03);
+      rect(img, x0, y0, Math.round(x0 + wid), Math.round(y0 + hgt), [0, 220, 255]);
+      NR.text(img, x0 + 6, y0 + 6, 'CUSTOMER', 2, [0, 220, 255], [0, 0, 0]);
+    }
+  }
+  NR.text(img, 10, H - 26, name, 2, [255, 255, 255], [27, 18, 14]);
+  const file = String(++n).padStart(2, '0') + '-' + name + '.png';
+  NR.writePNG(path.join(OUT, file), img);
+  index.push(file + '  (' + (setName || '-') + (def && def.line !== null && def.line !== undefined ? ', line ' + (def.line * 100).toFixed(1) + '%' : '') + ')');
+  console.log('  ' + file);
+  tiles.push(half(img));
+  if (tiles.length >= 12) flushSheet();
+}
+function flushSheet() {
+  if (NOSHEET || !tiles.length) { tiles = []; return; }
+  const img = NR.sheet(tiles, 3);
+  NR.writePNG(path.join(OUT, 'sheet-' + String(++sheets).padStart(2, '0') + '.png'), img);
+  tiles = [];
+}
+
+/* ── sample orders: a recipe as written (every pick's normal value), or with every optional part on ── */
+function specOf(rid, o) {
+  o = o || {};
+  const R = P.recipes[rid], it = R.item || {};
+  const pickOf = name => (P.picks || {})[name] || null;
+  const val = v => (v && typeof v === 'object' && v.pick ? ((pickOf(v.pick) || {}).normal || (pickOf(v.pick) || { values: [] }).values[0] || (P.slots && P.slots[v.pick] ? P.slots[v.pick].values[0].id : undefined)) : v);
+  const spec = { recipe: rid, ing: val(it.ing), parts: [], holds: [], adds: [] };
+  if (it.size) spec.size = val(it.size);
+  if (it.done) spec.done = val(it.done);
+  (it.parts || []).filter(p => o.all || p.opt !== 'out').forEach(p => {
+    const q = { ing: val(p.ing) };
+    if (p.done) q.done = val(p.done);
+    if (p.ing && typeof p.ing === 'object') q.flavour = true;
+    if (q.ing) spec.parts.push(q);
+  });
+  if (it.slots) {
+    spec.picks = {};
+    Object.keys(it.slots).forEach(slot => {
+      const v = it.slots[slot], S = (P.slots || {})[slot], first = S && S.values && S.values[0] && S.values[0].id;
+      if (typeof v === 'string' || Array.isArray(v)) spec.picks[slot] = v;
+      else if (v && v.pick) {
+        const pk = pickOf(v.pick), normal = (pk && pk.normal) || (pk && pk.values && pk.values[0]) || first;
+        spec.picks[slot] = v.count ? Array.from({ length: v.count[0] || 1 }, () => normal) : normal;
+      }
+    });
+  }
+  if (o.picks) Object.assign(spec.picks || (spec.picks = {}), o.picks);
+  if (o.set) Object.keys(o.set).forEach(key => { if (key === 'done' || (it.done && it.done.pick === key)) spec.done = o.set[key]; });
+  return spec;
+}
+/** The right answer for a step (as tests/food.test.cjs answers), or the bad one when told to serve a gross-out. */
+function answerFor(o, q, serveGross) {
+  const want = L.expected(P, o.items[q.item], q.station, q.step);
+  const leaves = (function flat(opts) { return opts.flatMap(x => (x.row ? flat(x.row) : [x])); })(q.options || []);
+  if (q.kind === 'add') return q.gross ? (serveGross ? 'add' : 'swap') : q.have < want ? 'add' : 'skip';
+  if (q.kind === 'cook') return q.timed ? 'takeOff' : want === null ? q.options[0].id : 'cook:' + want;
+  if (q.kind === 'pick') {
+    if (q.gross) return serveGross ? 'pick:' + q.gross.value : 'swap';
+    if (q.repeat) {
+      const left = L.remaining ? L.remaining(want || [], q.picked || []) : [];
+      if (!left.length) return q.have ? 'done' : leaves.find(x => x.value !== undefined).id;
+      return leaves.find(x => x.value === left[0]).id;
+    }
+    const hit = leaves.find(x => x.value === want) || leaves.find(x => x.value !== undefined);
+    return hit.id;
+  }
+  return null;
+}
+const stepKey = q => q.kind + ':' + (q.kind === 'add' ? q.ing : q.kind === 'pick' ? (q.slot || q.of) : q.station);
+const valueOf = (q, id) => (id && id.startsWith('pick:') ? id.slice(5) : id);
+
+/** Walk one order through the line as game.js would. hooks: { before(q, made, o), after(q, made, r, o, id), mid(e, q) ->
+ *  [{ ms, name }], answer(q, o) -> id, settings, gross, ms }. Returns the order and what was made. */
+async function walk(spec, hooks) {
+  hooks = hooks || {};
+  const settings = Object.assign({ cooking: 'simple' }, hooks.settings);
+  const o = L.create(P, { customer: { id: 'x', name: 'X' }, items: [spec] }, { settings, gross: hooks.gross });
+  for (let guard = 0; o.phase === 'line' && guard < 400; guard++) {
+    const q = L.question(P, o, settings);
+    if (!q) break;
+    const made = L.made(P, o, q.item);
+    world.goTo(q.station);
+    await drive(world.showStep(q, made));
+    if (hooks.before) await hooks.before(q, made, o);
+    const id = (hooks.answer && hooks.answer(q, o)) || answerFor(o, q, hooks.serveGross);
+    if (q.kind === 'cook' && q.timed && hooks.timedTo !== undefined) {
+      // Timed: tick the clock to the wanted stage, then take it off.
+      for (let t = 0; t < 400; t++) {
+        const ev = L.tick(P, o, 0.5, settings, false) || [];
+        for (const e of ev) if (e && e.type === 'stage') { world.cookStage(e); advance(100); if (hooks.stage) await hooks.stage(e, q); }
+        const now = L.question(P, o, settings);
+        if (now && now.stage === hooks.timedTo) break;
+      }
+    }
+    const r = L.answer(P, o, id, settings);
+    if (r.refused) throw new Error('the line refused ' + id + ' at ' + q.key);
+    const after = L.made(P, o, q.item);
+    for (const e of r.events || []) await drive(world.outcome(e, after, { ms: hooks.ms || 420 }), hooks.mid ? { snapAt: hooks.mid(e, q) || [] } : null);
+    if (hooks.after) await hooks.after(q, after, r, o, id);
+  }
+  return { o, made: L.made(P, o, 0) };
+}
+async function counterOf(list, name) {
+  world.goTo('counter');
+  world.showCounter(list);
+  await snap(name);
+}
+const recipeIds = Object.keys(P.recipes || {});
+const isEvent = rid => { const R = P.recipes[rid]; return R.level === 'event' || !!(R.look && R.look.giant) || R.giant === true; };
+const everyday = recipeIds.filter(rid => !isEvent(rid));
+/** The recipe with the most on it (the fullest line). */
+const fullest = everyday.slice().sort((a, b) => ((P.recipes[b].item || {}).parts || []).length - ((P.recipes[a].item || {}).parts || []).length)[0];
+
+(async () => {
+  const t0 = Date.now();
+  await world.init();
+  world.usePack(P);
+  console.log('frames for ' + packId + ' -> ' + OUT + (FILTERS.length ? '  (only: ' + FILTERS.join(', ') + ')' : ''));
+  const seen = new Set();
+  const once = key => { if (seen.has(key)) return false; seen.add(key); return true; };
+
+  /* line: every recipe, each ingredient and each slot value pictured once, before and after its step */
+  const order = [fullest].concat(everyday.filter(r => r !== fullest));
+  for (const rid of order) {
+    await walk(specOf(rid, { all: true }), {
+      before: async q => { if (once('before:' + stepKey(q))) await snap('line-' + rid + '-' + q.station + '-' + (q.kind === 'add' ? q.ing : q.kind === 'pick' ? (q.slot || q.of) : q.kind) + '-before'); },
+      mid: (e, q) => (e.type === 'auto' && once('mid:' + (e.show || e.id)) ? [{ ms: 400, name: 'line-' + rid + '-' + q.station + '-' + (e.show || e.id) + '-mid' }] : []),
+      after: async (q, made, r, o, id) => {
+        if (q.kind === 'add' && id !== 'add') return;
+        const key = 'after:' + stepKey(q) + ':' + (q.kind === 'pick' ? valueOf(q, id) : q.kind === 'auto' ? q.key : '');
+        if (once(key)) await snap('line-' + rid + '-' + q.station + '-' + (q.kind === 'add' ? q.ing : q.kind === 'pick' ? (q.slot || q.of) + '-' + valueOf(q, id) : q.kind) + '-after');
+      },
+    }).then(({ made }) => counterOf([made], 'counter-' + rid));
+  }
+  // Every slot value not yet seen: the first recipe with that slot, with that value, pictured after the pick.
+  for (const slot of Object.keys(P.slots || {})) {
+    for (const v of P.slots[slot].values || []) {
+      if (seen.has('after:pick:' + slot + ':' + v.id)) continue;
+      const rid = everyday.find(r => ((P.recipes[r].item || {}).slots || {})[slot] !== undefined);
+      if (!rid) continue;
+      seen.add('after:pick:' + slot + ':' + v.id);
+      await walk(specOf(rid, { picks: { [slot]: v.id } }), {
+        after: async (q, made, r, o, id) => { if (q.kind === 'pick' && q.slot === slot) await snap('line-' + rid + '-' + q.station + '-' + slot + '-' + v.id + '-after'); },
+      }).then(({ made }) => counterOf([made], 'counter-' + rid + '-' + slot + '-' + v.id));
+    }
+  }
+
+  /* cook: every cooking set, every stage, Simple's run and the Timed view */
+  const cookSets = new Set();
+  Object.keys(P.stations || {}).forEach(sid => { if (P.stations[sid].steps.some(s => s.kind === 'cook')) cookSets.add(sid); });
+  const cookedIngs = new Set();
+  for (const rid of everyday) {
+    const R = P.recipes[rid];
+    const sid = R.stations.find(s => cookSets.has(s));
+    if (!sid) continue;
+    const spec = specOf(rid, { all: true });
+    const key = sid + ':' + (spec.ing || rid);
+    if (cookedIngs.has(key)) continue;
+    cookedIngs.add(key);
+    const tag = 'cook-' + (spec.ing || rid);
+    await walk(spec, {
+      before: async (q, made) => {
+        if (q.kind !== 'cook' || q.station !== sid) return;
+        await snap(tag + '-wait');
+        const names = (q.set && P.stageSets && P.stageSets[q.set] && P.stageSets[q.set].stages) || [];
+        for (let i = 0; i < names.length; i++) { world.cookStage(i); advance(300); await snap(tag + '-stage' + i + '-' + names[i]); }
+        // Back to how the step was shown, so Simple's run starts from the start.
+        await drive(world.showStep(q, made));
+      },
+      answer: (q, o) => null,
+      mid: (e, q) => (e.type === 'cooked' ? [{ ms: 110, name: tag + '-run-in' }, { ms: 300, name: tag + '-run-baking' }] : []),
+      after: async (q, made, r) => { if (q.kind === 'cook' && q.station === sid) await snap(tag + '-run-done-' + (made.done || '')); },
+      ms: 520,
+    });
+    // Timed: on the heat from the start; taken off at the wanted stage.
+    const want = spec.done || null;
+    await walk(spec, {
+      settings: { cooking: 'timed', speed: 'normal' },
+      timedTo: want,
+      before: async q => { if (q.kind === 'cook' && q.station === sid) await snap('timed-' + (spec.ing || rid) + '-start'); },
+      after: async (q, made) => { if (q.kind === 'cook' && q.station === sid) await snap('timed-' + (spec.ing || rid) + '-off-' + (made.done || '')); },
+      ms: 400,
+    });
+  }
+
+  /* gross: every gross-out on the line (Full motion), served, on the counter; then with Motion Reduced */
+  for (const E of P.gross || []) {
+    const ing = E.step === 'pick' ? null : [].concat(E.on || [])[0];
+    const rid = everyday.find(r => (E.step === 'pick' ? ((P.recipes[r].item || {}).slots || {})[E.slot] !== undefined
+      : ((P.recipes[r].item || {}).parts || []).some(p => p.ing === ing)));
+    if (!rid) { console.log('  no recipe carries the gross-out ' + E.id); continue; }
+    const spec = specOf(rid, { all: true });
+    if (E.step === 'pick') { const bad = [].concat(E.on || []).find(v => v !== 'none') || E.on[0]; spec.picks = Object.assign({}, spec.picks, { [E.slot]: bad }); }
+    const gross = E.step === 'pick' ? { item: 0, slot: E.slot, event: E.id } : { item: 0, ing, event: E.id };
+    for (const mode of ['full', 'reduced']) {
+      motion.value = mode;
+      const tag = (mode === 'full' ? 'gross-' : 'reduced-') + E.id;
+      await walk(spec, {
+        gross, serveGross: true,
+        before: async q => { if (q.gross) { advance(450); await snap(tag + '-line'); } },
+        after: async (q, made, r) => { if (mode === 'full' && q.gross) await snap(tag + '-served'); },
+      }).then(async ({ made }) => { if (mode === 'full') await counterOf([made], tag + '-counter'); });
+    }
+    motion.value = 'full';
+  }
+
+  /* giant: the event recipes on their line and the counter; the event's finale together */
+  for (const rid of recipeIds.filter(isEvent)) {
+    const stations = new Set();
+    await walk(specOf(rid), {
+      before: async q => { if (!stations.has(q.station)) { stations.add(q.station); } },
+      after: async (q, made, r, o) => {
+        const st = P.stations[q.station];
+        const last = st && st.steps && q.step === st.steps.length - 1;
+        if (last || (q.kind === 'cook')) await snap('giant-' + rid + '-' + q.station);
+      },
+    }).then(({ made }) => counterOf([made], 'giant-' + rid + '-counter'));
+  }
+  const finale = P.events && P.events.five && P.events.five.finale && P.events.five.finale.items;
+  if (finale && finale.length) {
+    const list = [];
+    for (const it of finale) { const { made } = await walk(specOf(it.recipe, { set: it.set })); list.push(made); }
+    await counterOf(list, 'giant-finale-counter');
+  }
+
+  /* counter: one item, a main with its side, two mains */
+  if (wanted('counter-one') || wanted('counter-combo') || wanted('counter-twin')) {
+    const main = everyday.find(r => !P.recipes[r].course || P.recipes[r].course === 'main') || everyday[0];
+    const side = everyday.find(r => P.recipes[r].course && P.recipes[r].course !== 'main');
+    const one = (await walk(specOf(main, { all: true }))).made;
+    await counterOf([one], 'counter-one');
+    if (side) await counterOf([one, (await walk(specOf(side))).made], 'counter-combo');
+    const other = everyday.find(r => r !== main && (!P.recipes[r].course || P.recipes[r].course === 'main'));
+    if (other) await counterOf([one, (await walk(specOf(other))).made], 'counter-twin');
+  }
+
+  /* low: Graphics Quality Low on the fullest item */
+  if (wanted('low-line') || wanted('low-cook') || wanted('low-counter')) {
+    LOW = true;
+    const sid = (P.recipes[fullest].stations || []).find(s => cookSets.has(s));
+    await walk(specOf(fullest, { all: true }), {
+      before: async q => { if (q.kind === 'cook' && q.station === sid) { world.cookStage(2); advance(200); await snap('low-cook'); } },
+      after: async (q, made, r, o) => {
+        const st = P.stations[q.station];
+        if (q.station === (P.recipes[fullest].stations || [])[0] && st && q.step === st.steps.length - 1) await snap('low-line');
+      },
+    }).then(({ made }) => counterOf([made], 'low-counter'));
+    LOW = false;
+  }
+
+  flushSheet();
+  fs.writeFileSync(path.join(OUT, 'index.txt'), index.join('\n') + '\n');
+  console.log(n + ' frames in ' + OUT + ' (' + ((Date.now() - t0) / 1000).toFixed(1) + ' s)');
+})().catch(e => { console.error(e && e.stack || e); process.exit(1); });

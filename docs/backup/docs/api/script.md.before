@@ -1,0 +1,179 @@
+# The script: moments, files, merging and clip ids (core-b, 2026-11-08)
+
+`js/core/script.js` (`BB.script`, `SC` in tests) settles spec 5.5. Content agents write lines against this page; the
+page agent calls only the moments listed here. Tests: `node --test "tests/script.test.cjs"` (`BB_PACKS=<id>` for yours).
+
+## 1. A line
+
+```js
+{ id: 'react3.1', who: 'tony', moment: 'react.3', text: 'Bellissimo! The crust sings!', delivery: 'operatic, delighted' }
+{ id: 'extra.1', who: 'customer', moment: 'complain.extra', each: 'ing', text: 'I said no {ings}. I meant it.' }
+{ id: 'pick.1', who: 'vernon', moment: 'complain.pick', each: 'want', text: 'I asked for {want} {slot}. I will know.' }
+{ id: 'mention.c1', who: 'gus', moment: 'mention', about: 'sushi', text: '{about} said two of every roll was "a lot". It was.' }
+```
+
+| Field | | What |
+|---|---|---|
+| `id` | yes | letters, digits, `_ . -`. **Unique per speaker across the merged script** (the pack's file plus the cast's) |
+| `who` | yes | a character id, `'customer'` (the pack's fallback for any customer), or `mitch` (the manager) |
+| `moment` | yes | one of the moments in section 3 |
+| `text` | yes | the words; `[sigh]`-style tags are kept for the recording and dropped for captions and text to speech |
+| `each` | when it has `{ing}`/`{ings}`/`{want}`/`{got}`/`{slot}`/`{value}` | the blank whose value changes the words (one recording per value) |
+| `about` | mention lines | the restaurant it is about (a pack id) |
+| `delivery` | | how the final voice pass should say it |
+
+Writing rules (spec 0.5, 0.6): funny for adults, dry; the joke on the customer, the food or Mitch; never the player's
+speed or skill; PG; respectful. Greeting plus order at most about two sentences; `order.gag` 8 seconds or less.
+
+## 2. The files
+
+| File | Global | Holds |
+|---|---|---|
+| `packs/<pack>/script.js` | `BBScripts.<pack>` | every line about that restaurant's food: its regulars', locals', visitors', the 'customer' fallbacks, and Mitch's there |
+| `packs/cast/script.js` | `BBScripts.cast` | only lines that work anywhere, with no food names: `greet`, `smalltalk`, `goodbye`, `mention` |
+| `packs/court/script.js` | `BBScripts.court` | the court's: Mitch's `court.*`, the announcer's, the shoppers' chatter, everyone's cheers |
+
+Each is `{ lines: [...] }`, in the same UMD wrapper as a pack (`(root.BBScripts = root.BBScripts || {}).cast = data`).
+Two optional flags on the object:
+
+- `format: 3`: the script is complete. Each restaurant's coverage test runs once its **pack** says `format: 3`; the
+  court's once `packs/court/script.js` says `format: 3`. Until then the tests only check that the lines are well formed.
+- `plainIds: true`: only `packs/diner/script.js`. Its lines keep today's clip ids (the Burger Bar's recordings).
+
+**Ids.** Suggested: `<moment>.<n>` in pack scripts (`react3.1`, `greet.2`) and `<moment>.c<n>` in the cast script
+(`greet.c1`), so a speaker's cast line never takes the id of their pack line.
+
+## 3. The moments (`SC.MOMENTS`)
+
+`only` says which customers **must** have the moment at a restaurant (anyone who comes may have lines). "F": the pack
+must write 'customer' lines for it, which stand in for any customer with fewer than two of their own. `min`: lines each
+speaker must have of their own (variety, spec 5.5). Blanks are the only ones its lines may use.
+
+### Customers (at every restaurant they visit)
+
+| Moment | Who must have it | F | min | Blanks | Files | When the page says it |
+|---|---|---|---|---|---|---|
+| `greet` | every customer | | 3 | | pack, cast | as they walk up |
+| `visitor.arrive` | visitors | | 1 | | pack | a visitor, before their greet |
+| `order.usual` | those with a `usual` | | 1 | | pack | instead of the order, when it is exactly their usual |
+| `order.twin` | twins (Gus) | | 1 | | pack | after an order of two of one thing |
+| `order.dislike` | those with `dislikes` | | 1 | ing ings | pack | after an order that leaves off something they never take |
+| `order.gag` | locals at home | | 1 | | pack | after the order: their running gag, 8 s or less |
+| `order.odd.<oddId>` | whoever can get that odd order | F | 1 | | pack | instead of the order sentence |
+| `smalltalk` | every customer | | 3 | | pack, cast | once an order, after the last station, before the review |
+| `react.3` `react.2` `react.1` | every customer | F | 3 | | pack | the stars |
+| `react.favourite` | those with a `favourite` | | 1 | | pack | three stars on their favourite |
+| `react.gross` | every customer | F | 1 | | pack | a gross-out was served |
+| `complain.extra` | every customer | F | 1 | ing ings | pack | something they said no to is on it |
+| `complain.unasked` | every customer | F | 1 | ing ings | pack | something they never asked for is on it |
+| `complain.missing` | every customer | F | 1 | ing ings | pack | something they wanted was left off |
+| `complain.tooMany` `complain.tooFew` | every customer | F | 1 | ing ings slot want got value count | pack | a wrong count (an Add with a max, a repeat pick) |
+| `complain.done` | every customer | F | 1 | ing ings want got | pack | the wrong stage |
+| `complain.pick` | every customer | F | 1 | ing ings slot want got value | pack | a wrong pick: "I said white sauce" |
+| `complain.more` | every customer | F | 1 | | pack | after two complaints, when there were more |
+| `complain.gross.<grossId>` | every customer | F | 1 | ing ings (Add) / slot value (pick) | pack | that gross-out was served |
+| `goodbye` | every customer | | 3 | | pack, cast | after the reaction and complaints, before the receipt |
+| `mention` | nobody must | | | about | cast | at most once a shift: another open restaurant |
+
+A moment only applies where the pack can need it: `complain.extra/unasked/missing` and their warnings with an Add
+step; `tooMany`/`tooFew` with an Add of `max` above 1 or a repeat pick; `complain.done` and `nearly` with a cook
+step; `tutorial.warn.done` with a cook step Simple asks; `complain.pick` with a pick; `react.gross`, `after.gross`
+and the gross warnings with gross-outs; `order.twin` when some level allows two items; `event.*` with `events.five`.
+
+### Mitch (the pack's manager), in each pack's script
+
+| Moment | min | Blanks | When |
+|---|---|---|---|
+| `shift.start` `shift.end` | 1 | | a shift starts, ends |
+| `uniform` | 1 | | a joke about his uniform: the first shift at a restaurant in a session |
+| `tutorial.intro` `tutorial.ticket` `tutorial.review` `tutorial.serve` | 2 | | the tutorial |
+| `tutorial.gross` | 2 | | the tutorial's gross-out: what Swap It does (when the tutorial has one) |
+| `tutorial.<stationId>` | 2 | | the tutorial reaches that station (every station) |
+| `tutorial.cook.<stationId>` | 2 | | that station's cooking (every station with a cook step) |
+| `tutorial.warn.extra` `.unasked` `.missing` | 2 | ing ings | before a mistake lands, in the tutorial |
+| `tutorial.warn.tooMany` `.tooFew` | 2 | ing ings slot want got value count | |
+| `tutorial.warn.done` | 2 | ing ings want got | |
+| `tutorial.warn.pick` | 2 | ing ings slot want got value | "Hold on, they said white sauce." |
+| `tutorial.warn.gross` `.grossSkip` | 2 | ing ings slot value (grossSkip: want got too) | |
+| `gross.<grossId>` | 2 | ing ings (Add) / slot value (pick) | that gross-out comes down the line |
+| `nearly` | 1 | want name | Timed: one stage before the ticket's (`name`: the customer) |
+| `after.3` `after.1` `after.gross` | 1 | | a one-liner after a reaction |
+| `event.intro` `event.celebrate` `event.again` | 1 | name (the event's) | before the event; after a good one; after one that fell short |
+
+### The court (`packs/court/script.js`)
+
+| Moment | Who | Blanks | When |
+|---|---|---|---|
+| `court.return` | Mitch | goal | back on the court, when the goal changed ("Next up: {goal}.") |
+| `court.unlock` `court.goldSign` | Mitch | name (the restaurant) | a restaurant opened; a gold sign went up |
+| `court.celebrate` `court.promoted` | Mitch | | the grand celebration; the tape comes off |
+| `court.announce.open` `court.announce.gold` | `pa` | name | the Grand Opening; a gold sign |
+| `court.chatter` | `shopper` (any shopper may) | | captions only, never spoken |
+| `court.cheer` | every regular and visitor (locals may) | | the grand celebration, one each |
+
+`SC.moments(pack)` gives the concrete list for a merged pack: `[{ moment, who: 'customer'|'manager', speakers: [ids
+that must have it], blanks, min, fallback, files }]`; `SC.courtMoments(BBCast)` the court's. `SC.entryFor(moment)`
+finds a moment's registry entry (families too).
+
+## 4. Blanks
+
+The page passes ids, numbers or a whole mistake; `SC.fill` turns them into words (lower case):
+
+| Blank | Words | From vars |
+|---|---|---|
+| `{ing}` `{ings}` | the ingredient's name, its plural | `ing` |
+| `{want}` `{got}` | a stage ("medium"), a slot value ("white", with `slot`), an ingredient, or a count in words | `want`, `got` (`slot` for values) |
+| `{slot}` | the slot's name ("sauce") | `slot` |
+| `{value}` | a slot value's name ("red") | `value` with `slot` |
+| `{count}` | a number in words ("three") | `count`, or a count mistake's `want` |
+| `{name}` | given words: the customer (`nearly`), the event (`event.*`), the restaurant (court) | `name` |
+| `{goal}` | given words (`BB.courtRules.nextGoal().goal`) | `goal` |
+| `{about}` | how a sentence names a restaurant ("the Smoothie Shack") | from `SC.pickMention` |
+
+**Pass the mistake or warning itself as vars** (`judge.mistakes` / a tutorial `warn`): `{ kind: 'pick', of: 'slot',
+slot: 'sauce', want: 'white', got: 'red' }` fills "I said {want} {slot}" as "I said white sauce"; a count mistake
+fills `{count}`; a gross-out on a pick `{value}` and `{slot}`. Plain `{ ing }` or `{ want }` works as before. A blank
+with nothing to fill is left as it is (the tests catch that). Lines for a gross-out on a pick use `{value}`/`{slot}`,
+never `{ing}`; on an Add, `{ing}`/`{ings}`, never `{value}`.
+
+## 5. Merging, choosing a line, clip ids
+
+```js
+const script = SC.merge(pack, BBScripts[pack.id], BBScripts.cast);   // pack = the merged pack
+const court = SC.court(BBScripts.court);
+```
+
+- **The merged script** is the pack's lines, then the cast's lines for this pack's people; both count as the
+  speaker's own. Each line is copied with `src` (the pack id or `'cast'`). The files are never changed.
+- **Choosing**: `SC.pick(pack, script, who, moment, vars, used, rnd, kind)` -> `{ line, text, clip }` or null.
+  `kind` is `'customer'` for customers (their own lines, plus the pack's 'customer' lines when they have fewer than
+  two) and `null` for Mitch. `used` (a Set of clip ids) keeps a line from repeating in a shift until the moment runs
+  out. `SC.candidates(script, who, moment, kind)` lists the lines without choosing.
+- **A mention**: `SC.pickMention(pack, script, who, { here: pack.id, open: [open pack ids], said: { <pack id>:
+  BBCourt's said } }, used, rnd)` -> `{ line, text, clip, about }` or null: only a line whose `about` is open and is not
+  this restaurant. At most once a shift (the page's count).
+- **Clip ids** (the final voice pass): `<speaker>/<src>:<id>[.<value>]`, src the pack id, `cast` or `court`:
+  `tony/pizza:react3.1`, `gus/cast:greet.c1`, `mitch/court:return.1`. A 'customer' line said by a speaker puts
+  `customer.` before its id (`bev/pizza:customer.extra.1.onions`). The `.value` is the `each` blank's id, a slot
+  value as `<slot>.<value>` (`vernon/pizza:pick.1.sauce.white`). A `plainIds` script (the diner) keeps today's
+  `<speaker>/<id>[.<value>]`: `marge/greet.1`, `gus/customer.done.1.rare`.
+- `SC.recording(manifest, clip, text)`: the recorded file while its hash matches the words (recordings are off until
+  the voice pass, `BBCourt.recordedVoices`). `SC.everyClip(pack, script, { customers })`: every clip to record.
+
+## 6. Checks
+
+- `SC.check(pack, mergedScript)` -> problems: known moments in the right file, said by someone who can say them here,
+  family members the pack has (`tutorial.grill` at a pizzeria is wrong), allowed blanks, `each` where the words
+  change, a mention's `about`, ids unique per speaker across the pack's and the cast's lines.
+- `SC.coverage(pack, mergedScript)` -> `[{ moment, who, have, min, kind }]`: `missing` (nothing to say, own or
+  fallback), `few` (fewer of their own than `min`), `fallback` (no 'customer' line for an F moment).
+- `SC.checkCast(BBCast, BBScripts.cast, [pack ids])`, `SC.checkCourt(BBCast, BBScripts.court)`,
+  `SC.courtCoverage(BBCast, BBScripts.court)`.
+
+`tests/script.test.cjs` runs `check` and `coverage` on every restaurant whose pack says `format: 3`, `checkCast` on the
+cast script and `checkCourt` (plus coverage at `format: 3`) on the court's.
+
+## 7. Silence (the page's rules, spec 5.5)
+
+`smalltalk` and `goodbye` are skipped when Character Voices is Off. Every character line plays only while the scan is
+suspended. `court.chatter` is a caption, never spoken.

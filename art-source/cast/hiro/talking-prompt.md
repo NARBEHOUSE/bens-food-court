@@ -1,0 +1,14 @@
+# Chef Hiro pose prompts
+
+Generated with the built-in image_gen tool.
+Reference: neutral.png (approved character model).
+
+## talking.png
+
+Use case: identity-preserve. Asset: full-body character pose for a 2D comedy diner game, portrait 1024 x 1536 PNG. Image 1 is the APPROVED neutral model of CHEF HIRO; copy exactly the same face, short grey hair, neat grey moustache, body shape and proportions, dark indigo chef jacket and trousers, white apron and tie, white socks and wooden sandals, long cooking chopsticks, colours, thick clean even black outline weight and shading style. Change ONLY pose and facial expression. Stern dignified Japanese master sushi chef about 65; respectful original design, dry deadpan adult comedy, never cute or babyish. TV-cartoon look: simple bold shapes, flat bright colours, ONE hard-edged cel-shadow per colour, same big head and hands as reference. ONE character standing full body, facing viewer turned very slightly toward viewer's right, centered filling about 88% of image height with clear margins all round and no cropping. Plain pure white background, no floor, no cast shadow, no border, no text, no extra objects. Strong pose silhouette.
+Pose TALKING: mid-sentence with mouth visibly open, eyebrows raised. Raise the free hand beside the face in a clear ordering gesture, separated from head for readable silhouette. Other hand holds the same pair of long cooking chopsticks. Preserve character design exactly.
+
+## waiting.png
+
+Use case: identity-preserve. Asset: full-body character pose for a 2D comedy diner game, portrait 1024 x 1536 PNG. Image 1 is the APPROVED neutral model of CHEF HIRO; copy exactly the same face, short grey hair, neat grey moustache, body shape and proportions, dark indigo chef jacket and trousers, white apron and tie, white socks and wooden sandals, long cooking chopsticks, colours, thick clean even black outline weight and shading style. Change ONLY pose and facial expression. Stern dignified Japanese master sushi chef about 65; respectful original design, dry deadpan adult comedy, never cute or babyish. TV-cartoon look: simple bold shapes, flat bright colours, ONE hard-edged cel-shadow per colour, same big head and hands as reference. ONE character standing full body, facing viewer turned very slightly toward viewer's right, centered filling about 88% of image height with clear margins all round and no cropping. Plain pure white background, no floor, no cast shadow, no border, no text, no extra objects. Strong pose silhouette.
+Pose WAITING: patiently waiting, weight clearly shifted onto one leg, other knee relaxed, eyes glancing upward and to the side with dry restrained patience. Arms folded loosely in front of torso, fingers of free hand drumming on the opposite forearm; retain same pair of long cooking chopsticks held in the other hand angled clear of torso. No watch or new accessories. Pose reads clearly from silhouette; preserve character design exactly.

@@ -1,0 +1,8 @@
+fix-reginald-delighted	art-source/cast/reginald/neutral.png
+fix-pam-delighted	art-source/cast/pam/neutral.png
+fix-mitch-burrito-worried	art-source/cast/mitch-burrito/neutral.png art-source/cast/mitch/worried.png
+fix-kai-neutral-talking	art-source/cast/kai/neutral.png art-source/cast/kai/talking.png art-source/cast/reginald/neutral.png
+fix-kai-waiting-happy	art-source/cast/kai/waiting.png art-source/cast/kai/happy.png art-source/cast/reginald/neutral.png
+fix-kai-delighted-annoyed	art-source/cast/kai/delighted.png art-source/cast/kai/annoyed.png art-source/cast/reginald/neutral.png
+fix-kai-angry-disgusted	art-source/cast/kai/angry.png art-source/cast/kai/disgusted.png art-source/cast/reginald/neutral.png
+fix-kai-shocked-laughing	art-source/cast/kai/shocked.png art-source/cast/kai/laughing.png art-source/cast/reginald/neutral.png

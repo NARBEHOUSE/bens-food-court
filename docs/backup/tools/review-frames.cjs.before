@@ -1,0 +1,260 @@
+'use strict';
+/* Ben's Burger Bar - review frames without a browser (dev-only; browsers are off-limits on this PC).
+ *
+ * Plays the real page in jsdom (as tests/dom-play.cjs does), stops at the moments worth looking at
+ * (an order being taken, the grill, the dial, the line with a gross-out, Timed cooking, the review,
+ * the reaction and receipt), and at each one saves:
+ *   <out>/<n>-<moment>.3d.png    the real three.js scene drawn on the CPU by NARBE Racer's
+ *                                tools/node_render.cjs (magenta where nothing is drawn)
+ *   <out>/<n>-<moment>.json      what the 2D stage shows: backdrop, poses, props, controls, ticket, bubble
+ * Then:  python tools/review_compose.py <out>   lays the 2D stage over each frame like the CSS does.
+ *
+ *   JSDOM=<dir>/node_modules/jsdom node tools/review-frames.cjs <out dir>
+ */
+const path = require('path'), fs = require('fs');
+const jsdom = require(process.env.JSDOM || 'jsdom');
+const { JSDOM, VirtualConsole } = jsdom;
+const GAME = path.join(__dirname, '..');
+const HUB = path.join(GAME, '..', '..', '..');
+const NR = require(path.join(HUB, 'apps', 'games', 'NARBEKART', 'tools', 'node_render.cjs'));
+const ORIGIN = 'http://hub.local/';
+const OUT = path.resolve(process.argv[2] || path.join(GAME, 'art-source', 'review', 'frames'));
+const W = 1280, H = 720;
+const pack = require(path.join(GAME, 'packs/diner/pack.js'));
+const L = require(path.join(GAME, 'js/core/line.js'));
+const WORDS = require(path.join(GAME, 'js/core/words.js'));
+// node tools/review-frames.cjs <out dir> [session names...]: only those sessions (tut, motion, timed, sal).
+const ONLY = process.argv.slice(3);
+fs.mkdirSync(OUT, { recursive: true });
+
+class HubFiles extends jsdom.ResourceLoader {
+  fetch(url, options) {
+    if (!url.startsWith(ORIGIN)) return super.fetch(url, options);
+    const file = path.join(HUB, decodeURIComponent(url.slice(ORIGIN.length).split('?')[0]));
+    const p = new Promise((resolve, reject) => fs.readFile(file, (err, buf) => (err ? reject(err) : resolve(buf))));
+    p.abort = () => {};
+    return p;
+  }
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function session(name, settings, plan) {
+  if (ONLY.length && !ONLY.includes(name)) return;
+  const renders = { last: null };
+  const vc = new VirtualConsole();
+  vc.on('error', (...a) => console.log('  console.error:', a.map(x => (x && x.stack) || String(x)).join(' ').slice(0, 400)));
+  const dom = new JSDOM(fs.readFileSync(path.join(GAME, 'index.html'), 'utf8'), {
+    url: ORIGIN + 'apps/games/BENSFOODCOURT/index.html', runScripts: 'dangerously', resources: new HubFiles(), pretendToBeVisual: true, virtualConsole: vc,
+    beforeParse(w) {
+      w.localStorage.setItem('bb-settings', JSON.stringify({ v: 2, kind: 'settings', pack: 'diner', packVersion: pack.version, data: Object.assign({ motion: 'reduced', shiftLength: 2 }, settings) }));
+      let current = null;
+      w.SpeechSynthesisUtterance = function (t) { this.text = t; };
+      // Speech lasts long enough to catch a character mid-line.
+      w.speechSynthesis = { speaking: false, pending: false, getVoices: () => [{ name: 'Fake', lang: 'en-US', default: true }],
+        speak(u) { current = u; setTimeout(() => u.onstart && u.onstart(), 2); setTimeout(() => { if (current === u) { current = null; u.onend && u.onend(); } }, 40 + String(u.text).length * 9); },
+        cancel() { const u = current; current = null; if (u && u.onerror) u.onerror({ error: 'interrupted' }); }, addEventListener() {}, removeEventListener() {} };
+      w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+      w.HTMLMediaElement.prototype.play = function () { setTimeout(() => this.onended && this.onended(), 60); return Promise.resolve(); };
+      w.HTMLMediaElement.prototype.pause = function () {};
+      w.HTMLCanvasElement.prototype.getContext = function () { return new Proxy({}, { get: () => () => ({ addColorStop() {} }) }); };
+      class FakeRenderer {
+        constructor() { this.domElement = w.document.createElement('canvas'); }
+        setPixelRatio() {} setSize() {} setClearColor() {}
+        render(scene, camera) { renders.last = { scene, camera }; }
+      }
+      let T;
+      Object.defineProperty(w, 'THREE', { configurable: true, get: () => T, set: v => {
+        T = v; if (v && typeof v === 'object') Object.defineProperty(v, 'WebGLRenderer', { configurable: true, get: () => FakeRenderer, set: () => {} });
+      } });
+    },
+  });
+  const w = dom.window;
+  for (let i = 0; i < 200 && !(w.BB && w.BB.ui && w.BB.ui.__dbg().card === 'title'); i++) await sleep(50);
+  const dbg = () => w.BB.ui.__dbg();
+  async function press(code) {
+    const ev = t => new w.KeyboardEvent(t, { code, key: code === 'Space' ? ' ' : 'Enter', bubbles: true, cancelable: true });
+    w.document.body.dispatchEvent(ev('keydown')); await sleep(30); w.document.body.dispatchEvent(ev('keyup')); await sleep(320);
+  }
+  async function choose(id) {
+    for (let k = 0; k < 40; k++) {
+      const d = dbg();
+      if (d.active && d.id === id) { await press('Enter'); return true; }
+      if (!d.items.includes(id)) { await sleep(40); continue; }
+      await press('Space');
+    }
+    return false;
+  }
+  const settle = async () => { for (let k = 0; k < 600 && (w.BB.game.busy || !dbg().active); k++) await sleep(20); };
+  let n = 0;
+  async function shot(moment, opts) {
+    await sleep((opts && opts.wait) || 120);
+    const r = renders.last;
+    const doc = w.document, $ = id => doc.getElementById(id);
+    const vis = id => $(id).classList.contains('on');
+    if (r) {
+      // The review renderer cannot run the outline shader: hide the outline shells, draw the rest. It also
+      // draws a whole shape even when only part is drawn (a sauce being squirted), so those get a cut copy.
+      const hidden = [], cut = [];
+      r.scene.traverse(o => {
+        if (o.isMesh && o.material && o.material.isShaderMaterial && o.visible) { o.visible = false; hidden.push(o); }
+        else if (o.isMesh && o.geometry.index && o.geometry.drawRange.count < o.geometry.index.count) {
+          const g = o.geometry.clone(), n = Math.max(0, o.geometry.drawRange.count);
+          g.setIndex(Array.from(o.geometry.index.array.slice(0, n)));
+          cut.push([o, o.geometry]);
+          o.geometry = g;
+        }
+      });
+      const img = NR.render(w.THREE, r.scene, r.camera, W, H, { ss: 2, sky: ['#ff00ff', '#ff00ff', '#ff00ff'] });
+      hidden.forEach(o => { o.visible = true; });
+      cut.forEach(([o, g]) => { o.geometry = g; });
+      NR.writePNG(path.join(OUT, String(++n).padStart(2, '0') + '-' + name + '-' + moment + '.3d.png'), img);
+    } else n += 1;
+    const state = {
+      scene: doc.body.dataset.scene,
+      backdrop: ($('backdrop').style.backgroundImage.match(/backdrops\/(\w+)\.webp/) || [])[1] || null,
+      customer: $('customer').classList.contains('on') ? ($('customer').getAttribute('src') || '') : null,
+      mitch: vis('mitch') ? ($('mitch').getAttribute('src') || '') : null,
+      props: { register: vis('register'), bell: vis('bell') },
+      controls: [...doc.querySelectorAll('#controls .ctl')].map(el => ({ id: el.dataset.id, kind: el.className.replace('ctl ', '').split(' ')[0],
+        cls: el.className, label: (el.querySelector('.lb') || el).textContent.trim(), lit: el.classList.contains('lit') })),
+      bare: $('controls').classList.contains('bare'),
+      // The ticket: the customer's name, then each item as its lines (name, patties, what goes on); '> ' marks
+      // the item being made, ' | ' splits an item's lines.
+      ticket: $('ticket').style.display === 'none' || !$('ticket').querySelector('.who') ? null
+        : [$('ticket').querySelector('.who').textContent].concat([...$('ticket').querySelectorAll('li')].map(li => (li.classList.contains('now') ? '> ' : '') +
+          [...li.children].map(c => c.textContent).join(' | '))),
+      ticketMany: $('ticket').classList.contains('many'),
+      bubble: vis('bubble') ? { kind: $('bubble').className.replace('on ', ''), name: $('bubble').querySelector('b').textContent, text: $('bubble').querySelector('span').textContent } : null,
+      receipt: vis('receipt') ? $('receipt').textContent : null,
+      gauge: $('gauge').classList.contains('on') ? [...$('gauge').querySelectorAll('span')].map(s => ({ t: s.textContent, now: s.classList.contains('now'), want: s.classList.contains('want') })) : null,
+      lit: dbg().id, hud: $('hud').textContent,
+      // The ticket wheel as stage.js places it, worked out for the review picture's size.
+      wheel: doc.body.dataset.scene !== 'counter' ? w.BB.stage.wheelGeometry(W, H, doc.body.dataset.text, w.BB.stage.wheelTheta) : null,
+    };
+    fs.writeFileSync(path.join(OUT, String(n).padStart(2, '0') + '-' + name + '-' + moment + '.json'), JSON.stringify(state, null, 1));
+    console.log('  ' + moment + ': ' + state.scene + (state.customer ? ' customer ' + path.basename(path.dirname(state.customer)) + '/' + path.basename(state.customer) : '') +
+      (state.mitch ? ' mitch ' + path.basename(state.mitch) : '') + ' controls ' + state.controls.map(c => c.label).join('|'));
+  }
+  await plan({ w, dbg, choose, settle, shot, sleep });
+  dom.window.close();
+}
+
+/** Answer the step the right way (swapping a bad ingredient). */
+function right(w, q) {
+  const s = w.BB.game.shift(), o = s.order, want = L.expected(pack, o.items[q.item], q.station, q.step);
+  if (q.kind === 'add') return q.gross ? 'swap' : q.have < want ? 'add' : 'skip';
+  if (q.kind === 'cook') return q.timed ? 'takeOff' : 'cook:' + want;
+  return q.options.flatMap(x => x.row || [x]).find(x => x.value === want).id;
+}
+
+(async () => {
+  // The tutorial: Mitch, an order being taken, the grill, the dial, the line with the green cheese, the review, the reaction.
+  await session('tut', {}, async ({ w, dbg, choose, settle, shot, sleep }) => {
+    await choose('tutorial');
+    for (let k = 0; k < 200 && !w.BB.stage.scene; k++) await sleep(20);
+    await sleep(150);
+    await shot('mitch-intro', { wait: 10 });
+    for (let k = 0; k < 400 && !(document => document.getElementById('bubble').classList.contains('customer'))(w.document); k++) await sleep(15);
+    await shot('order', { wait: 10 });
+    // The order goes up on the wheel in the kitchen, and Mitch explains it there.
+    for (let k = 0; k < 600 && !(w.document.getElementById('bubble').classList.contains('mitch') && w.BB.stage.scene !== 'counter'); k++) await sleep(15);
+    await shot('ticket-mitch', { wait: 10 });
+    const seen = new Set();
+    for (let guard = 0; guard < 80; guard++) {
+      await settle();
+      const s = w.BB.game.shift();
+      if (!s) break;
+      const screen = w.BB.game.screen;
+      if (screen === 'receipt') { await shot('receipt'); break; }
+      const q = w.BB.shift.question(w.BB.packs || pack, s);
+      const tag = screen === 'review' ? 'review' : q.kind === 'cook' ? 'dial' : q.gross ? 'gross' : q.station === 'grill' ? 'grill'
+        : q.ing === 'lettuce' ? 'line' : q.ing === 'ketchup' ? 'bottle' : null;
+      if (tag && !seen.has(tag)) { seen.add(tag); await shot(tag); }
+      if (screen === 'review') {
+        await choose('serve');
+        // Catch the customer's reaction while they speak.
+        for (let k = 0; k < 400 && !w.document.getElementById('bubble').classList.contains('customer'); k++) await sleep(15);
+        await shot('reaction', { wait: 10 });
+        continue;
+      }
+      await choose(right(w, q));
+    }
+  });
+  // Full motion: the wheel bringing a new ticket round, the wheel turned by Ticket, the bottle mid-squirt.
+  await session('motion', { motion: 'full', shiftLength: 1 }, async ({ w, choose, settle, shot, sleep }) => {
+    await choose('start');
+    if (w.BB.ui.__dbg().card === 'tutorialOffer') await choose('skip');
+    const mid = (lo, hi) => w.BB.stage.wheelTheta > lo && w.BB.stage.wheelTheta < hi;
+    for (let k = 0; k < 3000 && !mid(-1.9, -0.9); k++) await sleep(2);
+    await shot('wheel-in', { wait: 0 });
+    let turned = false, squirted = false;
+    for (let guard = 0; guard < 60 && !squirted; guard++) {
+      await settle();
+      const s = w.BB.game.shift(), q = s && w.BB.shift.question(pack, s);
+      if (!q || w.BB.game.screen !== 'line') { await sleep(50); continue; }
+      if (!turned) {
+        turned = true;
+        await choose('ticket');
+        for (let k = 0; k < 3000 && !mid(-4.2, -2.2); k++) await sleep(2);
+        await shot('wheel-turn', { wait: 0 });
+        await sleep(1600);
+        continue;
+      }
+      const id = right(w, q);
+      if (q.ing === 'ketchup') {               // added even when the order holds it: it is the squirt we want to see
+        // Catch the bottle part way along: the bead on the burger is part drawn.
+        const scene = () => w.BB.world.__scene().scene;
+        const growing = () => { let f = 0; scene().traverse(o => { if (o.userData && o.userData.sauce && o.userData.sauce.geo !== undefined) { const g = o.userData.sauce.geo; if (g.index && g.drawRange.count > 0 && g.drawRange.count < g.index.count) f = g.drawRange.count / g.index.count; } }); return f; };
+        await choose('add');
+        for (let k = 0; k < 3000 && !(growing() > 0.4); k++) await sleep(2);
+        await shot('squirt', { wait: 0 });
+        await settle();
+        await shot('squirted');
+        squirted = true;
+        continue;
+      }
+      await choose(id);
+    }
+  });
+  // Timed cooking: the gauge and the spatula.
+  await session('timed', { cooking: 'timed', speed: 'normal' }, async ({ w, choose, settle, shot, sleep }) => {
+    await choose('start');
+    if (w.BB.ui.__dbg().card === 'tutorialOffer') await choose('skip');
+    for (let guard = 0; guard < 60; guard++) {
+      await settle();
+      const s = w.BB.game.shift(), q = s && w.BB.shift.question(pack, s);
+      if (!q) { await sleep(50); continue; }
+      if (q.kind === 'cook' && q.timed) { await sleep(5600); await shot('timed'); break; }
+      await choose(right(w, q));
+    }
+  });
+  // Sal, the newest customer: ordering, his line about lettuce, his reaction. Each picture is taken as he starts a
+  // line (the bubble is up, the game is waiting on his voice). Anyone who comes in before him is served as asked.
+  await session('sal', { shiftLength: 8, orders: 'simple' }, async ({ w, choose, settle, shot, sleep }) => {
+    const say = w.BB.audio.say, took = new Set();
+    w.BB.audio.say = async o => {
+      const s = w.BB.game.shift();
+      // Once served, the order has moved from s.order to s.last.
+      if (o && o.who === 'sal' && s && (s.order || s.last)) {
+        const tag = o.clip && /\/dislike\./.test(o.clip) ? 'lettuce' : s.order && o.text === WORDS.said(pack, s.order.ticket) ? 'order'
+          : w.BB.game.screen !== 'arrive' ? 'reaction' : null;
+        if (tag && !took.has(tag)) { took.add(tag); await shot(tag, { wait: 0 }); }
+      }
+      return say(o);
+    };
+    await choose('start');
+    if (w.BB.ui.__dbg().card === 'tutorialOffer') await choose('skip');
+    for (let guard = 0; guard < 600; guard++) {
+      await settle();
+      const s = w.BB.game.shift(), screen = w.BB.game.screen;
+      if (!s) { await sleep(50); continue; }
+      if (screen === 'receipt') { if (took.has('reaction')) break; await choose('next'); continue; }
+      const q = w.BB.shift.question(pack, s);
+      if (!q) { await sleep(30); continue; }
+      if (screen === 'review') { await choose('serve'); continue; }
+      if (screen === 'line') await choose(right(w, q)); else await sleep(30);
+    }
+    if (took.size < 3) console.log('  sal: only caught ' + [...took].join(', '));
+  });
+  console.log('frames in ' + OUT);
+})();

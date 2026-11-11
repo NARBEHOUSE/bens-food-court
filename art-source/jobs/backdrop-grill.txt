@@ -1,0 +1,16 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Scene: the back wall of a diner kitchen right above a big flat-top grill, as seen by the cook standing at it. The camera
+looks slightly downward.
+Composition (percent of the image):
+- Top 65%: the wall: white subway tiles with a little grease, a big stainless-steel extractor hood across the top with a
+  greasy filter, a rail of hanging spatulas, tongs and a ladle, a shelf with salt and pepper shakers and a cracked
+  egg-timer, a small kitchen radio, an order bell.
+- Bottom 35%: the far back edge of the grill's dark steel cooking surface, plain and dark with a soft heat shimmer (the
+  game draws the cooking surface and the food on top of this part, so keep it simple and dark).
+Hidden funny details, small but findable: a sign reading "DAYS WITHOUT A GREASE FIRE: 0"; a smoke detector with a sock
+pulled over it; a fly swatter mounted on a wooden plaque like a trophy; a tiny framed photo of a patty in a graduation cap.
+No text anywhere except that one sign. No border.
+Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; no real logos.
+Save as art-source/backdrops/grill.png (1536 x 1024) and the prompt as art-source/backdrops/grill-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

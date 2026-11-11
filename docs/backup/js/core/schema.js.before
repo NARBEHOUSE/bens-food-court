@@ -1,0 +1,147 @@
+/** Ben's Burger Bar - checks a pack before anything uses it.
+ *
+ *  validate(pack) -> list of problems (empty when the pack checks out). Every id a pack
+ *  refers to must exist, every step must be one the line knows, every recipe part must be
+ *  something its stations can make, and no step may offer more answers than a screen can
+ *  hold. The Node tests run it on the diner and on the test pizzeria.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./line.js'));
+  else (root.BB = root.BB || {}).schema = factory(root.BB.line);
+})(typeof window === 'undefined' ? globalThis : window, function (L) {
+  'use strict';
+
+  const KINDS = ['add', 'cook', 'pick'];
+
+  function validate(pack) {
+    const errs = [];
+    const bad = (where, msg) => errs.push(where + ': ' + msg);
+    const ings = pack.ingredients || {}, stations = pack.stations || {}, recipes = pack.recipes || {};
+    const ingOk = (where, id) => { if (!ings[id]) { bad(where, 'unknown ingredient ' + id); return false; } return true; };
+
+    if (!pack.id || typeof pack.version !== 'number') bad('pack', 'needs an id and a numeric version');
+    for (const [id, set] of Object.entries(pack.stageSets || {})) {
+      if (!Array.isArray(set.stages) || set.stages.length < 2) bad('stageSets.' + id, 'needs at least two stages');
+      (set.stages || []).forEach(st => { if (!(pack.stageNames || {})[st]) bad('stageSets.' + id, 'no name for stage ' + st); });
+      if (!Array.isArray(set.choose) || !set.choose.length) bad('stageSets.' + id, 'needs the stages Simple cooking offers (choose)');
+      else {
+        set.choose.forEach(st => { if (!set.stages.includes(st)) bad('stageSets.' + id, 'choose has unknown stage ' + st); });
+        if (set.choose.length > L.MAX_ANSWERS) bad('stageSets.' + id, 'offers more than ' + L.MAX_ANSWERS + ' doneness choices');
+      }
+    }
+    for (const [id, I] of Object.entries(ings)) {
+      const w = 'ingredients.' + id;
+      if (!I.name) bad(w, 'no name');
+      if (I.stages && !(pack.stageSets || {})[I.stages]) bad(w, 'unknown stage set ' + I.stages);
+      if (I.sizes && !(pack.sizeSets || {})[I.sizes]) bad(w, 'unknown size set ' + I.sizes);
+      if (I.each) ingOk(w + '.each', I.each);
+      if (!I.look || !I.look.shape) bad(w, 'no look (shape) for the 3D food');
+    }
+
+    // What each station can make, and that every step is one the line knows.
+    const makes = {};
+    for (const [sid, S] of Object.entries(stations)) {
+      const w = 'stations.' + sid, out = makes[sid] = new Set();
+      if (!S.name) bad(w, 'no name');
+      if (!Array.isArray(S.steps) || !S.steps.length) { bad(w, 'no steps'); continue; }
+      if (S.builds) {
+        ['on', 'base', 'cap'].forEach(k => { if (S.builds[k] && ingOk(w + '.builds.' + k, S.builds[k]) && k !== 'on') out.add(S.builds[k]); });
+      }
+      S.steps.forEach((step, n) => {
+        const ws = w + '.steps[' + n + ']';
+        if (!KINDS.includes(step.kind)) return bad(ws, 'unknown kind ' + step.kind);
+        if (step.kind === 'add') {
+          if (ingOk(ws, step.ing)) out.add(step.ing);
+          if (step.max !== undefined && !(step.max >= 1)) bad(ws, 'max must be 1 or more');
+          if (ings[step.ing] && ings[step.ing].stages && !S.steps.slice(n + 1).some(s => s.kind === 'cook' && s.ing === step.ing)) bad(ws, step.ing + ' cooks, so a cook step must follow it');
+        } else if (step.kind === 'cook') {
+          if (step.ing && ingOk(ws, step.ing) && !ings[step.ing].stages) bad(ws, step.ing + ' does not cook');
+          if (!step.ing && !S.steps.slice(0, n).some(s => s.kind === 'pick' && s.from)) {
+            // Cooks the item itself: fine when every recipe through here is a cookable item.
+            Object.values(recipes).filter(R => (R.stations || []).includes(sid)).forEach(R => { if (!ings[R.item.ing] || !ings[R.item.ing].stages) bad(ws, 'nothing to cook for ' + R.name); });
+          }
+        } else if (step.kind === 'pick') {
+          if (step.from) { step.from.forEach(x => { if (ingOk(ws, x)) out.add(x); }); if (step.from.length < 2) bad(ws, 'a pick needs at least two choices'); }
+          else if (!['size', 'flavour'].includes(step.of)) bad(ws, 'a pick needs from: [...] or of: size | flavour');
+          if (step.from) step.from.forEach(x => { if (S.steps.some(s => s.kind === 'cook' && !s.ing) && ings[x] && !ings[x].stages) bad(ws, x + ' is picked to cook but does not cook'); });
+        }
+      });
+    }
+
+    const picks = pack.picks || {};
+    const valuesOf = v => (v && typeof v === 'object' && v.pick ? (picks[v.pick] ? (picks[v.pick].fancy || picks[v.pick].values) : null) : [v]);
+    for (const [id, P] of Object.entries(picks)) if (!P.values || !P.values.includes(P.normal)) bad('picks.' + id, 'normal is not one of its values');
+    if (!Object.values(recipes).some(R => !R.unlock)) bad('recipes', 'no starter recipe');
+    for (const [rid, R] of Object.entries(recipes)) {
+      const w = 'recipes.' + rid;
+      if (!(R.price > 0)) bad(w, 'needs a price');
+      if (!R.name) bad(w, 'needs a name');
+      if (!Array.isArray(R.stations) || !R.stations.length) { bad(w, 'needs its stations'); continue; }
+      R.stations.forEach(s => { if (!stations[s]) bad(w, 'unknown station ' + s); });
+      const T = R.item;
+      if (!T) { bad(w, 'no item'); continue; }
+      const can = new Set();
+      R.stations.forEach(s => (makes[s] || []).forEach(x => can.add(x)));
+      const steps = R.stations.filter(s => stations[s]).flatMap(s => stations[s].steps);
+      const check = (where, v, test) => { const vals = valuesOf(v); if (!vals) return bad(where, 'unknown pick ' + v.pick); vals.forEach(x => test(x)); };
+      check(w + '.item.ing', T.ing, x => { if (!ingOk(w + '.item.ing', x)) return; if (!can.has(x) && !R.stations.some(s => stations[s] && stations[s].builds && stations[s].builds.on === x)) bad(w, x + ' is not made by its stations'); });
+      if (T.size) {
+        if (!steps.some(s => s.kind === 'pick' && s.of === 'size')) bad(w, 'has a size but no station picks one');
+        check(w + '.size', T.size, x => { const I = ings[T.ing]; if (!I || !I.sizes || !pack.sizeSets[I.sizes].some(z => z.id === x)) bad(w, 'unknown size ' + x); });
+      }
+      if (T.done) check(w + '.done', T.done, x => { const I = ings[T.ing]; if (!I || !I.stages || !pack.stageSets[I.stages].stages.includes(x)) bad(w, 'unknown stage ' + x); });
+      let flavours = 0;
+      (T.parts || []).forEach((p, i) => {
+        const wp = w + '.parts[' + i + ']';
+        if (p.ing && typeof p.ing === 'object') flavours += 1;
+        check(wp, p.ing, x => {
+          if (!ingOk(wp, x)) return;
+          if (!can.has(x) && !(typeof p.ing === 'object' && steps.some(s => s.kind === 'pick' && s.of === 'flavour'))) bad(wp, x + ' is not made by ' + R.stations.join(', '));
+          if (p.done) check(wp + '.done', p.done, d => { if (!ings[x].stages || !pack.stageSets[ings[x].stages].stages.includes(d)) bad(wp, x + ' has no stage ' + d); });
+        });
+        if (p.opt && p.opt !== 'in' && p.opt !== 'out') bad(wp, 'opt is in or out');
+      });
+      if (steps.some(s => s.kind === 'pick' && s.of === 'flavour') && flavours !== 1) bad(w, 'a flavour pick needs exactly one picked part');
+    }
+
+    const addIngs = new Set(Object.values(stations).flatMap(S => (S.steps || []).filter(s => s.kind === 'add').map(s => s.ing)));
+    (pack.gross || []).forEach((g, i) => {
+      const w = 'gross[' + i + ']';
+      if (!g.id || !g.say) bad(w, 'needs an id and the words that name it (say)');
+      (g.on || []).forEach(x => { if (ingOk(w, x) && !addIngs.has(x)) bad(w, x + ' is never offered on an Add step'); });
+      if (!(g.on || []).length) bad(w, 'happens to nothing (on)');
+    });
+
+    const ids = new Set();
+    const posesNeeded = Object.values((pack.poses || {}).customer || {});
+    if (!posesNeeded.length) bad('poses', 'no customer poses');
+    for (const C of pack.regulars || []) {
+      const w = 'regulars.' + C.id;
+      if (!C.id || !C.name) bad(w, 'needs an id and a name');
+      if (ids.has(C.id)) bad(w, 'id twice');
+      ids.add(C.id);
+      (C.likes || []).forEach(([r]) => { if (!recipes[r]) bad(w, 'likes unknown recipe ' + r); });
+      (C.always || []).forEach(r => { if (!recipes[r]) bad(w, 'always orders unknown recipe ' + r); });
+      (C.usual || []).forEach(u => { if (!recipes[u.recipe]) bad(w, 'usual is an unknown recipe ' + u.recipe); });
+      (C.dislikes || []).forEach(d => ingOk(w, d));
+      if (C.favourite && (!recipes[C.favourite.recipe] || !(C.favourite.bonus > 0))) bad(w, 'a favourite needs a recipe and a bonus above 0');
+    }
+    if (!(pack.regulars || []).some(C => C.art)) bad('regulars', 'nobody has pictures, so no one can come in');
+    if (!pack.manager || !pack.manager.id || !pack.manager.art) bad('manager', 'the assistant manager needs an id and pictures');
+
+    const T = pack.tutorial;
+    if (T) {
+      const C = (pack.regulars || []).find(c => c.id === T.customer);
+      if (!C || !C.art) bad('tutorial', 'its customer must exist and have pictures');
+      (T.items || []).forEach((it, i) => { if (!recipes[it.recipe]) bad('tutorial.items[' + i + ']', 'unknown recipe ' + it.recipe); });
+      if (T.gross) {
+        const it = (T.items || [])[T.gross.item], E = (pack.gross || []).find(g => g.id === T.gross.event);
+        if (!it || !E || !E.on.includes(T.gross.ing)) bad('tutorial.gross', 'must be an event that can happen to an ingredient of its item');
+        else if (!recipes[it.recipe].item.parts.some(p => p.ing === T.gross.ing) || (it.hold || []).includes(T.gross.ing)) bad('tutorial.gross', 'the ticket must want ' + T.gross.ing);
+      }
+    }
+    return errs;
+  }
+
+  return { validate, KINDS };
+});

@@ -1,0 +1,164 @@
+"""Ben's Burger Bar - turn the raw generated art into the game's images.
+
+Reads the raw art from the game's own art-source/ folder (DESIGN.md "Files") and writes
+  packs/diner/art/cast/<character>/<pose>.webp   cut out with BiRefNet, white fringe removed, every pose of a
+                                                 character on the same canvas (so a pose swap never jumps in size)
+  packs/diner/art/backdrops/<name>.webp          the station backdrops, sharp all over
+  packs/diner/art/manifest.js                    what exists, so the game never asks for a missing picture
+
+Run with the ComfyUI python that has torch + BiRefNet (the same one Wheelie Swingin' Dude's matte_park_cast.py uses):
+  "%USERPROFILE%/Documents/WSD-Art-Tools/ComfyUI/.venv/Scripts/python.exe" tools/build_art.py [characters...]
+With no names it builds everything; existing outputs newer than their source are skipped.
+"""
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+import numpy as np
+from PIL import Image, ImageFilter
+
+GAME = Path(__file__).resolve().parent.parent
+SRC = GAME / 'art-source'
+OUT = GAME / 'packs' / 'diner' / 'art'
+MODEL = Path.home() / 'Documents' / 'WSD-Art-Tools' / 'ComfyUI' / 'models' / 'RMBG' / 'BiRefNet'
+CAST_SIZE = (768, 1152)          # every pose canvas, from 1024 x 1536 (a figure about half the screen high stays sharp)
+BACKDROP_SIZE = (1536, 1024)
+# A soft feathered blur over a box of a backdrop (fractions: left, top, right, bottom). None now: the counter's waiting
+# queue used to be blurred, and the user said the one out-of-focus patch was not needed (2026-11-07); it stays sharp.
+BLUR = {}
+
+
+def load_model():
+    import torch
+    for name, file in (('BiRefNet_config', 'BiRefNet_config.py'), ('birefnet', 'birefnet.py')):
+        spec = importlib.util.spec_from_file_location(name, MODEL / file)
+        module = importlib.util.module_from_spec(spec); sys.modules[name] = module; spec.loader.exec_module(module)
+    from safetensors.torch import load_file
+    model = sys.modules['birefnet'].BiRefNet(sys.modules['BiRefNet_config'].BiRefNetConfig())
+    model.load_state_dict(load_file(str(MODEL / 'BiRefNet-general.safetensors')))
+    return model.eval().half().cuda()
+
+
+def matte(model, image):
+    """Alpha for a figure on white: pad to a square, run at 1024, crop back; white the model is unsure of is paper."""
+    import torch
+    from torchvision import transforms
+    prep = transforms.Compose([transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+    w, h = image.size; side = max(w, h)
+    square = Image.new('RGB', (side, side), 'white'); square.paste(image, ((side - w) // 2, (side - h) // 2))
+    with torch.no_grad():
+        pred = model(prep(square.resize((1024, 1024), Image.BICUBIC)).unsqueeze(0).cuda().half())[-1].float().sigmoid()
+    mask = Image.fromarray((pred[0, 0].cpu().numpy() * 255).astype('uint8')).resize((side, side), Image.BICUBIC)
+    mask = np.asarray(mask.crop(((side - w) // 2, (side - h) // 2, (side - w) // 2 + w, (side - h) // 2 + h))).astype(np.float32)
+    rgb = np.asarray(image).astype(np.int16)
+    paper = (rgb.min(axis=2) >= 244) & (rgb.max(axis=2) - rgb.min(axis=2) <= 8) & (mask < 230)
+    mask[paper] = 0
+    return mask
+
+
+def defringe(rgb, alpha):
+    """Edge pixels were blended with white paper: take the white back out so no light halo shows on dark scenes."""
+    a = (alpha / 255.0)[..., None]
+    out = rgb.astype(np.float32)
+    soft = (a > 0.02) & (a < 0.98)
+    fixed = (out - (1 - a) * 255.0) / np.maximum(a, 0.02)
+    out = np.where(soft, np.clip(fixed, 0, 255), out)
+    return out.astype(np.uint8)
+
+
+def newer(src, dst):
+    return not dst.exists() or src.stat().st_mtime > dst.stat().st_mtime
+
+
+def build_cast(names):
+    model = None
+    made = {}
+    for folder in sorted((SRC / 'cast').iterdir()):
+        if not folder.is_dir() or (names and folder.name not in names):
+            continue
+        poses = sorted(p for p in folder.glob('*.png'))
+        out_dir = OUT / 'cast' / folder.name
+        out_dir.mkdir(parents=True, exist_ok=True)
+        for src in poses:
+            dst = out_dir / (src.stem + '.webp')
+            if newer(src, dst):
+                model = model or load_model()
+                image = Image.open(src).convert('RGB')
+                alpha = matte(model, image)
+                rgb = defringe(np.asarray(image), alpha)
+                rgba = Image.fromarray(np.dstack([rgb, alpha.clip(0, 255).astype(np.uint8)]), 'RGBA')
+                rgba = rgba.resize(CAST_SIZE, Image.LANCZOS)
+                rgba.save(dst, 'WEBP', quality=88, method=6)
+                print('cut', folder.name, src.stem, dst.stat().st_size // 1024, 'KB')
+        made[folder.name] = sorted(p.stem for p in out_dir.glob('*.webp'))
+    return made
+
+
+def build_props(model_box):
+    """The real objects the choices live on (register, ticket wheel, bell...): cut out like the cast, 640 px square."""
+    made = []
+    out_dir = OUT / 'props'
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for src in sorted((SRC / 'props').glob('*.png')):
+        dst = out_dir / (src.stem + '.webp')
+        made.append(src.stem)
+        if not newer(src, dst):
+            continue
+        model_box[0] = model_box[0] or load_model()
+        image = Image.open(src).convert('RGB')
+        alpha = matte(model_box[0], image)
+        rgb = defringe(np.asarray(image), alpha)
+        rgba = Image.fromarray(np.dstack([rgb, alpha.clip(0, 255).astype(np.uint8)]), 'RGBA')
+        rgba = rgba.crop(rgba.getbbox() or (0, 0, rgba.width, rgba.height))
+        rgba.thumbnail((640, 640), Image.LANCZOS)
+        rgba.save(dst, 'WEBP', quality=90, method=6)
+        print('prop', src.stem, rgba.size, dst.stat().st_size // 1024, 'KB')
+    return made
+
+
+def build_backdrops():
+    made = []
+    out_dir = OUT / 'backdrops'
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for src in sorted((SRC / 'backdrops').glob('*.png')):
+        dst = out_dir / (src.stem + '.webp')
+        made.append(src.stem)
+        if not newer(src, dst):
+            continue
+        image = Image.open(src).convert('RGB').resize(BACKDROP_SIZE, Image.LANCZOS)
+        box = BLUR.get(src.stem)
+        if box:
+            w, h = image.size
+            blurred = image.filter(ImageFilter.GaussianBlur(2.6))
+            mask = Image.new('L', image.size, 0)
+            x0, y0, x1, y1 = int(box[0] * w), int(box[1] * h), int(box[2] * w), int(box[3] * h)
+            mask.paste(255, (x0, y0, x1, y1))
+            image = Image.composite(blurred, image, mask.filter(ImageFilter.GaussianBlur(28)))
+        image.save(dst, 'WEBP', quality=86, method=6)
+        print('backdrop', src.stem, dst.stat().st_size // 1024, 'KB')
+    return made
+
+
+def main():
+    names = set(sys.argv[1:])
+    cast = build_cast(names)
+    backdrops = build_backdrops()
+    props = build_props([None]) if not names else sorted(p.stem for p in (OUT / 'props').glob('*.webp'))
+    # Merge with what is already built (a run for one character keeps the others listed).
+    every = {d.name: sorted(p.stem for p in d.glob('*.webp')) for d in (OUT / 'cast').iterdir() if d.is_dir()}
+    every.update(cast)
+    manifest = {'cast': every, 'backdrops': sorted(set(backdrops) | {p.stem for p in (OUT / 'backdrops').glob('*.webp')}),
+                'props': sorted(set(props) | {p.stem for p in (OUT / 'props').glob('*.webp')}),
+                'castSize': list(CAST_SIZE), 'backdropSize': list(BACKDROP_SIZE)}
+    js = ('/** Built by tools/build_art.py: the pictures that exist (the game never asks for a missing one). */\n'
+          '(function (root, data) {\n'
+          "  if (typeof module === 'object' && module.exports) module.exports = data;\n"
+          '  else ((root.BBArt = root.BBArt || {}).diner = data);\n'
+          "})(typeof window === 'undefined' ? globalThis : window, " + json.dumps(manifest, indent=2) + ');\n')
+    (OUT / 'manifest.js').write_text(js, encoding='utf-8')
+    print('manifest:', {k: len(v) for k, v in every.items()}, 'backdrops:', manifest['backdrops'])
+
+
+if __name__ == '__main__':
+    main()

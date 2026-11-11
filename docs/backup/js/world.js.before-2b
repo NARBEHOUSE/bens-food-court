@@ -1,0 +1,690 @@
+/** Ben's Food Court - the 3D frame (docs/api/world.md).
+ *
+ *  The food is drawn in 3D on a transparent canvas over the station's 2D backdrop (DESIGN.md "Look and feel:
+ *  2.5D"). This file is the frame round it: the renderer; the sets (one per backdrop name) and their cameras, each
+ *  lens solved so the 3D work surface meets the line where the backdrop's painted surface starts; switching sets;
+ *  the ingredient waiting on the line and what happens to it (add, skip, swap, pick, auto); the cooking clock's
+ *  visuals; the counter; gross-out fx and everything that moves; Low graphics quality; Motion Reduced.
+ *
+ *  What the food looks like belongs to the restaurant's food module (js/food/<pack>.js), called through the
+ *  registry and kit in js/food/kit.js. Every animation is short, never needed to play, and resolves at once with
+ *  Motion Reduced. The scene is drawn only when something changed or moves. Without WebGL the game still plays:
+ *  every call does nothing.
+ */
+(function () {
+  'use strict';
+  const FOOD = window.BB && BB.food;
+  if (!FOOD || !window.THREE) {
+    // The food's kit did not load: the game still plays, with no food drawn.
+    const none = () => Promise.resolve();
+    console.warn("Ben's Food Court: js/food/kit.js is missing, so the food is not drawn");
+    BB.world = { init: none, usePack() {}, use() {}, goTo() {}, showStep: none, outcome: none, cookStage() {}, showCounter() {}, serveOut: none,
+      surfaceLine: () => null, counterLine: () => null, onScreen: null,
+      colourOf: () => 0x999999, marksOf: (ing, s) => Math.max(0, Math.min(s | 0, 4)), at: null, set: null, pack: null, graphics: null,
+      showGrill() {}, dropOnGrill: none, cookGrill: none, grillStage() {}, showBoard: none, lineOutcome: none, __scene: () => ({ scene: null, camera: null }) };
+    return;
+  }
+  const hubGraphics = window.NarbeGraphics ? NarbeGraphics.openGame('bensfoodcourt') : null;
+  const reduced = () => document.body.dataset.motion === 'reduced';
+  const low = () => !!(hubGraphics && hubGraphics.isLightweight());
+  const P = () => Promise.resolve();
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+  let renderer = null, scene = null, camera = null, wrap = null;
+  let last = 0, running = false, dirty = true, wasLow = false;
+  const tweens = [];
+  const spinners = [];                  // things that move every frame: flies, smoke, stink lines, bubbles, steam
+  let pack = null;                      // the restaurant on show
+  const sets = {};                      // backdrop name -> { name, def, g, food, fx, anchors, x }
+  let at = null, here = null;           // what goTo was given; the set on show
+  const views = {};                     // set name -> redraw what it shows (after a graphics change)
+  const cookState = {}, cookShowing = {}, lines = {};
+  let lastLine = null, lastStep = null;
+  const markDirty = () => { dirty = true; };
+
+  /* ── the kit, wired to this frame ───────────────────────────────────────── */
+  const k = FOOD.kit(THREE, {
+    pack: () => pack, reduced, low,
+    tween: (ms, fn) => tween(ms, fn),
+    wait: ms => wait(ms),
+    spin(o, kind, opts) {
+      spinners.push(Object.assign({ phase: 0 }, opts, { o, kind, base: o.position.clone(), until: opts && opts.until ? performance.now() + opts.until : 0 }));
+      dirty = true;
+    },
+    dirty: markDirty,
+  });
+
+  /* ── sets: one per backdrop name, built from the food module ────────────── */
+  /** The backdrop names a pack needs: its counter and every station's. */
+  function setNamesOf(p) {
+    const out = ['counter'];
+    Object.keys(p.stations || {}).forEach(sid => { const b = p.stations[sid].backdrop || sid; if (!out.includes(b)) out.push(b); });
+    return out;
+  }
+  /** A station id or a backdrop name -> the set's name (null: no 3D, as on the court). */
+  function setNameFor(name) {
+    if (!name) return null;
+    const st = pack && pack.stations && pack.stations[name];
+    return st ? (st.backdrop || name) : name;
+  }
+  function buildSets() {
+    Object.keys(sets).forEach(name => { clear(sets[name].g); scene.remove(sets[name].g); delete sets[name]; });
+    [views, cookState, cookShowing, lines].forEach(o => Object.keys(o).forEach(key => delete o[key]));
+    lastLine = null; lastStep = null;
+    if (!pack) return;
+    const used = new Set();
+    let next = 48;
+    setNamesOf(pack).forEach(name => {
+      const def = k.find('sets', name);
+      if (!def) { k.warn('set:' + (pack.id || '') + ':' + name, (pack.id || 'this pack') + ' has no 3D set "' + name + '": nothing is drawn there'); return; }
+      let x = typeof def.x === 'number' && !used.has(def.x) ? def.x : null;
+      while (x === null || used.has(x)) { x = next; next += 12; }
+      used.add(x);
+      const g = new THREE.Group();
+      g.name = 'set:' + name;
+      g.position.x = x;
+      const anchors = def.build(g, k) || {};
+      const food = new THREE.Group(), fx = new THREE.Group();
+      food.name = 'food'; fx.name = 'fx';
+      g.add(food, fx);
+      g.visible = false;
+      scene.add(g);
+      sets[name] = { name, def, g, food, fx, anchors, x };
+    });
+  }
+  /** The restaurant whose food is drawn. Its sets are built at once (and the old ones freed). */
+  function usePack(p) {
+    if (!p || p === pack) return;
+    pack = p;
+    k.reset();
+    if (scene) { buildSets(); goTo(at); }
+  }
+
+  /* ── what each set shows ────────────────────────────────────────────────── */
+  // Every step rebuilds its food, so the old shapes are freed (not the kit's shared ones), or a long shift slowly
+  // fills the graphics card's memory.
+  function clear(g) {
+    while (g.children.length) {
+      const c = g.children[0];
+      g.remove(c);
+      c.traverse(o => {
+        o.userData.gone = true;
+        if (o.isInstancedMesh) o.dispose();
+        if ((o.isMesh || o.isPoints || o.isLine) && !o.isSprite && o.geometry && !k.isKept(o.geometry)) o.geometry.dispose();
+        (Array.isArray(o.material) ? o.material : o.material ? [o.material] : []).forEach(m => { if (k.isOwned(m)) m.dispose(); });
+      });
+    }
+    dirty = true;
+  }
+  const hasStages = ing => !!(ing && pack && pack.ingredients && pack.ingredients[ing] && pack.ingredients[ing].stages);
+  /** A stage name (with its ingredient, and its cook step's stage set when known) -> its index. */
+  const stageOf = (e, set) => (e && typeof e === 'object' ? k.stageIndex({ ing: e.ing, done: e.stage, stages: e.set || set }) : (e | 0));
+  /** While a station builds a cap (the top bun), the cap waits off the stack until the station is done. */
+  function hideFor(q) {
+    const st = q && pack && pack.stations && pack.stations[q.station];
+    return st && st.builds && st.builds.cap ? ['top'] : [];
+  }
+
+  /* ── the cooking view: the food on the heat ── */
+  function cookFor(sname) {
+    const S = sets[sname];
+    if (!S || !S.def.cook) return null;
+    const h = k.find('cooks', S.def.cook);
+    if (!h) { k.warn('cook:' + S.def.cook, 'no cooking visuals "' + S.def.cook + '"'); return null; }
+    const st = cookState[sname] || (cookState[sname] = { ing: null, n: 0, stage: 0 });
+    const c = { k, set: sname, F: S.food, fx: S.fx, anchors: S.anchors, state: st,
+      redraw(s) { if (s) Object.assign(st, s); clear(S.food); h.show(c, st); dirty = true; return c; } };
+    return { h, c, st };
+  }
+  function cookShow(sname, s) {
+    const C = cookFor(sname);
+    if (!C) return;
+    Object.keys(C.st).forEach(key => delete C.st[key]);
+    cookShowing[sname] = true;
+    C.c.redraw(Object.assign({ ing: null, n: 0, stage: 0, cooking: false }, s));
+    views[sname] = () => C.c.redraw();
+  }
+  function cookAdd(sname, s) {
+    const C = cookFor(sname);
+    if (!C) return P();
+    cookShowing[sname] = true;
+    views[sname] = () => C.c.redraw();
+    if (C.h.add) return Promise.resolve(C.h.add(C.c, s));
+    C.c.redraw(Object.assign({ stage: 0 }, s));
+    return P();
+  }
+  function cookRun(sname, s) {
+    const C = cookFor(sname);
+    if (!C) return P();
+    if (C.h.run) return Promise.resolve(C.h.run(C.c, s));
+    C.c.redraw({ stage: s.stage });
+    return P();
+  }
+  const cookSetNow = () => (here && cookShowing[here] ? here : sets.grill ? 'grill' : Object.keys(sets).find(n => sets[n].def.cook));
+  /** The Timed cooking clock: the food on the heat shows a stage (an index, or the clock's { ing, stage } event). */
+  function cookStage(arg) {
+    if (!scene) return;
+    const C = cookFor(cookSetNow());
+    if (!C) return;
+    const stage = stageOf(arg, C.st.set);
+    if (C.h.stage) C.h.stage(C.c, Object.assign({}, C.st, { stage }));
+    else C.c.redraw({ stage });
+  }
+
+  /* ── the line view: the item so far, and what waits on the line ── */
+  function lineHandler(part) {
+    const L = k.lookFor(part);
+    const name = L.apply || k.find('applies', L.shape);
+    return name ? k.find('lines', name) : null;
+  }
+  /** The set's own options for an item (a smaller plate on the board, smaller food on the counter's plates). */
+  const itemOpts = (S, where) => (where === 'counter' ? { contentScale: S.anchors.contentScale, vesselScale: S.anchors.vesselScale } : { vesselScale: S.anchors.vesselScale });
+  /** Draw a line set: the item (made(), by its layout) at the set's `stack` anchor and the waiting part at its
+   *  `incoming` anchor, sliding in. o: { still (no slide), item (options for the layout: hide, level, vessel) }. */
+  function showLine(sname, made, incoming, o) {
+    const S = sets[sname];
+    if (!S) return P();
+    o = o || {};
+    clear(S.food);
+    lastLine = sname;
+    cookShowing[sname] = false;
+    const L = lines[sname] = { made: made || null, part: incoming || null, item: null };
+    if (made) {
+      const b = k.item(made, Object.assign({ where: 'line', set: sname }, itemOpts(S, 'line'), o.item));
+      // A giant item is drawn bigger, but a line set may cap it (anchors.giantMax), so the line stays clear.
+      if (S.anchors.giantMax && b.giant > S.anchors.giantMax) { b.g.scale.multiplyScalar(S.anchors.giantMax / b.giant); b.h *= S.anchors.giantMax / b.giant; }
+      b.g.position.copy(S.anchors.stack || V(0, 0, 0));
+      b.g.name = 'item';
+      S.food.add(b.g);
+      L.item = b;
+    }
+    let p = P();
+    if (incoming) {
+      const h = lineHandler(incoming);
+      const f = h && h.incoming ? h.incoming(incoming, ctxFor(sname)) : k.food(incoming);
+      f.g.position.copy(S.anchors.incoming || V(1, 0, 0));
+      if (f.rest !== undefined) f.g.position.y = (S.anchors.surface || 0) + f.rest;
+      f.g.name = 'incoming';
+      if (!f.g.userData.part) f.g.userData.part = incoming;
+      S.food.add(f.g);
+      if (!reduced() && !o.still) {
+        const to = f.g.position.clone(), from = to.clone().add(V(1.4, 0.4, 0));
+        f.g.position.copy(from);
+        p = tween(320, t => f.g.position.lerpVectors(from, to, ease(t)));
+      }
+    }
+    views[sname] = () => showLine(sname, made, incoming, Object.assign({}, o, { still: true }));
+    dirty = true;
+    return p;
+  }
+  /** What a line hook gets: the set, its food group and anchors, the item and the waiting part, and helpers. */
+  function ctxFor(sname, extra) {
+    const S = sets[sname], L = lines[sname] || {}, F = S.food;
+    const c = {
+      k, set: sname, F, fx: S.fx, anchors: S.anchors, made: L.made, item: L.item, part: L.part,
+      inc: F.getObjectByName('incoming'), stack: F.getObjectByName('stack'),
+      /** A point of obj (its own frame) in F's frame. */
+      toF(obj, v) { F.updateMatrixWorld(true); return F.worldToLocal(obj.localToWorld(v.clone())); },
+      /** The top of the item, in F's frame (where an ingredient lands). */
+      top() {
+        F.updateMatrixWorld(true);
+        const st = F.getObjectByName('stack');
+        if (st) return F.worldToLocal(st.localToWorld(V(0, st.userData.h || 0, 0)));
+        const it = F.getObjectByName('item');
+        if (it) return F.worldToLocal(it.localToWorld(V(0, (lines[sname] && lines[sname].item && lines[sname].item.h / (it.scale.y || 1)) || 0, 0)));
+        return (S.anchors.stack || V(0, 0, 0)).clone();
+      },
+      /** Draw the item again as `made` (no waiting part) and return its build. */
+      showItem(m, layout) {
+        showLine(sname, m, null, { still: true, item: Object.assign({ hide: hideFor(lastStep && lastStep.q) }, layout) });
+        return lines[sname].item;
+      },
+      /** g falls dy into place over ms. */
+      drop(g, dy, ms) {
+        if (!g || reduced()) return P();
+        const y = g.position.y;
+        return tween(ms || 260, t => { g.position.y = y + (1 - ease(t)) * dy; });
+      },
+      pop: g => popOf(g),
+    };
+    return Object.assign(c, extra);
+  }
+  function popOf(g) {
+    if (!g || reduced()) return P();
+    const s0 = g.scale.clone();
+    return tween(300, t => { const b = 1 + Math.sin(t * Math.PI) * 0.08; g.scale.set(s0.x * b, s0.y * (2 - b), s0.z * b); });
+  }
+
+  /** The waiting part goes on, slides on down the line (skip), or is tossed for a fresh one (swap). Its look's
+   *  line handler (look.apply, or the module's `applies` by shape) can do it its own way: a sauce is squirted.
+   *  opts.onApply (old name onSquirt) is called as it goes on: the game plays its sound then. */
+  function lineOutcome(kind, opts) {
+    if (!scene) return P();
+    const sname = lastLine && sets[lastLine] ? lastLine : sets.board ? 'board' : here;
+    const S = sname && sets[sname];
+    if (!S) return P();
+    const F = S.food, inc = F.getObjectByName('incoming');
+    const onApply = opts && (opts.onApply || opts.onSquirt);
+    if (!inc || reduced()) { if (inc && kind === 'add' && onApply) onApply(); return P(); }
+    const L = lines[sname] || {};
+    const h = L.part ? lineHandler(L.part) : null;
+    if (h && h[kind]) return Promise.resolve(h[kind](ctxFor(sname, { onApply })));
+    const from = inc.position.clone();
+    if (kind === 'add') {
+      const to = ctxFor(sname).top();
+      return tween(360, t => { inc.position.lerpVectors(from, to, ease(t)); inc.position.y += Math.sin(t * Math.PI) * 0.35; })
+        .then(() => { if (onApply) onApply(); });
+    }
+    if (kind === 'swap') return tween(360, t => { inc.position.set(from.x + t * 2.5, from.y + Math.sin(t * Math.PI) * 0.6, from.z - t); inc.rotation.z = t * 6; });
+    return tween(300, t => { inc.position.set(from.x + t * 2.2, from.y, from.z); });
+  }
+
+  /* ── the step API (docs/api/world.md): what game.js calls ───────────────── */
+  /** What a station shows for a step q (BB.shift.question), with made = BB.line.made(pack, order, q.item):
+   *  the food on the heat for a cook step, an Add of something that cooks, or a pick of what goes on the heat;
+   *  otherwise the item so far and, for an Add, the ingredient waiting on the line (sliding in). */
+  function showStep(q, made) {
+    if (!scene || !q || !q.station || q.kind === 'review') return P();
+    lastStep = { q, made: made || null };
+    const sname = setNameFor(q.station), S = sets[sname];
+    if (!S) return P();
+    const values = (q.options || []).flatMap(o => o.row || [o]).map(o => o.value).filter(Boolean);
+    const onHeat = S.def.cook && (q.kind === 'cook' || (q.kind === 'add' && hasStages(q.ing)) || (q.kind === 'pick' && values.some(hasStages)));
+    if (onHeat) {
+      cookShow(sname, {
+        ing: q.kind === 'pick' ? null : q.ing,
+        n: q.kind === 'add' ? (q.have || 0) : q.kind === 'cook' ? (q.count || 1) : 0,
+        stage: q.kind === 'cook' && q.timed ? stageOf({ ing: q.ing, stage: q.stage, set: q.set }) : 0,
+        set: q.set, cooking: !!(q.kind === 'cook' && q.timed), timed: !!q.timed, made: made || null,
+      });
+      return P();
+    }
+    // What waits on the line: an Add's ingredient; on a pick with a gross-out (spec 4.6), the bad value itself.
+    let incoming = null;
+    if (q.kind === 'add') incoming = { ing: q.ing, gross: q.gross ? q.gross.event : undefined };
+    else if (q.kind === 'pick' && q.gross && q.gross.value !== undefined) {
+      incoming = { ing: q.gross.value, slot: q.slot, pick: true, gross: q.gross.event };
+      const look = k.slotLook(q.slot, q.gross.value);
+      if (look) incoming.look = look;
+    }
+    return showLine(sname, made || null, incoming, { item: { hide: hideFor(q) } });
+  }
+  /** One playout event (from BB.shift.answer), with made = the item after it. Resolves when it has played.
+   *  opts: { onApply() - as the food goes on (play its sound then), ms - how long Simple cooking takes }. */
+  function outcome(e, made, opts) {
+    if (!scene || !e) return P();
+    opts = opts || {};
+    const onApply = opts.onApply || opts.onSquirt;
+    const done = () => { if (onApply) onApply(); };
+    const sname = here, S = sname && sets[sname];
+    if (!S) { done(); return P(); }
+    const onHeat = !!(cookShowing[sname] && S.def.cook);
+    const again = () => { if (made) showLine(sname, made, null, { still: true, item: { hide: hideFor(lastStep && lastStep.q) } }); };
+    switch (e.type) {
+      case 'added':
+        if (onHeat && hasStages(e.ing)) return cookAdd(sname, { ing: e.ing, n: e.n }).then(done);
+        if (!(lines[sname] && lines[sname].part)) { again(); done(); return P(); }
+        return lineOutcome('add', { onApply }).then(again);
+      case 'skipped': return lineOutcome('skip');
+      case 'swapped': return lineOutcome('swap');
+      case 'picked': {
+        if (onHeat && hasStages(e.value)) return cookAdd(sname, { ing: e.value, n: 1 }).then(done);
+        // The bad value that was waiting on the line was chosen: it goes on, like an Add.
+        const waiting = lines[sname] && lines[sname].part;
+        if (waiting && waiting.pick && waiting.ing === e.value) return lineOutcome('add', { onApply }).then(again);
+        if (S.def.pick) return Promise.resolve(S.def.pick(ctxFor(sname, { onApply }), e, made || (lines[sname] || {}).made));
+        again(); done();
+        return popOf(sets[sname].food.getObjectByName('item'));
+      }
+      case 'cooked':
+        if (onHeat) return cookRun(sname, { stage: stageOf(e, (cookState[sname] || {}).set), ms: opts.ms, ing: e.ing, n: e.count });
+        return P();
+      case 'phaseDone': return finish(e, made);
+      case 'auto': {
+        const fn = S.def.auto || k.find('autos', e.show || e.id);
+        if (fn) return Promise.resolve(fn(ctxFor(sname, { onApply }), e, made));
+        again(); done();
+        return k.find('autos', 'pop')(ctxFor(sname, { onApply }), e, made);
+      }
+      default: return P();
+    }
+  }
+  /** A station's phase is done: its own finish, or the cap (the top bun) drops on. */
+  function finish(e, made) {
+    const sname = setNameFor(e.station), S = sname && sets[sname];
+    if (!S) return P();
+    if (S.def.finish) return Promise.resolve(S.def.finish(ctxFor(sname), e, made));
+    const st = pack.stations && pack.stations[e.station];
+    if (!(st && st.builds && st.builds.cap && made) || cookShowing[sname]) return P();
+    showLine(sname, made, null, { still: true });
+    const stack = S.food.getObjectByName('stack'), cap = stack && stack.children[stack.children.length - 1];
+    if (!cap || reduced()) return P();
+    const y = cap.position.y;
+    return tween(240, t => { cap.position.y = y + (1 - ease(t)) * 0.35; });
+  }
+
+  /* ── the counter ────────────────────────────────────────────────────────── */
+  /** Keep an item on the counter top (spec 5.2): its far side on the counter (behind `back` is the customer's
+   *  side, off the counter), its near side short of `front` (the nearest the counter top is still on screen at
+   *  every window shape), inside the clear span minX..maxX. An item too deep or too wide for that (a giant) is
+   *  drawn smaller until it fits, standing where it stood. */
+  function onCounter(g, A) {
+    let box = k.boxOf(g), s = g.scale.x;
+    const fit = (lo, hi, a, b) => (lo !== undefined && hi !== undefined && hi > lo && (b - a) * s > hi - lo ? (hi - lo) / ((b - a) * s) : 1);
+    const shrink = Math.min(fit(A.back, A.front, box.min.z, box.max.z), fit(A.minX, A.maxX, box.min.x, box.max.x));
+    if (shrink < 1) { g.scale.multiplyScalar(shrink); s = g.scale.x; }
+    if (A.front !== undefined) { const over = g.position.z + box.max.z * s - A.front; if (over > 0) g.position.z -= over; }
+    if (A.back !== undefined) { const under = A.back - (g.position.z + box.min.z * s); if (under > 0) g.position.z += under; }
+    if (A.maxX !== undefined) { const over = g.position.x + box.max.x * s - A.maxX; if (over > 0) g.position.x -= over; }
+    if (A.minX !== undefined) { const under = A.minX - (g.position.x + box.min.x * s); if (under > 0) g.position.x += under; }
+  }
+  /** Side by side across the counter's clear span (anchors.minX to maxX), in ticket order, each as wide as it is
+   *  (a plate takes more room than a cup), all shrunk together only when they would not fit. */
+  function across(builds, A) {
+    const gap = 0.12, boxes = builds.map(b => k.boxOf(b.g)), sc = builds.map(b => b.g.scale.x);
+    const widths = boxes.map((x, i) => (x.max.x - x.min.x) * sc[i]);
+    const span = (A.maxX !== undefined ? A.maxX : 1) - (A.minX !== undefined ? A.minX : -1);
+    const total = widths.reduce((a, b) => a + b, 0) + gap * (builds.length - 1);
+    const s = Math.min(1, span / total);
+    const y = (A.spots && A.spots[0] ? A.spots[0].y : 0), z = A.row !== undefined ? A.row : 0.6;
+    let x = ((A.minX !== undefined ? A.minX : -1) + (A.maxX !== undefined ? A.maxX : 1)) / 2 - total * s / 2;
+    return boxes.map((bx, i) => {
+      const w = widths[i] * s, p = V(x + w / 2 - (bx.min.x + bx.max.x) / 2 * sc[i] * s, y, z);
+      x += w + gap * s;
+      return { p, s };
+    });
+  }
+  /** A set's camera as goTo() places it, with its lens solved for a window of this shape. */
+  function cameraFor(S, aspect) {
+    const d = S.def, c = new THREE.PerspectiveCamera(d.cam.fov, aspect, 0.1, 60);
+    c.position.set(S.x + d.cam.pos[0], d.cam.pos[1], d.cam.pos[2]);
+    c.lookAt(S.x + d.cam.at[0], d.cam.at[1], d.cam.at[2]);
+    c.updateMatrixWorld(); c.updateProjectionMatrix();
+    if (typeof d.line === 'number' && d.surface) {
+      const dy = FOOD.lensShift(c, V(S.x + d.cam.at[0], d.surface.y, d.surface.back), FOOD.lineOnScreen(d.line, aspect, d.picture));
+      c.view = { enabled: true, fullWidth: 1, fullHeight: 1, offsetX: 0, offsetY: -dy, width: 1, height: 1 };
+      c.updateProjectionMatrix();
+    }
+    return c;
+  }
+  /** The nearest depth of a solved set's work surface still on this window (a wide window cuts off the bottom of
+   *  the picture, and the near part of the counter top with it): the order on the counter stays in front of it. */
+  function nearestShown(S) {
+    const d = S.def;
+    if (typeof d.line !== 'number' || !d.surface || !window.innerHeight) return Infinity;
+    const c = cameraFor(S, window.innerWidth / window.innerHeight), p = V(0, 0, 0);
+    const low = z => { p.set(S.x + d.cam.at[0], d.surface.y, z).project(c); return (1 - p.y) / 2 > 0.992; };
+    let a = d.surface.back, b = d.cam.pos[2] - 0.2;
+    if (low(a)) return a;
+    if (!low(b)) return b;
+    for (let i = 0; i < 24; i++) { const m = (a + b) / 2; if (low(m)) b = m; else a = m; }
+    return a;
+  }
+  /** The set-local x that a fraction of this window's width falls on, on the work surface at depth z. */
+  function shownX(S, fx, z) {
+    const c = cameraFor(S, window.innerWidth / window.innerHeight), y = S.def.surface ? S.def.surface.y : 0;
+    const a = V(S.x, y, z).project(c).x, b = V(S.x + 1, y, z).project(c).x;
+    return Math.abs(b - a) < 1e-9 ? 0 : (2 * fx - 1 - a) / (b - a);
+  }
+  /** The counter's anchors for this window: the order kept short of where the window cuts the counter top off
+   *  (front), and from `minScreenX` (a fraction of the window's width; a Pause sign is there) when it gives one. */
+  function counterAnchors(S) {
+    const A = S.anchors, near = nearestShown(S);
+    if (near === Infinity) return A;
+    const out = Object.assign({}, A, { front: Math.min(A.front === undefined ? Infinity : A.front, near) });
+    // (a window narrower than any the spec names still leaves the order some room)
+    if (typeof A.minScreenX === 'number') out.minX = Math.min(shownX(S, A.minScreenX, out.front), (A.maxX === undefined ? 1 : A.maxX) - 0.6);
+    return out;
+  }
+  /** The order on the counter in front of the customer: list = [made()], one per item. The food module may place
+   *  them (counter.arrange(n, list, anchors) -> [{ p, s }], or null for the default: side by side, see across()).
+   *  Every item stays on the counter top and on screen at this window's shape (onCounter); a new window shape
+   *  places them again. */
+  function showCounter(list) {
+    if (!scene) return;
+    const S = sets.counter;
+    if (!S) return;
+    clear(S.food);
+    const items = (list || []).filter(Boolean);
+    const builds = items.map(m => k.item(m, Object.assign({ where: 'counter', set: 'counter' }, itemOpts(S, 'counter'))));
+    const M = k.chain().find(m => m.counter && m.counter.arrange);
+    const A = counterAnchors(S);
+    const spots = (builds.length && M && M.counter.arrange(builds.length, items, A)) || (builds.length ? across(builds, A) : []);
+    builds.forEach((b, i) => {
+      const sp = spots[i] || spots[spots.length - 1];
+      b.g.position.copy(sp.p);
+      if (sp.s && sp.s !== 1) b.g.scale.multiplyScalar(sp.s);
+      onCounter(b.g, A);
+      S.food.add(b.g);
+    });
+    views.counter = () => showCounter(list);
+    dirty = true;
+  }
+  /** Serve: the order slides across to the customer, who takes it (the counter is clear again). It already sits
+   *  at the counter's back edge (spec 5.2), so sliding on would leave it in mid-air in front of them. */
+  function serveOut() {
+    if (!scene || !sets.counter) return P();
+    const F = sets.counter.food;
+    const taken = () => { clear(F); views.counter = () => showCounter([]); };
+    if (reduced() || !F.children.length) { taken(); return P(); }
+    const start = F.children.map(c => c.position.clone());
+    return tween(520, t => F.children.forEach((c, i) => { c.position.z = start[i].z - ease(t) * 0.9; c.position.x = start[i].x - ease(t) * 0.4; }))
+      .then(taken);
+  }
+
+  /* ── the Burger Bar's own calls, kept until the page switches game.js over (phase 2) ── */
+  const grillSet = () => (sets.grill ? 'grill' : Object.keys(sets).find(n => sets[n].def.cook));
+  /** The grill: n of an ingredient, cooked to a stage index (raw = 0). */
+  function showGrill(ing, n, stage) { if (scene) cookShow(grillSet(), { ing, n, stage: stage || 0 }); }
+  /** Drop one more onto the grill (Add): it falls into place. */
+  function dropOnGrill(ing, n) { return scene ? cookAdd(grillSet(), { ing, n }) : P(); }
+  /** The grill's food, cooked: a sizzle, a hop and a flip, then the doneness. */
+  function cookGrill(stage, ms) { return scene ? cookRun(grillSet(), { stage, ms }) : P(); }
+  /** Timed cooking: the food shows each stage as it reaches it. */
+  function grillStage(stage) {
+    if (!scene) return;
+    const C = cookFor(grillSet());
+    if (C) C.c.redraw({ stage });
+  }
+  /** The board: the stack so far (on its plate), and the ingredient waiting on the line (or none). */
+  function showBoard(parts, incoming) {
+    if (!scene) return P();
+    const sname = sets.board ? 'board' : here;
+    if (!sets[sname]) return P();
+    const sid = Object.keys(pack.stations || {}).find(id => (pack.stations[id].backdrop || id) === sname && pack.stations[id].builds);
+    const on = sid ? pack.stations[sid].builds.on : (pack.ingredients && pack.ingredients.plate ? 'plate' : null);
+    return showLine(sname, { parts: parts || [] }, incoming, { item: { vessel: on || null } });
+  }
+
+  /* ── camera: each set's lens solved so its surface meets the backdrop's line ── */
+  function goTo(name) {
+    at = name;
+    const sname = setNameFor(name);
+    here = sname && sets[sname] ? sname : null;
+    Object.keys(sets).forEach(n => { sets[n].g.visible = n === here; });
+    if (name && !here && pack && scene) k.warn('goto:' + name, 'no 3D set for "' + name + '"');
+    dirty = true;
+    // Without a renderer (WebGL would not start) the game still plays: the 3D food is just absent.
+    if (!camera || !here) return;
+    const S = sets[here], c = S.def.cam;
+    camera.position.set(S.x + c.pos[0], c.pos[1], c.pos[2]);
+    camera.fov = c.fov;
+    camera.lookAt(S.x + c.at[0], c.at[1], c.at[2]);
+    camera.updateMatrixWorld();
+    camera.updateProjectionMatrix();
+  }
+  /** Where a set's surface line falls on this window (spec 5.2; default the counter, line 0.80 in every
+   *  restaurant): { line (a fraction of the picture), y (a fraction of the window's height, from the top), px }.
+   *  The page places the served customer (hips at it), the speech bubble and the counter props from it, so they
+   *  meet the 3D counter's back edge at every window shape. null for a set with no solved line (a fixed camera). */
+  function surfaceLine(name) {
+    const def = pack ? k.find('sets', name || 'counter') : null;
+    if (!def || typeof def.line !== 'number') return null;
+    const h = window.innerHeight || 1, y = FOOD.lineOnScreen(def.line, (window.innerWidth || 1) / h, def.picture);
+    return { line: def.line, y, px: y * h };
+  }
+  /** Where a point of the backdrop picture (fractions of its width and height) falls on this window: the picture
+   *  is drawn with CSS `cover`, so a wider window cuts its top and bottom off, a narrower one its sides.
+   *  -> { x, y } as fractions of the window. picture: its width / height (default 1536 / 1024). */
+  function onScreen(fx, fy, picture) {
+    const a = (window.innerWidth || 1) / (window.innerHeight || 1), p = picture || FOOD.PICTURE;
+    return { x: a < p ? 0.5 + (fx - 0.5) * p / a : fx, y: FOOD.lineOnScreen(fy, a, p) };
+  }
+  /** A camera whose projection always solves the lens for the set on show and its own aspect (the backdrop is
+   *  drawn with `cover`, so the line moves with the window's shape). Anything that sets the aspect and calls
+   *  updateProjectionMatrix() - the resize, the Node review renderer - gets a solved lens. */
+  function solvedCamera() {
+    const cam = new THREE.PerspectiveCamera(40, 1, 0.1, 60);
+    const base = THREE.PerspectiveCamera.prototype.updateProjectionMatrix;
+    cam.updateProjectionMatrix = function () {
+      this.view = null;
+      base.call(this);
+      const S = here && sets[here], d = S && S.def;
+      if (!d || d.line === null || d.line === undefined || !d.surface) return;
+      this.updateMatrixWorld();
+      const dy = FOOD.lensShift(this, V(S.x + d.cam.at[0], d.surface.y, d.surface.back), FOOD.lineOnScreen(d.line, this.aspect, d.picture));
+      if (Math.abs(dy) < 1e-7) return;
+      this.view = { enabled: true, fullWidth: 1, fullHeight: 1, offsetX: 0, offsetY: -dy, width: 1, height: 1 };
+      base.call(this);
+    };
+    return cam;
+  }
+
+  /* ── tweens, motion and the frame loop ──────────────────────────────────── */
+  const ease = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+  function tween(ms, fn) {
+    dirty = true;
+    return new Promise(resolve => { tweens.push({ t0: performance.now(), ms: Math.max(1, ms), fn, resolve }); });
+  }
+  const wait = ms => new Promise(r => setTimeout(r, Math.max(0, ms)));
+  function alpha(o, a) {
+    if (o.userData.mat) { o.userData.mat.opacity = a; return; }
+    if (o.material) o.material.opacity = a;
+  }
+  // Every kind starts from where the builder put it (base), which is where it sits still with Motion Reduced.
+  const SPIN = {
+    /** Stink, smoke, steam: up and fading, round again every two seconds. */
+    rise(s) {
+      const t = (s.phase % 2) / 2;
+      s.o.position.set(s.base.x + Math.sin(s.phase * 3) * 0.03, s.base.y + t * (s.height || 0.35), s.base.z);
+      alpha(s.o, (s.alpha === undefined ? 1 : s.alpha) * (1 - t));
+    },
+    /** A fly circling a centre. */
+    orbit(s) {
+      const c = s.centre || [0, 0.2, 0], r = s.r || 0.22;
+      s.o.position.set(c[0] + Math.cos(s.phase * 2.2) * r, c[1] + Math.sin(s.phase * 5) * 0.04, c[2] + Math.sin(s.phase * 2.2) * r * 0.73);
+      s.o.rotation.y = -s.phase * 2.2;
+    },
+    /** A bubble: up a little and pop, round again. */
+    bubble(s) {
+      const t = (s.phase * (s.speed || 1.5)) % 1;
+      s.o.position.y = s.base.y + t * (s.height || 0.02);
+      s.o.scale.set(1 - t * 0.45, (1 - t * 0.45) * 0.6, 1 - t * 0.45);
+    },
+    bob(s) { s.o.position.y = s.base.y + Math.sin(s.phase * (s.speed || 2)) * (s.amp || 0.01); },
+    spinY(s) { s.o.rotation.y = (s.turn || 0) + s.phase * (s.speed || 3); },
+  };
+  /** On screen: every parent up to the scene visible. */
+  function shown(o) { for (let p = o; p; p = p.parent) { if (!p.visible) return false; if (p === scene) return true; } return false; }
+
+  function frame(now) {
+    if (!running) return;
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.1, last ? (now - last) / 1000 : 0);
+    last = now;
+    if (hubGraphics) hubGraphics.frame(now);
+    let moving = tweens.length > 0;
+    for (let i = tweens.length - 1; i >= 0; i--) {
+      const tw = tweens[i], t = Math.min(1, (now - tw.t0) / tw.ms);
+      tw.fn(t);
+      if (t >= 1) { tweens.splice(i, 1); tw.resolve(); }
+    }
+    const still = reduced();
+    for (let i = spinners.length - 1; i >= 0; i--) {
+      const s = spinners[i];
+      if (s.o.userData.gone || !s.o.parent || (s.until && now > s.until)) {
+        if (s.until && s.o.parent && !s.o.userData.gone) {
+          s.o.parent.remove(s.o);
+          s.o.traverse(o => { if (o.material && k.isOwned(o.material)) o.material.dispose(); });
+        }
+        spinners.splice(i, 1);
+        dirty = true;
+        continue;
+      }
+      if (still || !shown(s.o)) continue;
+      s.phase += dt;
+      if (SPIN[s.kind]) SPIN[s.kind](s);
+      moving = true;
+    }
+    // Drawn only when something changed or moves: a still kitchen costs nothing.
+    if (dirty || moving) { renderer.render(scene, camera); dirty = false; }
+  }
+
+  let placedFor = 0;                    // the window shape the counter's order was placed for
+  function resize() {
+    if (!renderer) return;
+    const w = window.innerWidth, h = window.innerHeight;
+    const ratio = hubGraphics ? hubGraphics.pixelRatio(Math.min(window.devicePixelRatio || 1, 2), w, h) : Math.min(window.devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(ratio);
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    // A new shape shows more or less of the counter top: the order on it is placed again so it stays on screen.
+    if (Math.abs(camera.aspect - placedFor) > 0.01) { placedFor = camera.aspect; if (views.counter) views.counter(); }
+    dirty = true;
+  }
+  /** Graphics Quality changed: the canvas size follows, and on a change to or from Low the food is rebuilt
+   *  (Low thins decoration; the food, its doneness marks and every cue stay). */
+  function onGraphics() {
+    resize();
+    const now = low();
+    if (now === wasLow) return;
+    wasLow = now;
+    if (here && views[here]) views[here]();
+  }
+
+  async function init() {
+    if (hubGraphics) await hubGraphics.ready;
+    wrap = document.getElementById('canvasWrap');
+    const opts = { antialias: true, alpha: true, powerPreference: 'high-performance' };
+    try { renderer = new THREE.WebGLRenderer(hubGraphics ? hubGraphics.rendererOptions(opts) : opts); }
+    catch (e) { renderer = null; console.warn("Ben's Food Court: WebGL would not start, so the food is not drawn", e); return; }
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.setClearColor(0x000000, 0);
+    wrap.appendChild(renderer.domElement);
+    scene = new THREE.Scene();
+    camera = solvedCamera();
+    scene.add(new THREE.HemisphereLight(0xfff4e6, 0x6b4c3a, 1.35));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(1.5, 5, 3.5); scene.add(sun);
+    // Until the page picks a restaurant (phase 2), the Burger Bar.
+    if (!pack && window.BBPacks && BBPacks.diner) pack = BBPacks.diner;
+    wasLow = low();
+    buildSets();
+    goTo('counter');
+    resize();
+    if (hubGraphics) hubGraphics.subscribe(onGraphics);
+    window.addEventListener('resize', resize);
+    running = true;
+    requestAnimationFrame(frame);
+  }
+
+  /** The colour of an ingredient at a stage index (the dial plates show it beside the word and the marks):
+   *  look.ramp, else the food module's ramp for its shape, else look.colour. */
+  function colourOf(ing, s) {
+    const L = k.lookOf(ing), r = L.ramp || k.find('ramps', L.shape);
+    return r ? k.ramp({ ramp: r, colour: L.colour, stages: k.stageList(ing) }, s) : (L.colour !== undefined ? L.colour : 0x999999);
+  }
+  /** How many doneness marks a stage index shows: look.marks, else one per stage up to four. */
+  const marksOf = (ing, s) => k.marks(k.lookOf(ing), s);
+
+  BB.world = {
+    init, usePack, use: usePack, goTo, showStep, outcome, cookStage, showCounter, serveOut, colourOf, marksOf,
+    surfaceLine, counterLine: () => surfaceLine('counter'), onScreen,
+    get at() { return at; }, get set() { return here; }, get pack() { return pack; },
+    /** The NarbeGraphics handle (the Graphics Quality row reads and cycles it), or null. */
+    graphics: hubGraphics,
+    showGrill, dropOnGrill, cookGrill, grillStage, showBoard, lineOutcome,
+    /** For the Node renderer and the jsdom checks: the scene and camera as they are, and the kit. */
+    __scene: () => ({ scene, camera }), __kit: k,
+  };
+})();

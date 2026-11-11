@@ -1,0 +1,369 @@
+"""Ben's Burger Bar - the cast's voices, made with Voice Studio (DESIGN.md "Voices and the script").
+
+Runs in Voice Studio's own Python, which has the voice model, the speech check, pyworld and ffmpeg:
+  C:/VoiceStudio/venv/Scripts/python.exe tools/voices.py design [characters...]
+      Designs each character's voice from tools/voices.json: several candidates each, every one checked by
+      speech-to-text and by pitch and pace. The best is saved into Voice Studio's library as
+      "Burger Bar: <Name>" (id bb-<character>), where it can be heard, kept or replaced; every candidate is kept
+      in voice-source/design/<character>/ with a report.
+  C:/VoiceStudio/venv/Scripts/python.exe tools/voices.py record <clips.json> [--speaker x] [--limit n]
+      clips.json from `node tools/voice-clips.cjs`. Records every clip not yet recorded with its current words:
+      takes cloned from the character's Voice Studio voice, the best take by the speech check (never rushed, near
+      the voice's own pitch, then the clearest by Voice Studio's clarity score),
+      silence trimmed and loudness levelled, saved as packs/diner/voice/<speaker>/<clip>.mp3. The manifest keeps
+      the hash of the words, so a line edited later falls back to text to speech until it is recorded again.
+      Nothing is recorded today (2026-11-10: every existing voice was removed; the old takes are in
+      archives/games/2026-11-10/BENSFOODCOURT-removed/packs/diner/voice and the designs and voice tests in
+      archives/games/2026-11-10/BENSFOODCOURT-removed/voice-source; design and record recreate the folders they write): with no manifest every clip is to record,
+      and the first `record` writes packs/diner/voice/manifest.{json,js}. index.html then needs its
+      <script src="packs/diner/voice/manifest.js"> line back (docs/api/pilot.md), and BBCourt.recordedVoices true.
+      A character's "respell" list in tools/voices.json changes the words the voice model is given (Marge's "hon"
+      becomes "hun", with no comma before it); captions and the hash keep the script's words.
+  C:/VoiceStudio/venv/Scripts/python.exe tools/voices.py use <character> <candidate>
+      Makes a voice picked in the voice test (round 2: voice-source/design2/<character>/<candidate>.wav, e.g.
+      "sweet-s3") the character's Voice Studio voice (the old one is kept beside it), and takes that character's
+      recorded lines out of the manifest, so they play as text to speech until `record` makes them in the new voice.
+"""
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+GAME = Path(__file__).resolve().parent.parent
+VS = Path('F:/PROJECT FILES/TOOLS/voice-studio-main')
+sys.path.insert(0, str(VS))
+import config  # noqa: E402  (reads voice-studio.config.json, sets the model caches)
+import checks  # noqa: E402  (Qwen3-ASR speech check, ffmpeg)
+
+CONFIG = config.CONFIG
+VOICES = Path(CONFIG['data']) / 'voices'
+DESIGN_DIR = GAME / 'voice-source' / 'design'
+TAKES_DIR = GAME / 'voice-source' / 'takes'
+OUT = GAME / 'packs' / 'diner' / 'voice'
+DESIGN_SEEDS = [1, 2, 3, 4, 5, 6]
+STEPS, CFG = 24, 2.0          # Voice Studio's defaults
+
+
+class Worker:
+    """Voice Studio's model worker (studio_worker.py): loads VoxCPM2 once, then renders one job per line."""
+
+    def __init__(self):
+        env = dict(os.environ)
+        env['VOXCPM_MODEL'] = CONFIG.get('voxcpm_model') or 'openbmb/VoxCPM2'
+        for key, var in (('hf_home', 'HF_HOME'), ('torch_home', 'TORCH_HOME')):
+            if CONFIG.get(key):
+                env[var] = CONFIG[key]
+        env['PYTHONIOENCODING'] = 'utf-8'
+        self.log = open(TAKES_DIR / 'worker.log', 'a', encoding='utf-8')
+        self.p = subprocess.Popen([CONFIG['worker_python'], str(VS / 'studio_worker.py')], cwd=str(VS), env=env,
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.log, text=True, encoding='utf-8')
+        t0 = time.time()
+        while True:
+            line = self.p.stdout.readline()
+            if not line:
+                raise RuntimeError('the voice worker stopped while loading; see ' + str(TAKES_DIR / 'worker.log'))
+            msg = json.loads(line)
+            if msg.get('ready'):
+                print(f"voice model ready on {msg.get('device')} in {time.time() - t0:.0f} s", flush=True)
+                return
+
+    def render(self, job):
+        self.p.stdin.write(json.dumps(job) + '\n')
+        self.p.stdin.flush()
+        while True:
+            line = self.p.stdout.readline()
+            if not line:
+                raise RuntimeError('the voice worker stopped')
+            msg = json.loads(line)
+            if msg.get('id') == job['id']:
+                return msg
+
+    def close(self):
+        try:
+            self.p.stdin.close()
+            self.p.wait(timeout=20)
+        except Exception:
+            self.p.kill()
+
+
+def measure(wav, text, work, pitch_too=True):
+    """Speech check, pitch and pace of a take: (said, diffs, median pitch Hz, seconds, words per second).
+    The pitch (pyworld's harvest, a few seconds a take) is only worked out for voice design."""
+    import numpy as np
+    import soundfile as sf
+    said, diffs, wav16 = checks.transcript_check(str(wav), text, str(work))
+    x, sr = sf.read(wav16)
+    x = x.astype(np.float64)
+    pitch = 0.0
+    if pitch_too:
+        import pyworld
+        f0, _ = pyworld.harvest(x, sr, f0_floor=55, f0_ceil=500, frame_period=10)
+        voiced = f0[f0 > 0]
+        pitch = float(np.median(voiced)) if len(voiced) else 0.0
+    # speech length without leading and trailing silence
+    loud = np.where(np.abs(x) > 0.02)[0]
+    seconds = (loud[-1] - loud[0]) / sr if len(loud) else len(x) / sr
+    n = len(checks.words(text))
+    return said, diffs, pitch, seconds, n / max(seconds, 0.1)
+
+
+_squim = None
+
+
+def clarity(wav16):
+    """Voice Studio's clarity score (torchaudio's SQUIM, as studio.py uses it): a PESQ estimate, about 1 = distorted ..
+    4.5 = clean. It hears hiss and distortion, not acting. In the first voice test (2026-11-08) the voices the user called
+    distorted (Marge, Coach Bev) averaged 2.1 and 2.0; Mitch, approved, 3.7. wav16: a 16 kHz mono wav."""
+    global _squim
+    import soundfile as sf
+    import torch
+    if _squim is None:
+        from torchaudio.pipelines import SQUIM_OBJECTIVE
+        _squim = SQUIM_OBJECTIVE.get_model().eval()
+    w, _ = sf.read(str(wav16), dtype='float32')
+    if w.ndim > 1:
+        w = w.mean(axis=1)
+    with torch.no_grad():
+        _, pesq, _ = [float(x) for x in _squim(torch.from_numpy(w[:16000 * 20].copy())[None])]
+    return round(pesq, 2)
+
+
+def design(names):
+    cast = json.loads((GAME / 'tools' / 'voices.json').read_text(encoding='utf-8'))
+    names = names or [k for k in cast if not k.startswith('_')]
+    DESIGN_DIR.mkdir(parents=True, exist_ok=True)
+    TAKES_DIR.mkdir(parents=True, exist_ok=True)
+    w = Worker()
+    try:
+        for name in names:
+            c = cast[name]
+            folder = DESIGN_DIR / name
+            folder.mkdir(parents=True, exist_ok=True)
+            work = folder / 'work'
+            work.mkdir(exist_ok=True)
+            rows = []
+            for seed in DESIGN_SEEDS:
+                wav = folder / f'cand-{seed}.wav'
+                if not wav.exists():
+                    ans = w.render({'id': f'{name}-{seed}', 'text': f"({c['describe']}){c['sample']}", 'out': str(wav),
+                                    'seed': seed, 'steps': STEPS, 'cfg': CFG, 'retry': True})
+                    if not ans.get('ok'):
+                        print('  failed', name, seed, ans.get('error'))
+                        continue
+                said, diffs, pitch, secs, rate = measure(wav, c['sample'], work)
+                lo, hi = c['pitch']; rlo, rhi = c['rate']
+                fits = int(lo <= pitch <= hi) + int(rlo <= rate <= rhi)
+                rows.append({'seed': seed, 'diffs': diffs, 'said': said, 'pitch': round(pitch), 'seconds': round(secs, 2),
+                             'rate': round(rate, 2), 'fits': fits})
+                print(f"  {name} seed {seed}: pitch {pitch:.0f} Hz, {rate:.2f} words/s, {len(diffs)} word differences", flush=True)
+            # The pick: heard right first, then pitch and pace as described, then nearest the middle of the pitch range.
+            mid = sum(c['pitch']) / 2
+            rows.sort(key=lambda r: (len(r['diffs']) > 0, -r['fits'], abs(r['pitch'] - mid)))
+            best = rows[0]
+            (folder / 'report.json').write_text(json.dumps({'describe': c['describe'], 'sample': c['sample'], 'picked': best['seed'],
+                                                            'candidates': rows}, indent=1), encoding='utf-8')
+            vid = 'bb-' + name
+            vdir = VOICES / vid
+            vdir.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(folder / f"cand-{best['seed']}.wav", vdir / 'ref.wav')
+            voice = {'id': vid, 'name': 'Burger Bar: ' + c['name'],
+                     'notes': f"Designed from: {c['describe']} (seed {best['seed']}). Ben's Burger Bar; candidates in {folder}.",
+                     'ref_text': c['sample'], 'style': '', 'created': time.strftime('%Y-%m-%d %H:%M:%S'),
+                     'source': 'designed', 'cleaned': False, 'settings': {}, 'facts': {'seconds': best['seconds']}}
+            (vdir / 'voice.json').write_text(json.dumps(voice, indent=1), encoding='utf-8')
+            print(f"{name}: picked seed {best['seed']} ({best['pitch']} Hz, {best['rate']} words/s) -> Voice Studio voice {vid}", flush=True)
+    finally:
+        w.close()
+
+
+def export(src, dst):
+    """Trim the silence at both ends, level the loudness, save a small mono mp3."""
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    trim = 'silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.06'
+    af = f'{trim},areverse,{trim},areverse,loudnorm=I=-17:TP=-1.5:LRA=11'
+    subprocess.run([checks.ffmpeg(), '-v', 'error', '-y', '-i', str(src), '-af', af, '-ac', '1', '-ar', '44100',
+                    '-b:a', '64k', str(dst)], check=True)
+
+
+def write_manifest(manifest):
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=1, sort_keys=True), encoding='utf-8')
+    js = ('/** Built by tools/voices.py: every recorded line, with the hash of the words it was recorded from. */\n'
+          '(function (root, data) {\n'
+          "  if (typeof module === 'object' && module.exports) module.exports = data;\n"
+          '  else ((root.BBVoice = root.BBVoice || {}).diner = data);\n'
+          "})(typeof window === 'undefined' ? globalThis : window, " + json.dumps(manifest, sort_keys=True) + ');\n')
+    (OUT / 'manifest.js').write_text(js, encoding='utf-8')
+
+
+_home = {}
+
+
+def voice_pitch(speaker):
+    """The median pitch (Hz) of a character's own voice clip, its Voice Studio ref.wav."""
+    if speaker not in _home:
+        import numpy as np
+        import pyworld
+        import soundfile as sf
+        x, sr = sf.read(str(VOICES / ('bb-' + speaker) / 'ref.wav'))
+        x = (x.mean(axis=1) if x.ndim > 1 else x).astype(np.float64)
+        f0, _ = pyworld.harvest(x, sr, f0_floor=55, f0_ceil=500, frame_period=10)
+        voiced = f0[f0 > 0]
+        _home[speaker] = float(np.median(voiced)) if len(voiced) else 0.0
+    return _home[speaker]
+
+
+def respell(speaker, text):
+    """The words the voice model is given: the script's, with the character's respellings (tools/voices.json).
+    "calm": exclamation marks become full stops and ALL-CAPS words lower case, for a voice the model would otherwise
+    shout up into a high, distorted pitch (Coach Bev, 2026-11-08); captions keep the script's words."""
+    me = json.loads((GAME / 'tools' / 'voices.json').read_text(encoding='utf-8')).get(speaker) or {}
+    for pattern, said in me.get('respell', []):
+        text = re.sub(pattern, said, text, flags=re.IGNORECASE)
+    if me.get('calm'):
+        text = re.sub(r'\b[A-Z]{2,}\b', lambda m: m.group(0).lower(), text.replace('!', '.'))
+    return text
+
+
+def use(name, cand):
+    """A voice picked in the voice test becomes the character's voice; their old recordings stop playing."""
+    spec = json.loads((GAME / 'tools' / 'voice-styles.json').read_text(encoding='utf-8'))[name]
+    wav = GAME / 'voice-source' / 'design2' / name / (cand + '.wav')
+    if not wav.exists():
+        sys.exit(f'No candidate {wav}. voice-source/ (both voice test rounds) was archived on 2026-11-10 to '
+                 f'archives/games/2026-11-10/BENSFOODCOURT-removed/voice-source: new voices are made from scratch (voices.py design).')
+    style = next(s for s in spec['styles'] if cand.startswith(s['id'] + '-s'))
+    vid = 'bb-' + name
+    vdir = VOICES / vid
+    if (vdir / 'ref.wav').exists():
+        old = vdir / ('previous-' + time.strftime('%Y%m%d-%H%M%S'))
+        old.mkdir(parents=True)
+        for f in ('ref.wav', 'voice.json'):
+            if (vdir / f).exists():
+                shutil.copy2(vdir / f, old / f)
+    vdir.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(wav, vdir / 'ref.wav')
+    voice = {'id': vid, 'name': 'Burger Bar: ' + spec['name'],
+             'notes': f"Designed from: {style['describe']} (seed {cand.split('-s')[-1]}). Ben's Burger Bar, picked in the voice "
+                      f"test round 2 ({time.strftime('%Y-%m-%d')}); candidates in {wav.parent}.",
+             'ref_text': spec['sample'], 'style': '', 'created': time.strftime('%Y-%m-%d %H:%M:%S'),
+             'source': 'designed', 'cleaned': False, 'settings': {}, 'facts': {}}
+    (vdir / 'voice.json').write_text(json.dumps(voice, indent=1), encoding='utf-8')
+    try:
+        manifest = json.loads((OUT / 'manifest.json').read_text(encoding='utf-8'))
+    except FileNotFoundError:
+        manifest = None   # nothing recorded yet (the old diner takes were moved out 2026-11-10): nothing to take out
+    gone = [k for k in (manifest or {}) if k.startswith(name + '/')]
+    for k in gone:
+        del manifest[k]
+    if manifest is not None:
+        write_manifest(manifest)
+    print(f'{name}: Voice Studio voice {vid} is now {cand}; {len(gone)} old recordings taken out of the manifest '
+          f'(they play as text to speech until recorded again)')
+
+
+def record(clips_file, speaker=None, limit=None):
+    clips = json.loads(Path(clips_file).read_text(encoding='utf-8'))
+    try:
+        manifest = json.loads((OUT / 'manifest.json').read_text(encoding='utf-8'))
+    except FileNotFoundError:
+        manifest = {}
+    todo = [c for c in clips if not (manifest.get(c['clip']) or {}).get('hash') == c['hash']]
+    if speaker:
+        todo = [c for c in todo if c['speaker'] in speaker.split(',')]
+    if limit:
+        todo = todo[:int(limit)]
+    missing = sorted({c['speaker'] for c in todo if not (VOICES / ('bb-' + c['speaker']) / 'ref.wav').exists()})
+    if missing:
+        sys.exit('No Voice Studio voice yet for: ' + ', '.join(missing) + ' (run: voices.py design ' + ' '.join(missing) + ')')
+    print(f'{len(todo)} clips to record', flush=True)
+    if not todo:
+        return
+    TAKES_DIR.mkdir(parents=True, exist_ok=True)
+    w = Worker()
+    done = 0
+    t0 = time.time()
+    try:
+        for c in todo:
+            ref = VOICES / ('bb-' + c['speaker']) / 'ref.wav'
+            safe = re.sub(r'[^\w.@-]', '_', c['clip'].split('/', 1)[1])
+            folder = TAKES_DIR / c['speaker']
+            work = folder / 'work'
+            work.mkdir(parents=True, exist_ok=True)
+            said_as = respell(c['speaker'], c['text'])
+            text = (f"({c['delivery']})" if c.get('delivery') else '') + said_as
+            takes = []
+            words = max(1, len(checks.words(c['text'])))
+            # The voice test (2026-11-08) starred Mitch's take nearest his own pitch (176 Hz) over the same settings at
+            # 232 Hz: a take far off the voice's own pitch sounds like someone else. A delivery note allows more.
+            home = voice_pitch(c['speaker'])
+            slack = 0.25 if c.get('delivery') else 0.15
+            # One take; more only while none is good enough: heard right (or one slip on a long line), not gabbled,
+            # near the voice's own pitch, and clear (Voice Studio's clarity score; the distorted voices scored ~2).
+            for seed in (1, 2, 3, 4):
+                wav = folder / f'{safe}-s{seed}.wav'
+                ans = w.render({'id': f"{c['clip']}-{seed}", 'text': text, 'out': str(wav), 'seed': seed,
+                                'steps': STEPS, 'cfg': CFG, 'reference': str(ref), 'retry': True})
+                if not ans.get('ok'):
+                    continue
+                said, diffs, pitch, secs, rate = measure(wav, said_as, work)
+                clear = clarity(work / wav.name)
+                drift = bool(home and pitch) and abs(pitch - home) > slack * home
+                takes.append({'wav': wav, 'diffs': diffs, 'said': said, 'rate': rate, 'seconds': secs, 'seed': seed,
+                              'pitch': round(pitch), 'clarity': clear, 'drift': drift})
+                if len(diffs) <= (1 if words > 8 else 0) and rate <= 4.6 and not drift and clear >= 3.0:
+                    break
+            if not takes:
+                print('  NO TAKE', c['clip'], flush=True)
+                continue
+            # Fewest differences; then not rushed (VoxCPM gabbles some short lines); then near the voice's pitch (the
+            # nearest, when every take drifted); then the clearest.
+            best = sorted(takes, key=lambda t: (len(t['diffs']), t['rate'] > 4.6, t['drift'],
+                                                abs(t['pitch'] - home) if t['drift'] else 0, -t['clarity']))[0]
+            rel = c['clip'] + '.mp3'
+            export(best['wav'], OUT / rel)
+            manifest[c['clip']] = {'file': rel, 'hash': c['hash'], 'seed': best['seed'], 'heard': best['said'],
+                                   'flag': bool(best['diffs']), 'pitch': best['pitch'], 'clarity': best['clarity']}
+            # The mp3 is the product; the takes are re-made by recording again, so they do not pile up in OneDrive.
+            for t in takes:
+                for p in (t['wav'], work / t['wav'].name, work / (t['wav'].name + '.asr.log')):
+                    try:
+                        p.unlink()
+                    except FileNotFoundError:
+                        pass
+            done += 1
+            if done % 10 == 0 or done == len(todo):
+                write_manifest(manifest)
+                rate = (time.time() - t0) / done
+                print(f'  {done}/{len(todo)} recorded ({rate:.1f} s each, about {(len(todo) - done) * rate / 60:.0f} min left)', flush=True)
+            if best['diffs']:
+                print(f"  check by ear: {c['clip']}: heard '{best['said']}' ({'; '.join(best['diffs'][:2])})", flush=True)
+    finally:
+        write_manifest(manifest)
+        w.close()
+
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] not in ('design', 'record', 'use'):
+        sys.exit(__doc__)
+    if sys.argv[1] == 'design':
+        design(sys.argv[2:])
+    elif sys.argv[1] == 'use':
+        if len(sys.argv) != 4:
+            sys.exit(__doc__)
+        use(sys.argv[2], sys.argv[3])
+    else:
+        args = sys.argv[2:]
+        opt = {}
+        for k in ('--speaker', '--limit'):
+            if k in args:
+                i = args.index(k); opt[k[2:]] = args[i + 1]; del args[i:i + 2]
+        record(args[0], opt.get('speaker'), opt.get('limit'))
+
+
+if __name__ == '__main__':
+    main()

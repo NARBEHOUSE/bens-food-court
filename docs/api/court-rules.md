@@ -1,0 +1,252 @@
+# Court rules: `BB.courtRules` and `BBCourt` (phase 1, lane court-rules)
+
+Settled 2026-11-08. Code to this page, not to the source. Spec: `docs/FOODCOURT-BUILD.md` 4.1, 6.2 and 7.
+
+| File | Global | What |
+|---|---|---|
+| `packs/court/court.js` | `BBCourt` | the court as data: restaurants, arms, unlocks, thresholds, crowd, layout |
+| `js/core/court.js` | `BB.courtRules` | pure rules (UMD; `require()` in Node). No DOM, storage, clock or randomness |
+
+Neither file depends on anything else. Load both before `js/court.js`; neither is in `index.html` yet (see Requests).
+
+**Every function takes `BBCourt` first.** Called with anything else first, it throws a `TypeError` naming BBCourt.
+The brief wrote `crowd(state, id)`. It is `crowd(court, state, id)`, so the crowd table is data like every other
+threshold. `js/core/court.js` names no restaurant, arm, tier or number: change the data, not the rules.
+
+## BBCourt
+
+```js
+BBCourt = {
+  version: 1,
+  recordedVoices: false,   // spec 6.6: every line is TTS until the voice pass flips this
+  arms: [{ id: 'left', name: 'Left' }, { id: 'top', name: 'Top' }, { id: 'right', name: 'Right' }],  // root scan order (an upside-down U, open at the bottom)
+  restaurants: [   // SCAN ORDER, round the U from the bottom left: burrito, smoothie, pizza, diner, cafe, sushi, icecream
+    { pack: 'smoothie', name: "Ben's Smoothie Shack", short: 'Smoothie Shack', said: 'the Smoothie Shack',
+      arm: 'left', slot: 1, start: false, unlock: 1 },
+    ...   // name = full name; short = scan name; said = how a sentence names it ("Ben's Sushi", "the Cafe")
+  ],
+  unlocks: [{ pack: 'smoothie', stars: 3 }, { pack: 'burrito', stars: 4 }, { pack: 'sushi', stars: 5 }, { pack: 'icecream', stars: 5 }],
+  rules: { good: 2.0, popularityMax: 10,
+           stars: [{ popularity: 0, stars: 1 }, { popularity: 1, stars: 2 }, { popularity: 3, stars: 3 }, { popularity: 5, stars: 4 }],
+           event: { popularity: 7, stars: 4, gives: 5 } },
+  crowd: [ { tier, queue, seated }, ... ],   // one row per popularity 0..10 (below)
+  floor: { visitorsFrom: 4 },                // who fills the crowd: floor() (below)
+  layout: { picture: { w: 1536, h: 1024 }, board: [x0, y0, x1, y1], stores: { <pack>: { sign, store, queue, seats } } },
+}
+```
+
+`slot` is 1 for the upper store on an arm and the left one along the top. The scan goes round the upside-down U from the bottom left: the left arm lower then upper (up the arm), the top left to right, the right arm upper then lower (down it)
+(icecream, sushi), so use the array order and never sort by slot. `unlocks[i]` opens its pack once every open
+restaurant has at least `stars` stars, strictly in array order.
+
+## The state (the data of the `bb-court` save, spec 7)
+
+```js
+{ restaurants: { <pack>: { popularity, stars, opened, grandOpeningSeen, gold, goldSeen, tutorialDone, shifts } },
+  celebrated, celebrationSeen }
+```
+
+Record: `{ v: 1, kind: 'court', data: state }` under key `bb-court` (`R.KEY`, `R.VERSION`, `R.record(state)`).
+
+**Earned and seen are separate flags.** `opened`, `gold` and `celebrated` are set when earned, inside `addShift`.
+`grandOpeningSeen`, `goldSeen` and `celebrationSeen` are set by `seen()` once the court has played that moment, so
+exiting from the results card never loses one. Start restaurants are created with `grandOpeningSeen: true`, so they
+never get a Grand Opening. `tutorialDone` is set by `setTutorialDone` (Play or Skip on the first-visit card) and by any
+finished shift or tutorial. `shifts` counts finished, counted shifts.
+
+Only `addShift`, `seen` and `setTutorialDone` change a state; everything else reads it. Hand-built or partial
+entries are cleaned before use (types, ranges, `stars >= starsFor(popularity)`, gold ⇔ 5 stars, start ⇒ open).
+
+## The rules (spec 4.1)
+
+- **Counted:** a finished shift at an open restaurant that has at least one order and `tutorial` false. Tutorials,
+  empty shifts, shut restaurants, unknown packs and a `results.pack` that differs from `packId` change nothing.
+  A tutorial result still sets `tutorialDone`.
+- **Good:** the average is at least 2.0, from `results.stars` (one 1-3 per order) when present, else
+  `orders` and `avgStars`. When both are given, `stars[]` decides.
+- **Popularity:** +1 per good shift, max 10. Never down.
+- **Stars:** `max(stars, starsFor(popularity))`: 1 at 0, 2 at 1, 3 at 3, 4 at 5. Never lowered; a normal shift never
+  gives the 5th.
+- **Event due:** open, not gold, 4 stars, popularity ≥ 7. An event result (`results.event` truthy) **while due**: good
+  gives 5 stars plus gold (`out.event: 'won'`, and popularity +1 like any good shift); failed changes nothing and the
+  event stays due (`'failed'`). An event result while not due is a normal shift (`out.event: null`). A normal shift
+  while due grows popularity and never changes stars.
+- **Unlocks:** checked after every counted shift, in order (at most one per shift with these thresholds).
+- **Celebration:** the shift that brings all seven to 5 stars sets `celebrated` and returns `celebrate: true`. That
+  happens once, ever.
+
+## API (`R = BB.courtRules`, `C = BBCourt`)
+
+| Call | Returns |
+|---|---|
+| `R.create(C)` | a new state: pizza, diner and cafe open at 1 star, the rest shut |
+| `R.migrate(C, raw, { progress }?)` | a sound state from a JSON string, a record, the bare state or nothing. Never throws. Another kind's record gives a new court. `progress: { <pack>: old bb-progress data }`: a pack whose old save has `tutorialOffered` or `tutorialDone` gets `tutorialDone` (today's `bb-progress:diner`) |
+| `R.normalize(C, data)` | a cleaned copy of the data: unknown restaurants kept, unlock order repaired, earned unlocks and the celebration applied |
+| `R.record(state)` / `R.canWrite(stored)` | the record to store / false when the stored record is from a newer game |
+| `R.addShift(C, state, packId, results)` | `{ good, starsUp, stars, popularity, opened: [ids], gold, celebrate, counted, event: 'won'\|'failed'\|null, eventDue, was: { stars, popularity } }`. `eventDue` is the state after the shift |
+| `R.level(C, state, id)` | the ladder level for `S.create`: its stars, 1-5 (1 for a pack the court does not know) |
+| `R.isOpen(C, state, id)`, `R.eventDue(C, state, id)` | booleans |
+| `R.starsFor(C, popularity)` | the stars popularity gives (never 5) |
+| `R.restaurant(C, id)` | the BBCourt entry, or null |
+| `R.openShops(C, state)` | open BBCourt entries, scan order |
+| `R.parts(C, state)` | `[{ arm, name, shops: [entries] }]`, only parts with an open shop |
+| `R.stops(C, state, { saved }?)` | the court root **without Pause** (below) |
+| `R.label(C, state, id, { saved }?)` | `"Pizza Parlor, three stars"`, plus `", shift in progress"` and `", five-star event next"` when true |
+| `R.storefront(C, state, id)` | `{ pack, open, stars, popularity, eventDue, busy, shutter, banner, goldSign, tutorialDone, crowd }` (below) |
+| `R.crowd(C, state, id)` | `{ tier, popularity, queue, seated, spots: { queue: [[x,y]], seats: [[x,y,fx,fy]] } }`: how many, and where |
+| `R.floor(C, state, pools, { only }?)` | `{ <pack>: { queue: [{ id, at }], seats: [{ id, at }] } }`: who stands and sits where (below) |
+| `R.news(C, state)` | pending moments, in play order: `[{ kind: 'goldSign'\|'grandOpening'\|'celebration', pack, name, words }]` |
+| `R.seen(C, state, item)` | marks one news item as played |
+| `R.setTutorialDone(C, state, id)` | Play the Tutorial or Skip It was chosen |
+| `R.nextGoal(C, state)` | the goal (below) |
+| `R.help(C, state, { saved }?)` | Help's court words: every open shop's label (+ ", fully busy"), then the goal sentence |
+| `R.shiftWords(C, packId, out)` | the results card's court sentences for an `addShift` result (`[]` when nothing changed) |
+| `R.check(C)` | everything wrong with the data, as sentences (`[]` today) |
+| `R.words.number(n)`, `R.words.stars(n)` | `"seven"`, `"one star"` / `"three stars"` |
+
+`{ saved }` says which packs have a saved shift (`bb-shift:<pack>`). Pass an object `{ pizza: true }`, an array of ids,
+or a function `id => bool`.
+
+### The scan: `stops()`
+
+- **Four or fewer open:** shop stops `{ kind: 'shop', id: 'shop:<pack>', pack, label }`.
+- **Five or more open:** part stops `{ kind: 'part', id: 'part:<arm>', arm, label: 'Left. Burritos, Smoothie Shack.',
+  stops: [shop stops] }`. A part with exactly one open shop comes back as that shop.
+- **Order:** U order at every depth. The root with Pause is at most 5 stops (4 shops, or 3 parts, plus Pause), and a
+  part with its Back stop at most 4.
+- **The page adds** Pause last at the root, and the adapter's spoken Back stop in parts.
+- **No tutorial picker** (2026-11-09, spec 6.1): each restaurant offers its tutorial on the first visit.
+
+### What a storefront shows: `storefront()`
+
+- **The static state** before the pending `news()` moments play.
+- **`shutter`** is down while the shop is shut, and on a newly opened one until its Grand Opening moment rolls it up.
+- **`banner`** is the Grand Opening banner. It shows after that moment and stays until the first visit (tutorialDone,
+  or a finished shift).
+- **`goldSign`** turns true once its moment has dropped the sign on.
+- **The sign:** stars as glyphs plus the number come from `stars`.
+- **`busy`** means popularity is 10.
+
+### Moments on returning to the court: `news()`
+
+- **Order:** gold signs (scan order), then grand openings (unlock order), then the celebration.
+- **When:** play them all before the court scan opens, call `R.seen(C, state, item)` after each, then save.
+- **`name`** is the full name, for `{name}` in `court.announce.open|gold`, `court.unlock` and `court.goldSign`.
+- **`words`** is a plain sentence for the court prompt when no character will say it: "Ben's Smoothie Shack is open.",
+  "Ben's Pizza Parlor has five stars and its gold sign.", "All seven restaurants have five stars."
+
+### The goal: `nextGoal()`
+
+Returns `{ stage, key, goal, words, name, need, left: [ids], count, five, busy, total, board: [lines], blanks: { goal, name, count } }`.
+
+| stage | when | words (examples) |
+|---|---|---|
+| `unlock` | a restaurant is shut | "Get all three to three stars and the Smoothie Shack opens." · "Get the Burger Bar and the Cafe to three stars and…" · "Get three more to four stars and Ben's Burritos opens." |
+| `fiveStars` | all open, not all at 5 | "Get the Ice Cream Emporium to five stars and the whole court celebrates." |
+| `fullyBusy` | all at 5 | "Get all seven fully busy." |
+| `complete` | all at 5 and 10 | "All seven at five stars and fully busy." (`goal` is '') |
+
+- **Who is named:** everyone ("all three") when nobody has got there yet, one or two by name, otherwise "<n> more".
+- **`goal`** is the same clause starting lower case, with no full stop, for Mitch's `court.return` `{goal}`. Lines
+  must put it mid-sentence: "Next up: {goal}."
+- **`name`** is the full name of the shop that opens next (stage `unlock`, else '').
+- **`blanks`** go straight into `BB.script.fill`.
+- **`key`** changes exactly when the goal does. Say `court.return` only when `key` differs from the last one said; keep
+  that in memory, so each session starts with one reminder.
+- **`board`** is the progress board's lines, drawn at Text Size:
+  - `[words, 'Five stars: 2 of 7', 'Fully busy: 0 of 7']`;
+  - after the celebration, `['All seven at five stars', words, 'Fully busy: 3 of 7']`;
+  - finally `['All seven at five stars', 'All seven fully busy']`.
+- **Court prompt:** "Food court." + news `words` + goal `words`, only for whatever Mitch and the PA won't say.
+
+### Crowd (spec 6.2, as the user re-asked it on 2026-11-10): `BBCourt.crowd`, one row per popularity
+
+"Instead of having the characters bounce around in the food court view, just have them stand and wait like they're in
+line; show people sitting at chairs and eating as you get more popular; the characters should be ones you serve in the
+games." Nobody strolls (the `passing` counts and lines are gone; `R.check` refuses a store that still has `passing`).
+
+| popularity | tier | queue (in line) | seated (eating) |
+|---|---|---|---|
+| 0 / 1 / 2 | `quiet` | 1 (at the counter) | 0 |
+| 3 / 4 | `shortQueue` | 2 | 1 |
+| 5 / 6 | `shortQueue` | 3 | 1 / 2 |
+| 7 | `outTheDoor` | 4 | 2 |
+| 8 / 9 | `outTheDoor` | 4 | 3 |
+| 10 | `full` | 4 | `'all'` (every seat the store has) |
+
+`crowd()` clamps the counts to the spots in the layout (a count above a store's seats seats them all) and returns the
+spots to use, front or nearest first.
+
+### Who: `R.floor(C, state, pools, { only }?)`
+
+- **`pools`** `{ <pack>: { locals: [ids], regulars: [ids], visitors: [ids] } }`: the drawn customers who eat there. The page
+  builds them from each pack's `regulars` and the cast (js/court.js `pools()`): a non-visitor of role `local` is a local,
+  of role `regular` a regular; a visitor of role `visitor` (Reginald, Kai) a visitor; a cameo (another restaurant's
+  local) is left out, so locals stay at home. Never a shopper.
+- **Each character at most once on the whole court.** The spots are filled a round at a time across the storefronts
+  (`only`, default every open one): each round gives every storefront its next spot in the order queue 1, seat 1, queue 2,
+  seat 2..., the storefront with the fewest people left to choose from first; each takes its first free person: its
+  locals, then the regulars who eat at fewer of the storefronts first (ties by a stable hash), then visitors, who come in
+  only where `level()` has reached `BBCourt.floor.visitorsFrom` (4).
+- **More spots than people:** the last spots stay empty (22 customers; seven restaurants at 10 would want 48). With all
+  seven open the floor holds 7 people at popularity 0, about 20 at 3 and all 22 from 7.
+- **Stable:** the same save gives the same floor on every redraw and visit. The hash's seed is the court's finished
+  shifts, so the regulars are dealt out again only after a shift; the locals never move.
+- Returns, per storefront, `queue` front first and `seats` nearest first, each `{ id, at }` (`at` is the layout spot).
+
+## Layout (percent of `art-source/backdrops/court.png`, object-fit: contain)
+
+- **Boxes** are `[x0, y0, x1, y1]`:
+  - `sign` and `store` per shop, and `board` for the plinth top, are spec 6.2's measurements;
+  - the name plate and star sign go in `sign`;
+  - the scan frame, zoom and shutter use `store`.
+- **Spots,** set by eye in the review frames (crowd-cast, 2026-11-10, `art-source/review/crowd-cast/`):
+  - `queue: [[x, y]]`: feet points, the front of the line (at the counter) first. The top row's lines stand along
+    their own stools and turn down towards the middle at the fourth (the Burger Bar's between the two tables below it,
+    clear of the progress board); the side stalls' lines step out towards the middle; the bottom stalls' lines stand
+    along the open concourse. A line faces its front (js/court.js flips it when the front is to the left).
+  - `seats: [[x, y, fx, fy]]`: only chairs that face the viewer, behind a table (the cast is drawn from the front:
+    a diner on a near-side chair would turn their back to the table), plus the two booths' benches. The diner's
+    hips go at x, y, just inside the table top's far edge, so the table seems to hide them below the hips; their food
+    stands on the table at fx, fy. Nearest first; no chair belongs to two shops (20 seats: the smoothie, pizza, cafe
+    and sushi 2 each, the others 4).
+- **After tuning,** run `node --test "tests/court.test.cjs"`. `R.check` catches:
+  - a missing store;
+  - too few queue spots for the crowd table, a store with no seat, a seat that is not `[x, y, fx, fy]`, a
+    `passing` list;
+  - a seat given to two shops;
+  - a sign outside its store.
+
+## Page recipe
+
+1. **Load:** `state = R.migrate(C, localStorage['bb-court'], { progress: { diner: <bb-progress:diner data> } })`.
+2. **Save:** when `R.canWrite(stored)`, write `JSON.stringify(R.record(state))`.
+3. **Reset Progress:** remove `bb-court` (then `migrate` gives `create`).
+4. **Enter a storefront:**
+   - If `!storefront.tutorialDone`, show tutorialOffer. Play and Skip each call `setTutorialDone`.
+   - Otherwise, a saved shift resumes.
+   - Otherwise, if `eventDue`, show the event card.
+   - Otherwise, start `S.create(pack, { level: R.level(C, state, id), ... })`.
+5. **A shift finishes:** call `out = R.addShift(C, state, id, S.results(s))` exactly once (never on leaving), then save.
+   - The results card shows `R.shiftWords(C, id, out)`.
+   - Mitch says `event.celebrate` when `out.event === 'won'` and `event.again` when `'failed'`.
+6. **Return to the court:**
+   - play `news()`, marking each item `seen()`;
+   - say `court.return` if the goal `key` changed;
+   - say the prompt;
+   - open the scan from `stops()` plus Pause.
+   Celebration cheers and fireworks are the page's.
+
+## Choices made here (flag any you disagree with)
+
+- **First argument:** `crowd` takes the court first, unlike the brief.
+- **The floor's order** (crowd-cast): a line's first spot before anyone's second, seats interleaved with the line, so
+  with few people each restaurant shows someone at its counter and a diner before a long line.
+- **Good rule:** `stars[]` decides it over `avgStars`, with a 1e-9 float tolerance at exactly 2.0.
+- **Results from another restaurant** (`results.pack` ≠ `packId`), shut restaurants and empty shifts never count.
+- **An event result while not due** counts as a normal shift.
+- **Any finished shift** also sets `tutorialDone`.
+- **Grand Opening banner:** start restaurants never get one. It lasts until `tutorialDone` or the first finished shift.
+- **"Busy" goals:** after the celebration, the goal moves to fully busy (the spec only says the board reads "All seven
+  at five stars").
+- **Unknown restaurants in a save** are kept as they are; restaurants are never closed again.

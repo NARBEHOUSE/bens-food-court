@@ -1,0 +1,5 @@
+# Pizza peel prompt
+
+Use case: stylized-concept. Asset type: one 2D comedy diner game prop, 1024 x 1024 PNG. Input image: the attached spatula is a STYLE REFERENCE ONLY. Match its drawing style exactly: same thick clean even black outline weight, flat bright colours with one hard-edged cel-shadow tone, chunky slightly exaggerated proportions, TV-cartoon look. Draw only a new wooden pizza peel, not the spatula. Subject: a wide flat rounded paddle of pale wood with a long wooden handle. Orient the object diagonally at 45 degrees pointing up and right, with paddle blade at upper right and handle extending lower left like the reference orientation. A light dusting of flour on the blade, depicted as sparse simple off-white patches and specks. Minimal simple wood-grain marks. ONE object, centered, filling about 80% of the canvas, nothing cropped. Plain pure white (#FFFFFF) background. No floor, no cast shadow, no border, no additional objects, no text, no brand or logo. Flat fills and one hard-edged shadow tone, no gradients.
+
+Generated with the built-in image_gen tool.

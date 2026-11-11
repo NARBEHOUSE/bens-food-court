@@ -1,0 +1,5 @@
+# Blender switch
+
+Generated with the built-in image generation tool.
+
+Use case: stylized-concept. Asset type: game prop for a 2D comedy diner game, 1024 x 1024 PNG. Input image 1 is a STYLE REFERENCE ONLY: match its thick clean even black outline weight, flat bright colours with one hard-edged cel-shadow tone, chunky proportions, and plain white background. Draw only the NEW object, NOT the spatula. Subject: the oversized power switch of a commercial smoothie blender: a chunky chrome toggle lever with a big round teal knob, on a rounded medium-grey control plate with a darker grey rim and exactly two screws, seen from the front, the lever tilted up. The plate is solid medium grey, never white. Original TV-cartoon look, chunky slightly exaggerated shapes. One assembled object, centred, filling about 80 percent of the canvas, fully visible with nothing cropped. Pure white background, no floor, no cast shadow, no border, no other objects. No writing anywhere, no letters, no numbers, no brand, no logo, no watermark. Flat colours, no gradients or texture.

@@ -1,0 +1,6 @@
+Use case: edit an existing 2D cartoon background painting for a game (the attached image).
+Task: change ONLY the raised arm of the teenager in the backwards blue cap and cream jacket taking a selfie (the LAST person in the queue, about 70% to 74.7% across): they now hold the phone up in front of their face with the elbow bent close to the body, so the hand and phone end at about 73% across, no further right. Keep this person otherwise exactly the same (face, cap, jacket, purple backpack, size, place). Keep EVERYTHING ELSE in the picture exactly as it is: the same size (1536 x 1024), framing, perspective, colours, outlines, lighting, the other people, the furniture, the plants and every stall. Do not move, crop, zoom, re-frame, restyle or re-colour anything else.
+Where the arm and phone used to be, paint in what is behind them so it continues naturally: the windows and the potted plant.
+Nobody and nothing of the queue reaches right of 73.5% across, and nobody new is added.
+Style: exactly the picture's own style. No text. No border.
+Save the edited picture as art-source/backdrops/candidates/sushi-counter-nudge2.png (1536 x 1024). Reply with the saved path. If saving into the project fails, reply with the path of the generated file.

@@ -1,0 +1,9 @@
+# Chef Hiro — Laughing
+
+Generated with the built-in image_gen tool.
+
+Use case: illustration-story. Asset type: full-body character pose for a 2D comedy diner game, one character on pure white, 1024 x 1536 PNG.
+Input image 1 is the APPROVED neutral model of CHEF HIRO. Copy this exact character identity, face structure, short grey hair, neat grey moustache, body proportions, dark indigo chef jacket and trousers, white tied apron, white socks and wooden sandals with indigo straps, long cooking chopsticks, colours, thick clean even black outline and cel shading. Change ONLY pose and facial expression.
+LAUGHING: Hiro is doubled over laughing, torso bent forward strongly at the waist, knees bent, one hand pressed to his belly and the other slapping his knee. Eyes squeezed shut, visible tears of laughter, mouth open in a hearty laugh beneath his same grey moustache. Retain the long cooking chopsticks loosely held in the belly hand while it presses to his abdomen. Clear readable laughing silhouette. He remains standing on both feet, facing the viewer, turned very slightly toward the viewer's right.
+Character: a dignified, exacting Japanese master sushi chef about 65, drawn respectfully with no caricature. Adult dry comedy; never cute or babyish. Original TV-cartoon art, big head and hands exactly as the reference, simple bold shapes, flat bright colours with ONE hard-edged cel-shadow tone per colour.
+Composition: ONE full-body character from hair to sandals, centred and filling about 88 percent of canvas height with clear margins all around. All hands, feet and chopsticks fully inside frame. Plain pure white background, no floor, no cast shadow, no border, no text, no additional objects. Preserve model exactly; do not redesign clothing, hair, facial features, proportions or accessories.

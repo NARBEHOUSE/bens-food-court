@@ -1,0 +1,75 @@
+/** The rating: mistakes counted per step, stars from the count, tips, favourites. */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const { diner: pack, O, L, J, R } = require('./bot.cjs');
+
+const ST = { cooking: 'simple' };
+function made(recipe, play, opts) {
+  opts = opts || {};
+  const spec = O.resolve(pack, recipe, { rng: R.seed(1) }, { change: 0, set: { doneness: 'medium' } });
+  const customer = Object.assign({ id: 'x', name: 'X' }, opts.customer);
+  const o = L.create(pack, { customer, items: [spec] }, { settings: ST, gross: opts.gross });
+  const { patties = 1, done = 'medium', adds } = play;
+  for (let k = 0; k < patties; k++) L.answer(pack, o, 'add', ST);
+  if (patties < 3) L.answer(pack, o, 'skip', ST);
+  if (patties) L.answer(pack, o, 'cook:' + done, ST);
+  for (let k = 0; k < 9; k++) {
+    const q = L.question(pack, o, ST);
+    L.answer(pack, o, adds.includes(q.ing) ? 'add' : 'skip', ST);
+  }
+  L.answer(pack, o, 'serve', ST);
+  return J.score(pack, o);
+}
+// Cheeseburger as written: cheese, lettuce, tomato, pickles, ketchup.
+const AS_WRITTEN = ['cheese', 'lettuce', 'tomato', 'pickles', 'ketchup'];
+
+test('everything right: 3 stars, no mistakes', () => {
+  const r = made('cheeseburger', { adds: AS_WRITTEN });
+  assert.deepStrictEqual([r.stars, r.count, r.mistakes], [3, 0, []]);
+});
+
+test('one or two mistakes: 2 stars; three or more: 1 star; never zero', () => {
+  assert.strictEqual(made('cheeseburger', { adds: AS_WRITTEN.concat('onion') }).stars, 2);
+  assert.strictEqual(made('cheeseburger', { adds: ['lettuce', 'tomato', 'pickles', 'ketchup', 'mayo'] }).stars, 2);
+  const bad = made('cheeseburger', { adds: ['onion', 'mustard', 'mayo'] });
+  assert.strictEqual(bad.stars, 1);
+  assert.ok(bad.count >= 3);
+  const worst = made('cheeseburger', { patties: 0, adds: ['bacon', 'onion', 'mustard', 'mayo'] });
+  assert.strictEqual(worst.stars, 1);
+});
+
+test('each kind of mistake is named', () => {
+  const r = made('cheeseburger', { patties: 2, done: 'well', adds: ['lettuce', 'tomato', 'pickles', 'ketchup', 'onion'] });
+  const kinds = r.mistakes.map(m => m.kind + (m.ing ? ':' + m.ing : '')).sort();
+  assert.deepStrictEqual(kinds, ['count:patty', 'done:patty', 'extra:onion', 'missing:cheese']);
+  assert.strictEqual(r.count, 4);
+  const done = r.mistakes.find(m => m.kind === 'done');
+  assert.deepStrictEqual([done.want, done.got], ['medium', 'well']);
+  // Onion was never on a cheeseburger's ticket: "I didn't ask for", not "I said no".
+  assert.strictEqual(r.mistakes.find(m => m.kind === 'extra').held, false);
+});
+
+test('no patty at all is one mistake, not a doneness mistake too', () => {
+  const r = made('cheeseburger', { patties: 0, adds: AS_WRITTEN });
+  assert.deepStrictEqual(r.mistakes.map(m => m.kind), ['count']);
+  assert.strictEqual(r.stars, 2);
+});
+
+test('a bad ingredient served is a mistake; swapped, it is not', () => {
+  const g = { item: 0, ing: 'cheese', event: 'mouldy' };
+  const served = made('cheeseburger', { adds: AS_WRITTEN }, { gross: g });
+  assert.deepStrictEqual(served.mistakes.map(m => m.kind), ['gross']);
+  assert.strictEqual(served.stars, 2);
+});
+
+test('tips follow the stars; a favourite adds to the tip, never to the stars', () => {
+  const price = pack.recipes.cheeseburger.price;
+  const plain = made('cheeseburger', { adds: AS_WRITTEN });
+  assert.strictEqual(plain.tip, Math.round(price * (0.6 + 0.2 * 3)));
+  const fav = made('cheeseburger', { adds: AS_WRITTEN.concat('onion') }, { customer: { favourite: { recipe: 'cheeseburger', bonus: 2 } } });
+  assert.strictEqual(fav.stars, 2);
+  assert.ok(fav.favourite);
+  assert.strictEqual(fav.tip, Math.round(price * (0.6 + 0.2 * 2)) + 2);
+  assert.ok(J.starsFor(0) === 3 && J.starsFor(2) === 2 && J.starsFor(3) === 1 && J.starsFor(99) === 1);
+});

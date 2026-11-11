@@ -1,0 +1,11 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Scene: the cafe's donut station, as seen by the cook standing at it. The camera looks slightly downward.
+Composition (percent of the image):
+- Top 62%: the wall behind the station: cream tiles, a fryer set into the back counter glowing golden, cooling racks of plain donuts, bowls of glaze (sugar, chocolate, strawberry), jars of sprinkles, coconut and chopped nuts.
+- Bottom 38%: the back edge of a pale counter, plain and simple (the game draws the food and the work surface on top of this part).
+Hidden funny details, small but findable: a donut used as a life ring on a hook; a sprinkle jar with a tiny lifeguard; a framed donut wearing glasses; a squirrel peeking from a sack of flour.
+Everything sharp. No text anywhere except what the details ask for. No border.
+Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; no real logos.
+Save as art-source/backdrops/cafe-donuts.png (1536 x 1024) and the prompt as art-source/backdrops/cafe-donuts-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

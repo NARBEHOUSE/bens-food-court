@@ -1,0 +1,218 @@
+# The cast and the art layout (phase 1, cast lane, 2026-11-08)
+
+Settles spec 2.2, 3, 5.2 and 8 for `packs/cast/cast.js`, `tools/build_art.py` and the art manifests. Read this
+instead of the code. Tests: `node --test "tests/cast.test.cjs"`.
+
+## 1. `BBCast` (packs/cast/cast.js)
+
+A UMD file: the page gets `window.BBCast`; Node gets it from `require('packs/cast/cast.js')`. It is data plus one
+pure helper.
+
+```
+BBCast = {
+  version: 1,
+  people: { <id>: { name, art, role, scale?, who, voice, tts: { voices, pitch, rate },
+                    twin?, short?, exact?, newest?, tipScale?, threeStarScale? } },
+  poses: { customer: [10 names], manager: [10 names], promoted: 'promoted', extra: ['neutral'] },
+  drawn(BBArt.cast) -> [ids]
+}
+```
+
+- **id** is the art folder name (spec 2.2) and matches `/^\w+$/`. **art** is that same id, or `null` for someone with
+  no picture (`pa`, and the generic `shopper` speaker).
+  - A person's poses are `packs/cast/art/cast/<art>/<pose>.webp`.
+  - A shopper's one picture is `packs/court/art/shoppers/<art>.webp`.
+- **role** is one of:
+  - `manager`: `mitch`.
+  - `regular`: `marge gus bev vernon sal` (every restaurant), and `dale priya oakes tasha` (some restaurants, spec 5.4).
+  - `visitor`: `reginald kai`.
+  - `local`: `tony pam` (pizza), `breeze brock` (smoothie), `jitters` (cafe), `hiro dennis` (sushi), `inferno rita`
+    (burrito), `lulu walt` (icecream).
+  - `voice`: `pa`, the mall announcer.
+  - `extra`: `shopper1`…`shopper6` (pictures), plus `shopper`, the speaker id for `court.chatter` (captions only).
+- **Which restaurants someone visits is not in the cast.** Each pack's `regulars` lists them (spec 8). The spec 5.4
+  table is the contract; tests/cast.test.cjs keeps a copy of it.
+- **scale**: `kai` 0.74 and `lulu` 0.66. Every other character leaves it out (draw at 1). All poses share one tall
+  canvas, so a child drawn at `scale` keeps their feet on the floor line: scale from the bottom centre.
+- **name** is what captions and `{name}` show: "Coach Bev", "Professor Oakes", "Chef Hiro", "Little Lulu",
+  "Grandpa Walt", "Announcer", "Shopper".
+- **who / voice** are the briefs from DESIGN.md's cast table and `art-source/jobs/write_prompts.py`. `voice` is the brief
+  for the final voice pass. None of them leans on accent or background.
+- **Traits** are persona fields, copied from the Burger Bar (tests check them against `tests/packs/diner-golden`):
+  - `gus`: `twin: true`, `tipScale: 1.25`
+  - `vernon`: `exact: true`, `threeStarScale: 1.5`
+  - `reginald`: `newest: true`
+  - `kai`: `short: true`
+  
+  Nobody else has a trait. What anyone orders (likes, usual, dislikes, favourite) belongs to the pack.
+- **poses** lists the pose names from spec 2.2. `promoted` belongs to plain `mitch` only.
+- **drawn(BBArt.cast)** returns the ids, in cast order, of customers (regular, local or visitor) whose folder has every
+  customer pose. The page can pass this to `S.create(pack, { drawn })` (spec 4.5).
+- **Mitch's art**:
+  - `people.mitch.art` is `'mitch'`: Mitch in his shirt and tie. That folder has the ten poses plus `promoted`, for the
+    grand celebration.
+  - Each restaurant dresses him through `pack.manager.art`: `mitch-burger` for the diner, `mitch-<pack>` everywhere
+    else.
+  - All seven uniform folders have all ten poses now.
+
+## 2. Text to speech
+
+**Choosing the voice.** `js/audio.js` (`pickVoice`, the audio lane's) does the choosing, reading `BBCast.people[id].tts`:
+
+- The first fragment in `tts.voices` that matches a device voice wins. Case doesn't matter, and the match must start a
+  word.
+- If none matches, a stable hash picks a voice, skipping the player's scan voice.
+
+**How the lists are ordered.** Each list starts with an Edge natural voice: Guy, Aria, Jenny, Christopher, Roger, Ryan,
+Sonia, Natasha and so on. After that come the hub's Windows voices. Every list reaches David, Mark or Zira, so on the
+hub nobody is left to the hash.
+
+**Windows rounds pitch and rate to whole steps.** On the hub's Electron, Chromium sends SAPI
+`<pitch absmiddle="trunc(pitch*10-10)">` and `SetRate(trunc(10*log10(rate)))`. Here `rate` is the player's rate times
+the character's. I measured all six voices on this PC with SAPI, through the same markup:
+
+- **A pitch step is only about half a semitone.** Zira runs 137 to 242 Hz over the whole -10..+10 range, and David
+  barely moves.
+- **A rate step is about 11% of length.**
+- **Rates from 0.8 to 1.25 are all step 0.** So the old diner values (pitch 0.7 to 1.25, rate 0.88 to 1.12) made almost
+  no audible difference.
+
+The recipes are chosen to fit that:
+
+- Each value sits well inside its step: 0.88 is -1, 1.12 is +1, 1.32 is +3. Rates 0.9 to 1.12 are step 0, 1.3 and up
+  are +1, and 0.77 and down are -1.
+- Speakers who can meet at a restaurant, or at the court, and end up on the same voice must be far enough apart. On this
+  PC's six voices, and on a PC with only David, Zira and Mark, that means one of:
+  - 3 pitch steps apart;
+  - 2 pitch steps and a rate step;
+  - 2 rate steps.
+- They also stay at least 2 pitch steps (or a pitch step and a rate step) apart when the player's own rate is 0.8 or
+  1.25.
+- A level-4 cameo (any other restaurant's local) is also at least 2 pitch steps (or a pitch step and a rate step) apart.
+- Nobody sits on the game's own voice (pitch step 0 and rate step 0).
+- No two speakers share a pitch and rate anywhere.
+- Mitch keeps today's 1.15 / 1.12.
+- Pitch stays within 0.48 to 1.72 and rate within 0.75 to 1.45, so Edge's smooth voices still sound human.
+- On a fresh PC with only David and Zira, there are no exact clashes, but some pairs are only a step apart. That case is
+  not required.
+
+| id | voices (preference order) | pitch | rate | SAPI steps (pitch, rate) | this PC (6 voices) | David/Zira/Mark only |
+|---|---|---|---|---|---|---|
+| mitch | Guy, Mark, David | 1.15 | 1.12 | +1, 0 | Mark | Mark |
+| marge | Michelle, Zira, Susan, Hazel | 1.12 | 0.9 | +1, 0 | Zira | Zira |
+| gus | Christopher, David, Mark | 0.48 | 1.05 | -5, 0 | David | David |
+| bev | Aria, Susan, Zira, Hazel | 0.48 | 1.08 | -5, 0 | Susan | Zira |
+| vernon | Ryan, George, Mark, David | 1.52 | 0.92 | +5, 0 | George | Mark |
+| sal | Andrew, David, Mark | 0.78 | 1.3 | -2, +1 | David | David |
+| dale | Davis, Brian, Mark, David | 0.88 | 0.75 | -1, -1 | Mark | Mark |
+| priya | Sonia, Susan, Zira, Hazel | 0.88 | 1.34 | -1, +1 | Susan | Zira |
+| oakes | Steffan, George, Mark, David | 1.32 | 1.35 | +3, +1 | George | Mark |
+| tasha | Emma, Hazel, Zira, Susan | 0.88 | 0.77 | -1, -1 | Hazel | Zira |
+| reginald | Thomas, George, Mark, David | 0.68 | 0.9 | -3, 0 | George | Mark |
+| kai | Jenny, Zira, Hazel | 1.42 | 1.05 | +4, 0 | Zira | Zira |
+| tony | Roger, David, Mark | 1.42 | 0.95 | +4, 0 | David | David |
+| pam | Ava, Zira, Susan | 1.62 | 1.36 | +6, +1 | Zira | Zira |
+| breeze | Brian, David, Mark | 1.12 | 0.92 | +1, 0 | David | David |
+| brock | Eric Online, Mark, David | 0.88 | 1.32 | -1, +1 | Mark | Mark |
+| jitters | Eric Online, David, Mark | 1.62 | 1.45 | +6, +1 | David | David |
+| hiro | Steffan, David, Mark | 0.68 | 0.75 | -3, -1 | David | David |
+| dennis | Brian, David, Mark | 1.22 | 1.38 | +2, +1 | David | David |
+| inferno | Roger, Mark, David | 0.48 | 1.3 | -5, +1 | Mark | Mark |
+| rita | Natasha, Zira, Susan | 0.78 | 1.08 | -2, 0 | Zira | Zira |
+| lulu | Libby, Hazel, Zira | 1.72 | 1.0 | +7, 0 | Hazel | Zira |
+| walt | Roger, George, David, Mark | 1.22 | 0.76 | +2, -1 | George | David |
+| pa | Libby, Hazel, David, Zira | 1.12 | 0.95 | +1, 0 | Hazel | David |
+
+The shoppers have recipes too, but `court.chatter` is never spoken.
+
+**Changing a recipe.** Edit it, then run `node --test "tests/cast.test.cjs"`.
+
+**Adding a cameo** (spec 2.2):
+
+- tests/cast.test.cjs already checks every possible cameo pairing.
+- Any pack's `regulars` are also added to that restaurant's group when the pack loads.
+- So a cameo that a content agent adds is checked for real.
+
+## 3. The art layout
+
+| Source (art-source/) | Output | Treatment |
+|---|---|---|
+| `cast/<id>/<pose>.png` | `packs/cast/art/cast/<id>/<pose>.webp` | BiRefNet cut-out, white fringe removed, the whole 768×1152 canvas, q88 |
+| `cast/shopper<N>/neutral.png` | `packs/court/art/shoppers/shopper<N>.webp` | cut out, 3/8 scale (384×576), cropped to the figure: the bottom edge is the feet, and every shopper is at one scale |
+| `backdrops/{counter,grill,board}.png` | `packs/diner/art/backdrops/<name>.webp` | 1536×1024, sharp, q86 |
+| `backdrops/<pack>-<name>.png` | `packs/<pack>/art/backdrops/<name>.webp` | the same (`diner-fryer` becomes the diner's `fryer`) |
+| `backdrops/court.png` | `packs/court/art/court.webp` | 1536×1024, sharp, no blur, q90 |
+| `props/{shutter,grandOpening,goldSign,progressBoard}.png` | `packs/court/art/props/<name>.webp` | cut out, cropped, at most 640 px, q90 |
+| `props/<pack>-<name>.png` | `packs/<pack>/art/props/<name>.webp` | a restaurant's own version of a shared prop (none yet) |
+| any other `props/<name>.png` | `packs/shared/art/props/<name>.webp` | register, bell, back5, spatula, ticketWheel |
+
+**Phase 1 copied and never moved.**
+
+- `packs/diner/art/cast/*` were copied to `packs/cast/art/cast/` and `packs/diner/art/props/*` to
+  `packs/shared/art/props/`. The copies are byte-identical, with the same dates.
+- The old folders stay until the coordinator deletes them in phase 3. build_art never writes into them.
+
+## 4. Manifests
+
+Each manifest is a UMD script that sets `BBArt.<key>` in the page and `module.exports` in Node.
+
+```
+BBArt.cast    = { people: { <folder>: [poses] }, castSize: [768, 1152] }        packs/cast/art/manifest.js
+BBArt.shared  = { props: [names] }                                               packs/shared/art/manifest.js
+BBArt.court   = { picture: true|false, pictureSize: [1536, 1024], props: [names],
+                  shoppers: { shopper1: [w, h], ... }, shopperScale: 0.375 }     packs/court/art/manifest.js
+BBArt[<pack>] = { backdrops: [names], props: [own prop names], backdropSize: [1536, 1024] }
+                                                                                 packs/<pack>/art/manifest.js
+BBArt.diner   = { cast, backdrops, props, castSize, backdropSize }               packs/diner/art/manifest.js
+```
+
+- **`BBArt.cast.people`** has a folder for every character and for every Mitch uniform (`mitch-burger` … `mitch-icecream`).
+  Not every folder has every pose. Code follows the list: `BBCast.drawn` decides which customers come in, and a missing
+  uniform pose falls back to that folder's `neutral` (spec 2.2).
+- **`BBArt.court.shoppers`** gives each shopper's cropped pixel size, all at one scale. To draw them in proportion, use
+  `height = h × k` with one `k` for all six.
+- **`BBArt.court.picture`** is false when court.webp is missing. Then the page draws the storefronts itself (spec 3).
+- **`BBArt[<pack>].props`** lists only that restaurant's own versions of shared props. Look up a prop like this:
+  1. `packs/<pack>/art/props/<name>.webp` when `BBArt[pack].props` has it;
+  2. else `packs/shared/art/props/<name>.webp` (court props: `packs/court/art/props/`).
+- **`BBArt.diner` keeps today's shape**, key for key:
+  - `cast` and `props` still list the old `packs/diner/art/{cast,props}`, which stage.js reads until the page switches
+    over. Under the new rule its `props` are "diner overrides" that are the same pictures as the shared ones.
+  - `backdrops` now also has `fryer` and `drinks`.
+  - Once phase 3 deletes the old folders, the next build_art run empties `cast` and `props`.
+
+## 5. Re-running build_art
+
+From the game folder:
+
+```
+"%USERPROFILE%/Documents/WSD-Art-Tools/ComfyUI/.venv/Scripts/python.exe" tools/build_art.py [ids...] [--dry] [--force]
+```
+
+- **It is incremental.** An output newer than its source is skipped. A run with nothing new never loads BiRefNet or uses
+  the GPU.
+- **Each run rewrites every manifest from what is on disk.** A manifest file is only touched when its text changes.
+- **It checks names.**
+  - A source with no rule (a backdrop without a restaurant prefix, a pose name with a dash, an unknown folder) is warned
+    about and skipped.
+  - A source it can't read yet, because it is still being written, is skipped and picked up next time.
+- **What it prints:**
+  - each file it built;
+  - `built N of M`;
+  - which manifests changed;
+  - "still to draw in art-source/cast", which lists missing poses against spec 2.2.
+- **`ids`** limits the run to those cast folders or shoppers. Backdrops and props are still brought up to date.
+- **`--dry`** lists what it would build and writes nothing. **`--force`** rebuilds everything.
+- After a run, check with `node --test "tests/cast.test.cjs"`. The manifest tests compare every list with the files on
+  disk.
+
+## 6. index.html
+
+The `<!-- cast: ... -->` block, just before `js/save.js`, loads:
+
+- `packs/cast/cast.js`;
+- the cast, shared and court manifests;
+- the art manifests of pizza, smoothie, burrito, cafe, sushi and icecream.
+
+The diner's manifest is already loaded further up. The page agent keeps the block. Every file it names exists: in
+dom-play, a missing script counts as a jsdom error.

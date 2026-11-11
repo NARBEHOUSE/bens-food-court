@@ -1,0 +1,113 @@
+/** Ben's Food Court - the court's lines (FOODCOURT-BUILD.md 5.5 and 6.2; docs/api/script.md is the format;
+ *  docs/api/cast-script.md says what is here and how the page should play it).
+ *
+ *  Mitch (back on the court, in his shirt and tie):
+ *    court.return {goal}   when the goal has changed (once a session at least). {goal} is BB.courtRules.nextGoal().goal:
+ *                          a lower-case clause with no full stop ("get all three to three stars and the Smoothie Shack
+ *                          opens", "get all seven fully busy"), so every line puts it mid-sentence. Never said when the
+ *                          goal is '' (all seven at five stars and fully busy).
+ *    court.unlock {name}   a restaurant opened (after the announcer). {name}: the full name, "Ben's Smoothie Shack".
+ *    court.goldSign {name} a gold sign went up (after the announcer).
+ *    court.celebrate       the grand celebration, after the cheers.
+ *    court.promoted        then the ASST. tape comes off his badge (the `promoted` pose).
+ *  pa, the mall announcer (voice only): court.announce.open {name}, court.announce.gold {name}. Warm, a touch
+ *    over-formal, and short (one breath, well inside the 10 s speech cap).
+ *  shopper: court.chatter, captions only, never spoken. Each line is true at any point in the game: it names only the
+ *    three restaurants open from the start, or nobody, and never the player.
+ *  court.cheer: one each for every customer in the cast (regulars, visitors, locals), at the grand celebration. Short,
+ *    because they come one after another.
+ *  Ids: <moment>.<n> without the "court." (return.1, cheer.1). Clip ids: <speaker>/court:<id> (mitch/court:return.1).
+ *  delivery: how the final voice pass should say it ([peels tape]-style tags are dropped for TTS and captions).
+ *
+ *  Tone (spec 0.5): adult and dry; the joke is on Mitch, the shoppers and the customers, never the player; nothing about
+ *  speed or skill; PG.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBScripts = root.BBScripts || {}).court = data;
+})(typeof window === 'undefined' ? globalThis : window, { format: 3, lines: [
+
+  /* ── Mitch: back on the court, the next goal ({goal} sits mid-sentence) ─────────────────────────────────── */
+  { id: 'return.1', who: 'mitch', moment: 'court.return', text: 'Back on the floor! Next up: {goal}.', delivery: 'upbeat, a little too confident' },
+  { id: 'return.2', who: 'mitch', moment: 'court.return', text: 'Team meeting. The team is you. The agenda: {goal}.', delivery: 'upbeat, mock-official' },
+  { id: 'return.3', who: 'mitch', moment: 'court.return', text: 'Corporate called. Corporate is my mom. She says {goal}.', delivery: 'eager, then a quick aside' },
+  { id: 'return.4', who: 'mitch', moment: 'court.return', text: 'I updated the progress board. It updates itself, but I watched. Anyway: {goal}.', delivery: 'proud, then sheepish' },
+  { id: 'return.5', who: 'mitch', moment: 'court.return', text: 'Big-picture time. I love big-picture time. Here it is: {goal}.', delivery: 'eager, building it up' },
+  { id: 'return.6', who: 'mitch', moment: 'court.return', text: "My headset says {goal}. It isn't plugged in. I just know things.", delivery: 'confident, conspiratorial' },
+  { id: 'return.7', who: 'mitch', moment: 'court.return', text: "Here's the plan, and I made it myself: {goal}. I'll handle the pointing.", delivery: 'upbeat, proud' },
+  { id: 'return.8', who: 'mitch', moment: 'court.return', text: "Five-year plan, condensed: {goal}. I'm having it printed on a mug.", delivery: 'eager' },
+
+  /* ── Mitch: a restaurant opens; a gold sign goes up ({name} is the full name) ───────────────────────────── */
+  { id: 'unlock.1', who: 'mitch', moment: 'court.unlock', text: "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.", delivery: 'thrilled' },
+  { id: 'unlock.2', who: 'mitch', moment: 'court.unlock', text: 'Look at that shutter go! {name}! Same badge, same tape, whole new outfit.', delivery: 'thrilled, admiring' },
+  { id: 'unlock.3', who: 'mitch', moment: 'court.unlock', text: "{name} is officially open. I cut the ribbon. There wasn't a ribbon. I cut the air.", delivery: 'proud, then deadpan' },
+  { id: 'unlock.4', who: 'mitch', moment: 'court.unlock', text: "Grand opening at {name}! I've already memorized the menu. Mostly the pictures.", delivery: 'eager' },
+  { id: 'goldSign.1', who: 'mitch', moment: 'court.goldSign', text: "A gold sign on {name}! I'd like to thank my mom, who is also corporate.", delivery: 'thrilled, then an aside' },
+  { id: 'goldSign.2', who: 'mitch', moment: 'court.goldSign', text: "Look at that gold sign on {name}. I'm not crying. It's just very shiny.", delivery: 'choked up, insisting he is fine' },
+  { id: 'goldSign.3', who: 'mitch', moment: 'court.goldSign', text: "Five stars for {name}! I'm putting a gold star on my badge. Right next to the tape.", delivery: 'proud' },
+  { id: 'goldSign.4', who: 'mitch', moment: 'court.goldSign', text: "{name} has its gold sign! I'm standing next to it in every photo from now on.", delivery: 'giddy' },
+
+  /* ── Mitch: the grand celebration, then the promotion (the tape comes off) ──────────────────────────────── */
+  { id: 'celebrate.1', who: 'mitch', moment: 'court.celebrate', text: "All seven restaurants! Five stars each! Fireworks! I didn't approve the fireworks, but I'm allowing them.", delivery: 'overjoyed, then mock-stern' },
+  { id: 'celebrate.2', who: 'mitch', moment: 'court.celebrate', text: "Seven gold signs. The greatest day in food court history. I checked. I'm the historian.", delivery: 'overjoyed, proud' },
+  { id: 'celebrate.3', who: 'mitch', moment: 'court.celebrate', text: "Every restaurant at five stars. I had a speech. I'm too emotional. Here's the speech: wow.", delivery: 'choked up, then beaming' },
+  { id: 'promoted.1', who: 'mitch', moment: 'court.promoted', text: 'Corporate says I can take the tape off? [peels tape] Manager. It was right under there the whole time.', delivery: 'disbelief, then awe' },
+  { id: 'promoted.2', who: 'mitch', moment: 'court.promoted', text: "The tape is coming off. [peels tape] Hello. Manager Mitch. I'm keeping the tape, for the scrapbook.", delivery: 'ceremonial, then emotional' },
+  { id: 'promoted.3', who: 'mitch', moment: 'court.promoted', text: "[peels tape] Manager. I'd like to thank my mom, the board of directors, and also my mom.", delivery: 'emotional, grateful' },
+
+  /* ── the announcer: warm, slightly over-formal mall public address ──────────────────────────────────────── */
+  { id: 'open.1', who: 'pa', moment: 'court.announce.open', text: 'Attention, shoppers. The management is delighted to announce the grand opening of {name}. Please proceed calmly, and hungrily.', delivery: 'smooth, bright, over-formal' },
+  { id: 'open.2', who: 'pa', moment: 'court.announce.open', text: 'Good day, valued shoppers. {name} is now open for business. Strollers, scooters and pretzels are all welcome.', delivery: 'warm, over-formal' },
+  { id: 'open.3', who: 'pa', moment: 'court.announce.open', text: 'Attention, please. The shutter is up at {name}. The Grand Opening banner is decorative, and is not a snack.', delivery: 'smooth, gently stern' },
+  { id: 'open.4', who: 'pa', moment: 'court.announce.open', text: 'Courtesy announcement. {name} is now open. Please do not hold the doors. They are shutters. They go up.', delivery: 'smooth, patient' },
+  { id: 'gold.1', who: 'pa', moment: 'court.announce.gold', text: 'Attention, shoppers. {name} has five stars and a gold sign. Please admire it from a respectful distance.', delivery: 'smooth, over-formal' },
+  { id: 'gold.2', who: 'pa', moment: 'court.announce.gold', text: 'Good news, shoppers. {name} has earned its gold sign. Please do not take it home. It is bolted on.', delivery: 'warm, then firm' },
+  { id: 'gold.3', who: 'pa', moment: 'court.announce.gold', text: 'Attention, please. A gold sign now hangs at {name}. Sunglasses are available at the kiosk on level two.', delivery: 'smooth, bright' },
+  { id: 'gold.4', who: 'pa', moment: 'court.announce.gold', text: 'Special announcement. {name} now has five stars. Congratulations from the management, and also from the parking garage.', delivery: 'over-formal, sincere' },
+
+  /* ── shoppers: overheard chatter, captions only (never spoken, never over the highlighted storefront) ────── */
+  { id: 'chatter.1', who: 'shopper', moment: 'court.chatter', text: 'Is that the hot-dog man? Eating in the food court? His cart is right outside.', delivery: 'caption only, never recorded' },
+  { id: 'chatter.2', who: 'shopper', moment: 'court.chatter', text: "That security guard on the tiny scooter has passed me four times. I think he's showing off.", delivery: 'caption only, never recorded' },
+  { id: 'chatter.3', who: 'shopper', moment: 'court.chatter', text: 'I just asked a planter if this seat was taken. Long day.', delivery: 'caption only, never recorded' },
+  { id: 'chatter.4', who: 'shopper', moment: 'court.chatter', text: "The Cafe has a giant donut on its roof. I'm not even hungry. I just respect it.", delivery: 'caption only, never recorded' },
+  { id: 'chatter.5', who: 'shopper', moment: 'court.chatter', text: 'A man at the Burger Bar just reviewed his lunch out loud. For his eleven followers. None of them were there.', delivery: 'caption only, never recorded' },
+  { id: 'chatter.6', who: 'shopper', moment: 'court.chatter', text: "There's a man at the Pizza Parlor arguing with a pineapple. In song.", delivery: 'caption only, never recorded' },
+  { id: 'chatter.7', who: 'shopper', moment: 'court.chatter', text: "I came in for socks. I'm leaving with no socks and a very full stomach.", delivery: 'caption only, never recorded' },
+  { id: 'chatter.8', who: 'shopper', moment: 'court.chatter', text: "Who puts a progress board in a food court? I'm weirdly invested now.", delivery: 'caption only, never recorded' },
+  { id: 'chatter.9', who: 'shopper', moment: 'court.chatter', text: 'A lady just called me hon, and I feel ten years younger.', delivery: 'caption only, never recorded' },
+  { id: 'chatter.10', who: 'shopper', moment: 'court.chatter', text: 'Is that a coach blowing a whistle at a pigeon?', delivery: 'caption only, never recorded' },
+  { id: 'chatter.11', who: 'shopper', moment: 'court.chatter', text: "That trucker ordered two of everything. One for the road. Sir, the road doesn't eat.", delivery: 'caption only, never recorded' },
+  { id: 'chatter.12', who: 'shopper', moment: 'court.chatter', text: 'Every time I walk past, that man in the headset is pointing at something.', delivery: 'caption only, never recorded' },
+  { id: 'chatter.13', who: 'shopper', moment: 'court.chatter', text: 'My lunch break ended an hour ago. I live here now.', delivery: 'caption only, never recorded' },
+  { id: 'chatter.14', who: 'shopper', moment: 'court.chatter', text: 'My kid wants to eat at all seven. Today.', delivery: 'caption only, never recorded' },
+  { id: 'chatter.15', who: 'shopper', moment: 'court.chatter', text: "My doctor said eat more greens, so I'm sitting next to the plants.", delivery: 'caption only, never recorded' },
+  { id: 'chatter.16', who: 'shopper', moment: 'court.chatter', text: "I love a food court. It's a mall, but just the important parts.", delivery: 'caption only, never recorded' },
+
+  /* ── the grand celebration: one cheer each, short ───────────────────────────────────────────────────────── */
+  // regulars at every restaurant
+  { id: 'cheer.1', who: 'marge', moment: 'court.cheer', text: "Oh, hon, look at all that gold! I'm telling the girls at bingo!", delivery: 'delighted, warm' },
+  { id: 'cheer.1', who: 'gus', moment: 'court.cheer', text: 'Seven for seven! Somebody honk the horn on my rig!', delivery: 'joyful drawl, a big laugh' },
+  { id: 'cheer.1', who: 'bev', moment: 'court.cheer', text: 'CHAMPIONSHIP SEASON! Everybody gets a TROPHY! I brought ONE!', delivery: 'firm, like a coach, triumphant' },
+  { id: 'cheer.1', who: 'vernon', moment: 'court.cheer', text: "[sigh] Fine. It's magnificent. I may have to write something nice. Brace yourselves.", delivery: 'grudging, secretly moved' },
+  { id: 'cheer.1', who: 'sal', moment: 'court.cheer', text: "Ay! Look at all them gold signs! Even the pigeons are clappin'!", delivery: 'gruff, delighted' },
+  // recurring regulars
+  { id: 'cheer.1', who: 'dale', moment: 'court.cheer', text: "Well, I'll be. Shinier than a fresh chrome bumper.", delivery: 'slow, impressed' },
+  { id: 'cheer.1', who: 'priya', moment: 'court.cheer', text: "I stayed awake for this. That's the highest honor I've got.", delivery: 'dry, quietly sincere' },
+  { id: 'cheer.1', who: 'oakes', moment: 'court.cheer', text: "Seven out of seven! Statistically remarkable! I'm putting this in a paper!", delivery: 'nasal, thrilled' },
+  { id: 'cheer.1', who: 'tasha', moment: 'court.cheer', text: "Okay. That's actually cool. Don't tell anyone I said that.", delivery: 'flat, quietly thrilled' },
+  // visitors
+  { id: 'cheer.1', who: 'reginald', moment: 'court.cheer', text: 'Bravo! Bravo! A triumph in seven acts!', delivery: 'theatrical, sweeping' },
+  { id: 'cheer.1', who: 'kai', moment: 'court.cheer', text: 'Review: the whole food court. Ten out of ten. Done.', delivery: 'bright, very serious' },
+  // each restaurant's own (from their packs' briefs: packs/cast/cast.js)
+  { id: 'cheer.1', who: 'tony', moment: 'court.cheer', text: 'This calls for an aria! [sings] Laaaa!', delivery: 'operatic, joyful' },
+  { id: 'cheer.1', who: 'pam', moment: 'court.cheer', text: 'Party hats on, everybody! I brought forty!', delivery: 'cheerful, exhausted, triumphant' },
+  { id: 'cheer.1', who: 'breeze', moment: 'court.cheer', text: "Whoa. All that gold. It's like a sunrise, but for lunch.", delivery: 'dreamy, delighted' },
+  { id: 'cheer.1', who: 'brock', moment: 'court.cheer', text: "SEVEN GOLD SIGNS! That's a personal record for the whole MALL!", delivery: 'eager and hyped, big grin' },
+  { id: 'cheer.1', who: 'jitters', moment: 'court.cheer', text: "Gold-signs-everywhere-gold-signs! I need to sit down! I can't sit down!", delivery: 'very fast, wired' },
+  { id: 'cheer.1', who: 'hiro', moment: 'court.cheer', text: 'I will allow myself one smile. There. It is done.', delivery: 'calm, low, quietly funny' },
+  { id: 'cheer.1', who: 'dennis', moment: 'court.cheer', text: 'Is it safe to cheer? It is? Okay. Hooray! Quietly! Hooray!', delivery: 'anxious, then thrilled' },
+  { id: 'cheer.1', who: 'inferno', moment: 'court.cheer', text: "My ears are smoking, and it isn't even the hot sauce!", delivery: 'intense, proud' },
+  { id: 'cheer.1', who: 'rita', moment: 'court.cheer', text: 'This calls for one of everything!', delivery: 'hearty, hungry' },
+  { id: 'cheer.1', who: 'lulu', moment: 'court.cheer', text: "[sigh] I can't pick the best part of today. [sigh] All of it. Final answer.", delivery: 'big dramatic sighs, then very sure' },
+  { id: 'cheer.1', who: 'walt', moment: 'court.cheer', text: "Just like 1955! Well, better. We didn't have gold in 1955.", delivery: 'cheerful, nostalgic' },
+] });

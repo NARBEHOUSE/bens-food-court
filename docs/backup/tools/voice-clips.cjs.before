@@ -1,0 +1,49 @@
+/** Ben's Burger Bar - every clip the cast needs recorded, as JSON, for tools/voices.py.
+ *
+ *  node tools/voice-clips.cjs [out.json]
+ *
+ *  Each clip: { clip, speaker, text, delivery?, moment, hash, order, recorded }. hash is the
+ *  fingerprint of the words (js/core/script.js), so a line edited in packs/diner/script.js
+ *  shows up as needing a new recording. recorded: the voice manifest already has this clip
+ *  with these words. Clips are listed in the order they matter most: the tutorial and Mitch
+ *  first, then what customers say on every order, then the complaints.
+ */
+'use strict';
+const path = require('path');
+const fs = require('fs');
+const G = path.join(__dirname, '..');
+const pack = require(path.join(G, 'packs/diner/pack.js'));
+const script = require(path.join(G, 'packs/diner/script.js'));
+const SC = require(path.join(G, 'js/core/script.js'));
+const W = require(path.join(G, 'js/core/words.js'));
+const S = require(path.join(G, 'js/core/shift.js'));
+
+let manifest = {};
+try { manifest = JSON.parse(fs.readFileSync(path.join(G, 'packs/diner/voice/manifest.json'), 'utf8')); } catch (e) { /* none yet */ }
+
+const customers = S.castOf(pack).map(c => c.id);
+const clips = SC.everyClip(pack, script, { customers });
+// Every order part, in each customer's own voice, for the recipes on offer.
+const parts = W.allOrderParts(pack, S.recipesFor(pack, 2));
+for (const c of customers) for (const p of parts) clips.push({ clip: c + '/order.' + p.id, speaker: c, text: p.text, moment: 'order.part' });
+
+const rank = c => {
+  if (c.moment.startsWith('tutorial')) return 0;
+  if (c.speaker === pack.manager.id && /^(shift|gross)/.test(c.moment)) return 1;
+  if (/^(greet|order|react)/.test(c.moment)) return 2;
+  if (c.speaker === pack.manager.id) return 3;
+  return 4;
+};
+clips.forEach(c => {
+  c.hash = SC.hash(c.text);
+  c.order = rank(c);
+  c.recorded = !!(manifest[c.clip] && manifest[c.clip].hash === c.hash);
+});
+clips.sort((a, b) => a.order - b.order);
+
+const out = JSON.stringify(clips, null, 1);
+if (process.argv[2]) fs.writeFileSync(process.argv[2], out);
+else process.stdout.write(out);
+const left = clips.filter(c => !c.recorded);
+console.error(clips.length + ' clips, ' + (clips.length - left.length) + ' recorded, ' + left.length + ' to record' +
+  (left.length ? ' (' + Object.entries(left.reduce((m, c) => (m[c.speaker] = (m[c.speaker] || 0) + 1, m), {})).map(([k, v]) => k + ' ' + v).join(', ') + ')' : ''));

@@ -1,0 +1,506 @@
+/** Ben's Food Court - what things are called.
+ *
+ *  Every spoken label and every ticket line is built here from the pack's names, so speech
+ *  always says what is on screen. A customer says an order the way people do (said(): "no
+ *  onions"), and as parts ("Bacon Cheeseburger" · "medium" · "no onions"), which is how their
+ *  recorded voices say any order (DESIGN.md "Voices and the script"); the ticket spells out
+ *  everything, with counts, in the order the line asks for it (ticket(), item(), spelled()).
+ *
+ *  Pack wording (docs/api/line.md): slots.<x> = { name, plural?, say?, values: [{ id, name,
+ *  say? }] } names a pick and how its values read on the ticket; stageSets.<x>.ask is a Simple
+ *  cook step's question and .stop its Timed button ("Stop the Blender"). Without them, the
+ *  Burger Bar's words ("How done?", "Take It Off").
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./line.js'));
+  else (root.BB = root.BB || {}).words = factory(root.BB.line);
+})(typeof window === 'undefined' ? globalThis : window, function (L) {
+  'use strict';
+
+  const lower = s => String(s).toLowerCase();
+  const cap = s => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+  const name = (pack, id) => ((pack.ingredients[id] || {}).name || (pack.stations[id] || {}).name || (pack.recipes[id] || {}).name || id);
+  const plural = (pack, id) => (pack.ingredients[id] && pack.ingredients[id].plural) || name(pack, id);
+  const stage = (pack, id) => pack.stageNames[id] || id;
+  const NUMBER = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+  const ORDINAL = ['', 'a', 'a second', 'a third', 'a fourth', 'a fifth', 'a sixth', 'a seventh', 'an eighth', 'a ninth', 'a tenth',
+    'an eleventh', 'a twelfth'];
+  /** A count in words up to twelve; past twelve, the digits. */
+  const number = n => (NUMBER[n] !== undefined ? NUMBER[n] : String(n));
+  /** "a", "a second" ... "a twelfth"; past twelve, "another". */
+  const ordinal = n => (n > 0 && ORDINAL[n] !== undefined ? ORDINAL[n] : 'another');
+  const asList = v => (Array.isArray(v) ? v : v === undefined || v === null ? [] : [v]);
+  const isPick = v => !!v && typeof v === 'object' && !Array.isArray(v) && !!v.pick;
+  function sizeName(pack, ingId, id) {
+    const I = pack.ingredients[ingId];
+    const z = I && I.sizes ? pack.sizeSets[I.sizes].find(x => x.id === id) : null;
+    return z ? z.name : id;
+  }
+  function list(words, or) {
+    if (words.length < 2) return words.join('');
+    return words.slice(0, -1).join(', ') + (or ? ' or ' : ' and ') + words[words.length - 1];
+  }
+
+  /* ── slots ──────────────────────────────────────────────────────────────── */
+  const slotOf = (pack, slot) => (pack.slots || {})[slot] || null;
+  const valueOf = (pack, slot, v) => { const S = slotOf(pack, slot); return (S && S.values.find(x => x.id === v)) || null; };
+  /** A slot's name as the line asks it ("Crust", "Scoop"). */
+  const slotName = (pack, slot) => { const S = slotOf(pack, slot); return S && S.name ? S.name : String(slot); };
+  /** More than one of a repeat's picks ("Scoops"): its plural, else its name plus s. */
+  const slotPlural = (pack, slot) => { const S = slotOf(pack, slot); return S && S.plural ? S.plural : slotName(pack, slot) + 's'; };
+  /** A value's name as its answer is labelled ("Deep Dish"). */
+  const valueName = (pack, slot, v) => { const x = valueOf(pack, slot, v); return x && x.name ? x.name : String(v); };
+  /** A value as the ticket, the customer and the review say it: the value's own say, else the
+   *  slot's say with {value} filled ("{value} crust" -> "thin crust"), else "<value> <slot>". */
+  function valueSay(pack, slot, v) {
+    const S = slotOf(pack, slot), x = valueOf(pack, slot, v);
+    if (x && x.say) return x.say;
+    const word = lower(valueName(pack, slot, v));
+    return S && S.say ? S.say.replace('{value}', word) : word + ' ' + lower(slotName(pack, slot));
+  }
+  /** A repeat's values counted, alike ones together: [{ v, n }] in the order each first comes. */
+  function repeatGroups(values) {
+    const out = [];
+    asList(values).forEach(v => { const g = out.find(x => x.v === v); if (g) g.n += 1; else out.push({ v, n: 1 }); });
+    return out;
+  }
+  const groupSay = (pack, slot, g) => number(g.n) + ' ' + lower(valueName(pack, slot, g.v)) + ' ' + lower(g.n === 1 ? slotName(pack, slot) : slotPlural(pack, slot));
+  /** A repeat in words: "two chocolate scoops and one vanilla scoop". */
+  const repeatSay = (pack, slot, values) => list(repeatGroups(values).map(g => groupSay(pack, slot, g)));
+
+  /* ── the line, step by step ─────────────────────────────────────────────── */
+  /** The steps an item's line runs for this ticket, in order: [{ sid, n, step }]. */
+  function lineSteps(pack, spec) {
+    const out = [];
+    for (const sid of pack.recipes[spec.recipe].stations) {
+      pack.stations[sid].steps.forEach((step, n) => { if (L.applies(step, spec)) out.push({ sid, n, step }); });
+    }
+    return out;
+  }
+  /** Phrases in line order -> bits: each phrase, each run of Adds as "with ...", and "nothing
+   *  else on it" where the first run was when no run has anything. */
+  function joinSegments(segs) {
+    const anything = segs.some(x => x.words && x.words.length);
+    const bits = [], cooked = [], on = [];
+    let nothing = false;
+    for (const x of segs) {
+      if (x.text) { bits.push(x.text); cooked.push(x.text); }
+      else if (x.words.length) { bits.push('with ' + list(x.words)); x.words.forEach(w => on.push(w)); }
+      else if (!anything && !nothing) { bits.push('nothing else on it'); nothing = true; }
+    }
+    return { bits, cooked, on };
+  }
+
+  /* ── orders ─────────────────────────────────────────────────────────────── */
+  function head(pack, spec, many) {
+    const R = pack.recipes[spec.recipe];
+    const flavour = spec.parts.find(p => p.flavour);
+    let h = R.item.nameFrom === 'flavour' && flavour ? name(pack, flavour.ing) : (many ? R.plural || R.name : R.name);
+    if (spec.size) h = sizeName(pack, spec.ing, spec.size) + ' ' + lower(h);
+    return h;
+  }
+  /** The slots a customer says, in line order: every stage a cook step's `want` names, and each
+   *  slot whose value the recipe leaves to the order ({ pick }). -> [{ bit: the words, parts:
+   *  the same words as recordable parts }] */
+  function saidSlots(pack, spec) {
+    const T = pack.recipes[spec.recipe].item, slots = T.slots || {}, picks = spec.picks || {}, out = [], told = new Set();
+    for (const { step } of lineSteps(pack, spec)) {
+      const slot = step.kind === 'cook' ? step.want : step.kind === 'pick' ? step.slot : undefined;
+      if (slot === undefined || told.has(slot) || picks[slot] === undefined || picks[slot] === null) continue;
+      told.add(slot);
+      const v = picks[slot];
+      if (step.kind === 'cook') { const text = lower(stage(pack, v)); out.push({ bit: text, parts: [{ id: 'done.' + v, text }] }); continue; }
+      if (!isPick(slots[slot])) continue;
+      if (!step.repeat) { const text = valueSay(pack, slot, v); out.push({ bit: text, parts: [{ id: 'slot.' + slot + '.' + v, text }] }); continue; }
+      const groups = repeatGroups(v), parts = [];
+      groups.forEach((g, i) => {
+        if (i && i === groups.length - 1) parts.push({ id: 'and', text: 'and' });
+        parts.push({ id: 'slotn.' + slot + '.' + g.n + '.' + g.v, text: groupSay(pack, slot, g) });
+      });
+      out.push({ bit: repeatSay(pack, slot, v), parts });
+    }
+    return out;
+  }
+  /** The details after the name: doneness, the slots, then what is held or added. */
+  function details(pack, spec) {
+    const bits = [];
+    const dones = [];
+    if (spec.done) dones.push(spec.done);
+    spec.parts.forEach(p => { if (p.done && !dones.includes(p.done)) dones.push(p.done); });
+    dones.forEach(d => bits.push(lower(stage(pack, d))));
+    saidSlots(pack, spec).forEach(x => bits.push(x.bit));
+    if (spec.with) bits.push(spec.with.length ? 'with just ' + list(spec.with.map(h => lower(name(pack, h)))) : 'plain');
+    else {
+      (spec.holds || []).forEach(h => bits.push('no ' + lower(plural(pack, h))));
+      (spec.adds || []).forEach(h => bits.push('add ' + lower(name(pack, h))));
+    }
+    return bits;
+  }
+  /** Identical items side by side are said once with a count ("Two Cheeseburgers, medium"). */
+  function groups(t) {
+    const out = [];
+    t.items.forEach((spec, i) => {
+      const last = out[out.length - 1];
+      if (last && JSON.stringify(last.spec) === JSON.stringify(spec)) { last.n += 1; last.items.push(i); }
+      else out.push({ spec, n: 1, items: [i] });
+    });
+    return out;
+  }
+  /** The order as the customer says it, the way people order: the menu name, how done, the
+   *  slots the order chose, what is held or added ("Bacon Cheeseburger, medium, no onions.").
+   *  The ticket spells it out. */
+  function said(pack, t) {
+    const words = groups(t).map(g => (g.n > 1 ? cap(number(g.n)) + ' ' + head(pack, g.spec, true) : head(pack, g.spec)) +
+      [''].concat(details(pack, g.spec)).join(', '));
+    return list(words) + '.';
+  }
+
+  /* ── the ticket: everything spelt out ───────────────────────────────────── */
+  // "No onions" only makes sense if you know what a Bacon Cheeseburger comes with, so the ticket
+  // never leans on that: it lists everything, in the order the line asks for it, and "add what's
+  // on the ticket, skip what isn't" always works (DESIGN.md "The ticket"). A pick says the value
+  // to pick, a repeat how many of each, a cook step its stage, an Add with a max above 1 how many.
+  /** What one step puts on the ticket, or null. */
+  function stepWords(pack, item, sid, n, step) {
+    if (step.kind === 'cook') {
+      if (step.ing) return null;                           // said with the Add that put it on the heat
+      const want = L.expected(pack, item, sid, n);
+      return want ? lower(stage(pack, want)) : null;
+    }
+    if (step.kind === 'pick' && step.slot !== undefined) {
+      const want = L.expected(pack, item, sid, n);
+      if (want === null) return null;
+      return step.repeat ? repeatSay(pack, step.slot, want) : valueSay(pack, step.slot, want);
+    }
+    return null;                                           // from / of picks are the name; flourishes say nothing
+  }
+  /** An item spelt out: { head: its name, bits: [every phrase after the name, in line order],
+   *  cooked: [the phrases that are not Adds], on: [the words for everything Added] }. */
+  function spelled(pack, spec) {
+    const item = { spec, answers: {} };
+    const segs = [], told = new Set();
+    let run = null;
+    for (const { sid, n, step } of lineSteps(pack, spec)) {
+      if (step.kind === 'add') {
+        const I = pack.ingredients[step.ing] || {}, count = spec.parts.filter(p => p.ing === step.ing).length;
+        if (I.stages) {                                    // the cooked thing: how many, and how done
+          if (count && !told.has(step.ing)) {
+            told.add(step.ing);
+            const d = spec.parts.find(p => p.ing === step.ing).done;
+            segs.push({ text: number(count) + ' ' + lower(count === 1 ? name(pack, step.ing) : plural(pack, step.ing)) + (d ? ', ' + lower(stage(pack, d)) : '') });
+            run = null;
+          }
+          continue;
+        }
+        if (!run) { run = { words: [] }; segs.push(run); }
+        if (count && !told.has(step.ing)) {
+          told.add(step.ing);
+          const k = Math.min(count, step.max || 1);
+          run.words.push((step.max || 1) > 1 ? number(k) + ' ' + lower(k === 1 ? name(pack, step.ing) : plural(pack, step.ing)) : lower(name(pack, step.ing)));
+        }
+        continue;
+      }
+      const text = stepWords(pack, item, sid, n, step);
+      if (text) { segs.push({ text }); run = null; }
+    }
+    const j = joinSegments(segs);
+    return { head: head(pack, spec), cooked: j.cooked, on: j.on, bits: j.bits };
+  }
+  /** What goes on, in words: "with cheese, lettuce and tomato", or "nothing else on it". */
+  const onWords = sp => (sp.on.length ? 'with ' + list(sp.on) : 'nothing else on it');
+  const body = sp => (sp.bits.length ? ': ' + sp.bits.join(', ') : '');
+  /** One item as the ticket has it: "Cheeseburger: one patty, medium, with cheese, lettuce and tomato". */
+  function item(pack, spec) {
+    const sp = spelled(pack, spec);
+    return sp.head + body(sp);
+  }
+  /** The ticket read out: one sentence an item (identical ones together, "each"). */
+  function ticket(pack, t) {
+    return groups(t).map(g => {
+      const sp = spelled(pack, g.spec);
+      const h = g.n > 1 ? cap(number(g.n)) + ' ' + head(pack, g.spec, true) + ', each' : sp.head;
+      return h + body(sp) + '.';
+    }).join(' ');
+  }
+  /** The ticket as recordable parts: [{ id, text }] (text to speech says said() instead). */
+  function orderParts(pack, t) {
+    const parts = [];
+    groups(t).forEach((g, k) => {
+      if (k) parts.push({ id: 'and', text: 'and' });
+      const spec = g.spec, R = pack.recipes[spec.recipe];
+      if (g.n > 1) parts.push({ id: 'count.' + g.n, text: cap(number(g.n)) });
+      if (spec.size) parts.push({ id: 'size.' + spec.size, text: sizeName(pack, spec.ing, spec.size) });
+      const flavour = spec.parts.find(p => p.flavour);
+      if (R.item.nameFrom === 'flavour' && flavour) parts.push({ id: 'flavour.' + flavour.ing, text: name(pack, flavour.ing) });
+      else parts.push(g.n > 1 ? { id: 'recipes.' + spec.recipe, text: R.plural || R.name } : { id: 'recipe.' + spec.recipe, text: R.name });
+      const dones = [];
+      if (spec.done) dones.push(spec.done);
+      spec.parts.forEach(p => { if (p.done && !dones.includes(p.done)) dones.push(p.done); });
+      dones.forEach(d => parts.push({ id: 'done.' + d, text: lower(stage(pack, d)) }));
+      saidSlots(pack, spec).forEach(x => x.parts.forEach(p => parts.push(p)));
+      if (spec.with) {
+        if (!spec.with.length) parts.push({ id: 'plain', text: 'plain' });
+        else {
+          parts.push({ id: 'withJust', text: 'with just' });
+          spec.with.forEach((h, i) => {
+            if (i && i === spec.with.length - 1) parts.push({ id: 'and', text: 'and' });
+            parts.push({ id: 'ing.' + h, text: lower(name(pack, h)) });
+          });
+        }
+      } else {
+        (spec.holds || []).forEach(h => parts.push({ id: 'no.' + h, text: 'no ' + lower(plural(pack, h)) }));
+        (spec.adds || []).forEach(h => parts.push({ id: 'add.' + h, text: 'add ' + lower(name(pack, h)) }));
+      }
+    });
+    return parts;
+  }
+
+  /** Every part any order of these recipes can need, so a voice can be recorded once and
+   *  say any order. -> [{ id, text }] */
+  function allOrderParts(pack, recipes) {
+    const out = new Map();
+    const add = (id, text) => { if (!out.has(id)) out.set(id, text); };
+    add('and', 'and'); add('plain', 'plain'); add('withJust', 'with just');
+    [2, 3].forEach(n => add('count.' + n, cap(number(n))));
+    /** Every value a slot of the recipe can take (both the usual and the fancy list). */
+    const slotValues = v => {
+      if (!isPick(v)) return asList(v);
+      const P = (pack.picks || {})[v.pick], S = (pack.slots || {})[v.pick];
+      return [...new Set(P ? (P.values || []).concat(P.fancy || []) : S ? S.values.map(x => x.id) : [])];
+    };
+    for (const rid of recipes || Object.keys(pack.recipes)) {
+      const R = pack.recipes[rid], T = R.item;
+      const pickNames = [];
+      const each = v => (v && typeof v === 'object' && v.pick ? (pickNames.push(v.pick), pack.picks[v.pick].fancy || pack.picks[v.pick].values) : [v]);
+      if (T.nameFrom === 'flavour') {
+        T.parts.forEach(p => { if (p.ing && typeof p.ing === 'object') each(p.ing).forEach(f => add('flavour.' + f, name(pack, f))); });
+      } else { add('recipe.' + rid, R.name); add('recipes.' + rid, R.plural || R.name); }
+      if (T.size) each(T.size).forEach(z => add('size.' + z, sizeName(pack, T.ing, z)));
+      if (T.done) each(T.done).forEach(d => add('done.' + d, lower(stage(pack, d))));
+      T.parts.forEach(p => {
+        if (p.done) each(p.done).forEach(d => add('done.' + d, lower(stage(pack, d))));
+        if (typeof p.ing !== 'string') return;
+        if (p.opt === 'in') add('no.' + p.ing, 'no ' + lower(plural(pack, p.ing)));
+        if (p.opt === 'out') add('add.' + p.ing, 'add ' + lower(name(pack, p.ing)));
+        if (p.opt) add('ing.' + p.ing, lower(name(pack, p.ing)));
+      });
+      if (!T.slots) continue;
+      for (const sid of R.stations) {
+        for (const step of pack.stations[sid].steps) {
+          if (step.kind === 'cook' && step.want !== undefined && T.slots[step.want] !== undefined) {
+            slotValues(T.slots[step.want]).forEach(d => add('done.' + d, lower(stage(pack, d))));
+          } else if (step.kind === 'pick' && step.slot !== undefined && isPick(T.slots[step.slot])) {
+            const v = T.slots[step.slot];
+            if (!step.repeat) { slotValues(v).forEach(x => add('slot.' + step.slot + '.' + x, valueSay(pack, step.slot, x))); continue; }
+            const hi = Array.isArray(v.count) ? v.count[1] : v.count !== undefined ? v.count : (step.repeat.max || 1);
+            slotValues(v).forEach(x => { for (let n = 1; n <= hi; n++) add('slotn.' + step.slot + '.' + n + '.' + x, groupSay(pack, step.slot, { v: x, n })); });
+          }
+        }
+      }
+    }
+    return [...out].map(([id, text]) => ({ id, text }));
+  }
+
+  /* ── what was made (the review) ─────────────────────────────────────────── */
+  /** How a bad ingredient is said: "the green cheese", "tomato with a hair on it". */
+  function grossSay(pack, ing, eventId) {
+    const E = (pack.gross || []).find(g => g.id === eventId);
+    return E ? E.say.replace('{name}', lower(name(pack, ing))) : lower(name(pack, ing));
+  }
+  /** How a bad picked value is said: "red sauce with a skin on it" ({name} is the value's name). */
+  function grossPick(pack, slot, value, eventId) {
+    const E = (pack.gross || []).find(g => g.id === eventId);
+    return E ? E.say.replace('{name}', lower(valueName(pack, slot, value))) : valueSay(pack, slot, value);
+  }
+  /** The item as made, in plain words, in the line's order: "Cheeseburger: one patty, medium,
+   *  with cheese, lettuce and ketchup." A description, never a verdict. spec (the ticket) says
+   *  which steps this line ran. */
+  function made(pack, m, spec) {
+    const R = pack.recipes[m.recipe];
+    let h = R.name;
+    const flavour = m.parts.find(p => p.flavour);
+    if (R.item.nameFrom === 'flavour') h = flavour ? name(pack, flavour.ing) : 'Empty cup';
+    if (m.size) h = sizeName(pack, m.ing, m.size) + ' ' + lower(h);
+    const picks = m.picks || {};
+    const steps = lineSteps(pack, spec || { recipe: m.recipe, parts: [], picks });
+    // A cookable the recipe uses but none were made: "no patty".
+    const usual = spec ? [...new Set(pack.recipes[spec.recipe].item.parts.map(p => p.ing).filter(x => typeof x === 'string' && pack.ingredients[x] && pack.ingredients[x].stages))] : [];
+    const segs = [], told = new Set(), saidWords = [];
+    let run = null;
+    for (const { step } of steps) {
+      if (step.kind === 'add') {
+        const I = pack.ingredients[step.ing] || {};
+        if (I.stages) {
+          if (told.has(step.ing)) continue;
+          told.add(step.ing);
+          const mine = m.parts.filter(p => p.ing === step.ing && p.done !== undefined);
+          if (mine.length) {
+            const n = mine.length, d = mine[0].done;
+            segs.push({ text: number(n) + ' ' + lower(n === 1 ? name(pack, step.ing) : plural(pack, step.ing)) + (d ? ', ' + lower(stage(pack, d)) : '') });
+            run = null;
+          } else if (usual.includes(step.ing)) { segs.push({ text: 'no ' + lower(name(pack, step.ing)) }); run = null; }
+          continue;
+        }
+        if (!run) { run = { words: [] }; segs.push(run); }
+        if (told.has(step.ing)) continue;
+        told.add(step.ing);
+        const mine = m.parts.filter(p => p.ing === step.ing && p.done === undefined && !p.layer && !p.flavour);
+        if (!mine.length) continue;
+        const plain = (step.max || 1) > 1 ? number(mine.length) + ' ' + lower(mine.length === 1 ? name(pack, step.ing) : plural(pack, step.ing)) : lower(name(pack, step.ing));
+        mine.forEach(p => {
+          const w = p.gross ? grossSay(pack, p.ing, p.gross) : plain;
+          if (!saidWords.includes(w)) { saidWords.push(w); run.words.push(w); }
+        });
+        continue;
+      }
+      let text = null;
+      if (step.kind === 'cook' && !step.ing) {
+        const got = step.want !== undefined ? picks[step.want] : m.done;
+        if (got) text = lower(stage(pack, got));
+      } else if (step.kind === 'pick' && step.slot !== undefined && picks[step.slot] !== undefined) {
+        const got = picks[step.slot], bad = (m.gross || []).find(g => g.slot === step.slot);
+        text = step.repeat ? repeatSay(pack, step.slot, got) : bad ? grossPick(pack, step.slot, got, bad.event) : valueSay(pack, step.slot, got);
+      }
+      if (text) { segs.push({ text }); run = null; }
+    }
+    const bits = joinSegments(segs).bits;
+    return h + (bits.length ? ': ' + bits.join(', ') : '') + '.';
+  }
+
+  /* ── the line's labels ──────────────────────────────────────────────────── */
+  const setOf = (pack, q) => (q.set ? pack.stageSets[q.set] || null : null);
+  /** What is said when a step comes up: on a fresh phase it is spoken before the scan
+   *  starts; later steps are announced by their highlighted answer's own label. */
+  function prompt(pack, q, o) {
+    const st = q.station ? name(pack, q.station) : '';
+    const lead = q.fresh ? st + '. ' : '';
+    if (q.kind === 'review') return 'Here it is.';
+    if (q.kind === 'add') {
+      const what = q.gross ? grossSay(pack, q.ing, q.gross.event) : lower(name(pack, q.ing));
+      if (q.max > 1) return lead + 'Add ' + (q.offer === 1 ? 'a ' + lower(name(pack, q.ing)) : ordinal(q.offer) + ' ' + lower(name(pack, q.ing))) + '?';
+      return lead + cap(what) + '.';
+    }
+    if (q.kind === 'cook') {
+      const set = setOf(pack, q);
+      if (q.timed && set && set.stop) return lead + cap(lower(set.stop)) + ' when it is right.';
+      if (!q.timed && set && set.ask) return lead + set.ask;
+      const what = 'the ' + lower(q.count > 1 ? plural(pack, q.ing) : name(pack, q.ing));
+      return q.timed ? cap(what) + ' ' + (q.count > 1 ? 'are' : 'is') + ' cooking. Take it off when it is right.'
+        : 'Cook ' + what + '. How done?';
+    }
+    if (q.kind === 'pick') {
+      if (q.of === 'slot') {
+        // "Crust: Thin, Regular or Deep Dish?"; a repeat's next pick, "A second dip: Ranch, Garlic, more or Done?"
+        const names = q.options.filter(x => x.value !== undefined).map(x => option(pack, q, x, o).label);
+        if (q.options.some(x => x.row)) names.push('more');
+        if (q.options.some(x => x.id === 'done')) names.push('Done');
+        const what = q.repeat && q.have > 0 ? cap(ordinal(q.have + 1)) + ' ' + lower(slotName(pack, q.slot)) : slotName(pack, q.slot);
+        return lead + what + ': ' + list(names, true) + '?';
+      }
+      if (q.of === 'size') return lead + 'What size?';
+      if (q.of === 'flavour') return 'Which one?';
+      return lead + list(q.options.filter(x => x.value).map(x => name(pack, x.value)), true) + '?';   // one of them: "Fries or Onion Rings?"
+    }
+    return '';
+  }
+  /** An answer's label on screen and what the scan says for it. */
+  function option(pack, q, opt, o) {
+    const id = opt.id;
+    if (q.kind === 'add') {
+      const thing = q.gross ? grossSay(pack, q.ing, q.gross.event) : lower(name(pack, q.ing));
+      if (id === 'add') {
+        if (q.max > 1) return { label: 'Add', say: 'Add ' + (q.offer === 1 ? 'a ' + thing : ordinal(q.offer) + ' ' + thing) };
+        return { label: 'Add', say: 'Add ' + thing };
+      }
+      if (id === 'skip') return { label: q.max > 1 && q.have > 0 ? 'Done' : 'Skip', say: q.max > 1 && q.have > 0 ? 'Done, ' + number(q.have) + ' ' + lower(q.have === 1 ? name(pack, q.ing) : plural(pack, q.ing)) : 'Skip ' + thing };
+      if (id === 'swap') return { label: 'Swap It', say: 'Swap ' + thing + ' for a fresh one' };
+    }
+    if (q.kind === 'cook') {
+      const set = setOf(pack, q);
+      if (id === 'takeOff') return set && set.stop ? { label: set.stop, say: cap(lower(set.stop)) + '. ' + stage(pack, q.stage) } : { label: 'Take It Off', say: 'Take it off. ' + stage(pack, q.stage) };
+      return { label: stage(pack, opt.value), say: stage(pack, opt.value) };
+    }
+    if (q.kind === 'pick') {
+      if (id === 'more' || id.startsWith('more:')) return { label: 'More…', say: 'More choices' };
+      if (q.of === 'slot') {
+        if (id === 'done') return { label: 'Done', say: 'Done, ' + repeatSay(pack, q.slot, q.picked || []) };
+        const bad = q.gross ? grossPick(pack, q.slot, q.gross.value, q.gross.event) : null;
+        if (id === 'swap') return { label: 'Swap It', say: 'Swap ' + bad + ' for a fresh one' };
+        if (bad && opt.value === q.gross.value) return { label: cap(bad), say: cap(bad) };
+        const label = valueName(pack, q.slot, opt.value);
+        return { label, say: label };
+      }
+      const v = opt.value;
+      const label = q.of === 'size' ? (o ? sizeName(pack, o.items[q.item].spec.ing, v) : cap(String(v))) : name(pack, v);
+      return { label, say: label };
+    }
+    if (q.kind === 'review') {
+      if (id === 'serve') return { label: 'Ring It Up', say: 'Serve it. Ring it up' };
+      if (id === 'redo') return { label: 'Redo…', say: 'Redo something' };
+      if (id === 'more' || id.startsWith('more:')) return { label: 'More…', say: 'More to redo' };
+      if (opt.row) return { label: itemName(pack, o, opt.item), say: 'Redo the ' + lower(itemName(pack, o, opt.item)) };
+      const S = pack.stations[opt.station];
+      const label = S.redo || 'Redo the ' + S.name;
+      const many = o && o.items.length > 1;
+      return { label: many ? label + ' (' + (opt.item + 1) + ')' : label, say: label + (many ? ', item ' + (opt.item + 1) : '') };
+    }
+    return { label: id, say: id };
+  }
+  function itemName(pack, o, i) {
+    const spec = o.items[i].spec;
+    return 'Item ' + (i + 1) + ': ' + head(pack, spec);
+  }
+
+  /* ── the receipt, and the words for the script's blanks ────────────────── */
+  function mistake(pack, m) {
+    if (m.slot !== undefined) {
+      const S = cap(slotName(pack, m.slot));
+      switch (m.kind) {
+        case 'pick': return S + ': wanted ' + lower(valueName(pack, m.slot, m.want)) + ', got ' + (m.got === null || m.got === undefined ? 'nothing' : lower(valueName(pack, m.slot, m.got)));
+        case 'count': return cap(slotPlural(pack, m.slot)) + ': wanted ' + m.want + ', got ' + m.got;
+        case 'gross': return S + ': ' + grossPick(pack, m.slot, m.value, m.event).replace(/^the /, '');
+        default: return S;
+      }
+    }
+    const N = cap(name(pack, m.ing || ''));
+    switch (m.kind) {
+      case 'extra': return N + ': not wanted';
+      case 'missing': return N + ': left off';
+      case 'count': return cap(plural(pack, m.ing)) + ': wanted ' + m.want + ', got ' + m.got;
+      case 'done': return N + ': wanted ' + lower(stage(pack, m.want)) + ', got ' + lower(stage(pack, m.got));
+      case 'pick': return (m.of === 'size' ? 'Size' : m.of === 'flavour' ? 'Drink' : 'Order') + ': wanted ' +
+        lower(m.of === 'size' ? m.want : name(pack, m.want)) + ', got ' + lower(m.got ? (m.of === 'size' ? m.got : name(pack, m.got)) : 'nothing');
+      case 'gross': return N + ': ' + grossSay(pack, m.ing, m.event).replace(/^the /, '');
+      default: return N;
+    }
+  }
+  /** The words for a mistake's or a tutorial warning's blanks, lower case, ready for a line:
+   *  { ing, ings, slot, want, got, value, count }, only those that apply. A slot pick gives
+   *  {slot} and {want} (I said {want} {slot}: I said white sauce); a cook step or a
+   *  doneness gives stages; a count gives numbers in words. */
+  function blanks(pack, m) {
+    const out = {};
+    if (m.ing) { out.ing = lower(name(pack, m.ing)); out.ings = lower(plural(pack, m.ing)); }
+    const counted = m.kind === 'count' || m.kind === 'tooMany' || m.kind === 'tooFew';
+    if (m.slot !== undefined) {
+      out.slot = lower(slotName(pack, m.slot));
+      if (counted) { out.count = number(m.want); out.want = number(m.want); }
+      else {
+        if (m.want !== undefined && m.want !== null) out.want = lower(valueName(pack, m.slot, m.want));
+        if (m.got !== undefined && m.got !== null) out.got = lower(valueName(pack, m.slot, m.got));
+        if (m.value !== undefined && m.value !== null) out.value = lower(valueName(pack, m.slot, m.value));
+      }
+      return out;
+    }
+    const word = v => (m.kind === 'done' ? lower(stage(pack, v)) : m.of === 'size' ? lower(v) : lower(name(pack, v)));
+    if (counted) { out.count = number(m.want); out.want = number(m.want); if (m.got !== undefined) out.got = number(m.got); }
+    else {
+      if (m.want !== undefined && m.want !== null) out.want = word(m.want);
+      if (m.got !== undefined && m.got !== null) out.got = word(m.got);
+    }
+    return out;
+  }
+
+  return { lower, cap, name, plural, stage, list, sizeName, item, ticket, said, spelled, onWords, groups, orderParts, allOrderParts, made, grossSay, prompt, option, mistake, NUMBER,
+    ORDINAL, number, ordinal, slotName, slotPlural, valueName, valueSay, repeatSay, grossPick, blanks, lineSteps };
+});

@@ -1,0 +1,291 @@
+/** Ben's Burger Bar - the first restaurant of Ben's Food Court, as data (pack version 3: on the ladder).
+ *
+ *  The format is docs/api/pack-format.md; this restaurant in words is docs/api/packs/diner.md, the
+ *  template the other restaurants copy. The engine in js/core/ reads this and nothing else.
+ *
+ *  stations   each one is a PHASE of the line, named by its backdrop (grill, board, fryer, drinks):
+ *               add   offer one ingredient (Add / Skip); max > 1 offers it again
+ *               cook  how done (Simple: pick a stage; Timed: watch it and press the stage set's
+ *                     `stop` button, drawn as the station's `tool`)
+ *               pick  one choice of a few: `from` a list of ingredients, or `of` the
+ *                     item's size or flavour (the Burger Bar's own picks)
+ *             `builds` names what a station stacks the item on and what goes first and last
+ *             by itself (the bun). `sounds` are the station's (docs/api/audio.md 5.2).
+ *  recipes    `level` (the star level it is first ordered at) is the only gate; `course` makes
+ *             combos from level 3 (a burger with a side or a drink). `item` is the template a
+ *             ticket is made from: `opt: 'in'` parts can be held ("no onions"), `opt: 'out'`
+ *             parts can be added; a `{ pick }` value is chosen per order.
+ *  regulars   who orders here and what. Who they ARE (name, pictures, voice, traits such as
+ *             Gus's twin) is the cast's: packs/cast/cast.js, merged in by BB.cast.merge.
+ *  gross      what can go wrong with an ingredient on an Add step, and how it looks.
+ *  oddOrders  the ridiculous orders (level 4 and 5); events.five the five-star event.
+ *  look       how the 3D food draws each ingredient (js/food/diner.js: docs/api/world.md).
+ *
+ *  Prices are starting values, tuned with the playtest.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBPacks = root.BBPacks || {}).diner = data;
+})(typeof window === 'undefined' ? globalThis : window, {
+  id: 'diner',
+  version: 3,
+  name: "Ben's Burger Bar",
+  help: 'Follow the ticket: add what is on it and skip what is not. At the grill, add one patty for each on the ticket, ' +
+    'then choose how done. At the board, the toppings and sauces come down the line one at a time, and the buns go on ' +
+    'by themselves. From two stars, the fryer makes fries and onion rings: pick which, choose how crispy, then salt them ' +
+    'or skip the salt. From three stars, a burger can come with a side or a drink; at the drinks station, pick the cup ' +
+    'size, add ice or skip it, then pick the drink. If something looks nasty, choose Swap It for a fresh one. With Timed ' +
+    'cooking, take the food off when it reaches what the ticket says. At the end, check the order, redo anything that ' +
+    'is wrong, then ring it up.',
+
+  /* ── look: the diner's colours, which are bb.css's defaults (spec 5.6) ──────── */
+  theme: {
+    pageBg: '#3a2418',
+    panelTop: '#c9d1d8', panelBottom: '#8d969e', panelLip: '#4d545a',
+    plateTop: '#f2f4f6', plateBottom: '#b9c2c9', mark: '#6b3a22',
+    labelBg: 'rgba(27,18,14,.86)',
+    ticketAccent: '#8a2a20', ticketNow: '#fff2a8', perforation: '#c9c1b0',
+    hudBg: 'rgba(27,18,14,.75)', gaugeBg: 'rgba(27,18,14,.86)',
+    star: '#f0a500',
+    boardGlow: '#2f4a3f', woodInset: '#5e3b20', cardValue: '#ffe27a',
+    logoTop: '#ffd36b', logoMain: '#ff6b4a',
+    wheelInk: '#1b120e', wheelSteel: '#d6dce1', wheelDark: '#9aa4ad',
+    board: '#23382f', wood: '#8a5a32',
+  },
+  courses: ['main', 'side', 'drink'],
+
+  /* ── stages ─────────────────────────────────────────────────────────────── */
+  // choose: what Simple cooking offers; the list then runs on to its last stage, where Timed
+  // cooking stops if the food is never taken off. ask: Simple's question; stop: Timed's button.
+  stageSets: {
+    patty: { stages: ['raw', 'rare', 'medium', 'mediumWell', 'well', 'charred'], choose: ['rare', 'medium', 'mediumWell', 'well'],
+      ask: 'How done?', stop: 'Take It Off' },
+    fried: { stages: ['raw', 'golden', 'crispy', 'extraCrispy', 'burnt'], choose: ['golden', 'crispy', 'extraCrispy'],
+      ask: 'How crispy?', stop: 'Lift the Basket' },
+  },
+  stageNames: {
+    raw: 'Raw', rare: 'Rare', medium: 'Medium', mediumWell: 'Medium Well', well: 'Well Done', charred: 'Charred',
+    golden: 'Golden', crispy: 'Crispy', extraCrispy: 'Extra Crispy', burnt: 'Burnt',
+  },
+  /** Seconds per stage with Timed cooking; the stage the ticket asks for lasts wantedScale times as long. */
+  cookSpeeds: { verySlow: 12, slow: 8, normal: 5 },
+  wantedScale: 2,
+  sizeSets: {
+    cup: [{ id: 'small', name: 'Small' }, { id: 'medium', name: 'Medium' }, { id: 'large', name: 'Large' }],
+  },
+
+  /* ── ingredients ────────────────────────────────────────────────────────── */
+  // each: an Add puts one on every one of those (a slice of cheese on each patty).
+  ingredients: {
+    patty:   { name: 'Patty', plural: 'Patties', stages: 'patty', look: { shape: 'patty' } },
+    bun:     { name: 'Bun', layers: { bottom: 'Bottom Bun', top: 'Top Bun' }, look: { shape: 'bun', colour: 0xe0a456 } },
+    cheese:  { name: 'Cheese', each: 'patty', look: { shape: 'slice', colour: 0xffc21f } },
+    bacon:   { name: 'Bacon', look: { shape: 'strips', colour: 0xb4442a, fat: 0xf2c4a8 } },
+    lettuce: { name: 'Lettuce', look: { shape: 'leaf', colour: 0x5cbf3a } },
+    tomato:  { name: 'Tomato', plural: 'Tomatoes', look: { shape: 'disc', colour: 0xe23b2a, inner: 0xff7a5c } },
+    pickles: { name: 'Pickles', look: { shape: 'chips', colour: 0x6f9f2c } },
+    onion:   { name: 'Onion', plural: 'Onions', look: { shape: 'rings', colour: 0xf3ecdc } },
+    // A sauce comes down the line in its squeeze bottle (colour; cap: the cap and nozzle) and is squirted on.
+    ketchup: { name: 'Ketchup', sauce: true, look: { shape: 'sauce', colour: 0xc8231a, cap: 0xa51a13 } },
+    mustard: { name: 'Mustard', sauce: true, look: { shape: 'sauce', colour: 0xf2c21b, cap: 0xd6a30c } },
+    mayo:    { name: 'Mayo', sauce: true, look: { shape: 'sauce', colour: 0xf8f3e3, cap: 0xffffff } },
+    plate:   { name: 'Plate', look: { shape: 'plate' } },
+
+    fries:   { name: 'Fries', stages: 'fried', look: { shape: 'fries', colour: 0xf2c14e } },
+    rings:   { name: 'Onion Rings', stages: 'fried', look: { shape: 'onionRings', colour: 0xd99a3a } },
+    salt:    { name: 'Salt', look: { shape: 'sprinkle', colour: 0xffffff } },
+
+    cup:        { name: 'Cup', sizes: 'cup', look: { shape: 'cup' } },
+    ice:        { name: 'Ice', look: { shape: 'ice' } },
+    cola:       { name: 'Cola', look: { shape: 'drink', colour: 0x4a2412 } },
+    lemonLime:  { name: 'Lemon-Lime', look: { shape: 'drink', colour: 0xd9f2a0 } },
+    orangeSoda: { name: 'Orange Soda', look: { shape: 'drink', colour: 0xff8a1c } },
+    lemonade:   { name: 'Lemonade', look: { shape: 'drink', colour: 0xfff07a } },
+    icedTea:    { name: 'Iced Tea', look: { shape: 'drink', colour: 0x9a5a1e } },
+  },
+
+  /* ── stations: the phases of the line ───────────────────────────────────── */
+  // backdrop: the station's picture and 3D set (js/food/diner.js); redo: the review's words for
+  // doing it again; tool: the Timed control prop; sounds: { add, cook, stage, done, auto }.
+  stations: {
+    grill: {
+      name: 'Grill', backdrop: 'grill', redo: 'Redo the Grill', tool: 'spatula', sounds: { cook: 'sizzle', done: 'flip' },
+      steps: [{ kind: 'add', ing: 'patty', max: 3 }, { kind: 'cook', ing: 'patty' }],
+    },
+    board: {
+      name: 'Board', backdrop: 'board', redo: 'Redo the Toppings', builds: { on: 'plate', base: 'bun', cap: 'bun' },
+      steps: [
+        { kind: 'add', ing: 'cheese' }, { kind: 'add', ing: 'bacon' }, { kind: 'add', ing: 'lettuce' },
+        { kind: 'add', ing: 'tomato' }, { kind: 'add', ing: 'pickles' }, { kind: 'add', ing: 'onion' },
+        { kind: 'add', ing: 'ketchup' }, { kind: 'add', ing: 'mustard' }, { kind: 'add', ing: 'mayo' },
+      ],
+    },
+    // The fryer cooks what its pick picks (fries or onion rings), then the salt goes on.
+    fryer: {
+      name: 'Fryer', backdrop: 'fryer', redo: 'Redo the Fryer', tool: 'fryerBasket', sounds: { cook: 'fryer', add: 'salt' },
+      steps: [{ kind: 'pick', from: ['fries', 'rings'] }, { kind: 'cook' }, { kind: 'add', ing: 'salt' }],
+    },
+    // The drink is the station's last step, so its done sound is the fountain pouring it.
+    drinks: {
+      name: 'Drinks', backdrop: 'drinks', redo: 'Redo the Drink', builds: { on: 'cup' }, sounds: { done: 'fountain' },
+      steps: [{ kind: 'pick', of: 'size' }, { kind: 'add', ing: 'ice' }, { kind: 'pick', of: 'flavour' }],
+    },
+  },
+
+  /* ── recipes ────────────────────────────────────────────────────────────── */
+  picks: {
+    doneness: { values: ['rare', 'medium', 'mediumWell', 'well'], normal: 'medium' },
+    fry:      { values: ['golden', 'crispy'], normal: 'golden', fancy: ['golden', 'crispy', 'extraCrispy'] },
+    cupSize:  { values: ['small', 'medium', 'large'], normal: 'medium' },
+    soda:     { values: ['cola', 'lemonLime', 'orangeSoda'], normal: 'cola' },
+    tea:      { values: ['lemonade', 'icedTea'], normal: 'lemonade' },
+  },
+  // level: the star level a recipe is first ordered at (1: burgers; 2: the bigger burgers and the
+  // fryer; 3: drinks, as combos; 4: the Tower; 'event': only in the Burger Eating Contest).
+  recipes: {
+    hamburger: {
+      name: 'Hamburger', plural: 'Hamburgers', price: 6, level: 1, course: 'main', stations: ['grill', 'board'],
+      item: { ing: 'plate', parts: [
+        { ing: 'bun' }, { ing: 'patty', done: { pick: 'doneness' } },
+        { ing: 'lettuce', opt: 'in' }, { ing: 'tomato', opt: 'in' }, { ing: 'pickles', opt: 'in' }, { ing: 'onion', opt: 'out' },
+        { ing: 'ketchup', opt: 'in' }, { ing: 'mustard', opt: 'out' }, { ing: 'mayo', opt: 'out' }, { ing: 'bun' }] },
+    },
+    cheeseburger: {
+      name: 'Cheeseburger', plural: 'Cheeseburgers', price: 7, level: 1, course: 'main', stations: ['grill', 'board'],
+      item: { ing: 'plate', parts: [
+        { ing: 'bun' }, { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' },
+        { ing: 'lettuce', opt: 'in' }, { ing: 'tomato', opt: 'in' }, { ing: 'pickles', opt: 'in' }, { ing: 'onion', opt: 'out' },
+        { ing: 'ketchup', opt: 'in' }, { ing: 'mustard', opt: 'out' }, { ing: 'mayo', opt: 'out' }, { ing: 'bun' }] },
+    },
+    baconCheeseburger: {
+      name: 'Bacon Cheeseburger', plural: 'Bacon Cheeseburgers', price: 9, level: 2, course: 'main', stations: ['grill', 'board'],
+      item: { ing: 'plate', parts: [
+        { ing: 'bun' }, { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' }, { ing: 'bacon' },
+        { ing: 'lettuce', opt: 'in' }, { ing: 'tomato', opt: 'in' }, { ing: 'pickles', opt: 'out' }, { ing: 'onion', opt: 'in' },
+        { ing: 'ketchup', opt: 'in' }, { ing: 'mustard', opt: 'out' }, { ing: 'mayo', opt: 'out' }, { ing: 'bun' }] },
+    },
+    doubleCheeseburger: {
+      name: 'Double Cheeseburger', plural: 'Double Cheeseburgers', price: 10, level: 2, course: 'main', stations: ['grill', 'board'],
+      item: { ing: 'plate', parts: [
+        { ing: 'bun' }, { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' },
+        { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' },
+        { ing: 'lettuce', opt: 'in' }, { ing: 'tomato', opt: 'out' }, { ing: 'pickles', opt: 'in' }, { ing: 'onion', opt: 'in' },
+        { ing: 'ketchup', opt: 'in' }, { ing: 'mustard', opt: 'in' }, { ing: 'mayo', opt: 'out' }, { ing: 'bun' }] },
+    },
+    fries: {
+      name: 'Fries', plural: 'Fries', price: 3, level: 2, course: 'side', stations: ['fryer'],
+      item: { ing: 'fries', done: { pick: 'fry' }, parts: [{ ing: 'salt', opt: 'in' }] },
+    },
+    onionRings: {
+      name: 'Onion Rings', plural: 'Onion Rings', price: 4, level: 2, course: 'side', stations: ['fryer'],
+      item: { ing: 'rings', done: { pick: 'fry' }, parts: [{ ing: 'salt', opt: 'in' }] },
+    },
+    // The drink names the item (nameFrom: the flavour picked: "Cola", "Iced Tea").
+    fountain: {
+      name: 'Fountain Drink', plural: 'Fountain Drinks', price: 2, level: 3, course: 'drink', stations: ['drinks'],
+      item: { ing: 'cup', nameFrom: 'flavour', size: { pick: 'cupSize' }, parts: [{ ing: 'ice', opt: 'in' }, { ing: { pick: 'soda' } }] },
+    },
+    lemonade: {
+      name: 'Lemonade or Iced Tea', plural: 'Lemonades', price: 3, level: 3, course: 'drink', stations: ['drinks'],
+      item: { ing: 'cup', nameFrom: 'flavour', size: { pick: 'cupSize' }, parts: [{ ing: 'ice', opt: 'in' }, { ing: { pick: 'tea' } }] },
+    },
+    // Three patties and everything: a rare order from level 4 (Reginald's "newest"), and the
+    // ticket behind the "five patties" ridiculous order.
+    tower: {
+      name: 'The Diner Tower', plural: 'Diner Towers', price: 14, level: 4, rare: true, course: 'main', stations: ['grill', 'board'],
+      item: { ing: 'plate', parts: [
+        { ing: 'bun' },
+        { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' },
+        { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' },
+        { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' }, { ing: 'bacon' },
+        { ing: 'lettuce', opt: 'in' }, { ing: 'tomato', opt: 'in' }, { ing: 'pickles', opt: 'in' }, { ing: 'onion', opt: 'in' },
+        { ing: 'ketchup', opt: 'in' }, { ing: 'mustard', opt: 'in' }, { ing: 'mayo', opt: 'in' }, { ing: 'bun' }] },
+    },
+    // The Burger Eating Contest's finale: Coach Bev's order for her team, drawn giant (1.6 times
+    // bigger). The same grill and board, so it adds no choices.
+    teamStack: {
+      name: 'The Team Stack', plural: 'Team Stacks', price: 20, level: 'event', course: 'main', look: { giant: true }, stations: ['grill', 'board'],
+      item: { ing: 'plate', parts: [
+        { ing: 'bun' },
+        { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' },
+        { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' },
+        { ing: 'patty', done: { pick: 'doneness' } }, { ing: 'cheese' },
+        { ing: 'pickles', opt: 'in' }, { ing: 'onion', opt: 'in' },
+        { ing: 'ketchup', opt: 'in' }, { ing: 'mustard', opt: 'in' }, { ing: 'bun' }] },
+    },
+  },
+
+  /* ── the ladder (spec 4.3) ──────────────────────────────────────────────── */
+  // The engine's numbers as they are (pack-format.md 12): one item at levels 1-2 (level 1 keeps
+  // at most two optional toppings), one or two from level 3 with gross-outs, ridiculous orders and
+  // a visitor from level 4, the fancy picks (extra crispy) at level 5. A level here would override them.
+  levels: {},
+
+  /* ── gross-outs (DESIGN.md "Gross-outs"), from level 3 ──────────────────── */
+  // on: the ingredients it can happen to (only when the ticket wants them). say: how the
+  // step's spoken label names it ({name} is the ingredient, lower case). fx: how it looks.
+  gross: [
+    { id: 'mouldy',  on: ['cheese'], say: 'the green cheese', fx: { tint: 0x86b83c, stink: true } },
+    { id: 'wilted',  on: ['lettuce'], say: 'the brown lettuce', fx: { tint: 0x7a5a2a, droop: true, stink: true } },
+    { id: 'charred', on: ['bacon'], say: 'the burnt bacon', fx: { tint: 0x2a1a12, smoke: true } },
+    { id: 'hair',    on: ['lettuce', 'tomato', 'pickles', 'onion', 'cheese'], say: '{name} with a hair on it', fx: { hair: true } },
+    { id: 'fly',     on: ['lettuce', 'tomato', 'pickles', 'onion', 'cheese', 'bacon'], say: '{name} with a fly on it', fx: { fly: true } },
+  ],
+
+  /* ── people ─────────────────────────────────────────────────────────────── */
+  // Mitch, in the diner's red shirt and paper hat (packs/cast/art/cast/mitch-burger).
+  manager: { id: 'mitch', art: 'mitch-burger' },
+  // What each person orders here (who they are is packs/cast/cast.js). likes: recipes and
+  // weights. usual: a fixed order ("the usual, hon"). always: in every order the level allows.
+  // favourite: a bonus tip and a line, never stars. set: values they always have. dislikes:
+  // held where a recipe has them, never added. visitor: a special visitor from that level.
+  regulars: [
+    { id: 'marge', likes: [['cheeseburger', 3], ['hamburger', 1]], usual: [{ recipe: 'cheeseburger', set: { doneness: 'medium' } }] },
+    { id: 'gus', likes: [['cheeseburger', 2], ['baconCheeseburger', 2], ['hamburger', 1]] },
+    { id: 'bev', likes: [['doubleCheeseburger', 3], ['baconCheeseburger', 2], ['tower', 1]], favourite: { recipe: 'doubleCheeseburger', bonus: 2 } },
+    { id: 'vernon', likes: [['cheeseburger', 3], ['hamburger', 2], ['doubleCheeseburger', 1]] },
+    // Never lettuce: every burger he orders leaves it off (the ticket never lists it), then order.dislike.
+    { id: 'sal', likes: [['baconCheeseburger', 3], ['doubleCheeseburger', 2], ['cheeseburger', 1], ['tower', 1]], dislikes: ['lettuce'],
+      favourite: { recipe: 'baconCheeseburger', bonus: 2 } },
+    // The onion-ring guy: rings in every order from level 2, always extra crispy, with anything.
+    { id: 'dale', likes: [['onionRings', 4], ['cheeseburger', 1]], always: ['onionRings'], set: { fry: 'extraCrispy' },
+      favourite: { recipe: 'onionRings', bonus: 2 } },
+    // Lemonade, and never an onion (a new reason every visit).
+    { id: 'oakes', likes: [['lemonade', 3], ['hamburger', 1]], set: { tea: 'lemonade' }, dislikes: ['onion', 'rings'] },   // rings are onions
+    // The special visitors, one a shift from level 4: the critic (whatever is newest) and his biggest fan.
+    { id: 'reginald', likes: [['cheeseburger', 1]], visitor: { level: 4 } },
+    { id: 'kai', likes: [['hamburger', 2], ['cheeseburger', 2]], set: { cupSize: 'small' }, visitor: { level: 4 } },
+  ],
+
+  /* ── ridiculous orders (level 4 and 5): said one way, made as a plain ticket ─ */
+  // The customer says order.odd.<id> instead of the order; anything the line can't make is said,
+  // never made (spec 2.3).
+  oddOrders: [
+    // "Five patties." The line takes three: the ticket is the Diner Tower.
+    { id: 'fivePatties', level: 4, recipe: 'tower', say: 'order.odd.fivePatties' },
+    // "Everything except anything green": no lettuce, no pickles, every sauce.
+    { id: 'nothingGreen', level: 4, recipe: 'baconCheeseburger', holds: ['lettuce', 'pickles'], adds: ['mustard', 'mayo'],
+      say: 'order.odd.nothingGreen' },
+    // "The bun on the inside": said, never made; the ticket is a cheeseburger as written.
+    { id: 'bunInside', level: 5, recipe: 'cheeseburger', say: 'order.odd.bunInside' },
+  ],
+
+  /* ── the five-star event (spec 4.4) ─────────────────────────────────────── */
+  // The contestants order at level-4 complexity; Coach Bev orders last, for her team (spoken of,
+  // never shown: her order.gag), and the finale is the giant Team Stack.
+  events: {
+    five: {
+      name: 'The Burger Eating Contest',
+      customers: ['gus', 'sal', 'dale', 'vernon', 'marge', 'oakes'],
+      finale: { customer: 'bev', items: [{ recipe: 'teamStack', set: { doneness: 'well' } }] },
+    },
+  },
+
+  /* ── the tutorial (DESIGN.md "Tutorial") ────────────────────────────────── */
+  // One typical order, made exactly as written with the changes listed, and one gross-out.
+  tutorial: {
+    customer: 'marge',
+    items: [{ recipe: 'baconCheeseburger', set: { doneness: 'medium' }, hold: ['onion'] }],
+    gross: { item: 0, ing: 'cheese', event: 'mouldy' },
+  },
+});

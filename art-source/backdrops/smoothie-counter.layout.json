@@ -1,0 +1,23 @@
+{
+  "picture": "smoothie-counter.png",
+  "size": [
+    1536,
+    1024
+  ],
+  "queue": [
+    0.57,
+    0.802
+  ],
+  "heads": 0.494,
+  "feet": 0.713,
+  "eyes": 0.526,
+  "horizon": 0.48,
+  "sign": [
+    0.313,
+    0.168,
+    0.516,
+    0.216
+  ],
+  "notes": "The jogger's excitement marks to the boy with the rocket; the jogger's hair is the highest head. The sign hangs from the thatch on two ropes, left of centre.",
+  "how": "Fractions of the 1536 x 1024 picture, measured by 2b-seams on 2026-11-09 from zoomed crops (0.25-1% grid); the sign by flood fill of the blank face. queue: the left edge of the first person to the right edge of the last, with what they hold. heads: the top of the highest head or what it holds up. feet: the lowest foot (or where the queue goes behind furniture). eyes: the painted adults' eye line (the pictures were drawn at eye level 1.6 m, so the horizon runs through it). horizon: where the page puts the served customer's eyes: the eye line held to spec 5.2's 0.45-0.48. sign: the blank sign board's face [x0, y0, x1, y1], or null. Redraw a picture: measure it again here, then run tools/build_art.py (it copies this into BBArt.<pack>.counter)."
+}

@@ -1,0 +1,181 @@
+/** Shifts: who comes in, where gross-outs fall, the tutorial, saving mid-order, and many
+ *  bot shifts across every setting. */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const { diner: pack, S, L, W, right, play, random } = require('./bot.cjs');
+
+test('only customers with pictures come in, never the same one twice in a row', () => {
+  const drawn = new Set(pack.regulars.filter(c => c.art).map(c => c.id));
+  for (let seed = 1; seed <= 200; seed++) {
+    const s = S.create(pack, { seed, settings: { shiftLength: 8 } });
+    s.queue.forEach((id, i) => {
+      assert.ok(drawn.has(id), id + ' has no art');
+      if (i) assert.notStrictEqual(id, s.queue[i - 1], 'seed ' + seed + ': ' + id + ' twice in a row');
+    });
+    // Everyone once before anyone twice.
+    assert.strictEqual(new Set(s.queue.slice(0, drawn.size)).size, drawn.size);
+  }
+});
+
+test('gross-outs: at most two a shift, never the first order, never two on one order, only on wanted ingredients', () => {
+  let total = 0, shifts = 0, withOne = 0;
+  for (let seed = 1; seed <= 600; seed++) {
+    const s = S.create(pack, { seed, settings: { shiftLength: 8, orders: ['simple', 'usual', 'fancy'][seed % 3] } });
+    shifts += 1;
+    let here = 0;
+    while (!s.done) {
+      const n = s.n, o = S.next(pack, s);
+      if (o.pending) {
+        here += 1;
+        assert.ok(n > 0, 'not on the first order');
+        const spec = o.items[o.pending.item].spec;
+        assert.ok(spec.parts.some(p => p.ing === o.pending.ing), 'the ticket wants ' + o.pending.ing);
+        assert.ok(pack.gross.find(g => g.id === o.pending.event).on.includes(o.pending.ing));
+      }
+      play(pack, s, (q, ord) => right(pack, ord, q));
+    }
+    assert.ok(here <= pack.grossMax, 'seed ' + seed + ' had ' + here);
+    total += here;
+    if (here) withOne += 1;
+  }
+  assert.ok(total / shifts > 0.5 && total / shifts < 2, 'about one a shift on average, got ' + (total / shifts).toFixed(2));
+  assert.ok(withOne < shifts, 'some shifts have none');
+});
+
+test('the tutorial: one order, exactly as written, with the green cheese', () => {
+  const s = S.create(pack, { seed: 99, tutorial: true });
+  const o = S.next(pack, s);
+  assert.strictEqual(s.length, 1);
+  assert.strictEqual(o.ticket.customer.id, 'marge');
+  assert.strictEqual(W.said(pack, o.ticket), 'Bacon Cheeseburger, medium, no onions.');
+  assert.strictEqual(W.ticket(pack, o.ticket), 'Bacon Cheeseburger: one patty, medium, with cheese, bacon, lettuce, tomato and ketchup.');
+  assert.deepStrictEqual(o.pending, { item: 0, ing: 'cheese', event: 'mouldy' });
+  assert.ok(o.tutorial);
+  const r = play(pack, s, (q, ord) => right(pack, ord, q));
+  assert.strictEqual(r.result.stars, 3);
+  assert.strictEqual(r.result.swaps, 1);
+});
+
+test('warnings happen in the tutorial and nowhere else', () => {
+  const wrong = (q) => (q.kind === 'review' ? 'serve' : q.options[q.options.length - 1].id);
+  const t = S.create(pack, { seed: 4, tutorial: true });
+  let warned = 0;
+  play(pack, t, (q, o) => (warned < 3 ? wrong(q) : right(pack, o, q)), { onWarn: () => { warned += 1; } });
+  assert.ok(warned >= 1);
+  for (let seed = 1; seed <= 30; seed++) {
+    const s = S.create(pack, { seed, settings: { shiftLength: 3 } });
+    while (!s.done) assert.deepStrictEqual(play(pack, s, wrong).warnings, []);
+  }
+});
+
+test('a shift saved in the middle of an order continues exactly', () => {
+  for (const cooking of ['simple', 'timed']) {
+    const run = (cut) => {
+      let s = S.create(pack, { seed: 21, settings: { shiftLength: 4, cooking } });
+      const log = [];
+      let steps = 0;
+      while (!s.done) {
+        S.next(pack, s);
+        while (s.order.phase !== 'served') {
+          if (steps++ === cut) s = JSON.parse(JSON.stringify(s));    // save and load
+          const q = S.question(pack, s), id = right(pack, s.order, q);
+          if (id === null) { S.tick(pack, s, 1); continue; }
+          S.answer(pack, s, id);
+        }
+        log.push(JSON.stringify(S.serve(pack, s)));
+      }
+      return log.join('\n') + JSON.stringify(S.results(s));
+    };
+    assert.strictEqual(run(17), run(-1), cooking);
+  }
+});
+
+test('600 bot shifts across every setting: every order rated 1 to 3 stars, nothing stuck', () => {
+  const styles = ['simple', 'usual', 'fancy'], cookings = ['simple', 'timed'], lengths = [3, 5, 8];
+  let orders = 0;
+  for (let seed = 1; seed <= 600; seed++) {
+    const settings = { orders: styles[seed % 3], cooking: cookings[(seed >> 2) % 2], shiftLength: lengths[(seed >> 3) % 3], speed: 'normal' };
+    const s = S.create(pack, { seed, settings });
+    const bot = seed % 2 ? random(s) : (q, o) => right(pack, o, q);
+    while (!s.done) {
+      const r = play(pack, s, bot).result;
+      assert.ok(r.stars >= 1 && r.stars <= 3);
+      assert.ok(r.tip >= 1);
+      orders += 1;
+      if (!(seed % 2)) assert.strictEqual(r.stars, 3, 'the right answers always earn 3 stars');
+    }
+    assert.strictEqual(S.results(s).orders, settings.shiftLength);
+  }
+  assert.ok(orders > 2500);
+});
+
+test('Simple orders stay small; Usual is mostly one item', () => {
+  let items = 0, two = 0, n = 0;
+  for (let seed = 1; seed <= 300; seed++) {
+    const simple = S.create(pack, { seed, settings: { orders: 'simple', shiftLength: 4 } });
+    while (!simple.done) {
+      const o = S.next(pack, simple);
+      assert.strictEqual(o.items.length, 1);
+      const changes = (o.items[0].spec.with || []).length;
+      assert.ok(changes <= pack.orderStyles.simple.maxOptional);
+      play(pack, simple, (q, ord) => right(pack, ord, q));
+    }
+    const usual = S.create(pack, { seed, settings: { orders: 'usual', shiftLength: 4 } });
+    while (!usual.done) {
+      const o = S.next(pack, usual);
+      n += 1; items += o.items.length; if (o.items.length > 1) two += 1;
+      play(pack, usual, (q, ord) => right(pack, ord, q));
+    }
+  }
+  assert.ok(two / n < 0.45, 'Usual two-item orders: ' + (two / n).toFixed(2));
+});
+
+test('Gus orders two of one thing when the setting allows it', () => {
+  for (let seed = 1; seed <= 100; seed++) {
+    const s = S.create(pack, { seed, settings: { orders: 'usual', shiftLength: 8 } });
+    while (!s.done) {
+      const o = S.next(pack, s);
+      if (o.ticket.customer.id === 'gus') {
+        assert.strictEqual(o.items.length, 2);
+        assert.deepStrictEqual(o.items[0].spec, o.items[1].spec);
+        assert.match(W.ticket(pack, o.ticket), /^Two /);
+      }
+      play(pack, s, (q, ord) => right(pack, ord, q));
+    }
+  }
+});
+
+test('Sal never gets lettuce: every burger holds it, the ticket never lists it, and he has lines about it', () => {
+  const SC = require('../js/core/script.js');
+  const script = require('../packs/diner/script.js');
+  assert.ok(SC.candidates(script, 'sal', 'order.dislike', null).length >= 2);
+  let seen = 0;
+  for (let seed = 1; seed <= 120; seed++) {
+    const s = S.create(pack, { seed, settings: { orders: ['simple', 'usual', 'fancy'][seed % 3], shiftLength: 8 } });
+    while (!s.done) {
+      const o = S.next(pack, s);
+      if (o.ticket.customer.id === 'sal') {
+        seen += 1;
+        for (const it of o.items) {
+          assert.ok(it.spec.holds.includes('lettuce'), 'seed ' + seed + ': ' + JSON.stringify(it.spec));
+          assert.ok(!it.spec.parts.some(p => p.ing === 'lettuce'));
+        }
+        assert.doesNotMatch(W.ticket(pack, o.ticket), /lettuce/i, 'the ticket lists only what goes on');
+      }
+      play(pack, s, (q, ord) => right(pack, ord, q));
+    }
+  }
+  assert.ok(seen > 100, 'Sal came in ' + seen + ' times');
+});
+
+test('Timed answers take the food off at the stage it has reached', () => {
+  const s = S.create(pack, { seed: 8, settings: { cooking: 'timed', speed: 'normal', shiftLength: 1 } });
+  let took = null;
+  play(pack, s, (q, o) => {
+    if (q.kind === 'cook') { if (q.stage === 'well') { took = q.stage; return 'takeOff'; } return null; }
+    return right(pack, o, q);
+  });
+  assert.strictEqual(took, 'well');
+  assert.strictEqual(s.last.order.items[0].answers['grill.1'], 'well');
+});

@@ -1,0 +1,8 @@
+Use case: identity-preserve
+Asset type: full-body character model pose for a 2D comedy diner game, costume variant, 1024 x 1536 portrait PNG.
+Input image 1: approved MITCH character, edit target and exact identity/style reference.
+Draw the SAME character. Copy his face, hair, body shape and proportions, skin, colours, outline weight and shading style exactly. Change ONLY his outfit: add a red bandana tied on his head and a dark green apron over his existing shirt and red tie. His name badge is splattered with hot sauce, while its text remains readable: MANAGER with a strip of masking tape across it bearing handwritten ASST. Keep his phone headset and boom microphone. Preserve the original trousers, shoes, relaxed hands, face, hair silhouette as far as the bandana allows, and full-body positioning.
+Style: original 2D cartoon art for a comedy diner game, TV-cartoon look. Thick, clean, even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated proportions (big head, big hands, big expressive eyes and mouth); a strong readable silhouette. Dry, deadpan adult comedy, never cute or babyish. Original design, no resemblance to existing cartoon characters, shows or brands.
+Pose: NEUTRAL, standing relaxed and natural, calm pleasant face, hands at rest. Match the reference model pose.
+Framing: ONE character, full body from top of head to shoes, facing the viewer and turned very slightly toward viewer's right. Figure fills about 88% of image height, centred with clear margins; no cropping of hands, bandana, hair or feet.
+Background: plain pure white, no floor, no cast shadow, no border. No text except MANAGER and ASST. on the badge; no other objects.

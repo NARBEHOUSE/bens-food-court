@@ -1,0 +1,1012 @@
+# Ben's Food Court: build spec, v2 (2026-11-08)
+
+The contract for everyone building Ben's Food Court. v2 folds in three independent critiques of v1
+(`docs/critique/{engine,access,proposal}.md`); where this file and a critique differ, **this file wins**. Read this
+whole file first, then:
+
+- `BENS-FOOD-COURT` (game folder): the design proposal. It says what the game is.
+- `docs/map/*.md`: a map of the engine before this build (core, flow, ui, world, tests, rules), with file:line refs.
+- `DESIGN.md`: Ben's Burger Bar, the first restaurant and the template. Its rules hold in every restaurant unless this
+  file changes them.
+- `ACCESSIBILITY.md` and `GRAPHICS-QUALITY.md` (hub root). **The hub rulebook outranks the proposal and this file.**
+  Where you must follow it against this file, do so and say so in your report.
+
+Game folder: `bennyshub/apps/games/BENSFOODCOURT` in Benny's PC Hub (OneDrive). PC hub only: nothing goes to F: or the
+website, and nothing goes into `games.json`.
+
+## 0. Ground rules for every agent
+
+1. **Own only your files** (section 10). Read anything. Edit only what you own, plus anything section 10 grants you
+   explicitly. If you need a change in a file someone else owns, put it under "Requests" in your report.
+2. **No browsers, no Electron, no GPU work.** Test with Node: `node --test "tests/*.test.cjs"` (Node 22 wants the
+   quoted pattern, not the folder). Set `BB_PACKS=<id,...>` to test only some packs. The jsdom driver is
+   `JSDOM=<jsdom> node tests/dom-play.cjs [run words]`, where jsdom is
+   `C:/Users/ass/AppData/Local/Temp/claude/4e617c7b76a8b4f0/5068fa2a-ce07-4cfd-8b07-d3a624e474b5/scratchpad/harness/node_modules/jsdom`.
+   CPU review frames come from `tools/review-frames.cjs`.
+3. **Voices are text to speech until the final voice pass.** Never run Voice Studio, never record, never design voices.
+4. **No git here.** Before you first rewrite a file you own, copy it to `docs/backup/<path from the game folder>.before`,
+   for example `docs/backup/packs/diner/pack.js.before`. Never overwrite an existing backup.
+5. **Writing tone** (DESIGN.md "Writing tone"):
+   - Funny for adults, dry and absurd.
+   - The joke lands on the customer, the food or Mitch, never on the player.
+   - Nothing ever mentions the player's speed or skill. No baby talk.
+   - Crude means PG: no swearing.
+   - Characters from every background are written and drawn with respect. The humour comes from personality, never
+     from accent or ethnicity.
+6. **Customer rules**, in every restaurant:
+   - A personality changes *what* someone orders, never how many presses it takes.
+   - **The level and the Order Size setting decide item counts and repeat counts. Personality never does.**
+   - The ticket spells out the whole order: everything that goes on, with counts, in line order, and never "no X".
+   - Nobody brings a new mechanic, changes their mind, leaves or hurries the player.
+   - Snark aims at the food, never at the player.
+   - Greeting plus order is at most about two sentences. A long gag is one `order.gag` line of 8 seconds or less.
+7. **Input, as ui.js does now.**
+   - Choices act on release, through the hub's choice scanner.
+   - Keydown only starts things: the Space brake, the 3 s back-scan timer, and the Pause ring (shown from 2 s; Pause
+     opens at 5 s, and that release is swallowed).
+   - **In Timed cooking the clock freezes while either switch is down**, so Take It Off takes the stage shown when the
+     press began, however long the hold.
+8. **Choice limits.**
+   - A line screen offers at most 4 answers, plus Ticket, plus Pause, plus the blank stop. More values page with
+     "More…".
+   - The court and each court part never have more than 5 stops.
+   - Pause and Settings are flat cards, exempt from that limit as in the Burger Bar.
+   - Every card, the court and each court part open at -1 (nothing highlighted), including returns from Back and
+     Cancel. Only rows restore by id.
+9. **Simple mode stays safe and predictable.** Simple always comes out as chosen. Timed is the only place timing
+   matters, and time is never scored.
+10. **Reports.** Finish with:
+    - what you built;
+    - the format or API you settled, also written to `docs/api/<area>.md`;
+    - the tests you ran, with their output;
+    - anything not done, and Requests.
+
+## 1. The game
+
+Ben's Food Court is a mall food court seen from above, with seven restaurants round three sides of it like an
+upside-down U: three along the top, two down each side, and the bottom side open onto the mall, with the seating in
+the middle. Each restaurant is a pack on the shared engine (the Burger Bar's), with its own line, cooking step,
+backdrops, food, Mitch uniform and customers.
+
+The player picks a restaurant, works shifts there, and earns stars. Stars never go down. Three restaurants are open at
+the start; the other four open as stars rise. When all seven reach five stars, the court throws the grand
+celebration.
+
+**Flow:** main menu over the out-of-focus court (Play, How to Play, Settings, Exit Game) → Play brings the court into
+focus → a storefront → that restaurant's counter → shifts → results → back to the court.
+
+- On a first visit, a card offers the restaurant's tutorial.
+- The Burger Bar's own title menu goes away; it opens straight to the counter, like every restaurant.
+
+## 2. Names and ids
+
+### 2.1 Restaurants (pack ids are final)
+
+| pack | Name | Scan name | Arm, slot | Open at start | Unlock order |
+|---|---|---|---|---|---|
+| `burrito` | Ben's Burritos | Burritos | left, 2 (lower) | no | 2nd |
+| `smoothie` | Ben's Smoothie Shack | Smoothie Shack | left, 1 (upper) | no | 1st |
+| `pizza` | Ben's Pizza Parlor | Pizza Parlor | top, 1 (left) | yes | |
+| `diner` | Ben's Burger Bar | Burger Bar | top, 2 (middle) | yes | |
+| `cafe` | Ben's Cafe | Cafe | top, 3 (right) | yes | |
+| `sushi` | Ben's Sushi | Sushi | right, 1 (upper) | no | 3rd |
+| `icecream` | Ben's Ice Cream Emporium | Ice Cream Emporium | right, 2 (lower) | no | 4th |
+
+**The court is an upside-down U** (the user, 2026-11-08): three restaurants along the top, two down each side, and the
+bottom side open, so the seating in the middle is never closed off from the mall concourse. **Scan order** goes round
+it from the bottom left: burrito, smoothie, pizza, diner, cafe, sushi, icecream (up the left arm, along the top, down
+the right arm). It is the same in the flat list and the parts. The arm ids are `left`, `top` and
+`right` (`BBCourt.arms`).
+
+### 2.2 Characters (cast id = art folder name)
+
+- **Mitch** is `mitch`. He has uniforms `mitch-burger` (the diner's), `mitch-pizza`, `mitch-smoothie`, `mitch-cafe`,
+  `mitch-sushi`, `mitch-burrito` and `mitch-icecream`, each with ten poses: neutral talking pointing thumbsUp shocked
+  disgusted facepalm laughing worried shrug.
+  - `pack.manager.art` names the uniform folder. Once its neutral exists, the folder is used, and a missing pose falls
+    back to *that folder's* neutral.
+  - `mitch` alone has an eleventh pose, `promoted` (the ASST. tape off his badge), used only in the grand celebration.
+- **Regulars at every restaurant:** `marge`, `gus`, `bev` (Coach Bev), `vernon`, `sal`.
+- **Recurring cast:**
+  - `dale`: the onion-ring guy; Burger Bar regular.
+  - `priya`: night-shift nurse; the Cafe's most loyal regular.
+  - `oakes`: Professor Oakes, with a new reason to hate onions at every menu with onions.
+  - `reginald` (critic) and `kai` (ten-year-old reviewer): special visitors at every restaurant from level 4.
+  - `tasha`: deadpan skater; Smoothie Shack and Ice Cream Emporium regular.
+- **Each restaurant's own customers ("locals"):**
+
+  | Restaurant | Locals |
+  |---|---|
+  | pizza | `tony` (retired opera tenor, pizza purist, offended by pineapple), `pam` (birthday-party mom: "for twelve" is said, never made) |
+  | smoothie | `breeze` (slow surfer; his gag is in his words, not their length), `brock` (gym bro, "all the protein" is said) |
+  | cafe | `jitters` (far too much coffee) |
+  | sushi | `hiro` (Chef Hiro, the stern master who judges), `dennis` (nervous first-timer) |
+  | burrito | `inferno` (wants it hotter), `rita` (construction worker; "one of everything" is said) |
+  | icecream | `lulu` (Little Lulu agonises, then picks vanilla; the ticket shows her final pick), `walt` (Grandpa Walt, "like 1955") |
+
+  A content agent may add one other restaurant's local as a level-4 visitor (a cameo).
+- **The court:** `pa` is the mall announcer, voice only, no art. `shopper1` … `shopper6` are extras with one neutral
+  picture each.
+- **Customer poses:** neutral talking waiting happy delighted annoyed angry disgusted shocked laughing.
+- **Drawing size:** every pose is drawn on the same tall canvas. `scale` in the cast (default 1; `kai` 0.74, `lulu`
+  0.66) draws children smaller, feet on the same floor line.
+- **Drawn means ready:** a customer comes in only when their folder has every customer pose (see 4.5).
+- **Art status:** neutral models of every character and uniform, every backdrop, the court, its props and the shoppers
+  exist and were checked by eye. The other nine poses (wave 2) arrive during the build. Code must follow
+  `art/manifest.js`.
+
+### 2.3 Adapting the proposal's brief
+
+- **The proposal's table "Regulars across the court" is the brief** for each pack's regulars, adapted by rule 0.6:
+  - Gus's "two" is his `twin`, only where the level allows two items. Kai's `short` is the mirror: he orders one item
+    even where the level allows two. Both stay inside what the level allows, so neither ever adds presses.
+  - "A dozen donuts", "two of every roll", "for twelve", "one of everything", "all the protein" and "for the team" are
+    `order.gag` lines over a normal-sized order.
+  - Vernon orders alone at sushi; his lines mention Chef Hiro. Sal's smoothie refusal is his greet line; his order
+    never changes.
+- **Values the content agents add** so the brief fits the line: burrito topping Jalapeños; burrito protein None; pizza
+  recipe Meat Lover's; cafe Sugar (an Add, max 2, only when the drink is Drip). Pizza has no size: "two larges" is
+  said.
+- **Dislikes, wherever they apply:** Sal dislikes lettuce in every pack that has it. Oakes dislikes onions in every pack
+  that has them (pico does not count).
+- **Anything the line cannot make is said, never made.** That covers the Tower's five patties, the bun on the inside,
+  seven extra shots, the ten-scoop tower and Inferno's "every sauce": a line plus a normal ticket.
+
+## 3. Files
+
+```
+BENSFOODCOURT/
+  index.html                  the one page: menu, court, every restaurant
+  BENS-FOOD-COURT             the proposal (do not edit)
+  DESIGN.md                   rewritten at the end
+  docs/FOODCOURT-BUILD.md     this spec
+  docs/map/                   the engine map
+  docs/api/                   what each phase settles
+  docs/backup/                pre-edit copies
+  docs/critique/              the spec critiques
+  js/core/*.js                rules, Node-testable; never name an ingredient, station, recipe or pack
+  js/core/cast.js             NEW: merge(cast, pack)
+  js/core/court.js            NEW: the court's rules (BB.courtRules)
+  js/packs.js                 NEW: registry of loaded packs; merged views; the active pack
+  js/court.js                 NEW: the court screen (BB.court)
+  js/food/kit.js              NEW: 3D toolkit plus builders several packs share (blender jar, pour/fill, scatter, squeeze bottle, heap)
+  js/food/<pack>.js           NEW: each restaurant's 3D food, sets and cooking visuals (diner.js holds the burgers)
+  js/{game,ui,stage,world,audio,save,main}.js
+  css/bb.css
+  packs/court/court.js        NEW: BBCourt data
+  packs/court/script.js       NEW: court lines: Mitch, pa, shoppers, cheers
+  packs/court/art/            court.webp, props/{shutter,grandOpening,goldSign,progressBoard}.webp, shoppers/<id>.webp
+  packs/cast/cast.js          NEW: BBCast, every character
+  packs/cast/script.js        NEW: lines that work at any restaurant
+  packs/cast/art/cast/<id>/   every character's poses (copied from packs/diner/art/cast, plus the new ones)
+  packs/shared/art/props/     register, bell, back5, spatula, ticketWheel (copied from packs/diner/art/props)
+  packs/shared/sound/         shared sound effects
+  packs/<pack>/pack.js        one restaurant's data
+  packs/<pack>/script.js      its lines
+  packs/<pack>/art/           backdrops/, props/ (optional overrides), manifest.js
+  packs/<pack>/sound/         its own cooking sounds
+  tests/
+    *.test.cjs                loop over every restaurant pack (or BB_PACKS)
+    packs/test-pizza/
+    packs/diner-golden/       today's diner, frozen for the diner-specific assertions
+  tools/  art-source/  voice-source/
+```
+
+**Phase 1 copies and never moves.** `packs/diner/art/{cast,props}` and `packs/diner/sound` stay until the page has
+switched over. The coordinator deletes the old folders in phase 3.
+
+**Phase-1 owners may add their own new files to index.html** as marked blocks
+(`<!-- world: ... -->`, `<!-- cast: ... -->`, `<!-- audio: ... -->`, `<!-- core: ... -->`). The page agent keeps those
+blocks.
+
+**Missing art never breaks the game.**
+- A missing backdrop shows the theme colour.
+- A missing court picture shows drawn storefronts.
+- A missing uniform pose falls back to that uniform's neutral.
+
+## 4. Rules
+
+### 4.1 Results, stars, popularity, unlocks
+
+The shift result, as core-b returns it and every other agent codes to:
+
+```
+{ pack, level, event: <id>|null, tutorial: bool, orders: n, stars: [1-3 per order], avgStars, coins }
+```
+
+`BB.courtRules.addShift(court, state, packId, results)` returns `{ good, starsUp, stars, popularity, opened: [ids], gold,
+celebrate }`, with these rules:
+
+- **Good shift:** a finished shift is good when `avgStars ≥ 2.0`. Tutorials never count.
+- **Popularity:** each good shift adds 1 (max 10). It never goes down.
+- **Stars:** derived from popularity, never lowered, kept as a raised-only field: 1 at 0, 2 at 1, 3 at 3, 4 at 5.
+- **The event:** at popularity ≥ 7 with 4 stars, the five-star event is **due**. A good event shift gives the 5th star
+  and the gold sign. A failed event shift can be tried again.
+- **Fully busy:** popularity keeps growing after five stars; popularity 10 is fully busy.
+- **Unlocks** go in the order Smoothie Shack, Burritos, Sushi, Ice Cream Emporium:
+
+  | Restaurant | Opens when every open restaurant has |
+  |---|---|
+  | 4th | 3 stars |
+  | 5th | 4 stars |
+  | 6th | 5 stars |
+  | 7th | 5 stars |
+
+- **Grand celebration:** when all seven have five stars, once.
+- **Coins** are the tips, shown on the receipt and results and kept in `bb-progress:<pack>.coins`. Nothing spends them
+  yet.
+
+### 4.2 Leaving and resuming
+
+- **Leaving keeps the shift.** Food Court, Main Menu, Exit Game, or the hub closing the game, all save it as it is in
+  `bb-shift:<pack>`.
+- The storefront then says "shift in progress", and entering resumes it. An order left half made starts over (the
+  user, 2026-11-11): the same customer walks up and says it again, same ticket and gross-out, nothing made yet; the
+  shift's earlier customers, coins and results stay. An order already served is handed over as it was.
+- A shift's orders count once, when it finishes.
+- **Restart Shift is the only route that discards a shift.**
+- Every route out confirms, Cancel first, with the consequence spoken on open:
+  - Food Court: "This shift is saved. You can finish it later."
+  - Exit Game: "This shift is saved, and you go back to the hub."
+  - Restart Shift: "This shift starts again. Orders served so far are lost."
+- A tutorial never touches `bb-shift:<pack>`.
+
+### 4.3 The ladder (every restaurant)
+
+`pack.levels[1..5]` describes a shift at that star level. Order Size "One Item" overrides any level to one item.
+
+| Level | Orders | Gross-outs | Extras |
+|---|---|---|---|
+| 1 | one item; simple, at most a couple of changes; recipes of level 1 | none | |
+| 2 | one item; adds recipes with `level` 2 and longer tickets | none | |
+| 3 | one or two items (a main and a side or drink, via `recipe.course`) | yes, at most 2 per shift | |
+| 4 | as 3 | yes | ridiculous orders (`oddOrders`); exactly one special visitor per shift, never first, when one is drawn |
+| 5 | as 4 | yes | after the event |
+
+Other ladder rules:
+
+- `recipe.level` (default 1) is the only recipe gate. `unlock` and `milestone` are dropped from packs.
+- **Press budget**, Node-checked:
+  - In Simple, a level-1 item takes no more than the diner's 13-14 line choices.
+  - No order at any level takes more than 28.
+  - Every content agent reports press counts per recipe and per level.
+
+### 4.4 Events, ridiculous orders, visitors
+
+- **The five-star event** (`pack.events.five`):
+  - **When it is due:** the storefront label adds "five-star event next", and entering opens a card at -1 naming it:
+    Start the Event · Normal Shift · Food Court.
+  - **A normal shift** while the event is due grows popularity but never changes stars.
+  - **The event shift** has Shift Length orders, the last always the finale. Each order:
+    - has at most 3 items at level-4 complexity;
+    - comes from a drawn cast member who visits this restaurant. Groups without art are spoken of, never shown: Bev
+      orders "for the team", and Pam for the wedding party.
+  - **Giant items** are event-only recipes (`level: 'event'`) with a `giant: true` look, which the food module draws
+    bigger. Examples: The Kitchen Sink, the heart-shaped pizza. They never add choices.
+  - **Mitch's lines:** `event.intro` before the first order, `event.celebrate` after a good event, `event.again` after a
+    failed one.
+  - **Sushi:** Chef Hiro's order is the finale, and his reaction is the approval. The 5th star still follows the
+    average rule, as everywhere.
+- **Ridiculous orders** (`pack.oddOrders`, level 4+):
+  - Each is an order template whose customer says `order.odd.<id>` instead of the usual order sentence.
+  - It resolves to normal choices, and the ticket stays plain and complete.
+  - At most one per shift.
+- **Visitors:** Reginald and Kai at every restaurant, as `regulars` entries with `visitor: { level: 4 }`, plus any
+  cameo. A visitor says `visitor.arrive` before greeting.
+
+### 4.5 Who comes in
+
+`S.create(pack, { drawn: [ids], level, event, settings, ... })`:
+
+- **Only drawn ids come in:** the queue, visitors, event orderers and the tutorial customer.
+- **The page builds `drawn`** from `BBArt.cast`: a folder with every customer pose. Node tests pass every id.
+- **Substitutes:** a tutorial customer or event orderer who is not drawn is replaced by the first drawn regular.
+- **Nobody drawn:** `S.create` returns a finished, empty shift rather than looping.
+
+### 4.6 Gross-outs
+
+- **Where:** a gross-out is a bad thing offered before it is used. It sits on:
+  - an **Add** step, as now; or
+  - a **pick** step whose values plus Swap It are at most 4 answers (never a paged pick). The bad one is the value the
+    ticket wants.
+- **How it plays:**
+  - The spoken label names it ("Oat milk, spoiled").
+  - Choosing it serves it.
+  - Swap It replaces it and asks again.
+  - Choosing another value is a pick mistake.
+- **Never on a cook step and never on an auto step.**
+  - Burnt or overcooked stays Timed's last stage.
+  - The bursting burrito is a no-mistake joke playout after the wrap.
+  - A content agent moves or replaces any brief gross-out that cannot sit on such a step (the sock goes into the ice
+    Add) and lists each change.
+- **Schema** rejects a gross-out on any step that would go over 4 answers with Swap It.
+
+## 5. Each restaurant
+
+### 5.1 What every pack has
+
+- **People:** its regulars (5.4), locals and visitors; a counter scene.
+- **The line:** stations whose real-object controls are re-skinned shared ones.
+- **Cooking:** a stage set with its own words and a Timed control prop.
+- **Gross-outs** (4.6).
+- **Mitch:** in its uniform.
+- **Ladder content:** ridiculous orders and the five-star event.
+- **Teaching and help:** a tutorial (one guided order; Mitch warns before mistakes) and help text.
+- **Look:** a colour theme.
+- **Writing:** a full script (5.5).
+
+### 5.2 Stations, backdrops and 3D sets
+
+Each station names `backdrop:`, one of the pack's backdrop names below. Several stations may share one. There is no
+`pack.backdrops`, except `counter`, which every pack has.
+
+The 3D set is keyed by the backdrop name and drawn by `js/food/<pack>.js`, its camera solved so the food sits on that
+picture's surface line.
+
+| pack | backdrops (surface line, % down the picture) |
+|---|---|
+| diner | counter 78, grill 65, board 62, fryer 65, drinks 62 |
+| pizza | counter 78, prep 62 (crust, sauce, cheese, toppings; also the cut), oven 65 |
+| smoothie | counter 78, prep 62, blender 65 |
+| cafe | counter 78, coffee 65, donuts 62 (dough, fryer, glaze) |
+| sushi | counter 78, prep 62, roll 60 |
+| burrito | counter 78, prep 62 (line, wrap), griddle 65 |
+| icecream | counter 78, scoop 62 (holder, size, flavours), toppings 62 (toppings; milkshakes on its shake machine) |
+
+The unprefixed diner sources (`counter`, `grill`, `board`) are the diner's; every other source is
+`<pack>-<name>.png` in `art-source/backdrops/`.
+
+**Settled in phase 1** (`docs/api/world.md`):
+- **Surface lines are measured, not taken from the table.** The generated pictures miss their prompts by up to 2%.
+  Each food agent measures its own backdrops (the method is in world.md) and uses what it measured; the table is what
+  the pictures were asked for. The diner's measured lines: grill 64, board 64, fryer 65.7, drinks 63.2.
+- **Counter scenes match the court** (the user, 2026-11-08): each `counter` backdrop is the view from behind that
+  storefront's counter looking out into the court, and its counter, decor and colours match that storefront as drawn
+  in the court picture, so zooming in from the court is continuous. All seven were redrawn on 2026-11-09 (the old
+  ones are in `art-source/review/counters-v1/`).
+- **Counters sit low, solved to the picture** (revised 2026-11-09; the user: the Burger Bar's counter was "too high"
+  and "cutting off customers in the background", and the served customer was "much too high"). This replaces the
+  phase-1 fixed counter camera (the counter top started at 54.7% of the screen):
+  - Every counter set is solved like a station: `line: 0.80`, one value for every restaurant (every counter picture
+    keeps its painted queue, stools and floor above 80%), with `surface: { y: <counter top>, back: <its back edge> }`.
+    The counter top's back edge lands at 80% of the picture: about 85.5% of a 16:9 screen, 80% of a 4:3 one.
+  - Nothing the game draws covers the painted queue above the line, except the served customer.
+  - **The served customer** stands just behind that edge: the counter hides them from about the hips down, their eyes
+    near the painted horizon (about 45 to 48% of the picture), never cut off at the top. A child (cast `scale`) keeps
+    the same feet line, so only head and shoulders show. The page reads the line's screen position for the window
+    from `BB.world` and places the customer, the speech bubble and the counter props from it.
+  - The order on the counter sits on the counter top, below the line, fully on screen at 16:9, 16:10, 4:3 and 21:9.
+
+### 5.3 Lines
+
+The proposal's "The restaurants" section is the brief.
+
+- **diner:**
+  - As built: grill, then board.
+  - At level 2 the fryer adds fries and onion rings, with salt.
+  - At level 3, sides and drinks come as combos: fountain, lemonade or iced tea.
+  - Ridiculous orders: the Tower ("five patties" is said; the ticket is the 3-patty Tower), and "everything except
+    anything green".
+  - Event: the Burger Eating Contest (Bev orders for her team).
+- **pizza:**
+  - prep: crust Thin/Regular/Deep Dish; sauce Red/White/None; cheese Add/Skip; toppings one at a time: pepperoni,
+    sausage, mushrooms, peppers, onions, olives, pineapple.
+  - Then the oven (Light/Golden/Crispy), then the cut, a pick of 4/6/8 slices on the prep backdrop.
+  - Meat Lover's, and garlic knots as a side from level 2.
+  - Gross-outs: mouldy mushrooms, hair in the cheese, a fly on the pepperoni. Burnt crust is Timed's last stage.
+  - Event: the Pizza Party. The wedding party is spoken of; the heart-shaped pizza is an event recipe.
+- **smoothie:**
+  - prep: size S/M/L; base Juice/Milk/Yogurt/Oat Milk; fruits one at a time: strawberry, banana, mango, pineapple,
+    blueberry; extras: spinach, protein, honey, ice.
+  - Then the blender (Chunky/Smooth/Super Smooth). Acai bowls from level 3.
+  - Gross-outs: brown banana, mouldy strawberries, a bug in the ice, a sock (in the ice Add).
+  - Event: the Beach Volleyball Tournament.
+- **cafe:** two lines.
+  - Coffee, at the coffee bar: size; drink Drip/Latte/Cappuccino/Hot Chocolate; milk Whole/Oat/Skim/None; extras:
+    extra shot, vanilla, caramel, whipped cream; Sugar (max 2, Drip only).
+    - Then the espresso pour. In Simple it is automatic to the ticket's pour (`simple: 'auto'`); in Timed, stop the
+      pour.
+  - Donuts, at the donut station: dough Classic/Chocolate/Jelly-filled.
+    - Then the fryer (Golden/Dark Golden; Timed is one stop).
+    - Then glaze Sugar/Chocolate/Strawberry/None and toppings: sprinkles, coconut, nuts.
+  - Coffee and donut together from level 3.
+  - Gross-outs: a stale donut (on a pick of 3), a fly in the sprinkles. Spoiled milk only on a step with 3 or fewer
+    values, else dropped. Burnt coffee is Timed's last stage.
+  - Event: the Morning Rush.
+- **sushi:**
+  - prep: roll Regular/Inside-Out/Hand Roll; rice White/Brown; fillings one at a time: salmon, tuna, crab, cucumber,
+    avocado, cream cheese; toppings: sesame seeds, spicy mayo, eel sauce.
+  - Then the roll: pieces 6/8/10, a pick in Simple and Timed alike, with a flourish.
+  - Miso soup side from level 2.
+  - Gross-outs: fish that smells off, a hair in the rice, soggy seaweed, a fish that winks.
+  - Event: the Sushi Boat; Hiro is the finale.
+- **burrito:**
+  - prep: style Burrito/Bowl/Tacos; rice White/Brown/None; beans Black/Pinto/None; protein Chicken/Steak/Veggie/None;
+    toppings one at a time: cheese, lettuce, pico, corn, sour cream, guacamole, jalapeños; hot sauce
+    Mild/Medium/Hot/None.
+  - Then the wrap (an automatic flourish, on prep; the burst is a joke playout), then the griddle (Lightly
+    Toasted/Toasted/Extra Crispy; Timed is one stop).
+  - Chips and salsa side from level 2.
+  - Gross-outs: brown guacamole, a hair in the beans, a fly in the salsa.
+  - Event: the Burrito Challenge (Inferno).
+- **icecream:**
+  - scoop: holder Cone/Waffle Cone/Cup; scoop size (Simple: Small/Regular/Huge; Timed: stop it at the named stage);
+    flavours one scoop at a time (vanilla, chocolate, strawberry, mint chip, cookie dough; rocky road and bubblegum at
+    level 2).
+  - Then toppings one at a time: sprinkles, hot fudge, caramel, whipped cream, nuts, cherry.
+  - Milkshakes from level 2 (a shake station on the toppings backdrop's machine); banana splits from level 3.
+  - Gross-outs: freezer-burned ice cream (on a pick of 3 or fewer), hair in the sprinkles, a cherry that is actually a
+    tomato.
+  - Event: the Kitchen Sink, a giant sundae; Bev orders it for the Little League team.
+
+**Every stage set:**
+- names its words: `ask` (e.g. "How smooth?") and `stop` (e.g. "Stop the Blender", "Pull It Out", "Stop the Pour");
+- is at least as slow as the diner: Very Slow 12 s, Slow 8 s, Normal 5 s per stage, the wanted stage ×2. Schema
+  enforces this.
+
+**Every Timed stop** is a named stage, spoken when it changes and shown on the gauge as a word plus a mark. Each cook
+station names its Timed control prop (`tool`), with a drawn button as the fallback. The shared tool props in
+`packs/shared/art/props/` are: `spatula` (the diner's grill), `peel` (the pizza oven), `fryerBasket` (any fryer: the
+diner's fries and rings, the cafe's donuts), `blenderSwitch` (the smoothie blender, the ice-cream shake mixer),
+`scoop` (the ice-cream scoop size), `espressoLever` (the cafe's pour) and `grillPress` (the burrito griddle).
+
+### 5.4 Regulars per restaurant
+
+- Everywhere: marge, gus, bev, vernon, sal.
+- Diner: dale and oakes.
+- Pizza: oakes (onions).
+- Cafe: priya.
+- Burrito: oakes (onions).
+- Smoothie and icecream: tasha.
+- Everywhere at level 4: reginald and kai, as visitors.
+
+What each regular orders follows the proposal's table, adapted per 2.3.
+
+### 5.5 The script
+
+**The moment registry.** `SC.MOMENTS` (core-b, `js/core/script.js`, documented in `docs/api/script.md`) lists every
+moment, with its speakers and allowed blanks. game.js calls only listed moments. The coverage test checks every moment
+for every speaker who can say it, at every restaurant they visit.
+
+**Customers**, at every restaurant they visit (each pack writes its own `customer` fallback lines):
+
+- **Arriving and ordering:**
+  - `greet`
+  - `visitor.arrive` (visitors only)
+  - `order.usual`
+  - `order.twin`
+  - `order.dislike` {ing}
+  - `order.gag` (their running gag, said after the order; 8 s or less)
+  - `order.odd.<oddId>`
+- **While the food is made:**
+  - `smalltalk`: once per order, after the last station and before the review.
+- **Reacting:**
+  - `react.3`, `react.2`, `react.1`, `react.favourite`, `react.gross`
+- **Naming what was wrong:**
+  - `complain.extra` {ing}, `complain.unasked` {ing}, `complain.missing` {ing}
+  - `complain.tooMany`, `complain.tooFew`
+  - `complain.done` {want}
+  - `complain.pick` {slot}{want}, e.g. "I said white sauce"
+  - `complain.more`
+  - `complain.gross.<id>` {ing}
+- **Leaving:**
+  - `goodbye`: after the reaction and complaints, before the receipt.
+- **Cross-court gossip:**
+  - `mention` {about}: lives only in `packs/cast/script.js`. Said only when that restaurant is open and is not this
+    one, and at most once per shift.
+
+**Mitch**, per restaurant:
+
+- **The shift:**
+  - `shift.start`, `shift.end`
+  - `uniform`: a joke about his uniform, said on the first shift at a restaurant in each session.
+- **The tutorial:**
+  - `tutorial.intro`, `tutorial.ticket`, `tutorial.review`, `tutorial.serve`, `tutorial.gross`
+  - `tutorial.<stationId>` for every station
+  - `tutorial.cook.<stationId>` for every cook step
+  - `tutorial.warn.*`, including `tutorial.warn.pick` {slot}{want}
+- **During the shift:**
+  - `gross.<id>` for every gross-out
+  - `nearly` {want}
+  - `after.3`, `after.1`, `after.gross`
+- **The event:**
+  - `event.intro`, `event.celebrate`, `event.again`
+
+**The court** (`packs/court/script.js`):
+
+- Mitch:
+  - `court.return` {goal}: hints; said only when the goal has changed.
+  - `court.unlock` {name}
+  - `court.goldSign` {name}
+  - `court.celebrate`
+  - `court.promoted`
+- `pa`:
+  - `court.announce.open` {name}
+  - `court.announce.gold` {name}
+- `shopper`:
+  - `court.chatter`: captions only, never spoken, never over the highlighted storefront.
+- Each regular:
+  - `court.cheer`
+
+**Files:**
+- **The pack's script** (`packs/<pack>/script.js`) holds every line about that restaurant's food, including the
+  regulars' lines there and Mitch's.
+- **The cast script** (`packs/cast/script.js`) holds only lines that work anywhere, with no food names: `greet`,
+  `smalltalk`, `goodbye`, `mention`.
+- The diner's existing lines stay in `packs/diner/script.js`.
+- **Merging:** the merged script is pack lines plus cast lines, both counted as the speaker's own. The pack's
+  `customer` lines are the fallback.
+- **Line ids** are unique per speaker across the merged script.
+
+**Clip ids** (for the final voice pass): diner lines keep today's ids. All others are
+`<speaker>/<source>:<id>[.value]`, where source is the pack id, `cast` or `court`.
+
+**Variety:**
+- At least 3 variants per speaker for `greet`, `smalltalk`, `goodbye`, `react.3`, `react.2` and `react.1`.
+- At least 2 for each Mitch gross-out and tutorial moment.
+- Locals get a full set built round their gag.
+
+**Allowed blanks:** ing, ings, want, got, name, slot, value, count, goal, about.
+
+**Silence:**
+- `smalltalk` and `goodbye` are skipped when Character Voices is Off.
+- Every character line plays only while the scan is suspended.
+
+### 5.6 Themes
+
+`pack.theme` is a flat map. Its keys are exactly these tokens, camelCased:
+
+```
+pageBg panelTop panelBottom panelLip plateTop plateBottom mark labelBg ticketAccent ticketNow perforation hudBg
+gaugeBg star boardGlow woodInset cardValue logoTop logoMain wheelInk wheelSteel wheelDark board wood
+```
+
+- **Defaults:** bb.css defines each token with today's diner value.
+- **Applying:** `stage.usePack` writes the pack's values under `body[data-pack=<id>]`.
+- **Limits:** a theme never sets `--lit`, `--lit-ink`, the scan frame or the hold ring. High Contrast overrides every
+  theme token. Add, Skip and Swap keep their icon and word.
+- **Contrast:** colours the highlight sits on keep 3:1 against #ffd400; text keeps 4.5:1.
+- **Palettes:** pizza red and white; smoothie tropical teal; cafe warm brown and cream; sushi navy and wood; burrito
+  bright orange and green; icecream pastel pink; diner as now.
+- **Props** stay shared and are not recoloured. The one exception: `packs/<pack>/art/props/<name>.webp`, if it exists,
+  is used first.
+
+## 6. Presentation
+
+### 6.1 Main menu, How to Play and tutorials
+
+The user, 2026-11-09: "when you land into the game, the background is out of focus and we have a main menu that says
+play, how to play, settings - when you click play it will just go right into the food court scene and you can scan to
+each open restaurant to go in and play that restaurant to get more stars for it. how to play is a simple text scene
+that tells you what the point of the game is. settings will be the settings page."
+
+- **Main menu:** the game opens on the live court (picture and crowd) **out of focus**, blurred like a camera that
+  hasn't focused yet, so the menu reads clearly over it. Card `title` (keep the name), logo "Ben's Food Court", sits
+  over it.
+  - Items, in order: **Play · How to Play · Settings · Exit Game**. Exit Game stays because every hub game's main
+    menu has it (ACCESSIBILITY.md §7). It confirms first.
+  - **Play** → the card closes and the court comes into focus: a short focus pull of about 0.6 s, or a cut under
+    Reduced motion. The scan moves straight onto the open storefronts in the picture (6.2). **The player scans the
+    restaurants on the court, never a list of restaurants on a card** (the user: "you scan to the restaurants in the
+    court not on a menu after you press play"). Closed restaurants stay in the picture, greyed out, and are never scan
+    stops.
+  - **How to Play** → a simple text card over the out-of-focus court, following the `howto` card in
+    `apps/games/BENNYSRACETRACKS/js/ui.js`:
+    - title "How to Play" and the text below, at Text Size;
+    - the whole text spoken when it opens;
+    - one stop, Back, which returns to the main menu.
+
+    The text says the point of the game:
+
+    > You run the food court with Mitch. Pick an open restaurant and work a shift: take each customer's order, make it
+    > the way they asked, and serve it. Good shifts bring a restaurant more customers, and more customers earn it
+    > stars. A busy four-star restaurant gets a special event; a good event shift wins the fifth star and a gold sign.
+    > When every open restaurant has enough stars, a new one opens. Get all seven to five stars for a grand
+    > celebration. The first time you visit a restaurant, Mitch can walk you through one order.
+  - **Settings** → the Settings card (6.4) over the out-of-focus court. Back returns to the main menu.
+  - **Main Menu** (from the court's Pause or a restaurant's Pause) comes back here, and the court goes out of focus
+    again.
+  - **There is no tutorial picker.** The main menu's Tutorial item and its picker were replaced by How to Play on
+    2026-11-09. Mitch's walk-through is offered on each restaurant's first visit (below).
+- **First visit** (`tutorialDone` false): card `tutorialOffer` at -1, spoken "<Name>. First time here? Mitch can walk
+  you through one order."
+  - Items: Play the Tutorial · Skip It · Food Court.
+  - Both Play and Skip set `tutorialDone`.
+- **During the tutorial:**
+  - Lines and warnings ignore Assistant Manager and Character Voices Off; with Off they are spoken in the game's voice
+    and captioned.
+  - Restart Shift restarts the tutorial.
+- **Tutorial results:** Start a Shift · Food Court · Exit Game.
+
+### 6.2 The court
+
+`#court` is a layer over the court backdrop.
+
+**Storefronts** sit at the boxes in `BBCourt.layout`, measured from the picture (table below). Each storefront shows:
+
+- a name plate and star sign (stars as glyphs plus a number);
+- its crowd;
+- a shutter when closed, with the whole storefront greyed out (desaturated and dimmed; the user: "some will be grayed
+  out"), the Grand Opening banner, or the gold sign.
+
+All words are drawn in code at Text Size; the court art carries no words. The progress board in the middle says the
+next goal and how many restaurants are at five stars and fully busy.
+
+**Crowd by popularity:**
+
+| Popularity | Crowd |
+|---|---|
+| 0-2 | one or two shoppers passing |
+| 3-6 | a short queue |
+| 7-9 | a queue out the door, plus diners at the nearest tables |
+| 10 | every nearby table full |
+
+Shoppers stroll slowly and never jump. Under Reduced they stand still.
+
+**Scanning:**
+
+- **Root, four or fewer open:** the open shops, then Pause.
+- **Root, five or more open:** the parts (`part:left`, `part:top`, `part:right`), each entered with a spoken Back
+  stop, then Pause.
+  - A part with no open shop is left out. A part with one open shop appears at the root as that shop.
+  - Part labels read like "Left. Burritos, Smoothie Shack."
+- **Pause** is the Back in 5 sign, last.
+- **Ids:** `shop:<pack>`, `part:<arm>`, `pause`.
+- **Shop labels:** "Pizza Parlor, three stars", plus "shift in progress" or "five-star event next" when true.
+- **Closed shops** are never scanned.
+- **Pointer:** a click or tap enters a storefront from any level.
+- **Pause hold:** holding Enter 5 s opens the court Pause, once its scan is live.
+
+**The court Pause:** Continue · Help · Settings · Main Menu · Exit Game (confirm: "You will go back to the hub.",
+Cancel first).
+
+**The court prompt** is "Food court.", plus any news and the next goal, but only when Mitch won't say them. Help always
+says each open restaurant's stars and the next goal.
+
+**Moments**, all said before the court scan opens:
+
+- **Grand Opening:** the shutter rolls up (a cut under Reduced); `pa` says `court.announce.open`; the banner stays until
+  the first visit.
+- **Gold sign:** the sign drops onto the sign board with sparkles; `pa` says `court.announce.gold`; Mitch says
+  `court.goldSign`.
+- **Grand celebration** (once, on the first return after the seventh gold sign):
+  - Fireworks, with no full-screen flash and at most 3 flashes a second. Under Reduced, still bursts that fade.
+  - Every drawn regular stands on the floor, happy or laughing, and says one `court.cheer`.
+  - Mitch says `court.celebrate`, then `court.promoted` as he shows the `promoted` pose.
+  - The board then reads "All seven at five stars".
+- **Sound:** pops are short, quiet and below 2.5 kHz.
+
+**Court layout**, measured from `art-source/backdrops/court.png` (1536 x 1024; the upside-down U drawn 2026-11-08,
+replacing the first U picture, which is kept in `art-source/review/court-v1/`). Boxes are `[x0, y0, x1, y1]` in percent
+of the picture, drawn with object-fit: contain semantics. Sign boards and the plinth are measured; storefront boxes are
+set by eye.
+
+| store | sign board | whole storefront |
+|---|---|---|
+| burrito | [5.5, 62.2, 20.1, 69.6] | [0, 57, 24, 89] |
+| smoothie | [6.3, 31.1, 18.8, 38.5] | [0, 19, 25, 57] |
+| pizza | [19.9, 10.5, 33.5, 15.6] | [14, 0, 36.5, 35] |
+| diner | [41.5, 10.9, 58.6, 15.5] | [36.5, 0, 63.5, 34.5] |
+| cafe | [66.3, 10.7, 80.3, 16.0] | [63.5, 0, 86, 35] |
+| sushi | [81.5, 31.1, 93.9, 38.4] | [75, 21, 100, 57] |
+| icecream | [79.2, 62.5, 94.5, 69.8] | [75, 57, 100, 89] |
+| board plinth (top) | [43.9, 47.6, 56.1, 55.1] | the easel stands on it |
+
+- **Overlapping boxes:** the side stalls stand in front of the top row's corners (the smoothie shack before the pizza
+  parlor, the sushi bar before the cafe), so their storefront boxes overlap. A pointer hit in an overlap goes to the
+  store drawn in front: the one whose box reaches lower.
+- Crowd queues, table seats and stroll lines are a first guess in `BBCourt.layout`, tuned by eye in the review frames.
+
+### 6.3 Inside a restaurant
+
+**Entering:**
+- Choosing a storefront zooms in (a cut under Reduced) and opens the counter.
+- A saved shift resumes.
+- If the event is due, the event card opens (4.4).
+
+**The restaurant's Pause:**
+
+```
+Continue · Ticket · Help · Restart Shift · Settings · Food Court · Main Menu · Exit Game
+```
+
+- Ticket speaks the order without closing the card, and is off when there is no order.
+- Continue, Help, Restart Shift and Main Menu are there because ACCESSIBILITY.md §7 requires them.
+- Confirms follow 4.2.
+- While Pause is open, Mitch is silent and the cooking clock is stopped.
+
+**Results:**
+- Items: Another Shift · Food Court · Exit Game.
+- They say the stars gained, any restaurant opened, the gold sign, and the celebration.
+- An event names itself when it starts.
+
+**Returning to the court** plays its moments (6.2).
+
+**Interrupted playouts:**
+- game.js keeps a run counter. `pause()`, `leaveToCourt()`, `quit()`, `begin()` and court enter/leave bump it.
+- Every playout checks it after each await and stops if it changed.
+- `resume()` restarts the current screen. An interrupted arrival reads the ticket and starts the line.
+- `BB.ui.line()` never closes a card it didn't open.
+
+### 6.4 Settings (one set for the whole court)
+
+Rows, in order:
+
+1. Text to Speech
+2. Voice
+3. Cooking (Simple/Timed)
+4. Cooking Speed
+5. Shift Length (3/5/8)
+6. **Order Size** (Follow the Stars / One Item)
+7. Assistant Manager
+8. Character Voices
+9. Colour Profile
+10. Motion
+11. Text Size
+12. Graphics Quality (id `graphics-quality`, through `BB.world.graphics`, the NarbeGraphics handle)
+13. Auto Scan ("On — One Switch" / "Off — Two Switches")
+14. Scan Speed
+15. Sound Effects
+16. Reset Progress (two steps; clears `bb-court`, every `bb-progress:*` and every `bb-shift:*`)
+17. Back (to the card it came from)
+
+There is no music, so there is no Music row.
+
+### 6.5 3D food
+
+- **The frame:** `world.js` handles the renderer, cameras, scene switching, the incoming ingredient on the line,
+  cooking-clock visuals and fx.
+- **The modules:** world.js calls food modules through a registry. Each `js/food/<pack>.js` registers its shapes, its
+  sets (one per backdrop, cameras solved to 5.2's surface lines) and its assembly.
+- **Packs** reference shapes in `look`.
+- **made()** keeps every current field and meaning:
+  - `ing` is still set by a `from` pick or by `builds.on`;
+  - `size`, `done`, `parts[{ ing, done?, layer?, flavour?, gross? }]` and `gross` are as today;
+  - it only *adds* `picks: { <slot>: value | [values in line order] }`, `counts: { <ing>: n }` for repeats, and
+    `auto: [ids of auto steps that ran]`.
+- **Gross-out fx** work on any food.
+- **Low** graphics quality thins details.
+- **Reduced motion:** every module resolves at once (`k.reduced()`), and fx sit still on top of the food.
+- **Testing:** every builder is Node-testable (`tests/food.test.cjs`).
+
+### 6.6 Voices and sound
+
+**Character lines:**
+- Spoken through `NarbeVoiceManager.cancel()`, then `NarbePlatform.speech.speak(words, { voice, pitch, rate, volume })`.
+- Only when `NarbeVoiceManager.getSettings().ttsEnabled` is on; otherwise a silent pause for reading time.
+- The wait is capped with `getSpeechTimeout`.
+- `BB.audio.stop()` cancels the line, and scanner speech always wins.
+- **Never edit `shared/`**, and never call `speechSynthesis` directly.
+
+**Choosing voices:**
+- Voices come from the device's English voices after `waitForVoices()`.
+- The first `tts.voices` fragment that matches wins. Otherwise a stable hash of the id picks one, skipping the player's
+  scan voice when another exists.
+- The choice is cached, and made again when the voice list changes.
+- With few voices, pitch and rate tell people apart. Node check: no two speakers at one restaurant share the same
+  voice, pitch and rate.
+- Scan labels, the ticket read-out and help stay in the player's voice.
+
+**Recordings:** recorded clips are off (`BBCourt.recordedVoices = false`) until the voice pass.
+
+**Sounds:**
+- Shared ones (plop, swoosh, toss, tick, ding, kaching, stars, buzz, ew) go in `packs/shared/sound`.
+- The diner keeps sizzle, flip and squirt in `packs/diner/sound`.
+- Each restaurant's cooking sounds go in `packs/<pack>/sound`. A station lists `sounds: { add?, cook?, stage?, done?,
+  auto? }`. SafeAudio ids are `bb-<pack>-<name>`.
+- Anything heard every step stays soft, short and below about 2.5 kHz.
+- No ambient loop plays under speech.
+
+## 7. Saves
+
+**`bb-settings`, version 3:**
+- `orders` becomes Order Size (`stars` | `one`).
+- `graphics` is handed once to `NarbeGraphics.setChoice`, then dropped.
+- Everything else is kept.
+
+**`bb-court`:**
+
+```
+{ v, kind:'court', data: { restaurants: { <pack>: { popularity, stars, opened, grandOpeningSeen, gold, goldSeen,
+  tutorialDone, shifts } }, celebrated, celebrationSeen } }
+```
+
+**Per pack:**
+- `bb-shift:<pack>`: a saved shift.
+- `bb-progress:<pack>`: coins and extras.
+
+**Globals:**
+
+| Global | What it is | Defined in |
+|---|---|---|
+| `BB.courtRules` | the court's rules | `js/core/court.js` |
+| `BB.court` | the court screen | `js/court.js` |
+| `BBCourt` | `{ version, recordedVoices:false, restaurants:[...], unlocks:[...], layout:{} }` | `packs/court/court.js` |
+| `BBCast` | `{ people: {...} }` | `packs/cast/cast.js` |
+| `BB.cast` | `merge(cast, pack)` | `js/core/cast.js` |
+
+## 8. Formats (settled in phase 1, documented in docs/api)
+
+**`BBCast.people.<id>`:**
+
+```
+{ name, art, role: 'manager'|'regular'|'local'|'visitor'|'extra'|'voice', scale?, who, voice,
+  tts: { voices: [name fragments], pitch, rate }, twin?, short?, exact?, newest?, tipScale?, threeStarScale? }
+```
+
+Who someone is everywhere.
+
+**`pack.regulars[]`:**
+
+```
+{ id, likes?, usual?, always?, favourite?, set?, wants?, dislikes?: [this pack's ingredient ids],
+  visitor?: { level } }
+```
+
+- What they order here.
+- Persona fields come only from the cast; the pack's fields win for everything else.
+- `merge(cast, pack)` returns the pack with `regulars` and `manager` filled in. js/packs.js, tests/bot.cjs, schema and
+  every test use merged packs only.
+
+**`pack.manager`:** `{ id: 'mitch', art: '<uniform folder>' }`. The diner's is `mitch-burger`.
+
+**Slots:**
+- `pack.slots.<slot> = { name, values: [{ id, name, look? }], say? }`.
+- Step: `{ kind: 'pick', slot, repeat?: { max } }`. Repeats offer Done after the first.
+- Recipe: `item.slots: { <slot>: value | { pick } | { pick, count: [lo, hi] } }`.
+- Spec: `spec.picks.<slot> = value | [values]`.
+- `from`/`of` picks keep working for the diner.
+
+**Steps:**
+- `step.when`: `{ recipes: [...] }` or `{ slot, in: [...] }`. A step that doesn't match passes with a null answer, and
+  the judge skips it.
+- **Auto steps:** `{ kind: 'auto', id, show }`, a flourish with no answer.
+- **Cook steps:** `{ kind: 'cook', ing?, stages: <stageSetId>, want? }`.
+- `stageSets.<x> = { stages, choose, ask, stop, speed?, wantedScale?, simple?: 'auto' }`.
+
+**Stations:** `stations.<sid> = { name, backdrop, redo, builds?, steps, tool?, sounds? }`, where sid matches `/^\w+$/`.
+
+**Other pack fields:**
+- `levels`; `recipe.level`; `recipe.course`
+- `oddOrders: [{ id, level, recipe, set, holds, adds, picks, say }]`
+- `events.five`
+- `tutorial`
+- `help` (one paragraph)
+- `theme`
+- `gross: [{ id, on, step, say, fx }]`
+
+**Schema:**
+- Checks core fields strictly, ids against `/^\w+$/`, and the 4.6 gross-out rule.
+- Ignores `look` beyond `shape`, and the `sounds`, `help` and `world` fields.
+
+## 9. Checks that must pass at the end
+
+**Node:**
+- Every pack validates.
+- Line screens:
+  - at most 4 answers on every line screen;
+  - every recipe at every level can be made for 3 stars in Simple and in Timed;
+  - the press budget (4.3).
+- The judge counts every mistake kind.
+- Tickets list everything: slots, repeats, counts.
+- No `js/core` file names an id.
+- Court rules:
+  - unlock order and thresholds;
+  - stars never go down;
+  - the event gives the 5th star;
+  - the celebration happens once;
+  - a left shift resumes and counts once.
+- Moment coverage for every speaker at every restaurant they visit.
+- Food builders resolve every look a pack uses.
+- No two speakers at a restaurant sound the same.
+- The same recipes take the same presses for every customer.
+
+**jsdom, by Space and Enter only:**
+- The whole chain: main menu → court → each open restaurant → a shift → results → court.
+- Pause in a restaurant and on the court.
+- Settings keeps the hub rows.
+- The first-visit tutorial card.
+- An unlock and a five-star event, with seeded progress.
+- One-switch Auto Scan.
+- A 5 s Enter hold during an arrival opens Pause, which stays until Continue; the Timed clock runs after.
+- Holding Take It Off 3 s across a stage boundary takes the stage at keydown.
+- Every card opens at -1.
+- The court has at most 5 stops per level.
+
+**Review frames:**
+- Each restaurant's counter, stations and cooking, plus the court and its moments.
+- Checked by an agent reading the PNGs.
+
+## 10. Phases and file ownership
+
+### Phase 1: the engine
+
+Five lanes run in parallel; core-a and core-b run one after the other inside the first lane.
+
+**core-a:**
+- Owns `js/core/{line,judge,words,orders}.js`, `tests/{line,judge,words}.test.cjs`, `tests/bot.cjs` while core-a runs,
+  and `tests/packs/test-pizza/`.
+- Builds: slots and repeats; `when`; auto steps; cooking variants and stage-set words; paging; gross-outs on picks
+  (4.6); `made()` additions (6.5); words for slots, repeats and numbers up to twelve; the Timed clock freezing while a
+  switch is down (a `hold` input to `tick`).
+- **First,** copies today's `packs/diner/{pack,script}.js` to `tests/packs/diner-golden/`, and points every
+  diner-specific assertion at that copy.
+- Keeps the live diner working unchanged.
+
+**core-b**, after core-a:
+- Owns `js/core/{orders,shift,script,schema,savefmt,progress,cast}.js`, `tests/{shift,script,pack}.test.cjs` and
+  `tests/bot.cjs`.
+- Builds:
+  - levels, Order Size, combos, odd orders, visitors and events;
+  - `drawn` (4.5); results (4.1); resuming a saved shift (4.2);
+  - `SC.MOMENTS` and the script merge with clip ids (5.5);
+  - `cast.merge` (8); the schema (8); saves (7);
+  - the every-pack test loop with `BB_PACKS`, and the press-budget and same-presses checks.
+
+**court-rules:**
+- Owns `js/core/court.js`, `packs/court/court.js` (with 6.2's layout, the restaurants table, unlocks and
+  `recordedVoices: false`) and `tests/court.test.cjs`.
+
+**cast:**
+- Owns `packs/cast/cast.js` (every character, 2.2 and 8, with a distinct tts recipe for each), the copies into
+  `packs/cast/art/cast` and `packs/shared/art/props`, and `tools/build_art.py`.
+- `build_art.py` covers: the cast; shared props; per-pack backdrops by prefix; the court picture, props and shoppers;
+  and the manifests `BBArt.cast`, `BBArt.shared`, `BBArt.court` and `BBArt[<pack>]`. It keeps writing `BBArt.diner`.
+- Runs it for everything that exists now.
+- Does not touch sound.
+
+**world:**
+- Owns `js/world.js`, `js/food/kit.js`, `js/food/diner.js` (the burgers moved out; fries, rings, drinks, sprinkle, cup,
+  ice; fryer and drinks sets) and `tests/food.test.cjs`.
+- Exports the registry API in `docs/api/world.md` and `BB.world.graphics`.
+- Keeps the old function names working until the page switches game.js.
+
+**audio:**
+- Owns `js/audio.js` (6.6), `tools/make-sounds.cjs`, `packs/shared/sound`, `packs/diner/sound` and
+  `packs/<pack>/sound`.
+- Makes each restaurant's cooking sounds, the court's pops and chimes, and the shared copies.
+
+### Phase 2a: the pilot
+
+Pizza goes first. Four lanes run in parallel; inside a lane, agents run one after the other.
+
+| Lane | Agents, in order |
+|---|---|
+| diner and page | **diner-pack**, then **page-1** (restaurant and menus) and **diner-script** side by side, then **page-2** (the court) after page-1 |
+| pizza | **content-pizza**, then **food-pizza** |
+| cast | **content-cast** |
+
+Then **integrate** runs alone, with every pilot file.
+
+- **page** (page-1, then page-2) owns `index.html`, `css/bb.css`, `js/{game,ui,stage,save,main,packs,court}.js`,
+  `tests/dom-play.cjs`, `tools/review-frames.cjs` and `tools/review_compose.py`.
+  - page-1 builds everything inside a restaurant plus the menus, with a stand-in court (a flat card of open
+    restaurants) in `js/court.js`.
+  - page-2 replaces the stand-in with the real court, and may edit `BBCourt.layout` in `packs/court/court.js`
+    (queues, seats, stroll lines) to tune the crowd.
+- **content-diner** (diner-pack, then diner-script) owns `packs/diner/{pack,script}.js`. It uses only the looks
+  `js/food/diner.js` lists in `docs/api/world.md`, or files a Request.
+  - diner-pack moves the pack onto the ladder.
+  - diner-script writes the rest of the script and sets `format: 3`.
+- **content-pizza** owns `packs/pizza/{pack,script}.js` and writes `docs/api/packs/pizza.md` (the pack in words, with
+  every look the food module must draw).
+- **food-pizza** runs after content-pizza. It owns `js/food/pizza.js` and the new `tools/food-frames.cjs` (CPU
+  frames of any pack's food sets, for every food agent after it).
+- **content-cast** owns `packs/cast/script.js` and `packs/court/script.js`.
+- **integrate** wires the pizza into `index.html`, runs every check in section 9 that the pilot can pass, reads the
+  review frames, fixes seams in any pilot file, and writes `docs/api/pilot.md` for phase 2b.
+
+### Phase 2b: the other five
+
+Starts once the pilot's `docs/api` notes and the pizza pack exist. The pizza pack is the worked example.
+
+- **content-<pack>** for smoothie, cafe, sushi, burrito and icecream, each followed by its **food-<pack>**.
+
+### Phase 3: coordinator-led
+
+Integration, the remaining art, deleting the phase-1 originals, review frames, an adversarial review, fixes, and
+DESIGN.md.
+
+### Phase 4: after this build
+
+Ben's playtest. Press counts and timing are tuned from it.

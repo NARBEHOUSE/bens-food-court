@@ -1,0 +1,12 @@
+# Coach Bev pose prompts
+
+Generated with the built-in image generation tool.
+Reference: neutral.png (approved model).
+
+## talking.png
+
+Use case: identity-preserve. Asset: full-body character pose for a 2D comedy diner game, 1024 x 1536 PNG. Input reference: approved Coach Bev neutral model. Copy EXACTLY her face, spiky blonde hairstyle, sturdy athletic body and proportions, teal zip-up tracksuit with white stripes, white sneakers, silver whistle on black lanyard, brown clipboard tucked under her arm, colors, thick clean even black outline weight and shading style. Change ONLY pose and facial expression. Original TV-cartoon art, flat bright colors with ONE hard-edged cel-shadow per color, big expressive eyes and hands, dry adult comedy, never cute or babyish. ONE character, standing full body top of hair through shoes, facing viewer turned very slightly toward viewer's right. Centered, fills about 88% of canvas height, clear margins, all hands and feet inside. Pure white background, no floor, no cast shadow, no border, no text, no extra objects. Strong silhouette. Pose: TALKING, mid-sentence with mouth open, eyebrows raised, one hand raised beside her face gesturing as she orders; other arm retains clipboard. Keep exact approved character design.
+
+## waiting.png
+
+Use case: identity-preserve. Asset: full-body character pose for a 2D comedy diner game, 1024 x 1536 PNG. Input reference: approved Coach Bev neutral model. Copy EXACTLY her face, spiky blonde hairstyle, sturdy athletic body and proportions, teal zip-up tracksuit with white stripes, white sneakers, silver whistle on black lanyard, brown clipboard tucked under her arm, colors, thick clean even black outline weight and shading style. Change ONLY pose and facial expression. Original TV-cartoon art, flat bright colors with ONE hard-edged cel-shadow per color, big expressive eyes and hands, dry adult comedy, never cute or babyish. ONE character, standing full body top of hair through shoes, facing viewer turned very slightly toward viewer's right. Centered, fills about 88% of canvas height, clear margins, all hands and feet inside. Pure white background, no floor, no cast shadow, no border, no text, no extra objects. Strong silhouette. Pose: WAITING patiently, weight clearly on one leg, eyes glancing up and to the side, arms loosely folded with fingers of one hand drumming on the other forearm, retain clipboard tucked under arm. Keep exact approved character design.

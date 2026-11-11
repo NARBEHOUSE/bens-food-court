@@ -1,0 +1,13 @@
+Use case: character pose set for a 2D game
+Asset type: full-body character poses on plain white, one image per pose
+Attached image 1 is the APPROVED model of this character in the neutral pose. Copy the character EXACTLY: the same
+face, hair, body shape and proportions, clothes, accessories, colours, outline weight and shading style. Change ONLY the
+pose and the facial expression. Each pose must read from its silhouette alone.
+Style: original 2D cartoon art for a comedy diner game, TV-cartoon look. Thick, clean, even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated proportions (big head, big hands, big expressive eyes and mouth); a strong, readable silhouette. Funny for adults: dry, deadpan comedy, never cute, never babyish. It is an ORIGINAL design and must not resemble any existing cartoon character, show or brand.
+Character: BROCK, a gym bro who wants all the protein. About 28, an enormous muscular chest and arms on comically skinny legs, a small head with a buzz cut and a sweatband, a big confident grin. A stringer tank top, gym shorts, high socks, lifting gloves, a giant protein shaker bottle in one hand and a gym bag over his shoulder. Loud, eager and friendly.
+Make 2 separate images:
+- New picture 1: ANNOYED: both hands on hips, a flat unimpressed frown, one eyebrow raised high, leaning back slightly. Save as art-source/cast/brock/annoyed.png (1024 x 1536).
+- New picture 2: ANGRY: furious, leaning forward, one arm out pointing an accusing finger straight at the viewer, the other fist clenched, face red, shouting, a vein on the forehead. Save as art-source/cast/brock/angry.png (1024 x 1536).
+Framing: ONE character, full body from the top of the head to the shoes, standing, facing the viewer and turned very slightly toward the viewer's right. The figure fills about 88% of the image height, centred, with a clear margin all round; nothing is cropped (hands, hat and feet all inside the frame). Plain pure white background, no floor, no cast shadow, no border, no text other than what the character description asks for, no other objects except what the character holds.
+Also save the prompt as art-source/cast/brock/annoyed-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the paths of the generated files.

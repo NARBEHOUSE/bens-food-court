@@ -1,0 +1,16 @@
+/** Ben's Burger Bar - boot: sounds, the stage, the switch input, the 3D food, then the main menu. */
+(function () {
+  'use strict';
+  async function boot() {
+    BB.audio.init();
+    BB.stage.init();
+    BB.ui.init();
+    try { await BB.world.init(); } catch (e) { console.error('The 3D food could not start', e); }
+    await BB.stage.setScene('counter');
+    BB.world.showCounter([]);
+    document.getElementById('loading').classList.add('gone');
+    BB.ui.openCard('title');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();

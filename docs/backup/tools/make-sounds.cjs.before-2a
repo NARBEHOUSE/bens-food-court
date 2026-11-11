@@ -1,0 +1,691 @@
+/** Ben's Food Court - synthesise the sound effects into small WAV files (no Web Audio at run
+ *  time: they play through the hub's SafeAudio, ACCESSIBILITY.md §5). docs/api/audio.md lists
+ *  every sound and what it is for.
+ *
+ *  node tools/make-sounds.cjs                  every new sound, the shared copies, the index
+ *  node tools/make-sounds.cjs pizza court:pop1 only these (a folder name means all of its sounds)
+ *  node tools/make-sounds.cjs --check          measure every sound in the index; exit 1 when a
+ *                                              new one breaks its limits
+ *  node tools/make-sounds.cjs --index          rewrite the index only
+ *  node tools/make-sounds.cjs --doc            print the sound table for docs/api/audio.md
+ *  node tools/make-sounds.cjs --legacy <dir>   re-render the 12 original sounds into <dir>, to
+ *                                              compare (never into packs/)
+ *
+ *  Folders: packs/shared/sound (the UI sounds every restaurant shares), packs/court/sound (the
+ *  food court's moments) and packs/<pack>/sound (a restaurant's cooking sounds). The index,
+ *  packs/shared/sound/sounds.js, is BBSounds = { version, <folder>: { <name>: { dur, vol } } }:
+ *  js/audio.js preloads only what it lists (a preload of a missing file silently shadows a
+ *  sound), and plays each at `vol` unless the caller says otherwise.
+ *
+ *  The 12 original sounds (plop, swoosh, toss, sizzle, flip, tick, ding, kaching, stars,
+ *  buzz, ew, squirt) are never rewritten here: the nine shared ones are byte copies of
+ *  packs/diner/sound, and sizzle, flip and squirt stay in packs/diner/sound as they are.
+ *  Every new sound has its own seeded noise, so making or changing one never changes another.
+ *
+ *  Anything heard every step or every order stays short, soft and below about 2.5 kHz (a cue
+ *  Ben hears hundreds of times must not wear on him; a shrill whistle was "obnoxious"): new
+ *  sounds are steeply low-passed and --check holds them to the limits in LIMITS.
+ */
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+const GAME = path.join(__dirname, '..');
+const SR = 22050;
+const FOLDERS = ['shared', 'court', 'diner', 'pizza', 'smoothie', 'cafe', 'sushi', 'burrito', 'icecream'];
+const folderPath = f => path.join(GAME, 'packs', f, 'sound');
+const INDEX = path.join(GAME, 'packs', 'shared', 'sound', 'sounds.js');
+const ORIGINALS = path.join(GAME, 'packs', 'diner', 'sound');
+
+/* ══ limits ═════════════════════════════════════════════════════════════════
+ * kind   step   heard on most steps (an Add, a cut, a scoop)
+ *        order  once or twice an order (a cook step starting or ending)
+ *        burst  repeated quickly (knife cuts in a flourish, firework pops)
+ *        once   a rare court moment (a shutter, a chime)
+ * high: the most energy allowed at or above 2.5 kHz. mid: the least allowed from 250 Hz to
+ * 2.5 kHz, so laptop and tablet speakers (which barely play below 250 Hz) still play it. */
+const LIMITS = {
+  step: { dur: 0.8, peak: 0.5, high: 0.05, mid: 0.25 },
+  order: { dur: 1.6, peak: 0.5, high: 0.05, mid: 0.25 },
+  burst: { dur: 0.45, peak: 0.45, high: 0.03, mid: 0.25 },
+  once: { dur: 2.0, peak: 0.5, high: 0.05, mid: 0.25 },
+};
+
+/* ══ WAV in and out ═════════════════════════════════════════════════════════ */
+/** 16-bit mono PCM at SR, written the way the original 12 were. */
+function encodeWav(samples) {
+  const n = samples.length, buf = Buffer.alloc(44 + n * 2);
+  buf.write('RIFF', 0); buf.writeUInt32LE(36 + n * 2, 4); buf.write('WAVE', 8); buf.write('fmt ', 12);
+  buf.writeUInt32LE(16, 16); buf.writeUInt16LE(1, 20); buf.writeUInt16LE(1, 22); buf.writeUInt32LE(SR, 24);
+  buf.writeUInt32LE(SR * 2, 28); buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34); buf.write('data', 36); buf.writeUInt32LE(n * 2, 40);
+  for (let i = 0; i < n; i++) buf.writeInt16LE(Math.max(-32767, Math.min(32767, Math.round(samples[i] * 32767))), 44 + i * 2);
+  return buf;
+}
+/** -> { sr, channels, bits, x: Float64Array (first channel, -1..1) } */
+function readWav(file) {
+  const b = fs.readFileSync(file);
+  if (b.toString('ascii', 0, 4) !== 'RIFF' || b.toString('ascii', 8, 12) !== 'WAVE') throw new Error(file + ': not a WAV file');
+  let off = 12, fmt = null, data = null;
+  while (off + 8 <= b.length) {
+    const id = b.toString('ascii', off, off + 4), size = b.readUInt32LE(off + 4);
+    if (id === 'fmt ') fmt = { format: b.readUInt16LE(off + 8), channels: b.readUInt16LE(off + 10), sr: b.readUInt32LE(off + 12), bits: b.readUInt16LE(off + 22) };
+    else if (id === 'data') { data = b.subarray(off + 8, off + 8 + size); break; }
+    off += 8 + size + (size & 1);
+  }
+  if (!fmt || !data || fmt.format !== 1 || fmt.bits !== 16) throw new Error(file + ': not 16-bit PCM');
+  const n = Math.floor(data.length / 2 / fmt.channels), x = new Float64Array(n);
+  for (let i = 0; i < n; i++) x[i] = data.readInt16LE(i * 2 * fmt.channels) / 32768;
+  return { sr: fmt.sr, channels: fmt.channels, bits: fmt.bits, x };
+}
+
+/* ══ measuring ══════════════════════════════════════════════════════════════ */
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; }
+  }
+  for (let size = 2; size <= n; size <<= 1) {
+    const half = size >> 1, a = -2 * Math.PI / size, wr = Math.cos(a), wi = Math.sin(a);
+    for (let i = 0; i < n; i += size) {
+      let cr = 1, ci = 0;
+      for (let k = 0; k < half; k++) {
+        const p = i + k, q = p + half;
+        const vr = re[q] * cr - im[q] * ci, vi = re[q] * ci + im[q] * cr;
+        re[q] = re[p] - vr; im[q] = im[p] - vi; re[p] += vr; im[p] += vi;
+        const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t;
+      }
+    }
+  }
+}
+/** Length, levels and where the energy sits. high: the share of the energy at or above
+ *  2.5 kHz; mid: the share from 250 Hz to 2.5 kHz (what small speakers play); roll95: the frequency below which 95% of it lies; loud: the RMS of the loudest
+ *  100 ms; first/last: the size of the first and last samples (a click if large). */
+function analyse(x, sr) {
+  sr = sr || SR;
+  const N = 2048, hop = 512, bins = new Float64Array(N / 2);
+  const w = new Float64Array(N);
+  for (let i = 0; i < N; i++) w[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (N - 1));
+  for (let s = 0; ; s += hop) {
+    const re = new Float64Array(N), im = new Float64Array(N);
+    for (let i = 0; i < N; i++) re[i] = (x[s + i] || 0) * w[i];
+    fft(re, im);
+    for (let k = 0; k < N / 2; k++) bins[k] += re[k] * re[k] + im[k] * im[k];
+    if (s + N >= x.length) break;
+  }
+  const hz = k => k * sr / N;
+  let total = 0, high = 0, mid = 0, centroid = 0;
+  for (let k = 0; k < N / 2; k++) { total += bins[k]; centroid += bins[k] * hz(k); if (hz(k) >= 2500) high += bins[k]; else if (hz(k) >= 250) mid += bins[k]; }
+  let acc = 0, roll95 = 0;
+  for (let k = 0; k < N / 2; k++) { acc += bins[k]; if (acc >= 0.95 * total) { roll95 = hz(k); break; } }
+  let peak = 0, sum = 0, sq = 0;
+  for (const v of x) { peak = Math.max(peak, Math.abs(v)); sum += v; sq += v * v; }
+  const W = Math.max(1, Math.round(0.1 * sr));
+  let best = 0, run = 0;
+  for (let i = 0; i < x.length; i++) { run += x[i] * x[i]; if (i >= W) run -= x[i - W] * x[i - W]; if (run > best) best = run; }
+  return {
+    dur: x.length / sr, peak, rms: Math.sqrt(sq / Math.max(1, x.length)), loud: Math.sqrt(best / Math.min(W, Math.max(1, x.length))),
+    dc: sum / Math.max(1, x.length), high: total ? high / total : 0, mid: total ? mid / total : 0, centroid: total ? centroid / total : 0, roll95,
+    first: Math.abs(x[0] || 0), last: Math.abs(x[x.length - 1] || 0),
+  };
+}
+/** The limits a measured sound breaks, as words (an empty list when it is fine). */
+function breaks(a, kind) {
+  const L = LIMITS[kind], out = [];
+  if (!L) return ['unknown kind ' + kind];
+  if (a.dur > L.dur) out.push('longer than ' + L.dur + ' s');
+  if (a.peak > L.peak) out.push('peak over ' + L.peak);
+  if (a.high > L.high) out.push(Math.round(a.high * 1000) / 10 + '% above 2.5 kHz (limit ' + L.high * 100 + '%)');
+  if (a.mid < L.mid) out.push('only ' + Math.round(a.mid * 100) + '% from 250 Hz to 2.5 kHz (small speakers; at least ' + L.mid * 100 + '%)');
+  if (a.first > 0.01 || a.last > 0.01) out.push('does not start and end at silence (a click)');
+  if (Math.abs(a.dc) > 0.01) out.push('off-centre (DC)');
+  return out;
+}
+
+/* ══ synthesis kit ══════════════════════════════════════════════════════════ */
+const len = s => Math.round(s * SR);
+const buf = s => new Float64Array(len(s));
+function fnv(text) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h >>> 0;
+}
+/** A seeded random source per sound (mulberry32). */
+function kit(seedText) {
+  let a = fnv(seedText) || 1;
+  const rand = () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return { rand, noise: () => rand() * 2 - 1, between: (lo, hi) => lo + (hi - lo) * rand() };
+}
+/** RBJ biquad: 'lp', 'hp' or 'bp' (0 dB at the centre). */
+function biquad(x, type, f0, Q) {
+  const w0 = 2 * Math.PI * Math.min(f0, SR * 0.45) / SR, c = Math.cos(w0), s = Math.sin(w0), al = s / (2 * Q);
+  let b0, b1, b2;
+  if (type === 'lp') { b0 = (1 - c) / 2; b1 = 1 - c; b2 = (1 - c) / 2; }
+  else if (type === 'hp') { b0 = (1 + c) / 2; b1 = -(1 + c); b2 = (1 + c) / 2; }
+  else { b0 = al; b1 = 0; b2 = -al; }
+  const a0 = 1 + al, a1 = -2 * c, a2 = 1 - al;
+  const y = new Float64Array(x.length);
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  for (let i = 0; i < x.length; i++) {
+    const v = (b0 * x[i] + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2) / a0;
+    x2 = x1; x1 = x[i]; y2 = y1; y1 = v; y[i] = v;
+  }
+  return y;
+}
+/** A band-pass whose centre moves: fAt(t) in Hz. */
+function sweep(x, fAt, Q) {
+  const y = new Float64Array(x.length);
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  for (let i = 0; i < x.length; i++) {
+    const w0 = 2 * Math.PI * Math.min(fAt(i / SR), SR * 0.45) / SR, c = Math.cos(w0), s = Math.sin(w0), al = s / (2 * Q);
+    const v = (al * x[i] - al * x2 + 2 * c * y1 - (1 - al) * y2) / (1 + al);
+    x2 = x1; x1 = x[i]; y2 = y1; y1 = v; y[i] = v;
+  }
+  return y;
+}
+/** Fourth-order Butterworth low-pass: 24 dB an octave, so little is left above the cutoff. */
+const lp4 = (x, f) => biquad(biquad(x, 'lp', f, 0.5412), 'lp', f, 1.3066);
+/** Add src into dst at time t0 (s), scaled. */
+function mix(dst, src, t0, gain) {
+  const i0 = Math.round((t0 || 0) * SR), g = gain === undefined ? 1 : gain;
+  for (let i = 0; i < src.length && i0 + i < dst.length; i++) if (i0 + i >= 0) dst[i0 + i] += src[i] * g;
+  return dst;
+}
+/** Fill a buffer from f(t). */
+const fill = (s, f) => { const x = buf(s); for (let i = 0; i < x.length; i++) x[i] = f(i / SR, i); return x; };
+/** Attack then an exponential decay (the originals' envelope). */
+const ad = (t, a, d) => (t < 0 ? 0 : t < a ? t / a : Math.exp(-(t - a) / d));
+/** A smooth rise and fall over [t0, t0 + T]. */
+const hann = (t, t0, T) => (t < t0 || t > t0 + T ? 0 : 0.5 - 0.5 * Math.cos(2 * Math.PI * (t - t0) / T));
+/** 0 → 1 between a and b, smoothly. */
+const ramp = (t, a, b) => (t <= a ? 0 : t >= b ? 1 : (1 - Math.cos(Math.PI * (t - a) / (b - a))) / 2);
+/** Noise that wanders smoothly, `rate` new values a second: t -> -1..1. */
+function wander(k, rate) {
+  const pts = Array.from({ length: 128 }, () => k.noise());
+  return t => {
+    const u = Math.max(0, t) * rate, i = Math.floor(u), f = u - i, w = (1 - Math.cos(Math.PI * f)) / 2;
+    return pts[i % 128] * (1 - w) + pts[(i + 1) % 128] * w;
+  };
+}
+/** A struck object: decaying sines (modes), added into dst at t0. */
+function hit(dst, t0, freqs, decays, amps, attack) {
+  const at = attack || 0.0015, i0 = Math.round(t0 * SR);
+  const n = Math.round(Math.max(...decays) * 8 * SR);
+  for (let i = 0; i < n && i0 + i < dst.length; i++) {
+    const t = i / SR, a = t < at ? t / at : 1;
+    let v = 0;
+    for (let m = 0; m < freqs.length; m++) v += amps[m] * Math.exp(-t / decays[m]) * Math.sin(2 * Math.PI * freqs[m] * t);
+    dst[i0 + i] += a * v;
+  }
+  return dst;
+}
+/** A bubble: a short sine whose pitch rises as it surfaces, added into dst at t0. */
+function bubble(dst, t0, f0, dur, amp, rise) {
+  const i0 = Math.round(t0 * SR), n = Math.round(dur * SR), r = rise === undefined ? 0.6 : rise;
+  let ph = 0;
+  for (let i = 0; i < n && i0 + i < dst.length; i++) {
+    const t = i / SR, u = t / dur;
+    ph += 2 * Math.PI * f0 * (1 + r * u) / SR;
+    dst[i0 + i] += amp * Math.min(1, t / 0.002) * Math.exp(-3 * u) * (1 - u) * Math.sin(ph);
+  }
+  return dst;
+}
+/** A short burst of band-passed noise (a crackle, a grain), added into dst at t0. */
+function grain(dst, k, t0, dur, amp, f, Q) {
+  const n = len(dur) + len(0.012);
+  const raw = new Float64Array(n);
+  for (let i = 0; i < n; i++) raw[i] = k.noise() * ad(i / SR, 0.0008, dur / 3);
+  return mix(dst, f ? biquad(raw, 'bp', f, Q || 1.5) : raw, t0, amp);
+}
+/** A motor: harmonics of fAt(t), each 1/h^tilt, none above maxHz. */
+function motor(s, fAt, maxHz, tilt, k) {
+  const x = buf(s), H = 48, ph = new Float64Array(H), p0 = Array.from({ length: H }, () => k.rand() * 2 * Math.PI);
+  for (let i = 0; i < x.length; i++) {
+    const f = fAt(i / SR);
+    let v = 0;
+    for (let h = 1; h <= H; h++) {
+      const fh = h * f;
+      if (fh > maxHz + 250) break;
+      ph[h - 1] += 2 * Math.PI * fh / SR;
+      v += (fh <= maxHz ? 1 : (maxHz + 250 - fh) / 250) * Math.sin(ph[h - 1] + p0[h - 1]) / Math.pow(h, tilt);
+    }
+    x[i] = v;
+  }
+  return x;
+}
+const noiseBuf = (k, s, envF) => fill(s, t => k.noise() * (envF ? envF(t) : 1));
+/** Scale to a peak, centre it and fade the ends so nothing clicks. */
+function finish(x, peak, fadeIn, fadeOut) {
+  let mean = 0;
+  for (const v of x) mean += v;
+  mean /= Math.max(1, x.length);
+  for (let i = 0; i < x.length; i++) x[i] -= mean;
+  const fi = len(fadeIn || 0.003), fo = len(fadeOut || 0.015);
+  for (let i = 0; i < fi && i < x.length; i++) x[i] *= i / fi;
+  for (let i = 0; i < fo && i < x.length; i++) x[x.length - 1 - i] *= i / fo;
+  let m = 0;
+  for (const v of x) m = Math.max(m, Math.abs(v));
+  const g = m ? peak / m : 0;
+  for (let i = 0; i < x.length; i++) x[i] *= g;
+  return x;
+}
+
+/* ══ the sounds ═════════════════════════════════════════════════════════════
+ * { folder, name, kind, vol, what, hooks?, make(k) }   (a `legacy` entry is a file kept as
+ * it is). hooks: where a station would use it (docs/api/audio.md). */
+const CATALOG = [
+  // ── shared: the original UI sounds, byte copies of packs/diner/sound ──
+  { folder: 'shared', name: 'plop', kind: 'step', vol: 0.4, legacy: true, hooks: 'add (the default)', what: 'Something lands on the food (every Add). A soft low thump.' },
+  { folder: 'shared', name: 'swoosh', kind: 'step', vol: 0.3, legacy: true, what: 'An ingredient slides away (Skip).' },
+  { folder: 'shared', name: 'toss', kind: 'step', vol: 0.4, legacy: true, what: 'The bad one is thrown out (Swap It): a whoosh and a soft bin thunk.' },
+  { folder: 'shared', name: 'tick', kind: 'step', vol: 0.3, legacy: true, hooks: 'stage (the default)', what: 'A Timed stage change (0.3); also the scan highlight moving (0.12).' },
+  { folder: 'shared', name: 'ding', kind: 'order', vol: 0.4, legacy: true, what: 'The counter bell: Next Customer.' },
+  { folder: 'shared', name: 'kaching', kind: 'order', vol: 0.45, legacy: true, what: 'The register rings the order up.' },
+  { folder: 'shared', name: 'stars', kind: 'order', vol: 0.35, legacy: true, what: 'The rating appears: three rising notes.' },
+  { folder: 'shared', name: 'buzz', kind: 'order', vol: 0.25, legacy: true, what: 'A fly is on the food (a fly gross-out).' },
+  { folder: 'shared', name: 'ew', kind: 'order', vol: 0.4, legacy: true, what: 'A gross-out was served: a low falling "wah".' },
+  // ── diner: the originals, kept as they are ──
+  { folder: 'diner', name: 'sizzle', kind: 'order', vol: 0.35, legacy: true, hooks: 'grill cook', what: 'Patties hit the grill.' },
+  { folder: 'diner', name: 'flip', kind: 'step', vol: 0.3, legacy: true, hooks: 'grill done', what: 'A quick spatula "fwip" (also the ticket going up).' },
+  { folder: 'diner', name: 'squirt', kind: 'step', vol: 0.3, legacy: true, what: "A squeeze bottle: each sauce's Add (the bottles squirt it on)." },
+
+  // ── diner: new, for the fryer and the drinks ──
+  { folder: 'diner', name: 'fryer', kind: 'order', vol: 0.35, hooks: 'fryer cook', what: 'The fry basket goes into the oil: a light clank, then bubbling.', make: k => {
+    const x = buf(1.2);
+    hit(x, 0, [480, 1130, 1790], [0.05, 0.035, 0.02], [0.3, 0.15, 0.05]);
+    mix(x, lp4(biquad(noiseBuf(k, 1.2, t => ramp(t, 0, 0.05) * Math.exp(-t / 0.45)), 'bp', 1000, 0.6), 2200), 0.03, 0.75);
+    for (let j = 0; j < 46; j++) { const t = 0.05 + 1.0 * k.rand(); bubble(x, t, k.between(220, 620), k.between(0.012, 0.035), k.between(0.1, 0.24) * Math.exp(-t / 0.55)); }
+    for (let j = 0; j < 16; j++) { const t = 0.04 + 0.8 * k.rand(); grain(x, k, t, 0.004, k.between(0.08, 0.16) * Math.exp(-t / 0.5), 1400, 1.2); }
+    return finish(lp4(x, 2300), 0.36, 0.002, 0.25);
+  } },
+  { folder: 'diner', name: 'fountain', kind: 'order', vol: 0.32, hooks: 'drinks add or auto', what: 'A soda fountain pours: a soft stream with a muffled fizz.', make: k => {
+    const x = buf(1.2);
+    hit(x, 0, [380, 900], [0.02, 0.01], [0.25, 0.08]);
+    const sway = wander(k, 9);
+    mix(x, biquad(noiseBuf(k, 1.2, t => ramp(t, 0.02, 0.09) * (1 - ramp(t, 0.85, 1.18)) * (0.85 + 0.15 * sway(t))), 'bp', 560, 0.8), 0, 0.55);
+    for (let j = 0; j < 110; j++) { const t = 0.06 + 1.0 * k.rand(); bubble(x, t, k.between(700, 1700), k.between(0.008, 0.02), k.between(0.03, 0.07) * (1 - ramp(t, 0.8, 1.15)), 0.4); }
+    return finish(lp4(x, 2200), 0.3, 0.003, 0.08);
+  } },
+  { folder: 'diner', name: 'salt', kind: 'step', vol: 0.35, hooks: 'an Add of salt', what: 'Two shakes of a salt shaker: soft, low "tch tch".', make: k => {
+    const x = buf(0.36);
+    for (const t0 of [0, 0.16]) {
+      mix(x, biquad(noiseBuf(k, 0.09, t => ad(t, 0.004, 0.03)), 'bp', 1300, 1.0), t0, 1);
+      for (let j = 0; j < 18; j++) grain(x, k, t0 + 0.01 + 0.06 * k.rand(), 0.002, k.between(0.08, 0.16), 1600, 2);
+      hit(x, t0 + 0.004, [650, 1400], [0.015, 0.008], [0.2, 0.06]);
+    }
+    return finish(lp4(x, 2300), 0.3, 0.002, 0.04);
+  } },
+
+  // ── pizza ──
+  { folder: 'pizza', name: 'oven', kind: 'order', vol: 0.35, hooks: 'oven cook', what: 'The pizza slides into the brick oven: a soft whump, a warm roar and a few crackles.', make: k => {
+    const x = buf(1.3);
+    const ph = { v: 0 };
+    mix(x, fill(0.3, t => { ph.v += 2 * Math.PI * (55 + 45 * Math.exp(-t / 0.05)) / SR; return Math.sin(ph.v) * ad(t, 0.004, 0.09); }), 0, 0.55);
+    mix(x, biquad(lp4(noiseBuf(k, 1.3, t => ramp(t, 0.02, 0.35) * (1 - ramp(t, 0.6, 1.28))), 650), 'hp', 70, 0.7), 0, 1.1);
+    for (let j = 0; j < 14; j++) grain(x, k, 0.15 + 1.0 * k.rand(), 0.005, k.between(0.12, 0.3), 1100, 1.5);
+    return finish(lp4(x, 2300), 0.36, 0.002, 0.1);
+  } },
+  { folder: 'pizza', name: 'peel', kind: 'step', vol: 0.35, hooks: 'oven done', what: 'The wooden peel slides the pizza out: a short scrape and a light wooden tap.', make: k => {
+    const x = buf(0.46);
+    mix(x, sweep(noiseBuf(k, 0.34, t => hann(t, 0, 0.32) * (0.8 + 0.2 * Math.sin(2 * Math.PI * 31 * t))), t => 430 + 380 * t / 0.32, 1.4), 0, 1);
+    hit(x, 0.32, [370, 900, 1580], [0.05, 0.028, 0.014], [0.55, 0.25, 0.08]);
+    return finish(lp4(x, 2300), 0.36, 0.003, 0.05);
+  } },
+  { folder: 'pizza', name: 'cut', kind: 'step', vol: 0.32, hooks: 'cut done', what: 'The pizza wheel rolls across the crust: a soft, gritty roll.', make: k => {
+    const x = buf(0.52);
+    const bumps = t => Math.pow(Math.abs(Math.sin(Math.PI * 26 * t)), 3);
+    mix(x, biquad(noiseBuf(k, 0.52, t => hann(t, 0, 0.5) * (0.35 + 0.65 * bumps(t))), 'bp', 850, 0.9), 0, 1);
+    mix(x, lp4(noiseBuf(k, 0.52, t => hann(t, 0, 0.5)), 380), 0, 0.5);
+    return finish(lp4(x, 2200), 0.32, 0.004, 0.06);
+  } },
+
+  // ── smoothie ──
+  { folder: 'smoothie', name: 'blender', kind: 'order', vol: 0.32, hooks: 'blender cook', what: 'The blender runs: a low motor whirr with fruit chopping, about a second and a half.', make: k => {
+    const D = 1.4, wob = wander(k, 3), chop = wander(k, 22);
+    const f = t => (80 + 95 * ramp(t, 0, 0.25)) * (1 + 0.012 * wob(t)) * (1 - 0.035 * Math.abs(Math.sin(2 * Math.PI * 2.5 * t)));
+    const m = motor(D, f, 1900, 1.0, k), x = mix(Float64Array.from(m, v => v * 0.6), biquad(m, 'bp', 750, 0.9), 0, 1.2);
+    const shape = t => ramp(t, 0, 0.12) * (1 - ramp(t, D - 0.3, D - 0.01));
+    for (let i = 0; i < x.length; i++) x[i] *= 0.55 * shape(i / SR);
+    mix(x, biquad(noiseBuf(k, D, t => shape(t) * (0.55 + 0.45 * chop(t))), 'bp', 900, 0.7), 0, 0.7);
+    return finish(lp4(x, 2200), 0.32, 0.004, 0.05);
+  } },
+  { folder: 'smoothie', name: 'blenderStop', kind: 'step', vol: 0.32, hooks: 'blender done', what: 'The blender winds down and the jug lifts off its base with a soft clunk.', make: k => {
+    const D = 0.7;
+    const m = motor(D, t => 40 + 135 * Math.exp(-t / 0.2), 1900, 1.0, k), x = mix(Float64Array.from(m, v => v * 0.6), biquad(m, 'bp', 750, 0.9), 0, 1.2);
+    for (let i = 0; i < x.length; i++) x[i] *= 0.5 * Math.exp(-(i / SR) / 0.22);
+    hit(x, 0.44, [220, 560, 1100], [0.08, 0.05, 0.02], [0.35, 0.3, 0.08]);
+    return finish(lp4(x, 2200), 0.34, 0.003, 0.08);
+  } },
+  { folder: 'smoothie', name: 'pour', kind: 'step', vol: 0.3, hooks: 'auto (a base pouring in)', what: 'Juice or milk glugs into the jug.', make: k => {
+    const D = 0.75, x = buf(D);
+    const shape = t => ramp(t, 0, 0.06) * (1 - ramp(t, 0.55, 0.73));
+    mix(x, biquad(noiseBuf(k, D, t => shape(t) * (0.75 + 0.25 * Math.sin(2 * Math.PI * 7 * t))), 'bp', 480, 0.8), 0, 0.45);
+    for (let j = 0; j < 44; j++) { const t = 0.03 + 0.6 * k.rand(); bubble(x, t, k.between(260, 700), k.between(0.025, 0.06), k.between(0.15, 0.35) * shape(t)); }
+    return finish(lp4(x, 2000), 0.32, 0.004, 0.06);
+  } },
+
+  // ── cafe ──
+  { folder: 'cafe', name: 'pour', kind: 'order', vol: 0.34, hooks: 'coffee cook (the espresso pour)', what: 'Espresso runs into the cup: a thin, gentle trickle.', make: k => {
+    const D = 1.2, x = buf(D);
+    const shape = t => ramp(t, 0, 0.08) * (1 - ramp(t, 0.95, 1.19));
+    mix(x, biquad(noiseBuf(k, D, t => shape(t) * (0.8 + 0.2 * Math.sin(2 * Math.PI * 5 * t))), 'bp', 700, 1.0), 0, 0.4);
+    for (let j = 0; j < 84; j++) { const t = 0.04 + 1.1 * k.rand(); bubble(x, t, k.between(450, 1100), k.between(0.015, 0.04), k.between(0.14, 0.3) * shape(t)); }
+    return finish(lp4(x, 2300), 0.34, 0.004, 0.06);
+  } },
+  { folder: 'cafe', name: 'hiss', kind: 'order', vol: 0.28, hooks: 'coffee done (the machine lets off steam)', what: 'The espresso machine lets off steam: a muffled "pssh" and a low pump hum.', make: k => {
+    const D = 1.1, x = buf(D), flutter = wander(k, 30);
+    const shape = t => ramp(t, 0, 0.06) * (1 - ramp(t, 0.7, 1.08));
+    mix(x, lp4(biquad(noiseBuf(k, D, t => shape(t) * (0.85 + 0.15 * flutter(t))), 'bp', 1300, 0.6), 2200), 0, 1);
+    mix(x, lp4(noiseBuf(k, D, shape), 180), 0, 0.7);
+    mix(x, fill(D, t => Math.sin(2 * Math.PI * 50 * t) * shape(t)), 0, 0.05);
+    return finish(lp4(x, 2300), 0.3, 0.004, 0.06);
+  } },
+  { folder: 'cafe', name: 'fryer', kind: 'order', vol: 0.34, hooks: 'donut fryer cook', what: 'A donut drops into the hot oil: a soft plop, then gentle bubbling.', make: k => {
+    const D = 1.3, x = buf(D);
+    const ph = { v: 0 };
+    mix(x, fill(0.2, t => { ph.v += 2 * Math.PI * (80 + 50 * Math.exp(-t / 0.04)) / SR; return Math.sin(ph.v) * ad(t, 0.004, 0.06); }), 0, 0.45);
+    mix(x, lp4(noiseBuf(k, 0.4, t => ad(t, 0.003, 0.11)), 1500), 0, 0.4);
+    mix(x, lp4(biquad(noiseBuf(k, D, t => ramp(t, 0.02, 0.1) * (1 - ramp(t, 0.9, 1.28))), 'bp', 1500, 0.8), 2200), 0, 0.22);
+    for (let j = 0; j < 90; j++) { const t = 0.05 + 1.15 * k.rand(); bubble(x, t, k.between(220, 650), k.between(0.01, 0.035), k.between(0.1, 0.3) * (1 - ramp(t, 0.9, 1.25))); }
+    return finish(lp4(x, 2300), 0.34, 0.003, 0.06);
+  } },
+  { folder: 'cafe', name: 'dip', kind: 'step', vol: 0.3, hooks: 'a glaze station done', what: 'A donut is dipped in glaze: a thick, wet "schlup" and one drip.', make: k => {
+    const x = buf(0.42), ph = { v: 0 };
+    mix(x, fill(0.25, t => { ph.v += 2 * Math.PI * (150 + 170 * Math.exp(-t / 0.05)) / SR; return Math.sin(ph.v) * ad(t, 0.008, 0.07); }), 0, 0.4);
+    mix(x, sweep(noiseBuf(k, 0.2, t => ad(t, 0.01, 0.06)), t => 800 - 1500 * t, 1.2), 0, 1.3);
+    bubble(x, 0.28, 420, 0.045, 0.35, 0.5);
+    return finish(lp4(x, 2000), 0.32, 0.003, 0.05);
+  } },
+
+  // ── sushi ──
+  { folder: 'sushi', name: 'knife', kind: 'burst', vol: 0.28, hooks: 'roll done (once per cut)', what: 'One clean cut through the roll: a quiet "shk" and the board under it.', make: k => {
+    const x = buf(0.16);
+    mix(x, biquad(noiseBuf(k, 0.12, t => ad(t, 0.002, 0.03)), 'bp', 1500, 1.2), 0, 1);
+    hit(x, 0.045, [260, 640], [0.03, 0.014], [0.5, 0.18]);
+    return finish(lp4(x, 2300), 0.3, 0.002, 0.03);
+  } },
+  { folder: 'sushi', name: 'mat', kind: 'step', vol: 0.3, hooks: 'roll auto (the rolling flourish)', what: 'The bamboo mat rolls the sushi: a soft wooden clatter that speeds up.', make: k => {
+    const D = 0.75, x = buf(D);
+    let t = 0.02, gap = 0.055;
+    while (t < 0.66) {
+      const f = k.between(700, 1100), a = k.between(0.6, 1) * (0.6 + 0.4 * ramp(t, 0, 0.2));
+      hit(x, t, [f, f * 2.3], [0.012, 0.006], [0.5 * a, 0.12 * a]);
+      t += gap; gap = Math.max(0.03, gap * 0.95);
+    }
+    mix(x, lp4(noiseBuf(k, D, t2 => hann(t2, 0, 0.72)), 900), 0, 0.25);
+    return finish(lp4(x, 2300), 0.3, 0.003, 0.06);
+  } },
+
+  // ── burrito ──
+  { folder: 'burrito', name: 'wrap', kind: 'step', vol: 0.32, hooks: 'auto (the wrap)', what: 'The tortilla folds twice and rolls up: soft papery "fwumps".', make: k => {
+    const x = buf(0.8);
+    for (const t0 of [0, 0.26]) {
+      mix(x, biquad(noiseBuf(k, 0.14, t => hann(t, 0, 0.13)), 'bp', 650, 0.9), t0, 0.7);
+      hit(x, t0 + 0.06, [160, 330], [0.04, 0.02], [0.22, 0.1]);
+    }
+    mix(x, sweep(noiseBuf(k, 0.3, t => hann(t, 0, 0.29)), t => 520 - 200 * t / 0.29, 1.0), 0.49, 0.45);
+    return finish(lp4(x, 2000), 0.32, 0.003, 0.05);
+  } },
+  { folder: 'burrito', name: 'press', kind: 'order', vol: 0.34, hooks: 'griddle cook', what: 'The griddle press comes down: a low clunk, then a sizzle that settles.', make: k => {
+    const D = 1.2, x = buf(D);
+    hit(x, 0, [120, 310, 760, 1350], [0.15, 0.08, 0.04, 0.02], [0.6, 0.32, 0.15, 0.05]);
+    mix(x, lp4(biquad(noiseBuf(k, D, t => ramp(t, 0.02, 0.06) * Math.exp(-t / 0.45) * (1 - ramp(t, 0.9, 1.18))), 'bp', 1400, 0.7), 2200), 0, 0.85);
+    for (let j = 0; j < 24; j++) { const t = 0.05 + 0.9 * k.rand(); grain(x, k, t, 0.004, k.between(0.06, 0.16) * Math.exp(-t / 0.5), 1500, 1.3); }
+    return finish(lp4(x, 2300), 0.36, 0.002, 0.08);
+  } },
+  { folder: 'burrito', name: 'burst', kind: 'step', vol: 0.34, hooks: 'the bursting-burrito joke', what: 'An over-stuffed burrito bursts: a soft pop and a comic splat.', make: k => {
+    const x = buf(0.55), ph = { v: 0 };
+    mix(x, fill(0.2, t => { ph.v += 2 * Math.PI * (90 + 130 * Math.exp(-t / 0.035)) / SR; return Math.sin(ph.v) * ad(t, 0.002, 0.06); }), 0, 0.4);
+    mix(x, biquad(noiseBuf(k, 0.15, t => ad(t, 0.002, 0.04)), 'bp', 700, 0.8), 0, 1.4);
+    mix(x, biquad(noiseBuf(k, 0.4, t => ad(t, 0.005, 0.11)), 'bp', 500, 0.7), 0.05, 1.3);
+    mix(x, fill(0.4, t => Math.sin(2 * Math.PI * 180 * t) * (0.5 + 0.5 * Math.sin(2 * Math.PI * 12 * t)) * ad(t, 0.01, 0.12)), 0.07, 0.2);
+    return finish(lp4(x, 1800), 0.36, 0.002, 0.05);
+  } },
+
+  // ── icecream ──
+  { folder: 'icecream', name: 'scoop', kind: 'step', vol: 0.32, hooks: 'scoop add (each scoop) or cook', what: 'The scoop drags through the tub, and the ball lands with a soft "thup".', make: k => {
+    const x = buf(0.42), ph = { v: 0 };
+    mix(x, sweep(noiseBuf(k, 0.25, t => hann(t, 0, 0.24) * (0.75 + 0.25 * Math.sin(2 * Math.PI * 40 * t))), t => 450 + 450 * t / 0.24, 1.6), 0, 0.9);
+    mix(x, fill(0.16, t => { ph.v += 2 * Math.PI * (160 + 90 * Math.exp(-t / 0.03)) / SR; return Math.sin(ph.v) * ad(t, 0.003, 0.045); }), 0.26, 0.3);
+    mix(x, biquad(noiseBuf(k, 0.1, t => ad(t, 0.002, 0.03)), 'bp', 600, 0.8), 0.26, 0.9);
+    return finish(lp4(x, 2200), 0.36, 0.003, 0.05);
+  } },
+  { folder: 'icecream', name: 'mixer', kind: 'order', vol: 0.3, hooks: 'shake cook', what: 'The shake mixer spins: a smooth, gentle whirr with the shake churning.', make: k => {
+    const D = 1.3, wob = wander(k, 4), churn = wander(k, 6);
+    const m = motor(D, t => (100 + 110 * ramp(t, 0, 0.2)) * (1 + 0.015 * wob(t)), 1800, 1.1, k), x = mix(Float64Array.from(m, v => v * 0.6), biquad(m, 'bp', 650, 1.0), 0, 1.0);
+    const shape = t => ramp(t, 0, 0.1) * (1 - ramp(t, D - 0.3, D - 0.01));
+    for (let i = 0; i < x.length; i++) x[i] *= 0.5 * shape(i / SR);
+    mix(x, biquad(noiseBuf(k, D, t => shape(t) * (0.7 + 0.3 * churn(t))), 'bp', 600, 0.8), 0, 0.5);
+    return finish(lp4(x, 2200), 0.3, 0.004, 0.05);
+  } },
+  { folder: 'icecream', name: 'mixerStop', kind: 'step', vol: 0.3, hooks: 'shake done', what: 'The mixer winds down and the cup comes off with a light tap.', make: k => {
+    const D = 0.6;
+    const m = motor(D, t => 40 + 170 * Math.exp(-t / 0.17), 1800, 1.1, k), x = mix(Float64Array.from(m, v => v * 0.6), biquad(m, 'bp', 650, 1.0), 0, 1.0);
+    for (let i = 0; i < x.length; i++) x[i] *= 0.5 * Math.exp(-(i / SR) / 0.2);
+    hit(x, 0.38, [420, 980], [0.05, 0.02], [0.4, 0.12]);
+    return finish(lp4(x, 2200), 0.3, 0.003, 0.06);
+  } },
+
+  // ── the court ──
+  { folder: 'court', name: 'shutter', kind: 'once', vol: 0.4, what: 'A storefront shutter rolls up (Grand Opening): a metal rattle and a clunk at the top.', make: k => {
+    const D = 1.7, x = buf(D);
+    let t = 0.05, gap = 0.05;
+    while (t < 1.36) {
+      const f = k.between(300, 420), a = k.between(0.6, 1);
+      hit(x, t, [f, f * 2.2, f * 3.9], [0.025, 0.012, 0.006], [0.5 * a, 0.22 * a, 0.07 * a]);
+      t += gap; gap = Math.max(0.041, gap * 0.985);
+    }
+    const shape = t2 => ramp(t2, 0, 0.1) * (1 - ramp(t2, 1.3, 1.45));
+    mix(x, lp4(noiseBuf(k, D, shape), 220), 0, 0.9);
+    mix(x, fill(D, t2 => (Math.sin(2 * Math.PI * 60 * t2) + 0.5 * Math.sin(2 * Math.PI * 120 * t2)) * shape(t2)), 0, 0.05);
+    hit(x, 1.42, [110, 290, 640], [0.18, 0.1, 0.05], [0.7, 0.32, 0.12]);
+    return finish(lp4(x, 2300), 0.36, 0.004, 0.08);
+  } },
+  { folder: 'court', name: 'chime', kind: 'once', vol: 0.38, what: 'The Grand Opening chime: four warm rising bell notes.', make: () => {
+    const x = buf(1.8);
+    [[523.25, 0], [659.25, 0.16], [783.99, 0.32], [1046.5, 0.5]].forEach(([f, t0]) => {
+      hit(x, t0, [f, 2 * f], [0.55, 0.18], [0.5, f < 700 ? 0.12 : 0.07], 0.004);
+    });
+    return finish(lp4(x, 2400), 0.32, 0.003, 0.1);
+  } },
+  { folder: 'court', name: 'paChime', kind: 'once', vol: 0.36, what: 'The mall PA\'s "bing-bong" before the announcer speaks.', make: () => {
+    const x = buf(1.35);
+    [[659.25, 0], [523.25, 0.42]].forEach(([f, t0]) => {
+      const n = buf(0.92);
+      for (let i = 0; i < n.length; i++) {
+        const t = i / SR;
+        n[i] = (Math.sin(2 * Math.PI * f * t) + 0.15 * Math.sin(2 * Math.PI * 2 * f * t) * Math.exp(-t / 0.15)) * ad(t, 0.006, 0.32) * (1 + 0.15 * Math.sin(2 * Math.PI * 5.5 * t));
+      }
+      mix(x, n, t0, 0.5);
+    });
+    return finish(lp4(x, 2400), 0.3, 0.003, 0.08);
+  } },
+  { folder: 'court', name: 'signDrop', kind: 'once', vol: 0.38, what: 'The gold sign drops onto the sign board: a solid "clonk" and a small bounce.', make: k => {
+    const x = buf(0.5);
+    hit(x, 0, [190, 470, 1050, 1720], [0.1, 0.07, 0.035, 0.02], [0.35, 0.42, 0.2, 0.05]);
+    hit(x, 0.13, [190, 470, 1050], [0.08, 0.05, 0.025], [0.13, 0.15, 0.06]);
+    mix(x, biquad(noiseBuf(k, 0.1, t => ad(t, 0.002, 0.03)), 'bp', 500, 0.8), 0, 0.5);
+    return finish(lp4(x, 2300), 0.36, 0.002, 0.06);
+  } },
+  { folder: 'court', name: 'sparkle', kind: 'once', vol: 0.32, what: 'The gold sign sparkles: a soft shimmer of little bell notes (nothing shrill).', make: k => {
+    const x = buf(1.1), notes = [1046.5, 1174.66, 1318.51, 1567.98, 1760, 2093];
+    for (let j = 0; j < 9; j++) {
+      const t0 = 0.66 * j / 9 + 0.03 * k.rand(), f = notes[Math.floor(k.rand() * notes.length)], a = k.between(0.4, 0.7);
+      for (const [dt, g] of [[0, 1], [0.11, 0.35], [0.22, 0.15]]) hit(x, t0 + dt, [f], [0.16], [a * g], 0.004);
+    }
+    return finish(lp4(x, 2400), 0.24, 0.004, 0.12);
+  } },
+  // The pop is a short mid-range burst (small speakers play it), over a small low boom.
+  ...[['pop1', 300, 120, 700, 8, 0.34], ['pop2', 240, 100, 550, 5, 0.36], ['pop3', 340, 140, 900, 11, 0.3]].map(([name, fa, fb, popHz, crackles, peak]) => ({
+    folder: 'court', name, kind: 'burst', vol: 0.36, what: 'A quiet firework pop for the grand celebration (' + ['middle', 'deepest', 'lightest, most crackle'][+name.slice(3) - 1] + ').', make: k => {
+      const x = buf(0.4), ph = { v: 0 };
+      mix(x, fill(0.15, t => { ph.v += 2 * Math.PI * (fb + (fa - fb) * Math.exp(-t / 0.02)) / SR; return Math.sin(ph.v) * ad(t, 0.002, 0.035); }), 0, 0.3);
+      mix(x, biquad(noiseBuf(k, 0.12, t => ad(t, 0.001, 0.02)), 'bp', popHz, 0.8), 0, 3);
+      for (let j = 0; j < crackles; j++) { const t = 0.06 + 0.29 * Math.pow(k.rand(), 1.6); grain(x, k, t, 0.002, k.between(0.1, 0.22) * Math.exp(-(t - 0.06) / 0.12), k.between(1200, 1700), 2); }
+      return finish(lp4(x, 2200), peak, 0.002, 0.04);
+    },
+  })),
+];
+
+/* ══ the 12 originals, exactly as they were first made ══════════════════════
+ * Never written into packs/. --legacy <dir> renders them into <dir> to compare: one seeded
+ * noise stream feeds them all in this order, so every one but sizzle (it also used
+ * Math.random) comes out byte-identical to the files in packs/diner/sound. */
+function renderLegacy(OUT, only) {
+  fs.mkdirSync(OUT, { recursive: true });
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647) * 2 - 1;
+  const ONLY = only || [];
+  function wav(name, samples) {
+    if (ONLY.length && !ONLY.includes(name)) return;
+    fs.writeFileSync(path.join(OUT, name + '.wav'), encodeWav(samples));
+    console.log('legacy', name, (samples.length / SR).toFixed(2) + ' s');
+  }
+  const env = (t, a, d) => (t < a ? t / a : Math.exp(-(t - a) / d));
+  function lowpass(x, hz) { const k = 1 - Math.exp(-2 * Math.PI * hz / SR); let y = 0; return x.map(v => (y += k * (v - y))); }
+  wav('plop', Array.from({ length: len(0.16) }, (_, i) => { const t = i / SR, f = 260 - 900 * t; return Math.sin(2 * Math.PI * f * t) * env(t, 0.004, 0.045) * 0.42; }));
+  wav('swoosh', lowpass(Array.from({ length: len(0.22) }, (_, i) => { const t = i / SR; return rnd() * Math.sin(Math.PI * t / 0.22) * 0.35; }), 1600));
+  wav('toss', lowpass(Array.from({ length: len(0.42) }, (_, i) => { const t = i / SR; return (t < 0.28 ? rnd() * Math.sin(Math.PI * t / 0.28) * 0.4 : 0) + (t > 0.3 ? Math.sin(2 * Math.PI * 140 * t) * env(t - 0.3, 0.003, 0.04) * 0.5 : 0); }), 2000));
+  wav('sizzle', lowpass(Array.from({ length: len(1.3) }, (_, i) => { const t = i / SR; const crackle = Math.random() < 0.004 ? 1 : 0; return (rnd() * 0.22 + crackle * rnd() * 0.5) * Math.min(1, t / 0.05) * Math.min(1, (1.3 - t) / 0.3); }), 2300));
+  wav('flip', lowpass(Array.from({ length: len(0.18) }, (_, i) => { const t = i / SR; return rnd() * Math.sin(Math.PI * t / 0.18) * 0.4 + Math.sin(2 * Math.PI * (300 + 900 * t) * t) * env(t, 0.01, 0.05) * 0.2; }), 2200));
+  wav('tick', Array.from({ length: len(0.07) }, (_, i) => { const t = i / SR; return Math.sin(2 * Math.PI * 900 * t) * env(t, 0.001, 0.012) * 0.35; }));
+  wav('ding', Array.from({ length: len(0.9) }, (_, i) => { const t = i / SR; const e = env(t, 0.002, 0.28); return (Math.sin(2 * Math.PI * 1568 * t) * 0.5 + Math.sin(2 * Math.PI * 2093 * t) * 0.18 + Math.sin(2 * Math.PI * 784 * t) * 0.2) * e * 0.5; }));
+  wav('kaching', Array.from({ length: len(0.8) }, (_, i) => {
+    const t = i / SR;
+    const clunk = Math.sin(2 * Math.PI * 180 * t) * env(t, 0.002, 0.03) * 0.5;
+    const drawer = t > 0.08 && t < 0.3 ? rnd() * 0.18 * Math.sin(Math.PI * (t - 0.08) / 0.22) : 0;
+    const bell = t > 0.12 ? (Math.sin(2 * Math.PI * 2637 * t) * 0.3 + Math.sin(2 * Math.PI * 3520 * t) * 0.15) * env(t - 0.12, 0.002, 0.18) : 0;
+    return clunk + drawer + bell;
+  }));
+  wav('stars', Array.from({ length: len(0.75) }, (_, i) => { const t = i / SR; const k = Math.min(2, Math.floor(t / 0.16)), f = [784, 988, 1175][k], tt = t - k * 0.16; return Math.sin(2 * Math.PI * f * t) * env(tt, 0.004, 0.12) * 0.38; }));
+  wav('buzz', lowpass(Array.from({ length: len(0.9) }, (_, i) => { const t = i / SR; return Math.sign(Math.sin(2 * Math.PI * (190 + 25 * Math.sin(2 * Math.PI * 7 * t)) * t)) * 0.12 * Math.min(1, t / 0.05) * Math.min(1, (0.9 - t) / 0.15); }), 1400));
+  wav('ew', Array.from({ length: len(0.6) }, (_, i) => { const t = i / SR; const f = 220 - 120 * t; return (Math.sin(2 * Math.PI * f * t) + 0.4 * Math.sin(2 * Math.PI * 2 * f * t)) * env(t, 0.02, 0.25) * 0.3; }));
+  wav('squirt', (() => {
+    const raw = Array.from({ length: len(0.62) }, () => rnd());
+    const hi = lowpass(raw, 1500), lo = lowpass(raw, 300);
+    return hi.map((v, i) => {
+      const t = i / SR;
+      const sputter = 0.65 + 0.35 * Math.sin(2 * Math.PI * (22 + 30 * t) * t);
+      const shape = Math.min(1, t / 0.03) * (t < 0.42 ? 1 : Math.max(0, 1 - (t - 0.42) / 0.14));
+      const drip = t > 0.5 ? Math.sin(2 * Math.PI * (420 - 2100 * (t - 0.5)) * (t - 0.5)) * env(t - 0.5, 0.003, 0.03) * 0.3 : 0;
+      return (v - lo[i]) * sputter * shape * 0.9 + drip;
+    });
+  })());
+}
+
+/* ══ files ══════════════════════════════════════════════════════════════════ */
+const fileOf = e => path.join(folderPath(e.folder), e.name + '.wav');
+const sha256 = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+
+/** The shared set: byte copies of the originals in packs/diner/sound. A copy is made only
+ *  when it is missing; a copy that differs from its original is reported, never replaced. */
+function copyShared() {
+  fs.mkdirSync(folderPath('shared'), { recursive: true });
+  for (const e of CATALOG.filter(x => x.legacy && x.folder === 'shared')) {
+    const src = path.join(ORIGINALS, e.name + '.wav'), dst = fileOf(e);
+    if (!fs.existsSync(src)) continue;
+    if (!fs.existsSync(dst)) { fs.copyFileSync(src, dst); console.log('copied   shared/' + e.name + '.wav'); }
+    else if (sha256(src) !== sha256(dst)) console.warn('DIFFERS  shared/' + e.name + '.wav is not the same as packs/diner/sound/' + e.name + '.wav (left as it is)');
+  }
+}
+
+function render(e) {
+  const x = e.make(kit(e.folder + ':' + e.name));
+  fs.mkdirSync(folderPath(e.folder), { recursive: true });
+  fs.writeFileSync(fileOf(e), encodeWav(x));
+  const a = analyse(x);
+  const bad = breaks(a, e.kind);
+  console.log(('wrote    ' + e.folder + '/' + e.name).padEnd(30), a.dur.toFixed(2) + ' s', 'peak ' + a.peak.toFixed(2), Math.round(a.high * 1000) / 10 + '% >2.5k', bad.length ? '  BREAKS: ' + bad.join('; ') : '');
+}
+
+/** BBSounds: every catalogued sound whose file exists, with its length and volume. */
+function indexData() {
+  const out = { version: 1 };
+  for (const f of FOLDERS) {
+    for (const e of CATALOG.filter(x => x.folder === f)) {
+      const file = fileOf(e);
+      if (!fs.existsSync(file)) continue;
+      const w = readWav(file);
+      (out[f] = out[f] || {})[e.name] = { dur: Math.round(w.x.length / w.sr * 100) / 100, vol: e.vol };
+    }
+  }
+  return out;
+}
+function writeIndex() {
+  const data = indexData();
+  const body = FOLDERS.filter(f => data[f]).map(f => '  ' + JSON.stringify(f) + ': {\n' +
+    Object.entries(data[f]).map(([n, v]) => '    ' + JSON.stringify(n) + ': ' + JSON.stringify(v)).join(',\n') + ',\n  },').join('\n');
+  const text = '/** Built by tools/make-sounds.cjs: every sound effect there is, by folder (packs/<folder>/sound/<name>.wav),\n' +
+    ' *  with its length in seconds and the volume it is played at. js/audio.js preloads only these. Do not edit. */\n' +
+    '(function (root, data) {\n' +
+    "  if (typeof module === 'object' && module.exports) module.exports = data;\n" +
+    '  else root.BBSounds = data;\n' +
+    "})(typeof window === 'undefined' ? globalThis : window, {\n" +
+    '  version: 1,\n' + body + '\n});\n';
+  fs.mkdirSync(path.dirname(INDEX), { recursive: true });
+  fs.writeFileSync(INDEX, text);
+  const n = Object.keys(data).filter(k => k !== 'version').reduce((s, f) => s + Object.keys(data[f]).length, 0);
+  console.log('index    packs/shared/sound/sounds.js (' + n + ' sounds)');
+}
+
+/** Measure every indexed sound. Returns the problems with new sounds (originals are only reported). */
+function check(print) {
+  const problems = [];
+  if (print) console.log('sound'.padEnd(22), 'kind'.padEnd(6), 'dur'.padStart(5), 'peak'.padStart(5), 'loud'.padStart(6), '>2.5k'.padStart(6), 'mid'.padStart(5), 'roll95'.padStart(7), '  notes');
+  for (const e of CATALOG) {
+    const file = fileOf(e);
+    if (!fs.existsSync(file)) { if (!e.legacy) problems.push(e.folder + '/' + e.name + ': missing'); continue; }
+    const a = analyse(readWav(file).x);
+    const bad = e.legacy ? [] : breaks(a, e.kind);
+    bad.forEach(b => problems.push(e.folder + '/' + e.name + ': ' + b));
+    if (print) console.log((e.folder + '/' + e.name).padEnd(22), e.kind.padEnd(6), a.dur.toFixed(2).padStart(5), a.peak.toFixed(2).padStart(5), a.loud.toFixed(3).padStart(6),
+      (Math.round(a.high * 1000) / 10 + '%').padStart(6), (Math.round(a.mid * 100) + '%').padStart(5), (Math.round(a.roll95) + 'Hz').padStart(7), '  ' + (e.legacy ? 'original (kept as it is)' : bad.length ? 'BREAKS: ' + bad.join('; ') : 'ok'));
+  }
+  return problems;
+}
+
+function doc() {
+  for (const f of FOLDERS) {
+    const list = CATALOG.filter(e => e.folder === f);
+    if (!list.length) continue;
+    console.log('\n**' + f + '**\n\n| name | for | suggested hook | length | vol |\n|---|---|---|---|---|');
+    for (const e of list) {
+      const file = fileOf(e);
+      const d = fs.existsSync(file) ? (readWav(file).x.length / SR).toFixed(2) + ' s' : '(missing)';
+      console.log('| `' + e.name + '` | ' + e.what + (e.legacy ? ' *(original)*' : '') + ' | ' + (e.hooks || '') + ' | ' + d + ' | ' + e.vol + ' |');
+    }
+  }
+}
+
+function main(argv) {
+  if (argv[0] === '--legacy') {
+    const dir = argv[1];
+    if (!dir) { console.error('--legacy needs a folder to write into'); process.exit(2); }
+    const out = path.resolve(dir);
+    if (out.startsWith(path.join(GAME, 'packs'))) { console.error('--legacy never writes into packs/'); process.exit(2); }
+    renderLegacy(out, argv.slice(2));
+    return;
+  }
+  if (argv[0] === '--check') { const p = check(true); if (p.length) { console.error('\n' + p.join('\n')); process.exit(1); } return; }
+  if (argv[0] === '--index') { writeIndex(); return; }
+  if (argv[0] === '--doc') { doc(); return; }
+  const fresh = CATALOG.filter(e => !e.legacy);
+  const want = argv.length ? fresh.filter(e => argv.includes(e.folder) || argv.includes(e.folder + ':' + e.name)) : fresh;
+  const unknown = argv.filter(a => !fresh.some(e => a === e.folder || a === e.folder + ':' + e.name));
+  if (unknown.length) { console.error('no such new sound: ' + unknown.join(', ') + ' (the originals are never re-made here; see --legacy)'); process.exit(2); }
+  copyShared();
+  want.forEach(render);
+  writeIndex();
+}
+
+module.exports = { SR, FOLDERS, LIMITS, CATALOG, INDEX, encodeWav, readWav, analyse, breaks, indexData, kit, fileOf };
+if (require.main === module) main(process.argv.slice(2));

@@ -1,0 +1,9 @@
+# Tasha — Laughing
+
+Generated with built-in image_gen.
+
+Use case: illustration-story. Asset: a single full-body character pose for a 2D comedy diner game, 1024 x 1536 PNG.
+Input image 1 is the APPROVED TASHA neutral model, the exact identity and visual design reference. Copy her EXACTLY: same face structure, dark braids and gold braid cuffs, purple slouchy ribbed beanie, skin colour, gold hoop earrings, body shape and proportions, oversized crimson hoodie with two cream chest stripes, wired white earbuds around neck, ripped cuffed blue jeans, cream and purple high-top sneakers with the same colourful doodles, and turquoise skateboard with yellow lightning bolt, black doodles, yellow wheels and grey trucks. Change ONLY pose and facial expression.
+LAUGHING: Tasha is doubled over laughing, torso bent forward strongly at the waist, one hand pressed to belly and other hand slapping her knee, knees slightly bent, both feet planted. Eyes squeezed shut with tears of laughter and an open laughing mouth. Keep skateboard secured under the belly-side upper arm so both hands can perform the required gestures. Pose must read clearly from silhouette alone. Preserve teenage proportions, no babyish or cute redesign.
+Style: same original TV-cartoon style as reference: thick clean even black outlines, flat bright colours and ONE hard-edged cel-shadow tone per colour, simple bold shapes, big head and hands and expressive face. Adult dry comedy character caught in uncontrollable laughter. No resemblance to any existing cartoon character, show or brand.
+Framing: ONE character, full body from hat to shoes, facing viewer and turned very slightly toward viewer's right. Bent-over standing pose fills about 88% of image height, centred with clear margins all round; hat, braids, hands, board and shoes entirely inside frame. Pure white background #FFFFFF, no floor, no cast shadow, no border, no captions or text, no additional objects.

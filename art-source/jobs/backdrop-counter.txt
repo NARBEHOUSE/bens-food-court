@@ -1,0 +1,21 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Scene: the inside of a retro American diner, seen from BEHIND the serving counter, looking out across the dining room
+toward the front doors, eye level about 1.6 m. A cheerful 1950s-style room: a black-and-white checkerboard floor,
+red vinyl booths with chrome trim, a few small tables and chairs, pendant lamps, a long window with blinds.
+Composition (percent of the image):
+- Left 10% to 55%: keep this area visually quiet (the dining room wall and a booth far back), because the game draws the
+  current customer standing here, large, on top of the picture.
+- Right 55% to 85%, middle distance: a short queue of three waiting customers standing in line, small and SLIGHTLY OUT OF
+  FOCUS (soft blur, as if the camera focuses on the counter): a bored man in a bowling shirt reading a newspaper, a
+  jogger in a sweatband staring at her watch, and an old man holding a huge empty takeout bag. Original, funny designs.
+- Behind them: glass double doors with a little bell over them, framed artwork on the walls, two booths with a couple
+  of seated diners in the far background.
+- Bottom 22%: just the floor and the lower part of the room (the game draws the counter top here, on top of the picture).
+Hidden funny details, small but findable: an "EMPLOYEE OF THE MONTH" frame whose photo is a pickle; a mounted fish on the
+wall wearing tiny sunglasses; a ceiling fan with a sock stuck on one blade; a sign by the door that reads "NO SHIRT, NO
+SHOES, NO PROBLEM"; a framed painting of a cheeseburger in a dramatic heroic sunset.
+No text anywhere except those two signs. No border.
+Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; no real logos.
+Save as art-source/backdrops/counter.png (1536 x 1024) and the prompt as art-source/backdrops/counter-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

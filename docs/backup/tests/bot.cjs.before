@@ -1,0 +1,61 @@
+/** Test helpers: the packs, the rules modules, and bots that play the line. */
+'use strict';
+const path = require('path');
+
+const G = path.join(__dirname, '..');
+const load = p => require(path.join(G, p));
+const diner = load('packs/diner/pack.js');
+const pizza = load('tests/packs/test-pizza/pack.js');
+const R = load('js/core/rng.js'), O = load('js/core/orders.js'), L = load('js/core/line.js');
+const J = load('js/core/judge.js'), S = load('js/core/shift.js'), W = load('js/core/words.js');
+const SC = load('js/core/script.js'), schema = load('js/core/schema.js'), F = load('js/core/savefmt.js');
+
+/** The answer the ticket wants (a bad ingredient is swapped first). Timed cooking waits
+ *  for the wanted stage before taking the food off. */
+function right(pack, o, q) {
+  if (q.kind === 'review') return 'serve';
+  const want = L.expected(pack, o.items[q.item], q.station, q.step);
+  if (q.kind === 'add') { if (q.gross) return 'swap'; return q.have < want ? 'add' : 'skip'; }
+  if (q.kind === 'cook') return q.timed ? (q.stage === want ? 'takeOff' : null) : 'cook:' + want;
+  if (q.kind === 'pick') {
+    const flat = q.options.flatMap(x => x.row || [x]);
+    return flat.find(x => x.value === want).id;
+  }
+  return null;
+}
+
+/** Play the current order to its serve. choose(q, o) -> an answer id, or null to let Timed
+ *  food cook another second. Returns { presses, warnings, score }. */
+function play(pack, s, choose, opts) {
+  opts = opts || {};
+  const o = S.next(pack, s);
+  let presses = 0, guard = 0;
+  const warnings = [];
+  while (o.phase !== 'served') {
+    if (++guard > 2000) throw new Error('order never finished');
+    const q = S.question(pack, s);
+    const id = choose(q, o);
+    if (id === null || id === undefined) { S.tick(pack, s, 1); continue; }
+    const r = S.answer(pack, s, id);
+    if (r.refused) throw new Error('refused ' + id + ' at ' + JSON.stringify(q));
+    if (r.warn) { warnings.push(r.warn); if (opts.onWarn) opts.onWarn(r.warn, q); continue; }
+    presses += 1;
+  }
+  return { presses, warnings, result: S.serve(pack, s) };
+}
+
+/** A random but legal answer, for bot shifts. */
+function random(s) {
+  return (q) => {
+    const rnd = () => R.next(s.botRng || (s.botRng = { rng: R.seed(s.seed * 7 + 3) }));
+    if (q.kind === 'cook' && q.timed) return rnd() < 0.2 ? 'takeOff' : null;
+    const flat = q.options.flatMap(x => x.row || [x]).flatMap(x => x.row || [x]);
+    if (q.kind === 'review') {
+      const redos = flat.filter(x => x.id.startsWith('redo:') && x.station);
+      return rnd() < 0.7 || !redos.length ? 'serve' : redos[Math.floor(rnd() * redos.length)].id;
+    }
+    return flat[Math.floor(rnd() * flat.length)].id;
+  };
+}
+
+module.exports = { G, load, diner, pizza, R, O, L, J, S, W, SC, schema, F, right, play, random };

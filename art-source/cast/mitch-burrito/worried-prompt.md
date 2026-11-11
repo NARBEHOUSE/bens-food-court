@@ -1,0 +1,11 @@
+# Mitch Burrito — Worried
+
+Generated using the built-in image_gen tool.
+
+Use case: identity-preserve
+Asset type: Full-body character pose for a 2D comedy diner game, costume variant; one PNG, 1024 x 1536.
+Input image 1 is the approved MITCH restaurant costume and character identity. Input image 2 is the approved WORRIED pose to copy exactly.
+Create one new picture: use the exact pose, hand positions and finger gestures, facial expression, crossed legs, body proportions and framing of image 2, dressed in the complete restaurant uniform from image 1. Preserve image 2's hunched shoulders, both hands anxiously held against his mouth, clenched visible teeth, raised worried eyebrows, wide anxious eyes, sweat droplets and bent crossed knees. Do not use image 1's smile or relaxed arms.
+Preserve Mitch's face identity, large nose, messy brown swooping hair, lanky adult build, headset with boom microphone, white short-sleeved shirt, khaki trousers and scuffed brown shoes. Add the exact red patterned bandana tied around his head, dark green apron with waist bow and two lower pockets, and hot-sauce-splattered badge from image 1. The apron covers the red tie completely except for the red knot at the collar; no long tie blade is visible. Keep the pocket protector with colorful pens as in image 1. Adapt the apron naturally to the worried pose, behind his raised arms, without changing the pose. Badge reads "MANAGER" with masking tape over its upper part reading handwritten "ASST." and orange hot sauce splatters/drips.
+Style: match approved references closely: original TV-style 2D cartoon art for an adult comedy diner game, thick clean even black outlines, flat bright colors with ONE hard-edged cel-shadow tone per color, bold simple shapes, big expressive head, hands, eyes and mouth. Dry adult comedy, not cute or babyish. Original character; no resemblance to existing cartoon brands or shows.
+Composition: ONE full-body standing character, facing viewer turned very slightly to viewer's right. Match image 2 framing: centered, fills about 88% of canvas height, clear margins on all sides, every part from hair to shoes inside frame. Pure white background, no floor, no cast shadow, no border, no extra objects, no extra text beyond badge. No cup. Nothing else changes.

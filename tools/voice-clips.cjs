@@ -1,0 +1,106 @@
+/** Ben's Food Court - every clip the cast needs recorded, as JSON, for tools/voices.py.
+ *
+ *  node tools/voice-clips.cjs [<pack id> | court | all] [out.json]      (default: diner; `node tools/voice-clips.cjs
+ *                                                                         out.json` still lists the Burger Bar's)
+ *
+ *  Each clip: { clip, speaker, text, delivery?, moment, hash, order, recorded, pack }. hash is the fingerprint of the
+ *  words (js/core/script.js), so a line edited in a script shows up as needing a new recording. recorded: that pack's
+ *  voice manifest (packs/<id>/voice/manifest.json) already has this clip with these words. Clips are listed in the
+ *  order they matter most: the tutorial and Mitch first, then what customers say on every order, then the complaints.
+ *
+ *  A restaurant's list is SC.everyClip(merged pack, merged script, { customers, said }) (docs/api/script.md 5), plus
+ *  every order part in each customer's own voice. The court's is SC.everyClip(null, SC.court(court script),
+ *  { customers: everyone drawn (the celebration's cheers), names: every restaurant's full name, goals: every goal the
+ *  progress board can set }), the goals gathered by playing the court's rules through many random progressions.
+ *  (integrate-2b, 2026-11-10: was the diner's alone, with customers only.)
+ *
+ *  voicecut (2026-11-10): a clip id is one recording wherever it is said, so `all` lists each once: a cast line
+ *  (<speaker>/cast:<id>) is filed under the cast (packs/cast/voice/manifest.json), and an order part said at two
+ *  restaurants is listed at the first. The summary on stderr counts by speaker and by moment.
+ */
+'use strict';
+const path = require('path');
+const fs = require('fs');
+const G = path.join(__dirname, '..');
+const B = require(path.join(G, 'tests/bot.cjs'));
+const SC = require(path.join(G, 'js/core/script.js'));
+const W = require(path.join(G, 'js/core/words.js'));
+const S = require(path.join(G, 'js/core/shift.js'));
+const COURT = require(path.join(G, 'packs/court/court.js'));
+const RULES = require(path.join(G, 'js/core/court.js'));
+
+const args = process.argv.slice(2);
+const outFile = args.find(a => /\.json$/i.test(a));
+const which = args.find(a => !/\.json$/i.test(a)) || 'diner';
+const said = Object.fromEntries(COURT.restaurants.map(r => [r.pack, r.said]));
+const manifestOf = folder => { try { return JSON.parse(fs.readFileSync(path.join(G, 'packs', folder, 'voice/manifest.json'), 'utf8')); } catch (e) { return {}; } };
+
+function packClips(id) {
+  const R = B.restaurants().find(r => r.id === id);
+  if (!R || R.error) throw new Error('no pack ' + id + (R && R.error ? ': ' + R.error : ''));
+  const pack = R.pack;
+  const customers = S.castOf(pack).map(c => c.id);
+  const clips = SC.everyClip(pack, R.script, { customers, said });
+  // Every order part, in each customer's own voice, for the recipes on offer.
+  const parts = W.allOrderParts(pack, S.recipesFor(pack, 2));
+  for (const c of customers) for (const p of parts) clips.push({ clip: c + '/order.' + p.id, speaker: c, text: p.text, moment: 'order.part' });
+  const rank = c => {
+    if (c.moment.startsWith('tutorial')) return 0;
+    if (c.speaker === pack.manager.id && /^(shift|gross)/.test(c.moment)) return 1;
+    if (/^(greet|order|react)/.test(c.moment)) return 2;
+    if (c.speaker === pack.manager.id) return 3;
+    return 4;
+  };
+  const manifest = manifestOf(id), cast = manifestOf('cast');
+  clips.forEach(c => {
+    const own = c.clip.includes('/cast:') ? 'cast' : id, m = own === 'cast' ? cast : manifest;
+    c.pack = own; c.order = rank(c); c.hash = SC.hash(c.text); c.recorded = !!(m[c.clip] && m[c.clip].hash === c.hash);
+  });
+  return clips;
+}
+
+/** Every goal the progress board can set: the court's rules played through random progressions (stars up one at a
+ *  time at a random open restaurant, its gold sign with the fifth star, popularity to 10 at the end). */
+function everyGoal() {
+  const goals = new Set();
+  let seed = 7;
+  const rand = n => { seed = (seed * 16807) % 2147483647; return seed % n; };
+  for (let run = 0; run < 400; run++) {
+    const st = RULES.normalize(COURT, RULES.create(COURT));
+    for (let k = 0; k < 200; k++) {
+      const g = RULES.nextGoal(COURT, st);
+      if (g.goal) goals.add(g.goal);
+      if (g.stage === 'complete') break;
+      const open = Object.keys(st.restaurants).filter(id => st.restaurants[id].opened);
+      const id = open[rand(open.length)], r = st.restaurants[id];
+      if (r.stars < 5) { r.stars += 1; r.popularity = Math.max(r.popularity, r.stars * 2 - 2); if (r.stars === 5) Object.assign(r, { gold: true, goldSeen: true }); }
+      else r.popularity = Math.min(10, r.popularity + 1);
+      Object.assign(st, RULES.normalize(COURT, st));
+    }
+  }
+  return [...goals].sort();
+}
+
+function courtClips() {
+  const court = SC.court(B.courtScript());
+  const customers = B.CAST.drawn(require(path.join(G, 'packs/cast/art/manifest.js')));
+  const clips = SC.everyClip(null, court, { customers, names: COURT.restaurants.map(r => r.name), goals: everyGoal() });
+  const manifest = manifestOf('court');
+  clips.forEach(c => { c.pack = 'court'; c.order = /^court\.(unlock|announce|celebrate|promoted)/.test(c.moment) ? 1 : 3; c.hash = SC.hash(c.text); c.recorded = !!(manifest[c.clip] && manifest[c.clip].hash === c.hash); });
+  return clips;
+}
+
+const ids = which === 'all' ? B.restaurants().filter(r => !r.error).map(r => r.id).concat(['court']) : [which];
+const seen = new Set();
+const clips = ids.flatMap(id => (id === 'court' ? courtClips() : packClips(id))).filter(c => !seen.has(c.clip) && seen.add(c.clip));
+clips.sort((a, b) => a.order - b.order);
+
+const out = JSON.stringify(clips, null, 1);
+if (outFile) fs.writeFileSync(outFile, out);
+else process.stdout.write(out);
+const left = clips.filter(c => !c.recorded);
+const tally = (list, key) => Object.entries(list.reduce((m, c) => (m[key(c)] = (m[key(c)] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1]).map(([k, v]) => k + ' ' + v).join(', ');
+console.error(ids.join(', ') + ': ' + clips.length + ' clips, ' + (clips.length - left.length) + ' recorded, ' + left.length + ' to record' +
+  (left.length ? ' (' + tally(left, c => c.speaker) + ')' : ''));
+console.error('by moment: ' + tally(clips, c => c.moment.replace(/^(complain\.gross|gross|tutorial\.warn|tutorial\.cook|order\.odd|mistake|court\.announce)\..*/, '$1.*')
+  .replace(/^tutorial\.(?!warn|cook)\w+$/, 'tutorial.*')));

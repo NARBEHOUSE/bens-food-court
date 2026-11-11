@@ -1,0 +1,19 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Attached image 1 is THIS restaurant's storefront, cut out of the food court picture (attached image 2), seen from above.
+Draw the same restaurant from INSIDE it: its materials, colours, roof and awning, blank sign shape, counter front and
+props must match image 1 exactly, so a player who zooms in from the court recognises it at once.
+Scene: inside Ben's Burger Bar, a retro red-and-chrome diner stall with a giant burger on its roof, one of the restaurants in a cheerful shopping-mall food court, seen from BEHIND its serving counter,
+looking straight down the length of the court toward its OPEN end: tables, chairs and planters in the middle distance, the round stone plinth, and far away the wide mall concourse with shoppers' benches and potted palms; the side stalls appear only at the far left and far right edges, under the mall's big skylight, eye level about 1.6 m. The stall's own side walls, pillars and roof edge
+frame the view on the left edge, the right edge and across the top, seen from inside (its kitchen is behind the viewer,
+out of sight). The stall's decor: red and chrome everywhere: black-and-white checkered wall tiles, ribbed chrome pillars at the sides, the red-and-chrome underside of its sign and roof across the top, two milkshake machines and stacks of white plates on a side shelf, ketchup and mustard bottles, red-topped chrome stools on the customers' side of the counter.
+Composition (percent of the image):
+- Left 10% to 55%: keep this area visually quiet (a plain wall of the stall and an empty table far back), because the
+  game draws the current customer standing here, large, on top of the picture.
+- Right 55% to 85%, middle distance: a short queue of three waiting customers, small, SHARP and in focus like everything
+  else: a trucker with a toothpick, a woman with a stroller, a teenager with headphones. Original, funny designs.
+- Bottom 22%: just the floor (the game draws the counter top here, on top of the picture).
+Hidden funny details, small but findable: an EMPLOYEE OF THE MONTH frame whose photo is a pickle; a mounted fish on the wall wearing tiny sunglasses; a ceiling fan with a sock stuck on one blade; a sign reading NO SHIRT, NO SHOES, NO PROBLEM; a framed painting of a cheeseburger in a dramatic heroic sunset.
+Everything sharp, nothing blurred. No text anywhere except what the details ask for. No border.
+Save as art-source/backdrops/candidates/counter.png (1536 x 1024) and the prompt as art-source/backdrops/candidates/counter-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

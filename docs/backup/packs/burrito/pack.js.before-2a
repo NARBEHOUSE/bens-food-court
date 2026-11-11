@@ -1,0 +1,378 @@
+/** Ben's Burritos - the restaurant, as data (docs/api/pack-format.md; in words: docs/api/packs/burrito.md).
+ *
+ *  A bright orange taco-truck counter with papel picado, a big griddle and a wall of hot sauces (FOODCOURT-BUILD.md
+ *  5.3, BENS-FOOD-COURT "Ben's Burritos"). Shut at the start; the second restaurant to open (left arm, lower). The
+ *  engine (js/core) reads this and nothing else; the food is js/food/burrito.js (food-burrito), the lines are
+ *  packs/burrito/script.js, who everyone IS is packs/cast/cast.js.
+ *
+ *  The line (Simple; Serve counted):
+ *    prep (Burrito Line)  Style Burrito/Bowl/Tacos -> Rice White/Brown/None -> Beans Black/Pinto/None (burritos and
+ *                         bowls; tacos skip both) -> Protein Chicken/Steak/Veggies/None -> Add or Skip, one at a time:
+ *                         cheese, lettuce, pico, corn, sour cream, guacamole, jalapenos (and onions, tacos only)
+ *                         -> Hot Sauce Mild/Medium/Hot/None -> a flourish by itself: a burrito wraps, tacos fold, a
+ *                         bowl settles into neat sections; an over-stuffed burrito then bursts and is wrapped again
+ *                         in a second tortilla (the bursting-burrito joke: no mistake, spec 4.6)
+ *    griddle (Griddle)    burritos and tacos: Simple: How toasted? Lightly Toasted / Toasted / Extra Crispy. Timed:
+ *                         the grill press comes down; Lift the Press (left on, it stops at Burnt: Timed's last stage,
+ *                         never a gross-out). Bowls skip the griddle.
+ *    chips (Chip Basket)  Chips and Salsa (a side, from level 2): Salsa Red/Green/Mango -> Add or Skip guacamole, lime.
+ *  A burrito is 14 presses, a bowl 13, tacos 13, chips and salsa 4.
+ *
+ *  The toppings are Add or Skip steps, one at a time (pilot.md 5.2): the brown guacamole sits on one, Sal's lettuce
+ *  and Oakes's onions are held as recipe parts, and nothing pages behind More... Every pick has four values or fewer.
+ *
+ *  Plain data only: no functions, no Math.random. Ids match /^\w+$/ and avoid every word js/core quotes (medium,
+ *  extra, done, one, two, plain, event, tutorial), so the sauces are mildSauce, mediumSauce, hotSauce, noSauce.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBPacks = root.BBPacks || {}).burrito = data;
+})(typeof window === 'undefined' ? globalThis : window, {
+  id: 'burrito',
+  version: 1,
+  name: "Ben's Burritos",
+  format: 3,                      // packs/burrito/script.js covers every moment (content-burrito, 2026-11-09)
+
+  help: "Ben's Burritos. Every order starts at the burrito line: pick the style, Burrito, Bowl or Tacos, then the " +
+    'rice, the beans and the protein. Then Add or Skip each topping as it comes down the line, and pick the hot sauce. ' +
+    'A burrito wraps itself, and tacos fold themselves. Then the griddle: in Simple, pick how toasted, Lightly ' +
+    'Toasted, Toasted or Extra Crispy; in Timed, the press comes down, so Lift the Press when it reaches the stage on ' +
+    'the ticket. Bowls skip the griddle; tacos skip the rice and beans and get onions. Chips and salsa: pick the ' +
+    "salsa, then Add or Skip the guacamole and the lime. The ticket lists everything: add what's on it, skip what " +
+    "isn't. If something looks wrong, Swap It brings a fresh one.",
+
+  /* ── colours (spec 5.6): bright orange and green. A burnt-orange control panel, deep green menu boards in a bright
+     orange frame (the storefront's boards), cream plates. Contrast worked out in docs/api/packs/burrito.md 14: the
+     highlight is at least 3.8:1 on everything it sits on, text at least 4.5:1, stars 3:1. ── */
+  theme: {
+    pageBg: '#0f2a14',                 // behind everything: deep cactus green
+    panelTop: '#b04a0c',               // the line's control panel: burnt orange (the highlight sits on it, 3.83:1)
+    panelBottom: '#7a300a',
+    panelLip: '#3f1704',
+    plateTop: '#fffaf0',               // the griddle's doneness plates: cream enamel, ink words
+    plateBottom: '#fde6c8',
+    mark: '#7a2e0e',                   // a grill-mark on a plate: chili brown
+    labelBg: 'rgba(48,20,4,.9)',       // white words on a prop's label
+    ticketAccent: '#a83e0a',           // the customer's name on the ticket (on paper)
+    ticketNow: '#e4f6d2',              // the item being made, on the ticket: pale lime (ink words)
+    perforation: '#d9c2a3',
+    hudBg: 'rgba(40,20,6,.86)',        // white words
+    gaugeBg: 'rgba(14,40,20,.92)',     // the Timed gauge: white words, the highlight marks the stage now
+    star: '#c97c00',                   // amber stars: 3:1 on the receipt's paper and on both greens
+    boardGlow: '#124422',              // menu boards: a deep green board in an orange frame
+    woodInset: '#5a2a08',
+    cardValue: '#ffe7a3',
+    logoTop: '#ffb347',                // orange
+    logoMain: '#c6f28a',               // lime
+    wheelInk: '#1b120e',
+    wheelSteel: '#dfe4e8',
+    wheelDark: '#2f8a3e',              // the ticket wheel's spokes, painted green
+    board: '#0e3519',
+    wood: '#f28a1e',                   // the boards' frame: the storefront's bright orange planks
+  },
+  courses: ['main', 'side'],      // a two-item order (level 3 up) is a main and chips, or Gus's two of one thing
+  levels: {},                     // the engine's ladder unchanged (pack-format.md 12)
+
+  manager: { id: 'mitch', art: 'mitch-burrito' },   // the red bandana, green apron and the hot-sauce-stained badge
+
+  /* ── cooking: the griddle and its grill press ──────────────────────────────────────────────────────────────── */
+  // The griddle toasts the whole item (a wrapped burrito, or the tacos). Timed food left under the press stops at
+  // Burnt, its last stage.
+  stageSets: {
+    toast: { stages: ['soft', 'lightlyToasted', 'toasted', 'extraCrispy', 'burnt'], choose: ['lightlyToasted', 'toasted', 'extraCrispy'],
+      ask: 'How toasted?', stop: 'Lift the Press' },
+  },
+  stageNames: { soft: 'Soft', lightlyToasted: 'Lightly Toasted', toasted: 'Toasted', extraCrispy: 'Extra Crispy', burnt: 'Burnt' },
+  cookSpeeds: { verySlow: 12, slow: 8, normal: 5 },   // the Burger Bar's grill: seconds a stage
+  wantedScale: 2,                                     // the ticket's stage lasts twice as long
+
+  /* ── what goes on (looks: docs/api/packs/burrito.md 10 has the table food-burrito draws from) ─────────────── */
+  ingredients: {
+    // The items. Each is the order's body (the line builds on the style picked); a ramp is the tortilla's colour at
+    // each toast stage (the griddle plates' swatches).
+    burrito:    { name: 'Burrito', plural: 'Burritos',
+      look: { shape: 'burritoBody', ramp: { soft: 0xf3e3bf, lightlyToasted: 0xeccb8a, toasted: 0xd9a356, extraCrispy: 0xb5732c, burnt: 0x3e2614 } } },
+    bowl:       { name: 'Bowl', plural: 'Bowls', look: { shape: 'bowlBody' } },
+    tacos:      { name: 'Tacos', plural: 'Tacos',
+      look: { shape: 'tacoBody', ramp: { soft: 0xf2e0b0, lightlyToasted: 0xe9c47e, toasted: 0xd69c4c, extraCrispy: 0xb06c28, burnt: 0x3d2513 } } },
+    chips:      { name: 'Chips and Salsa', plural: 'Chips and Salsa', look: { shape: 'chipBasket', colour: 0xf2c46a } },
+    // The toppings, in line order.
+    cheese:     { name: 'Cheese', look: { shape: 'shreddedCheese', colour: 0xf5b83a } },
+    lettuce:    { name: 'Lettuce', look: { shape: 'shreddedLettuce', colour: 0x8ccf4d } },
+    pico:       { name: 'Pico', look: { shape: 'pico', colour: 0xd8402c } },
+    corn:       { name: 'Corn', look: { shape: 'cornKernels', colour: 0xf6d03a } },
+    sourCream:  { name: 'Sour Cream', look: { shape: 'sourCream', colour: 0xfbf8ef } },
+    guacamole:  { name: 'Guacamole', look: { shape: 'guacamole', colour: 0x7fb93c } },
+    jalapenos:  { name: 'Jalapeños', look: { shape: 'jalapenoRings', colour: 0x4f9a2a } },
+    onions:     { name: 'Onions', look: { shape: 'dicedOnions', colour: 0xf4efe2 } },
+    // The chips' own.
+    lime:       { name: 'Lime', look: { shape: 'limeWedge', colour: 0x8fd14f } },
+  },
+
+  /* ── named picks ──────────────────────────────────────────────────────────────────────────────────────────── */
+  // The ticket never says "no X": each None value says itself ("rice: none").
+  slots: {
+    style: { name: 'Style', say: '{value} style', values: [
+      { id: 'burrito', name: 'Burrito', look: { shape: 'flourTortilla', colour: 0xf3e3bf } },
+      { id: 'bowl', name: 'Bowl', look: { shape: 'burritoBowl', colour: 0xe8792b } },
+      { id: 'tacos', name: 'Tacos', say: 'taco style', look: { shape: 'softTacos', colour: 0xf2e0b0 } }] },
+    rice: { name: 'Rice', say: '{value} rice', values: [
+      { id: 'whiteRice', name: 'White', look: { shape: 'rice', colour: 0xfbf8f0 } },
+      { id: 'brownRice', name: 'Brown', look: { shape: 'rice', colour: 0xc69a5e } },
+      { id: 'noRice', name: 'None', say: 'rice: none' }] },
+    beans: { name: 'Beans', say: '{value} beans', values: [
+      { id: 'black', name: 'Black', look: { shape: 'beans', colour: 0x2b2230 } },
+      { id: 'pinto', name: 'Pinto', look: { shape: 'beans', colour: 0xb0703f } },
+      { id: 'noBeans', name: 'None', say: 'beans: none' }] },
+    protein: { name: 'Protein', say: '{value}', values: [
+      { id: 'chicken', name: 'Chicken', look: { shape: 'chickenPieces', colour: 0xe0b070 } },
+      { id: 'steak', name: 'Steak', look: { shape: 'steakPieces', colour: 0x7a3b22 } },
+      { id: 'veggies', name: 'Veggies', look: { shape: 'grilledVeggies', colour: 0x4f9a3a } },
+      { id: 'noProtein', name: 'None', say: 'protein: none' }] },
+    sauce: { name: 'Hot Sauce', say: '{value} sauce', values: [
+      { id: 'mildSauce', name: 'Mild', look: { shape: 'hotSauce', colour: 0x8cb83a, chilies: 1 } },
+      { id: 'mediumSauce', name: 'Medium', look: { shape: 'hotSauce', colour: 0xf08a1c, chilies: 2 } },
+      { id: 'hotSauce', name: 'Hot', look: { shape: 'hotSauce', colour: 0xd23a16, chilies: 3 } },
+      { id: 'noSauce', name: 'None', say: 'hot sauce: none' }] },
+    salsa: { name: 'Salsa', say: '{value} salsa', values: [
+      { id: 'redSalsa', name: 'Red', look: { shape: 'salsaCup', colour: 0xc8321f } },
+      { id: 'greenSalsa', name: 'Green', look: { shape: 'salsaCup', colour: 0x5f9a2e } },
+      { id: 'mangoSalsa', name: 'Mango', look: { shape: 'salsaCup', colour: 0xf2a531 } }] },
+  },
+
+  /* ── stations ─────────────────────────────────────────────────────────────────────────────────────────────── */
+  stations: {
+    prep: {
+      name: 'Burrito Line', backdrop: 'prep', redo: 'Redo the Order', sounds: { auto: 'wrap' },
+      steps: [
+        { kind: 'pick', slot: 'style' },
+        { kind: 'pick', slot: 'rice', when: { slot: 'style', in: ['burrito', 'bowl'] } },
+        { kind: 'pick', slot: 'beans', when: { slot: 'style', in: ['burrito', 'bowl'] } },
+        { kind: 'pick', slot: 'protein' },
+        { kind: 'add', ing: 'cheese' },
+        { kind: 'add', ing: 'lettuce' },
+        { kind: 'add', ing: 'pico' },
+        { kind: 'add', ing: 'corn' },
+        { kind: 'add', ing: 'sourCream' },
+        { kind: 'add', ing: 'guacamole' },
+        { kind: 'add', ing: 'jalapenos' },
+        { kind: 'add', ing: 'onions', when: { slot: 'style', in: ['tacos'] } },     // street tacos: onions
+        { kind: 'pick', slot: 'sauce' },
+        // The flourishes, by themselves (the ticket's style decides which): the burrito rolls up in its foil, the
+        // tacos fold, the bowl settles into neat sections. Then an over-stuffed burrito bursts and is wrapped again
+        // in a second tortilla: the bursting-burrito joke, never a mistake (spec 4.6).
+        { kind: 'auto', id: 'wrap', show: 'burritoWrap', when: { slot: 'style', in: ['burrito'] } },
+        { kind: 'auto', id: 'fold', show: 'tacoFold', when: { slot: 'style', in: ['tacos'] } },
+        { kind: 'auto', id: 'arrange', show: 'bowlArrange', when: { slot: 'style', in: ['bowl'] } },
+        { kind: 'auto', id: 'burst', show: 'burritoBurst', sound: 'burst', when: { recipes: ['everythingBurrito', 'challengeBurrito'] } },
+      ],
+    },
+    griddle: {
+      name: 'Griddle', backdrop: 'griddle', redo: 'Toast Again', tool: 'grillPress', sounds: { cook: 'press' },
+      steps: [{ kind: 'cook', stages: 'toast', want: 'toast' }],   // want: the ticket's toast is said in line order, after the sauce
+    },
+    chips: {
+      name: 'Chip Basket', backdrop: 'prep', redo: 'Redo the Chips',
+      steps: [
+        { kind: 'pick', slot: 'salsa' },
+        { kind: 'add', ing: 'guacamole' },
+        { kind: 'add', ing: 'lime' },
+      ],
+    },
+  },
+
+  /* ── how orders choose values (level 5 uses the fancy lists) ──────────────────────────────────────────────── */
+  picks: {
+    rice:       { values: ['whiteRice', 'brownRice'], normal: 'whiteRice', fancy: ['whiteRice', 'brownRice', 'noRice'] },
+    beans:      { values: ['black', 'pinto'], normal: 'black', fancy: ['black', 'pinto', 'noBeans'] },
+    pintoBeans: { values: ['pinto', 'black'], normal: 'pinto' },                      // the bean and cheese
+    sauce:      { values: ['mildSauce', 'mediumSauce', 'hotSauce'], normal: 'mildSauce', fancy: ['mildSauce', 'mediumSauce', 'hotSauce', 'noSauce'] },
+    tacoSauce:  { values: ['mediumSauce', 'mildSauce', 'hotSauce'], normal: 'mediumSauce', fancy: ['mediumSauce', 'mildSauce', 'hotSauce', 'noSauce'] },
+    toast:      { values: ['lightlyToasted', 'toasted', 'extraCrispy'], normal: 'toasted' },
+    crispToast: { values: ['extraCrispy', 'toasted'], normal: 'extraCrispy' },        // the Fire Burrito
+    salsa:      { values: ['redSalsa', 'greenSalsa'], normal: 'redSalsa', fancy: ['redSalsa', 'greenSalsa', 'mangoSalsa'] },
+  },
+
+  /* ── the menu (spec 4.3): level is the only gate ─────────────────────────────────────────────────────────── */
+  // The style is fixed by the recipe (its name says it), so the ticket and the name always agree. Every main names
+  // every slot its line picks; opt 'in' parts can be held ("no lettuce"), opt 'out' parts added ("add guacamole").
+  // Lettuce is never a fixed part of a recipe a customer draws (only the finale's giant has it), so Sal can order
+  // anything (it is held); onions come only on tacos, held for Oakes.
+  recipes: {
+    chickenBurrito: {
+      name: 'Chicken Burrito', plural: 'Chicken Burritos', price: 8, level: 1, course: 'main', look: { shape: 'burrito' },
+      stations: ['prep', 'griddle'],
+      item: { ing: 'burrito',
+        slots: { style: 'burrito', rice: { pick: 'rice' }, beans: { pick: 'beans' }, protein: 'chicken', sauce: { pick: 'sauce' }, toast: { pick: 'toast' } },
+        parts: [{ ing: 'cheese' }, { ing: 'lettuce', opt: 'in' }, { ing: 'pico' }, { ing: 'sourCream', opt: 'in' },
+          { ing: 'corn', opt: 'out' }, { ing: 'guacamole', opt: 'out' }, { ing: 'jalapenos', opt: 'out' }] },
+    },
+    // Coach Bev's: the jalapenos are always on it, so she can count them.
+    steakBurrito: {
+      name: 'Steak Burrito', plural: 'Steak Burritos', price: 9, level: 1, course: 'main', look: { shape: 'burrito' },
+      stations: ['prep', 'griddle'],
+      item: { ing: 'burrito',
+        slots: { style: 'burrito', rice: { pick: 'rice' }, beans: { pick: 'beans' }, protein: 'steak', sauce: { pick: 'sauce' }, toast: { pick: 'toast' } },
+        parts: [{ ing: 'cheese' }, { ing: 'lettuce', opt: 'in' }, { ing: 'pico' }, { ing: 'guacamole', opt: 'in' }, { ing: 'jalapenos' },
+          { ing: 'sourCream', opt: 'out' }, { ing: 'corn', opt: 'out' }] },
+    },
+    // Marge's usual: beans and cheese, no rice, no meat.
+    beanCheese: {
+      name: 'Bean and Cheese Burrito', plural: 'Bean and Cheese Burritos', price: 6, level: 1, course: 'main', look: { shape: 'burrito' },
+      stations: ['prep', 'griddle'],
+      item: { ing: 'burrito',
+        slots: { style: 'burrito', rice: 'noRice', beans: { pick: 'pintoBeans' }, protein: 'noProtein', sauce: { pick: 'sauce' }, toast: { pick: 'toast' } },
+        parts: [{ ing: 'cheese' }, { ing: 'pico', opt: 'out' }, { ing: 'sourCream', opt: 'out' }] },
+    },
+    chickenBowl: {
+      name: 'Chicken Bowl', plural: 'Chicken Bowls', price: 8, level: 1, course: 'main', look: { shape: 'bowl' },
+      stations: ['prep'],
+      item: { ing: 'bowl',
+        slots: { style: 'bowl', rice: { pick: 'rice' }, beans: { pick: 'beans' }, protein: 'chicken', sauce: { pick: 'sauce' } },
+        parts: [{ ing: 'cheese' }, { ing: 'lettuce', opt: 'in' }, { ing: 'pico' }, { ing: 'corn' }, { ing: 'sourCream', opt: 'in' },
+          { ing: 'guacamole', opt: 'out' }, { ing: 'jalapenos', opt: 'out' }] },
+    },
+    veggieBowl: {
+      name: 'Veggie Bowl', plural: 'Veggie Bowls', price: 8, level: 2, course: 'main', look: { shape: 'bowl' },
+      stations: ['prep'],
+      item: { ing: 'bowl',
+        slots: { style: 'bowl', rice: { pick: 'rice' }, beans: { pick: 'beans' }, protein: 'veggies', sauce: { pick: 'sauce' } },
+        parts: [{ ing: 'cheese', opt: 'in' }, { ing: 'lettuce', opt: 'in' }, { ing: 'pico' }, { ing: 'corn' }, { ing: 'guacamole' },
+          { ing: 'sourCream', opt: 'out' }, { ing: 'jalapenos', opt: 'out' }] },
+    },
+    steakTacos: {
+      name: 'Steak Tacos', plural: 'Plates of Steak Tacos', price: 9, level: 2, course: 'main', look: { shape: 'tacos' },
+      stations: ['prep', 'griddle'],
+      item: { ing: 'tacos',
+        slots: { style: 'tacos', protein: 'steak', sauce: { pick: 'tacoSauce' }, toast: { pick: 'toast' } },
+        parts: [{ ing: 'cheese', opt: 'in' }, { ing: 'pico' }, { ing: 'onions', opt: 'in' },
+          { ing: 'lettuce', opt: 'out' }, { ing: 'guacamole', opt: 'out' }, { ing: 'jalapenos', opt: 'out' }] },
+    },
+    chickenTacos: {
+      name: 'Chicken Tacos', plural: 'Plates of Chicken Tacos', price: 8, level: 2, course: 'main', look: { shape: 'tacos' },
+      stations: ['prep', 'griddle'],
+      item: { ing: 'tacos',
+        slots: { style: 'tacos', protein: 'chicken', sauce: { pick: 'tacoSauce' }, toast: { pick: 'toast' } },
+        parts: [{ ing: 'cheese' }, { ing: 'lettuce', opt: 'in' }, { ing: 'pico' }, { ing: 'sourCream', opt: 'in' }, { ing: 'onions', opt: 'in' },
+          { ing: 'corn', opt: 'out' }, { ing: 'guacamole', opt: 'out' }] },
+    },
+    chips: {
+      name: 'Chips and Salsa', plural: 'Baskets of Chips and Salsa', price: 3, level: 2, course: 'side', look: { shape: 'chipsBasket' },
+      stations: ['chips'],
+      item: { ing: 'chips', slots: { salsa: { pick: 'salsa' } },
+        parts: [{ ing: 'lime', opt: 'in' }, { ing: 'guacamole', opt: 'out' }] },
+    },
+    // Every topping on the line. It always bursts after the wrap (the joke) and comes out in two tortillas.
+    everythingBurrito: {
+      name: 'Everything Burrito', plural: 'Everything Burritos', price: 12, level: 3, course: 'main', look: { shape: 'burrito' },
+      stations: ['prep', 'griddle'],
+      item: { ing: 'burrito',
+        slots: { style: 'burrito', rice: { pick: 'rice' }, beans: { pick: 'beans' }, protein: 'steak', sauce: { pick: 'sauce' }, toast: { pick: 'toast' } },
+        parts: [{ ing: 'cheese' }, { ing: 'lettuce', opt: 'in' }, { ing: 'pico' }, { ing: 'corn', opt: 'in' }, { ing: 'sourCream' },
+          { ing: 'guacamole' }, { ing: 'jalapenos', opt: 'in' }] },
+    },
+    // Inferno's: hot sauce, always, and toasted hard.
+    fireBurrito: {
+      name: 'Fire Burrito', plural: 'Fire Burritos', price: 10, level: 3, course: 'main', look: { shape: 'burrito' },
+      stations: ['prep', 'griddle'],
+      item: { ing: 'burrito',
+        slots: { style: 'burrito', rice: { pick: 'rice' }, beans: { pick: 'beans' }, protein: 'chicken', sauce: 'hotSauce', toast: { pick: 'crispToast' } },
+        parts: [{ ing: 'cheese' }, { ing: 'pico' }, { ing: 'jalapenos' }, { ing: 'sourCream', opt: 'in' }, { ing: 'guacamole', opt: 'out' }] },
+    },
+    // The five-star event's giant: made on the normal line (no added choices), drawn 1.6 times bigger. "Every sauce"
+    // is said, never made: the ticket is hot. It bursts too, and gets a second giant tortilla.
+    challengeBurrito: {
+      name: 'Challenge Burrito', plural: 'Challenge Burritos', price: 24, level: 'event', course: 'main',
+      look: { shape: 'giantBurrito', giant: true },
+      stations: ['prep', 'griddle'],
+      item: { ing: 'burrito',
+        slots: { style: 'burrito', rice: 'whiteRice', beans: 'black', protein: 'steak', sauce: 'hotSauce', toast: { pick: 'toast' } },
+        parts: [{ ing: 'cheese' }, { ing: 'lettuce' }, { ing: 'pico' }, { ing: 'corn' }, { ing: 'sourCream' }, { ing: 'guacamole' },
+          { ing: 'jalapenos' }] },
+    },
+  },
+
+  /* ── gross-outs (spec 4.6): the label names it, Swap It brings a fresh one ─────────────────────────────────── */
+  // The bursting burrito is not here: it is the burst flourish, a joke with no mistake. Burnt is the toast set's last
+  // stage, in Timed only.
+  gross: [
+    { id: 'brown', on: ['guacamole'], say: 'the brown {name}', fx: { tint: 0x7a6528, spots: { colour: 0x4a3a12, n: 8 } } },
+    { id: 'hair', step: 'pick', slot: 'beans', on: ['black', 'pinto'], say: '{name} beans with a hair in them', fx: { hair: true } },
+    { id: 'fly', step: 'pick', slot: 'salsa', on: ['redSalsa', 'greenSalsa', 'mangoSalsa'], say: '{name} salsa with a fly in it', fx: { fly: true } },
+  ],
+
+  /* ── people (spec 2.2, 2.3, 5.4): what each orders here; who they are is the cast's ───────────────────────── */
+  regulars: [
+    // Bean and cheese: her usual.
+    { id: 'marge', likes: [['beanCheese', 3]],
+      usual: [{ recipe: 'beanCheese', set: { pintoBeans: 'pinto', sauce: 'mildSauce', toast: 'toasted' } }] },
+    // Two burritos: his cast twin, where the level allows two items.
+    { id: 'gus', likes: [['chickenBurrito', 2], ['steakBurrito', 2]] },
+    // A steak burrito; she counts the jalapenos out loud.
+    { id: 'bev', likes: [['steakBurrito', 3]], favourite: { recipe: 'steakBurrito', bonus: 2 } },
+    // A bowl, nothing touching. Brown rice, black beans, mild: always.
+    { id: 'vernon', likes: [['chickenBowl', 2], ['veggieBowl', 2]], set: { rice: 'brownRice', beans: 'black', sauce: 'mildSauce' } },
+    // Steak, never lettuce.
+    { id: 'sal', likes: [['steakBurrito', 3], ['steakTacos', 2]], dislikes: ['lettuce'] },
+    // A new reason to hate onions: tacos come with them, and he holds them.
+    { id: 'oakes', likes: [['chickenTacos', 2], ['steakTacos', 1], ['veggieBowl', 1]], dislikes: ['onions'] },
+    // The locals. Inferno wants it hotter: hot sauce on everything, toasted hard.
+    { id: 'inferno', likes: [['fireBurrito', 3], ['steakTacos', 2], ['steakBurrito', 1]], favourite: { recipe: 'fireBurrito', bonus: 2 },
+      wants: { sauce: 'hotSauce', tacoSauce: 'hotSauce', toast: 'extraCrispy', crispToast: 'extraCrispy' } },
+    // Rita, on her lunch break: "one of everything" is said (her order.gag), never made.
+    { id: 'rita', likes: [['everythingBurrito', 3], ['steakBurrito', 2], ['chickenBurrito', 2]], favourite: { recipe: 'everythingBurrito', bonus: 2 } },
+    // Special visitors from level 4, one a shift, never first: the critic, his ten-year-old fan, and a cameo (spec
+    // 2.2): Chef Hiro from Ben's Sushi, here to judge the roll.
+    { id: 'reginald', likes: [['everythingBurrito', 2]], visitor: { level: 4 } },
+    { id: 'kai', likes: [['chickenBurrito', 2], ['beanCheese', 1]], visitor: { level: 4 } },
+    // He came to watch the roll, so he always has a burrito (lightly toasted: the roll should show).
+    { id: 'hiro', likes: [['chickenBurrito', 3]], always: ['chickenBurrito'], set: { toast: 'lightlyToasted' }, visitor: { level: 4 } },
+  ],
+
+  /* ── the tutorial: one guided order through every station, with a gross-out to Swap ───────────────────────── */
+  // Rita's chicken burrito with guacamole (the line, the wrap, the griddle) and chips and salsa (the chip basket);
+  // the guacamole comes down the line brown.
+  tutorial: {
+    customer: 'rita',
+    items: [
+      { recipe: 'chickenBurrito', set: { rice: 'whiteRice', beans: 'black', sauce: 'mildSauce', toast: 'toasted' }, add: ['guacamole'] },
+      { recipe: 'chips', set: { salsa: 'redSalsa' } },
+    ],
+    gross: { item: 0, ing: 'guacamole', event: 'brown' },
+  },
+
+  /* ── ridiculous orders (level 4+, at most one a shift): said in order.odd.<id>; the ticket stays plain ────── */
+  // An odd order is made as written (normal picks), so Inferno, whose wants make everything hot, gets only his own.
+  oddOrders: [
+    // "A burrito wrapped inside another burrito." The Everything Burrito always bursts and is wrapped again, so the
+    // line makes it come true by accident; the ticket is the Everything Burrito as written.
+    { id: 'doubleWrap', recipe: 'everythingBurrito', who: ['marge', 'gus', 'bev', 'vernon', 'sal', 'oakes', 'rita'], say: 'order.odd.doubleWrap' },
+    // "Guacamole, but no avocado." Guacamole is avocado, so the ticket simply leaves it off the veggie bowl.
+    { id: 'noAvocado', recipe: 'veggieBowl', holds: ['guacamole'], who: ['marge', 'gus', 'bev', 'vernon', 'sal', 'oakes', 'rita'],
+      say: 'order.odd.noAvocado' },
+    // "The hottest sauce you've got" from someone who will cry about it. Never Inferno: for him that's lunch.
+    { id: 'hottest', recipe: 'chickenBurrito', picks: { sauce: 'hotSauce' }, who: ['marge', 'gus', 'bev', 'vernon', 'sal', 'oakes', 'rita'],
+      say: 'order.odd.hottest' },
+    // Inferno's own: "hot enough to set off the fire alarm" (the one with the little mustache, on the prep wall). The
+    // ticket is the Fire Burrito as written.
+    { id: 'fireAlarm', recipe: 'fireBurrito', set: { crispToast: 'extraCrispy' }, who: ['inferno'], say: 'order.odd.fireAlarm' },
+    // "Just the tortilla." A bean and cheese burrito with no beans, no cheese and no sauce: the name on the ticket
+    // is the joke.
+    { id: 'justTortilla', level: 5, recipe: 'beanCheese', holds: ['cheese'], picks: { beans: 'noBeans', sauce: 'noSauce' },
+      set: { toast: 'lightlyToasted' }, who: ['marge', 'gus', 'bev', 'vernon', 'sal', 'oakes', 'rita'], say: 'order.odd.justTortilla' },
+  ],
+
+  /* ── the five-star event (spec 4.4): The Burrito Challenge ────────────────────────────────────────────────── */
+  // A crowd gathers to watch Inferno take on the giant burrito; they order while they wait (Shift Length orders at
+  // level-4 complexity). The last is always Inferno's Challenge Burrito, "every sauce" said, the ticket hot.
+  events: {
+    five: {
+      name: 'The Burrito Challenge',
+      customers: ['marge', 'gus', 'bev', 'vernon', 'sal', 'oakes', 'rita', 'reginald', 'kai'],
+      finale: { customer: 'inferno', items: [
+        { recipe: 'challengeBurrito', set: { toast: 'extraCrispy' } },
+        { recipe: 'chips', set: { salsa: 'greenSalsa' } },
+      ] },
+    },
+  },
+});

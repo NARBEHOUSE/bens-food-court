@@ -1,0 +1,31 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Scene: BEN'S FOOD COURT, a bright shopping-mall food court seen from high above at a steep three-quarter overhead angle,
+like a cosy tycoon game. The seven restaurants stand round THREE sides of the court like an upside-down U: a row of three
+storefronts along the TOP, two more down the LEFT side and two down the RIGHT side. The BOTTOM side is OPEN: the seating
+area of tables, chairs and potted plants fills the middle and runs down to the bottom edge of the picture, where the open
+mall concourse is, so nothing closes the seating off. One empty round stone plinth sits in the centre of the seating (the
+game puts a progress board there). Every storefront faces INTO the court, toward the seating: its open counter front, its
+stools and its blank sign board all face the middle.
+Layout (percent of the image width x height):
+- Top row, facing down toward the seating and the viewer: three storefronts side by side along the top edge, at about
+  22-41%, 41-60% and 60-79% x, 2-32% y: a pizza parlor (red-and-white checks, brick oven), a retro burger diner (red and
+  chrome, the biggest, in the middle), and a cosy cafe (brown and cream, a giant donut on its roof). Their counters and
+  stools run along their bottom edges, facing the seating.
+- Left arm, facing right: two storefronts stacked on the left edge, the upper one at about 3-22% x 34-60% y (a beach-shack
+  smoothie bar, teal and bamboo) and the lower one at about 3-22% x 62-90% y (a burrito stall, orange with papel picado).
+- Right arm, facing left: two storefronts stacked on the right edge, mirroring the left: the upper one at about 78-97% x
+  34-60% y (a sushi bar, navy with paper lanterns) and the lower one at about 78-97% x 62-90% y (an ice cream parlor,
+  pink and white with a swirly roof).
+- Each storefront has ONE BLANK sign board: a WIDE horizontal board, about three times as wide as it is tall, mounted
+  flat on the front of its roof edge so it faces the viewer squarely, on the four side stalls too (never a tall,
+  narrow or vertical sign, never a sign on the side of a stall). The game writes the names on these boards. Below the
+  board, an open counter front with stools.
+- The middle 25-75% x, 33-90% y: the seating area, paths between the tables, a few planters, the round plinth at about
+  50% x, 62% y; keep the floor paths open (the game draws small shoppers walking there).
+- The bottom edge, 90-100% y, is the open concourse floor: no wall, no shops and no railing across it, at most a potted
+  palm in each bottom corner. Nothing stands between the seating and the bottom edge.
+No people anywhere. No text anywhere. Everything sharp. No border.
+Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; no real logos.
+Save as art-source/backdrops/court.png (1536 x 1024) and the prompt as art-source/backdrops/court-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

@@ -1,0 +1,428 @@
+/** Ben's Smoothie Shack - every line about this restaurant's food (FOODCOURT-BUILD.md 5.5; docs/api/script.md is the
+ *  format; docs/api/packs/smoothie.md section 12 says who must have what; docs/api/packs/smoothie-script.md is this
+ *  file in words, for the agents after it).
+ *
+ *  What is here: Mitch's lines in his Hawaiian shirt (the shift, the tutorial at every station, every warning, every
+ *  gross-out, the Timed heads-up, the one-liners, the Beach Volleyball Tournament), the 'customer' fallbacks for every
+ *  F moment, the locals' full sets (Breeze, Brock), the cameo's (Tony, the Pizza Parlor's tenor, here as a level-4
+ *  visitor), and every regular's and visitor's lines about the smoothies (reactions, favourites, dislikes, odd orders,
+ *  complaints). greet, smalltalk and goodbye for everyone who is not a local or the cameo come from
+ *  packs/cast/script.js and are merged in; the few here for them are restaurant-flavoured extras (Sal's refusals).
+ *
+ *  A line is { id, who, moment, text, each?, delivery }. Ids are <moment>.<n>, unique per speaker (the cast script
+ *  uses .c<n>, so the two never collide). Clip ids: <speaker>/smoothie:<id>[.<value>] (breeze/smoothie:react.3.1,
+ *  vernon/smoothie:complain.pick.1.base.oatMilk). `each` names the one blank whose value changes the words (one
+ *  recording per value): {ing}/{ings} on Add moments, {want} on stage and pick moments. A pick line uses {slot} and
+ *  {want} together ("for the {slot}, I said {want}"), never "{want} {slot}". No line starts with a lower-cased blank.
+ *  [sigh]-style tags are kept for the recording and dropped for text to speech and captions. delivery: for the final
+ *  voice pass (Bev's say firm, never loud; Sal's and Brock's never say loud either: docs/api/cast-script.md 3).
+ *
+ *  Tone (spec 0.5, DESIGN.md "Writing tone"): adult and dry; the joke is on the customer, the food or Mitch, never
+ *  the player; nothing about speed or skill; nobody hurries anyone; PG; the humour is personality, never accent or
+ *  background. Customer rules (spec 0.6): a gag is one line of 8 seconds or less over a normal order; "all the
+ *  protein", "two shakes" and the dog are said, never made.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBScripts = root.BBScripts || {}).smoothie = data;
+})(typeof window === 'undefined' ? globalThis : window, { format: 3, lines: [
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     MITCH, in the Hawaiian shirt (over the tie), the lei, and sunglasses on his head
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* ── the shift ─────────────────────────────────────────────────────────────────────────────────────────────── */
+  { id: 'shift.start.1', who: 'mitch', moment: 'shift.start', text: 'Doors are open. Blenders plugged in, earmuffs on the hook, and the flamingo in the rafters is watching.', delivery: 'upbeat, a glance up at the flamingo' },
+  { id: 'shift.start.2', who: 'mitch', moment: 'shift.start', text: "Smoothie Shack, open for business. I'm wearing a lei over a tie. It's called range.", delivery: 'proud, adjusting the lei' },
+  { id: 'shift.start.3', who: 'mitch', moment: 'shift.start', text: "Let's go. Today's surf report: one tiny wave. It's a drawing. It's always the drawing.", delivery: 'cheerful, pointing at the board' },
+  { id: 'shift.start.4', who: 'mitch', moment: 'shift.start', text: "Shift's on. Fruit on the shelf, blenders in the back, and the crab in sunglasses does not work here. Don't feed him.", delivery: 'brisk, a stern look at the crab' },
+  { id: 'shift.start.5', who: 'mitch', moment: 'shift.start', text: "Doors open. If the blenders get loud, that's normal. If the green one puts its earmuffs on, that's also normal.", delivery: 'upbeat, matter-of-fact' },
+  { id: 'shift.end.1', who: 'mitch', moment: 'shift.end', text: "That's the shift. Nobody put a sock in anything on purpose. I'm counting that as a win.", delivery: 'relieved, fond' },
+  { id: 'shift.end.2', who: 'mitch', moment: 'shift.end', text: 'Blenders off. My ears are still ringing. They ring in a tropical key.', delivery: 'tired, a little dazed' },
+  { id: 'shift.end.3', who: 'mitch', moment: 'shift.end', text: "Great shift. I'm keeping the lei. It isn't mine. Nobody has asked for it back.", delivery: 'cheerful, a confession' },
+  { id: 'shift.end.4', who: 'mitch', moment: 'shift.end', text: "Doors are locked. The coconut on the shelf saw everything today. He's not talking. He never talks.", delivery: 'conspiratorial, a nod to the coconut' },
+
+  /* ── the uniform: the first shift here in a session ────────────────────────────────────────────────────────── */
+  { id: 'uniform.1', who: 'mitch', moment: 'uniform', text: "Yes, it's a Hawaiian shirt. Over a tie. Corporate said beach casual. I heard beach, I heard casual, and I panicked.", delivery: 'pre-empting the question, deadpan' },
+  { id: 'uniform.2', who: 'mitch', moment: 'uniform', text: "The sunglasses stay on my head. If I put them on, I can't see the blenders. Nobody wants that.", delivery: 'earnest, tapping the sunglasses' },
+  { id: 'uniform.3', who: 'mitch', moment: 'uniform', text: "The lei is made of real flowers. Real plastic flowers. They're very real plastic.", delivery: 'proud, then honest' },
+
+  /* ── gross-outs, said as the bad one comes down the line (all on Add steps: {ing}) ─────────────────────────── */
+  { id: 'gross.brown.1', who: 'mitch', moment: 'gross.brown', each: 'ing', text: "That {ing} is brown. Not banana brown. Bruise brown. Swap it.", delivery: 'alarmed, peering at it' },
+  { id: 'gross.brown.2', who: 'mitch', moment: 'gross.brown', each: 'ing', text: "Whoa. That {ing} has gone soft and brown. It's had a long life. Let it rest. Swap it.", delivery: 'gentle, mock-solemn' },
+  { id: 'gross.brown.3', who: 'mitch', moment: 'gross.brown', each: 'ing', text: "A brown, mushy {ing}. That's banana bread's problem, not ours. Swap it.", delivery: 'brisk, waving it off' },
+  { id: 'gross.mouldy.1', who: 'mitch', moment: 'gross.mouldy', each: 'ings', text: "Those {ings} are wearing little fur coats. It isn't that cold in here. Swap them.", delivery: 'grossed out, dry' },
+  { id: 'gross.mouldy.2', who: 'mitch', moment: 'gross.mouldy', each: 'ings', text: 'Mouldy {ings}! Fuzzy fruit is a no. Get fresh ones.', delivery: 'a recoil, then quick' },
+  { id: 'gross.mouldy.3', who: 'mitch', moment: 'gross.mouldy', each: 'ings', text: 'Whoa. Those {ings} grew a beard. Swap them out.', delivery: 'squeamish, backing away' },
+  { id: 'gross.bug.1', who: 'mitch', moment: 'gross.bug', each: 'ing', text: "There's a bug frozen in the {ing}. He looks surprised. So am I. Swap it.", delivery: 'alarmed, then flat' },
+  { id: 'gross.bug.2', who: 'mitch', moment: 'gross.bug', each: 'ing', text: "Bug in the {ing}! He's not a topping, he's a fossil. Swap it.", delivery: 'sharp, then a grimace' },
+  { id: 'gross.bug.3', who: 'mitch', moment: 'gross.bug', each: 'ing', text: "That {ing} has a bug in it. That's somebody's science project. Not ours. Swap it.", delivery: 'disgusted, brisk' },
+  { id: 'gross.sock.1', who: 'mitch', moment: 'gross.sock', each: 'ing', text: "Why is there a sock in the {ing}? Whose sock is that? Don't answer. Swap it.", delivery: 'horrified, holding up a hand' },
+  { id: 'gross.sock.2', who: 'mitch', moment: 'gross.sock', each: 'ing', text: "There's a sock in the {ing}. One sock. That's a mystery for later. Swap it now.", delivery: 'grim, detective voice' },
+  { id: 'gross.sock.3', who: 'mitch', moment: 'gross.sock', each: 'ing', text: "Sock in the {ing}! And a flip-flop on the shelf. Somebody's getting changed in here. Swap it.", delivery: 'appalled, piecing it together' },
+
+  /* ── Timed: one stage before the ticket's ──────────────────────────────────────────────────────────────────── */
+  { id: 'nearly.1', who: 'mitch', moment: 'nearly', each: 'want', text: "Nearly {want}. That's the one on the ticket.", delivery: 'quick, a little nervous' },
+  { id: 'nearly.2', who: 'mitch', moment: 'nearly', each: 'want', text: "Heads up. It's almost {want}. The blender's doing its thing.", delivery: 'quick, a little nervous' },
+
+  /* ── Mitch: the mistake, read after the customer's complaint (voicecut, 2026-11-10): one line per value, his voice only ── */
+  { id: 'mistake.extra.1', who: 'mitch', moment: 'mistake.extra', each: 'ings', text: 'The ticket said no {ings}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.unasked.1', who: 'mitch', moment: 'mistake.unasked', each: 'ings', text: 'Nobody ordered {ings}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.missing.1', who: 'mitch', moment: 'mistake.missing', each: 'ing', text: 'The ticket said {ing}. That got left off.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.done.1', who: 'mitch', moment: 'mistake.done', each: 'want', text: 'The ticket said {want}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.pick.1', who: 'mitch', moment: 'mistake.pick', each: 'wanted', text: 'The ticket said {wanted}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.more.1', who: 'mitch', moment: 'mistake.more', text: "And more. The receipt's got the rest. It's a long receipt. It's having a day.", delivery: 'resigned, dry' },
+
+  /* ── one-liners after a customer's reaction (Hints and Jokes only) ─────────────────────────────────────────── */
+  { id: 'after.3.1', who: 'mitch', moment: 'after.3', text: "Another happy customer. I'd high-five you, but my hands smell like mango.", delivery: 'warm, sniffing his hand' },
+  { id: 'after.3.2', who: 'mitch', moment: 'after.3', text: "Beautiful. I'd do a little hula, but HR has seen my hula.", delivery: 'pleased, then a quick aside' },
+  { id: 'after.3.3', who: 'mitch', moment: 'after.3', text: 'See? Smoothie, done right. I supervised. From under the flamingo.', delivery: 'smug' },
+  { id: 'after.1.1', who: 'mitch', moment: 'after.1', text: "We'll call that a learning experience. For the smoothie.", delivery: 'diplomatic, strained' },
+  { id: 'after.1.2', who: 'mitch', moment: 'after.1', text: "I'm going to go stand by the ukulele and pretend I didn't see that.", delivery: 'quiet, already moving' },
+  { id: 'after.1.3', who: 'mitch', moment: 'after.1', text: "Okay. The blender's fine. The fruit's fine. Something else happened. Moving on.", delivery: 'brisk, not looking at it' },
+  { id: 'after.gross.1', who: 'mitch', moment: 'after.gross', text: "In fairness, I did point at it. With my whole arm.", delivery: 'defensive, small' },
+  { id: 'after.gross.2', who: 'mitch', moment: 'after.gross', text: "That one's going in the crab's diary. He keeps a diary. He sees everything.", delivery: 'grim, resigned' },
+
+  /* ── the tutorial: Breeze's Tropical Smoothie and an acai bowl, with a brown banana ─────────────────────────── */
+  { id: 'tutorial.intro.1', who: 'mitch', moment: 'tutorial.intro', text: "First day at the Smoothie Shack? Great. I'm Mitch. Assistant manager, and today, tropical. One order together, start to finish.", delivery: 'friendly, welcoming' },
+  { id: 'tutorial.intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Welcome to the Smoothie Shack. I'm Mitch. Yes, the shirt is a lot. We'll get to that. First, one order, together.", delivery: 'friendly, heading off the shirt question' },
+  { id: 'tutorial.ticket.1', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. Breeze's smoothie and his açaí bowl. Forget the order, pick Ticket, and you hear it again.", delivery: 'clear, pointing up' },
+  { id: 'tutorial.ticket.2', who: 'mitch', moment: 'tutorial.ticket', text: "There's the ticket on the wheel. Everything Breeze wants, in order. Pick Ticket any time and it reads itself again.", delivery: 'clear, helpful' },
+  { id: 'tutorial.prep.1', who: 'mitch', moment: 'tutorial.prep', text: 'The prep table. Pick the cup size, then the base, and the base pours into the jug. After that, every fruit and extra comes down the line, one at a time. On the ticket, Add. Not on the ticket, Skip.', delivery: 'teaching, steady' },
+  { id: 'tutorial.prep.2', who: 'mitch', moment: 'tutorial.prep', text: "This is where a smoothie starts. Size, then base, then the fruit comes to you one by one. Add what the ticket says. Skip what it doesn't.", delivery: 'teaching, steady' },
+  { id: 'tutorial.blender.1', who: 'mitch', moment: 'tutorial.blender', text: 'The blender. The jug goes on, the switch does the rest. The earmuffs on the hook are optional. Highly recommended. Optional.', delivery: 'proud of the blender, wary of the noise' },
+  { id: 'tutorial.blender.2', who: 'mitch', moment: 'tutorial.blender', text: "This is the blender. It's loud, it's fast, and it pours itself into the cup when it's done. I wish I did that.", delivery: 'teaching, a little envious' },
+  { id: 'tutorial.cook.blender.1', who: 'mitch', moment: 'tutorial.cook.blender', text: "Now, how smooth? Breeze said smooth. Pick Smooth. The blender does the blending, I do the watching. It's a system.", delivery: 'teaching, pleased with the system' },
+  { id: 'tutorial.cook.blender.2', who: 'mitch', moment: 'tutorial.cook.blender', text: "How smooth? Chunky, smooth or super smooth. The ticket says smooth. In Timed cooking you'd watch it and Stop the Blender yourself. Today, just pick.", delivery: 'teaching, clear' },
+  { id: 'tutorial.bowlBar.1', who: 'mitch', moment: 'tutorial.bowlBar', text: "The bowl bar. The açaí is blended and in the bowl. Now the toppings come down, one at a time: granola, banana, strawberries, blueberries, honey.", delivery: 'teaching, steady' },
+  { id: 'tutorial.bowlBar.2', who: 'mitch', moment: 'tutorial.bowlBar', text: 'Bowl bar. Same deal as the prep table: Add what the ticket says, Skip what it doesn\'t. Breeze wants the lot.', delivery: 'teaching, a shrug at the end' },
+  { id: 'tutorial.gross.1', who: 'mitch', moment: 'tutorial.gross', text: 'When something comes down the line looking wrong, like that banana, pick Swap It and you get a fresh one.', delivery: 'teaching, a grimace at the banana' },
+  { id: 'tutorial.gross.2', who: 'mitch', moment: 'tutorial.gross', text: 'See that? A brown, mushy banana. Swap It brings a good one. Skip sends it away, and Breeze still wants banana. So: Swap It.', delivery: 'teaching, firm on the last two words' },
+  { id: 'tutorial.review.1', who: 'mitch', moment: 'tutorial.review', text: "Here's the order. If something's wrong, redo it now. If it's right, ring it up.", delivery: 'teaching, clear' },
+  { id: 'tutorial.review.2', who: 'mitch', moment: 'tutorial.review', text: "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Breeze is watching a cloud. We're indoors. There's no cloud.", delivery: 'teaching, a glance at Breeze' },
+  { id: 'tutorial.serve.1', who: 'mitch', moment: 'tutorial.serve', text: "And that's the job. Get something wrong and the customer will tell you. Breeze tells you very gently. Ready for a real shift?", delivery: 'wrapping up, encouraging' },
+  { id: 'tutorial.serve.2', who: 'mitch', moment: 'tutorial.serve', text: "That's one order, start to finish. Every smoothie goes the same way. The customers don't. Ready for a real shift?", delivery: 'wrapping up, dry' },
+
+  /* ── tutorial warnings, before a mistake lands (he = Breeze) ───────────────────────────────────────────────── */
+  { id: 'tutorial.warn.extra.1', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ings', text: 'Hold on. No {ings} in this one. Check the ticket.', delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.extra.2', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ings', text: "Wait. He said no {ings}. That one gets skipped.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.unasked.1', who: 'mitch', moment: 'tutorial.warn.unasked', each: 'ing', text: "Hold on. The ticket has no {ings}. If it isn't on there, Skip it.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.unasked.2', who: 'mitch', moment: 'tutorial.warn.unasked', each: 'ings', text: "Wait, the ticket doesn't say {ings}. Skip that one.", delivery: 'quick, light' },
+  { id: 'tutorial.warn.missing.1', who: 'mitch', moment: 'tutorial.warn.missing', each: 'ing', text: 'Wait, he wants {ing} in that. Add it.', delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.missing.2', who: 'mitch', moment: 'tutorial.warn.missing', each: 'ing', text: "Hold on. The ticket says {ing}. Add it. He won't say anything, but he'll feel it.", delivery: 'quick, a glance at Breeze' },
+  { id: 'tutorial.warn.done.1', who: 'mitch', moment: 'tutorial.warn.done', each: 'want', text: "Almost. He asked for {want}.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.done.2', who: 'mitch', moment: 'tutorial.warn.done', each: 'want', text: "Hold on. Breeze said {want}. Pick {want}.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.pick.1', who: 'mitch', moment: 'tutorial.warn.pick', each: 'wanted', text: "Hold on. Breeze asked for {wanted}.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.pick.2', who: 'mitch', moment: 'tutorial.warn.pick', each: 'wanted', text: "Not that one. The ticket says {wanted}.", delivery: 'gentle correction, reading it off' },
+  { id: 'tutorial.warn.gross.1', who: 'mitch', moment: 'tutorial.warn.gross', each: 'ing', text: "Whoa. We are not putting that {ing} in a smoothie. Swap it for a fresh one.", delivery: 'alarmed, firm' },
+  { id: 'tutorial.warn.gross.2', who: 'mitch', moment: 'tutorial.warn.gross', each: 'ing', text: 'Nope. Not that {ing}. Pick Swap It and a good one comes down.', delivery: 'firm, helpful' },
+  { id: 'tutorial.warn.grossSkip.1', who: 'mitch', moment: 'tutorial.warn.grossSkip', each: 'ing', text: "He does want {ing}. Just not that {ing}. Swap it.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.grossSkip.2', who: 'mitch', moment: 'tutorial.warn.grossSkip', each: 'ing', text: "Don't skip it. The ticket says {ing}. Swap It brings a good one.", delivery: 'gentle correction' },
+
+  /* ── the five-star event: The Beach Volleyball Tournament ({name} is the event's name) ─────────────────────── */
+  { id: 'event.intro.1', who: 'mitch', moment: 'event.intro', text: "It's {name}! Two teams, one net, and sand on my floor. Brock captains one team. Breeze captains the other. Nobody told Breeze.", delivery: 'excited, a little overwhelmed' },
+  { id: 'event.intro.2', who: 'mitch', moment: 'event.intro', text: "Here we go: {name}. Both teams order between games, the blenders are warm, and the last order is a trophy. A trophy you drink.", delivery: 'brave, building' },
+  { id: 'event.celebrate.1', who: 'mitch', moment: 'event.celebrate', text: "{name} was a hit! Breeze's team won. He found out from the trophy. The gold sign's going up!", delivery: 'joyful, laughing' },
+  { id: 'event.celebrate.2', who: 'mitch', moment: 'event.celebrate', text: "That's {name} done, and that's five stars. I'm wearing the lei to bed. I've earned the lei.", delivery: 'triumphant, solemn about the lei' },
+  { id: 'event.again.1', who: 'mitch', moment: 'event.again', text: "{name} didn't quite come together. Nobody got hurt, except my ears. We can run it again.", delivery: 'consoling, hopeful' },
+  { id: 'event.again.2', who: 'mitch', moment: 'event.again', text: 'Okay. {name} fell a little flat. Like a volleyball with a hole in it. We\'ll run it again.', delivery: 'rueful, then upbeat' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     EVERY CUSTOMER: the pack's fallback for anyone with fewer than two lines of their own (neutral voice)
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'react.3.1', who: 'customer', moment: 'react.3', text: "That's it. That's exactly the smoothie. Cold, right, and mine.", delivery: 'pleased, sincere' },
+  { id: 'react.3.2', who: 'customer', moment: 'react.3', text: 'Perfect. Everything in it that should be, and nothing that shouldn\'t.', delivery: 'satisfied' },
+  { id: 'react.3.3', who: 'customer', moment: 'react.3', text: "Look at that. That's a smoothie that read its own ticket.", delivery: 'impressed, dry' },
+  { id: 'react.2.1', who: 'customer', moment: 'react.2', text: "Close. Not the smoothie I pictured, but it's cold, and I'm thirsty.", delivery: 'mild, accepting' },
+  { id: 'react.2.2', who: 'customer', moment: 'react.2', text: "It's fine. A fine smoothie. Fine.", delivery: 'flat, unconvinced by the third fine' },
+  { id: 'react.2.3', who: 'customer', moment: 'react.2', text: 'Nearly. This smoothie has one wrong idea in it.', delivery: 'dry' },
+  { id: 'react.1.1', who: 'customer', moment: 'react.1', text: "This is not what I ordered. This is some other smoothie's problem.", delivery: 'unimpressed' },
+  { id: 'react.1.2', who: 'customer', moment: 'react.1', text: "Well. It's cold. That's where the good news ends.", delivery: 'deadpan' },
+  { id: 'react.1.3', who: 'customer', moment: 'react.1', text: "I've had this smoothie before. In a dream. Not a good one.", delivery: 'haunted, dry' },
+  { id: 'react.gross.1', who: 'customer', moment: 'react.gross', text: 'Oh. Oh, no. Something in this cup is looking back at me.', delivery: 'disgusted, a slow horror' },
+  { id: 'react.gross.2', who: 'customer', moment: 'react.gross', text: 'No. No, no. That is not a fruit.', delivery: 'gagging, firm' },
+  // A complaint that names no food (voicecut): everyone has their own in packs/cast/script.js; these stand in for anyone short.
+  { id: 'complain.1', who: 'customer', moment: 'complain', text: "That's not what I ordered.", delivery: 'mildly put out' },
+  { id: 'complain.2', who: 'customer', moment: 'complain', text: "Hm. This isn't quite what I asked for.", delivery: 'polite, disappointed' },
+  { id: 'complain.gross.brown.1', who: 'customer', moment: 'complain.gross.brown', text: 'That banana was brown and mushy. I could taste the brown.', delivery: 'disgusted' },
+  { id: 'complain.gross.brown.2', who: 'customer', moment: 'complain.gross.brown', text: 'The banana in this was past its best. Way past. Years past.', delivery: 'disgusted, measured' },
+  { id: 'complain.gross.mouldy.1', who: 'customer', moment: 'complain.gross.mouldy', text: 'These strawberries had fur. Fruit should not have fur.', delivery: 'revolted' },
+  { id: 'complain.gross.mouldy.2', who: 'customer', moment: 'complain.gross.mouldy', text: 'Mouldy strawberries. In a smoothie. I can see the fuzz through the cup.', delivery: 'dry, revolted' },
+  { id: 'complain.gross.bug.1', who: 'customer', moment: 'complain.gross.bug', text: "There's a bug in the ice. Frozen solid. Looking right at me.", delivery: 'disgusted, staring at it' },
+  { id: 'complain.gross.bug.2', who: 'customer', moment: 'complain.gross.bug', text: 'A bug. In the ice. He got here before me, and he got the best seat.', delivery: 'flat, disgusted' },
+  { id: 'complain.gross.sock.1', who: 'customer', moment: 'complain.gross.sock', text: "There's a sock in the ice. A sock. One sock. Where's the other one?", delivery: 'disbelieving, then worried' },
+  { id: 'complain.gross.sock.2', who: 'customer', moment: 'complain.gross.sock', text: 'Something in the ice is wearing stripes. It is a sock. I checked.', delivery: 'flat, horrified' },
+  // Ridiculous orders (level 4 and 5): said instead of the order sentence; the ticket is plain and complete.
+  { id: 'order.odd.everyFruit.1', who: 'customer', moment: 'order.odd.everyFruit', text: "Every fruit you've got. All of them, in one cup. I'm not choosing. Choosing is for other people.", delivery: 'calm, certain' },
+  { id: 'order.odd.everyFruit.2', who: 'customer', moment: 'order.odd.everyFruit', text: "One of every fruit, please. I don't want any of them to feel left out.", delivery: 'sincere, as if normal' },
+  { id: 'order.odd.notGreen.1', who: 'customer', moment: 'order.odd.notGreen', text: "A green smoothie. But not green. I want the health, not the colour.", delivery: 'matter-of-fact' },
+  { id: 'order.odd.notGreen.2', who: 'customer', moment: 'order.odd.notGreen', text: "Green smoothie, please, without the green part. I'm easing into it.", delivery: 'calm, a little sheepish' },
+  { id: 'order.odd.dogShake.1', who: 'customer', moment: 'order.odd.dogShake', text: "A small protein shake, no honey. It's for my dog. He's training for something. He won't say what.", delivery: 'serious, a little proud' },
+  { id: 'order.odd.dogShake.2', who: 'customer', moment: 'order.odd.dogShake', text: "Small protein shake, no honey. For my dog. Don't worry, he won't drink it. He just likes to be included.", delivery: 'warm, confiding' },
+  { id: 'order.odd.wipeout.1', who: 'customer', moment: 'order.odd.wipeout', text: 'Everything. Every fruit, every extra, the biggest cup. Blend it until it gives up.', delivery: 'grave, determined' },
+  { id: 'order.odd.wipeout.2', who: 'customer', moment: 'order.odd.wipeout', text: "The works. Every fruit, every extra, large, super smooth. I've cleared my afternoon.", delivery: 'building, relishing it' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     BREEZE, the shack's own: a laid-back surfer whose board has never been in the ocean. Dreamy, kind, unbothered;
+     the joke is in his words (calm, short sentences with a slow turn), never in their length or in anyone's speed.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'greet.1', who: 'breeze', moment: 'greet', text: 'Hey, friend. The board and I were just passing. We are always just passing.', delivery: 'dreamy, unhurried' },
+  { id: 'greet.2', who: 'breeze', moment: 'greet', text: "Whoa. The Smoothie Shack. Every time I come back, it's still here. Love that.", delivery: 'genuinely amazed, slow' },
+  { id: 'greet.3', who: 'breeze', moment: 'greet', text: "Hey. Good morning. Or afternoon. I don't check. The sun handles that.", delivery: 'relaxed, a slow shrug' },
+  { id: 'greet.4', who: 'breeze', moment: 'greet', text: "Yo. The surf report board says one tiny wave. Best conditions all year.", delivery: 'serene, pleased with the logic' },
+  { id: 'greet.5', who: 'breeze', moment: 'greet', text: "Hey, friend. I'm Breeze. The board is also called Breeze. It gets confusing at the beach.", delivery: 'mellow, patting the board' },
+  { id: 'smalltalk.1', who: 'breeze', moment: 'smalltalk', text: "My board's never been in the ocean. We're taking it slow. The ocean is a big commitment.", delivery: 'tender, about the board' },
+  { id: 'smalltalk.2', who: 'breeze', moment: 'smalltalk', text: 'Brock and I talked for an hour today. He talked about protein. I talked about clouds. Same conversation, really.', delivery: 'slow, fond' },
+  { id: 'smalltalk.3', who: 'breeze', moment: 'smalltalk', text: 'I tried to catch a wave once. It was on a poster. The poster won.', delivery: 'calm, a gentle defeat' },
+  { id: 'smalltalk.4', who: 'breeze', moment: 'smalltalk', text: "People ask what I do for a living. I say, living. They don't ask again.", delivery: 'serene, a slow grin' },
+  { id: 'smalltalk.5', who: 'breeze', moment: 'smalltalk', text: "A pelican looked at me for a whole minute once. Didn't say anything. Changed my life.", delivery: 'awed, quiet' },
+  { id: 'goodbye.1', who: 'breeze', moment: 'goodbye', text: "Later, friend. I'm going to sit by the fountain and think about this smoothie.", delivery: 'dreamy, drifting off' },
+  { id: 'goodbye.2', who: 'breeze', moment: 'goodbye', text: "Peace. If anyone needs me, I'll be wherever I end up.", delivery: 'easy, a wave of the hand' },
+  { id: 'goodbye.3', who: 'breeze', moment: 'goodbye', text: "Thanks, friend. Tide's going out. Or in. Either way, so am I.", delivery: 'a relaxed shrug' },
+  { id: 'goodbye.4', who: 'breeze', moment: 'goodbye', text: "Catch you later. Not literally. I'm not a great catcher.", delivery: 'mellow, honest' },
+  // The running gag, after the order: his words, not their length (8 seconds or less).
+  { id: 'order.gag.1', who: 'breeze', moment: 'order.gag', text: "Blend it like the ocean would. If the ocean had a blender. I think it does.", delivery: 'dreamy, a slow realisation' },
+  { id: 'order.gag.2', who: 'breeze', moment: 'order.gag', text: 'A smoothie is just a wave you can hold, friend. Hold it gently.', delivery: 'serene wisdom' },
+  { id: 'order.gag.3', who: 'breeze', moment: 'order.gag', text: 'Mango is just sunshine that grew a pit. Think about that. I do. Every day.', delivery: 'slow, profound' },
+  { id: 'order.gag.4', who: 'breeze', moment: 'order.gag', text: 'I asked the ocean what to order once. It said nothing. The ocean is very private.', delivery: 'mellow, respectful' },
+  { id: 'order.gag.5', who: 'breeze', moment: 'order.gag', text: 'Ice is just water taking a little break. Respect the break.', delivery: 'calm, a slow nod' },
+  { id: 'order.odd.everyFruit.1', who: 'breeze', moment: 'order.odd.everyFruit', text: "Every fruit, friend. All of them. I don't want any fruit to feel left out. Fruit has feelings. Probably.", delivery: 'gentle, sincere' },
+  { id: 'order.odd.notGreen.1', who: 'breeze', moment: 'order.odd.notGreen', text: 'A green smoothie, but not green. Green is a lot. I just want the idea of green.', delivery: 'dreamy, philosophical' },
+  { id: 'order.odd.dogShake.1', who: 'breeze', moment: 'order.odd.dogShake', text: "Small protein shake, no honey. It's for my dog, Barnacle. He's strong. Spiritually.", delivery: 'proud, tender' },
+  { id: 'order.odd.wipeout.1', who: 'breeze', moment: 'order.odd.wipeout', text: 'Everything. Every fruit, every extra, the big cup. Blend it until it finds peace.', delivery: 'serene, building gently' },
+  { id: 'react.3.1', who: 'breeze', moment: 'react.3', text: "Oh, that's the wave. That's the wave right there.", delivery: 'blissed out' },
+  { id: 'react.3.2', who: 'breeze', moment: 'react.3', text: "Whoa. Perfect. I'm going to drink this real slow and think about nothing.", delivery: 'serene' },
+  { id: 'react.3.3', who: 'breeze', moment: 'react.3', text: 'Yeah. Yeah. This smoothie gets it. This smoothie gets me.', delivery: 'a slow nod, deep approval' },
+  { id: 'react.3.4', who: 'breeze', moment: 'react.3', text: "That's beautiful, friend. I'd frame it, but I'm already drinking it.", delivery: 'warm, mid-sip' },
+  { id: 'react.2.1', who: 'breeze', moment: 'react.2', text: 'Close. Not the wave I paddled for, but a wave. I will ride it.', delivery: 'easygoing, forgiving' },
+  { id: 'react.2.2', who: 'breeze', moment: 'react.2', text: "Hm. Something's a little off. I can feel it. In my ankles, for some reason.", delivery: 'calm, puzzled' },
+  { id: 'react.2.3', who: 'breeze', moment: 'react.2', text: "Almost, friend. Almost is like a sunset. Still pretty. Still not breakfast.", delivery: 'dreamy, philosophical' },
+  { id: 'react.1.1', who: 'breeze', moment: 'react.1', text: 'Oh no. This smoothie wiped out, friend. Full wipeout.', delivery: 'sad, gentle' },
+  { id: 'react.1.2', who: 'breeze', moment: 'react.1', text: "That's not the one. That's a different smoothie's journey. I wish it well.", delivery: 'mellow, letting it go' },
+  { id: 'react.1.3', who: 'breeze', moment: 'react.1', text: 'Bummer. This smoothie went looking for itself. It found something else.', delivery: 'wistful' },
+  { id: 'react.gross.1', who: 'breeze', moment: 'react.gross', text: "Whoa. Something in here is looking at me. And it doesn't look chill.", delivery: 'slow dawning alarm' },
+  { id: 'react.gross.2', who: 'breeze', moment: 'react.gross', text: 'Oh. Oh, friend. Something in here has its own vibe. A bad one.', delivery: 'quiet horror, still kind' },
+  { id: 'complain.gross.brown.1', who: 'breeze', moment: 'complain.gross.brown', text: 'That banana was brown, friend. Like, sunset brown. A banana should not have a sunset.', delivery: 'gentle, troubled' },
+  { id: 'complain.gross.mouldy.1', who: 'breeze', moment: 'complain.gross.mouldy', text: 'The strawberries had fuzz. I like fuzz on a peach. Not on these.', delivery: 'calm, mildly stern' },
+  { id: 'complain.gross.bug.1', who: 'breeze', moment: 'complain.gross.bug', text: 'There is a little dude frozen in the ice. He looks peaceful. Still no.', delivery: 'relaxed, then firm' },
+  { id: 'complain.gross.sock.1', who: 'breeze', moment: 'complain.gross.sock', text: "There's a sock in the ice. Not my sock. I don't own socks. I never have.", delivery: 'calm, then quietly proud' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     BROCK, the shack's own: a gym bro, huge arms, small legs, giant shaker bottle (Kevin). Eager, friendly, sincere;
+     "all the protein" is said, never made (one Add, as every ticket). He skips leg day, and he knows it.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'greet.1', who: 'brock', moment: 'greet', text: "Brock! What's up, chief! Just came from the gym. I'm always just coming from the gym.", delivery: 'pumped, friendly' },
+  { id: 'greet.2', who: 'brock', moment: 'greet', text: "Yo! Arm day. Also chest day. It's always arm day somewhere.", delivery: 'eager, flexing' },
+  { id: 'greet.3', who: 'brock', moment: 'greet', text: "Sup, bro! Thought about walking here on my hands. Didn't. But I thought about it.", delivery: 'hyped, honest' },
+  { id: 'greet.4', who: 'brock', moment: 'greet', text: "Brock's here! Me and Kevin. Kevin's my shaker bottle. Say hi, Kevin.", delivery: 'warm, holding up the bottle' },
+  { id: 'greet.5', who: 'brock', moment: 'greet', text: 'Hey, hey! Two hundred push-ups in the parking lot. People watched. It was great for everyone.', delivery: 'proud, beaming' },
+  { id: 'smalltalk.1', who: 'brock', moment: 'smalltalk', text: "Today's leg day. I skipped it. I skip it every time. At this point it's a tradition.", delivery: 'cheerful, unashamed' },
+  { id: 'smalltalk.2', who: 'brock', moment: 'smalltalk', text: 'My mom says I should eat a vegetable. I said, is protein a vegetable? She said, Brock.', delivery: 'earnest, then quoting his mom flatly' },
+  { id: 'smalltalk.3', who: 'brock', moment: 'smalltalk', text: "Kevin and I have been together six years. Longest relationship I've ever had. He's a shaker bottle.", delivery: 'tender, sincere' },
+  { id: 'smalltalk.4', who: 'brock', moment: 'smalltalk', text: 'I cried at a movie last night. Big tears. Great for hydration, though.', delivery: 'open-hearted, then practical' },
+  { id: 'smalltalk.5', who: 'brock', moment: 'smalltalk', text: "Breeze says my muscles have a lot of potential energy. I said thanks. I don't know what he meant.", delivery: 'puzzled, pleased anyway' },
+  { id: 'goodbye.1', who: 'brock', moment: 'goodbye', text: 'Thanks, chief! Off to the gym. Again. Still. Forever.', delivery: 'pumped, jogging off' },
+  { id: 'goodbye.2', who: 'brock', moment: 'goodbye', text: "Later, bro! If anybody needs me, I'm doing curls with my shopping bags.", delivery: 'cheerful' },
+  { id: 'goodbye.3', who: 'brock', moment: 'goodbye', text: "Gotta go! Kevin needs a rinse. He's been through a lot.", delivery: 'caring, about the bottle' },
+  { id: 'goodbye.4', who: 'brock', moment: 'goodbye', text: 'Peace out! Stay hydrated. Then stay hydrated again.', delivery: 'friendly, pointing on the way out' },
+  // The running gag, after the order: "all the protein" is said; the ticket is one normal smoothie.
+  { id: 'order.gag.1', who: 'brock', moment: 'order.gag', text: 'And put all the protein in it. All of it. The whole tub, if it fits.', delivery: 'eager, completely serious' },
+  { id: 'order.gag.2', who: 'brock', moment: 'order.gag', text: "All the protein, bro. If there's protein in this building, I want it in the cup.", delivery: 'hyped, sweeping a hand' },
+  { id: 'order.gag.3', who: 'brock', moment: 'order.gag', text: "Extra protein. Then extra on the extra. I'm building a second me.", delivery: 'earnest, flexing' },
+  { id: 'order.gag.4', who: 'brock', moment: 'order.gag', text: "All the protein, chief. Kevin's watching. Don't let Kevin down.", delivery: 'serious, holding up the bottle' },
+  { id: 'order.gag.5', who: 'brock', moment: 'order.gag', text: "Every scoop of protein you've got. My muscles have muscles, and they're all hungry.", delivery: 'pumped, patting his arms' },
+  { id: 'order.odd.everyFruit.1', who: 'brock', moment: 'order.odd.everyFruit', text: "Every fruit you've got, chief! Vitamins are like protein's little cousins!", delivery: 'hyped, sincere' },
+  { id: 'order.odd.notGreen.1', who: 'brock', moment: 'order.odd.notGreen', text: "A green smoothie, but not green, bro. I want the gains. I don't want the leaves.", delivery: 'earnest, a little sheepish' },
+  { id: 'order.odd.dogShake.1', who: 'brock', moment: 'order.odd.dogShake', text: "Small protein shake, no honey. It's for my dog, Tank. He's a chihuahua. He's working on it.", delivery: 'proud, tender' },
+  { id: 'order.odd.wipeout.1', who: 'brock', moment: 'order.odd.wipeout', text: 'Everything, bro! Every fruit, every extra, the biggest cup! Blend it like it owes you money!', delivery: 'pumped, building' },
+  { id: 'react.3.1', who: 'brock', moment: 'react.3', text: 'Yes! That is the stuff! I can feel my arms getting bigger already!', delivery: 'pumped, flexing' },
+  { id: 'react.3.2', who: 'brock', moment: 'react.3', text: "Perfect, chief! Kevin, look at this! Kevin's speechless. He's a bottle, but still.", delivery: 'thrilled, holding up the bottle' },
+  { id: 'react.3.3', who: 'brock', moment: 'react.3', text: "Oh, that's perfect! I'm going to flex now. It's how I say thank you.", delivery: 'grateful, flexing' },
+  { id: 'react.3.4', who: 'brock', moment: 'react.3', text: 'This smoothie is ten out of ten! Twelve out of ten! I am bad at numbers, and I feel great!', delivery: 'overjoyed' },
+  { id: 'react.favourite.1', who: 'brock', moment: 'react.favourite', text: 'The protein shake! The king of drinks! Kevin, we are home!', delivery: 'triumphant, arms up' },
+  { id: 'react.favourite.2', who: 'brock', moment: 'react.favourite', text: "That's the protein shake, done right! I'm getting emotional. That's normal. It's the gains.", delivery: 'moved, sniffing' },
+  { id: 'react.2.1', who: 'brock', moment: 'react.2', text: 'Solid smoothie! Not a personal best. Still counts as a rep.', delivery: 'upbeat, fair' },
+  { id: 'react.2.2', who: 'brock', moment: 'react.2', text: 'Close, bro. Like a rep with bad form. Still a rep.', delivery: 'friendly, a so-so hand' },
+  { id: 'react.2.3', who: 'brock', moment: 'react.2', text: "It's good! It's not great. It's like leg day. I'll do it, but I won't love it.", delivery: 'cheerful, honest' },
+  { id: 'react.1.1', who: 'brock', moment: 'react.1', text: 'Oh no, chief. This smoothie skipped leg day. And every other day.', delivery: 'sad, sincere' },
+  { id: 'react.1.2', who: 'brock', moment: 'react.1', text: "That's not it, bro. That's like a dumbbell made of foam. Looks right. Isn't.", delivery: 'deflated' },
+  { id: 'react.1.3', who: 'brock', moment: 'react.1', text: "Aw, man. Kevin's disappointed. I can tell. He's gone quiet. Quieter.", delivery: 'sad, looking at the bottle' },
+  { id: 'react.gross.1', who: 'brock', moment: 'react.gross', text: "Whoa, whoa! Something in here isn't protein! I know protein! That is not protein!", delivery: 'alarmed, recoiling' },
+  { id: 'react.gross.2', who: 'brock', moment: 'react.gross', text: 'Bro. Bro. That is gross. And I drink raw eggs. On purpose.', delivery: 'horrified, then matter-of-fact' },
+  { id: 'complain.gross.brown.1', who: 'brock', moment: 'complain.gross.brown', text: 'That banana was brown, chief. Potassium is important. Not like that.', delivery: 'grossed out, earnest' },
+  { id: 'complain.gross.mouldy.1', who: 'brock', moment: 'complain.gross.mouldy', text: 'These strawberries had fuzz on them! The only fuzz I like is on my towel!', delivery: 'disgusted, sincere' },
+  { id: 'complain.gross.bug.1', who: 'brock', moment: 'complain.gross.bug', text: "There was a bug in the ice, bro! Technically that's protein. I still don't want it!", delivery: 'torn, then firm' },
+  { id: 'complain.gross.sock.1', who: 'brock', moment: 'complain.gross.sock', text: "There's a sock in the ice! Is that my gym sock? It's not. I'd know. I would know.", delivery: 'alarmed, then very sure' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     TONY, the cameo: the Pizza Parlor's retired tenor, here as a level-4 visitor, in a shack full of pineapple (the
+     mirror of the pizza's Breeze cameo). Grand, wounded, brave; the humour is grandeur and passion.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'visitor.arrive.1', who: 'tony', moment: 'visitor.arrive', text: 'Tony. Of the Pizza Parlor. My doctor said more fruit. I have come to suffer for my art.', delivery: 'grand, announcing himself' },
+  { id: 'visitor.arrive.2', who: 'tony', moment: 'visitor.arrive', text: "I have entered the pineapple's house. Let it know: I am not afraid.", delivery: 'heroic, chin up' },
+  { id: 'visitor.arrive.3', who: 'tony', moment: 'visitor.arrive', text: 'Good day. The surfer comes to my parlor for pineapple. Today I come to his shack. For balance.', delivery: 'stately, a duel declared' },
+  { id: 'greet.1', who: 'tony', moment: 'greet', text: 'A smoothie. A drink with no crust. Very well. I am open to new music.', delivery: 'magnanimous, a little wary' },
+  { id: 'greet.2', who: 'tony', moment: 'greet', text: 'There is a pineapple in that basket. It is looking at me. I am looking back.', delivery: 'low, a standoff' },
+  { id: 'greet.3', who: 'tony', moment: 'greet', text: 'Tony! Napkin tucked, voice warm, heart guarded. Mostly against pineapple.', delivery: 'operatic, delighted with himself' },
+  { id: 'greet.4', who: 'tony', moment: 'greet', text: 'Good afternoon! A tenor must keep his throat cool. I am here for my instrument.', delivery: 'grand, a hand at his throat' },
+  { id: 'smalltalk.1', who: 'tony', moment: 'smalltalk', text: 'In my day, a smoothie was called a tomato. We were happy.', delivery: 'nostalgic, firm' },
+  { id: 'smalltalk.2', who: 'tony', moment: 'smalltalk', text: 'The surfer, Breeze, ordered pineapple at my parlor. I sang for twenty minutes. He applauded. It was very confusing.', delivery: 'aggrieved, then baffled' },
+  { id: 'smalltalk.3', who: 'tony', moment: 'smalltalk', text: 'My accompanist says a tenor must drink fruit. She also says I sing flat. She is wrong twice.', delivery: 'proud, dismissive' },
+  { id: 'smalltalk.4', who: 'tony', moment: 'smalltalk', text: 'I once sang so powerfully that a fruit bowl fell over. It was mostly pineapple. I did not apologise.', delivery: 'triumphant, savouring it' },
+  { id: 'goodbye.1', who: 'tony', moment: 'goodbye', text: 'I take my leave. The pineapples may now relax.', delivery: 'a grand exit' },
+  { id: 'goodbye.2', who: 'tony', moment: 'goodbye', text: 'Farewell! I came, I sipped, I survived the pineapple. A trilogy.', delivery: 'triumphant, milking it' },
+  { id: 'goodbye.3', who: 'tony', moment: 'goodbye', text: 'Goodbye! And to the pineapple in the basket: I see you. I always see you.', delivery: 'warm, then a pointed whisper' },
+  { id: 'order.dislike.1', who: 'tony', moment: 'order.dislike', text: "And no pineapple. Not a chunk, not a whisper. A smoothie is not a pineapple's audition.", delivery: 'firm, building to disdain' },
+  { id: 'order.dislike.2', who: 'tony', moment: 'order.dislike', text: 'No pineapple. If I taste pineapple, I sing. If I sing, the blenders join in. Nobody wants a choir.', delivery: 'a solemn warning' },
+  { id: 'order.dislike.3', who: 'tony', moment: 'order.dislike', text: 'No pineapple. It is everywhere in here. Let it be everywhere but my cup.', delivery: 'grave, a sweep of the arm' },
+  { id: 'react.3.1', who: 'tony', moment: 'react.3', text: 'Bravo! The smoothie sings! And not one note of pineapple!', delivery: 'ecstatic, an operatic crescendo' },
+  { id: 'react.3.2', who: 'tony', moment: 'react.3', text: 'Magnificent! I came for fruit and found an aria. A cold one. With a straw.', delivery: 'rapture, full voice' },
+  { id: 'react.3.3', who: 'tony', moment: 'react.3', text: 'Perfection! If I had a rose, I would throw it. I have a straw. Take the straw.', delivery: 'overcome, offering the straw' },
+  { id: 'react.2.1', who: 'tony', moment: 'react.2', text: 'Hm. A fine first act. The second act forgets its lines.', delivery: 'measured, a connoisseur disappointed' },
+  { id: 'react.2.2', who: 'tony', moment: 'react.2', text: 'Good. Not great. At the opera house, we called this the understudy.', delivery: 'polite, faintly wounded' },
+  { id: 'react.2.3', who: 'tony', moment: 'react.2', text: 'Close. Like a high note that wobbles. I forgive it. I do not forget it.', delivery: 'pained, demonstrating the wobble' },
+  { id: 'react.1.1', who: 'tony', moment: 'react.1', text: 'No. No! This is not a smoothie, this is a tragedy in a cup!', delivery: 'anguished, full tragic voice' },
+  { id: 'react.1.2', who: 'tony', moment: 'react.1', text: 'I have been booed in Vienna. Vienna was kinder than this cup.', delivery: 'quiet devastation' },
+  { id: 'react.1.3', who: 'tony', moment: 'react.1', text: 'This drink has wounded me. Take me home. Take me to my parlor. Take me to a crust.', delivery: 'faint, a hand to the brow' },
+  { id: 'react.gross.1', who: 'tony', moment: 'react.gross', text: '[gasp] What is THAT? In my cup? Stop the music! Stop the blenders!', delivery: 'a stage gasp, then bellowing' },
+  { id: 'complain.gross.mouldy.1', who: 'tony', moment: 'complain.gross.mouldy', text: 'These strawberries are wearing fur! It is not winter! This is not the opera!', delivery: 'escalating horror' },
+  { id: 'complain.gross.sock.1', who: 'tony', moment: 'complain.gross.sock', text: 'A sock! In the ice! I have found many things in my drinks. Never wardrobe!', delivery: 'horror, then professional offence' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     THE REGULARS: what they say about the smoothies (greet, smalltalk and goodbye come from the cast script)
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Tasha: the deadpan skater; this is her spot (spec 5.4); pretends not to care, cheers quietly on three stars ─ */
+  { id: 'greet.1', who: 'tasha', moment: 'greet', text: "Sup. This is my spot. Not my spot. It's just where I end up. Every day.", delivery: 'flat, deadpan' },
+  { id: 'order.odd.everyFruit.1', who: 'tasha', moment: 'order.odd.everyFruit', text: "Every fruit. Whatever. I'm not picking a favourite. That's a lot of pressure.", delivery: 'flat, a shrug' },
+  { id: 'order.odd.notGreen.1', who: 'tasha', moment: 'order.odd.notGreen', text: "Green smoothie, but not green. Green's not my colour. Nothing is.", delivery: 'flat, deadpan' },
+  { id: 'react.3.1', who: 'tasha', moment: 'react.3', text: "Okay. That's good. That's really good. Don't make it a thing.", delivery: 'flat, then a crack of delight, then flat again' },
+  { id: 'react.3.2', who: 'tasha', moment: 'react.3', text: "Perfect. I'm not smiling. My face just does that sometimes.", delivery: 'flat, smiling anyway' },
+  { id: 'react.3.3', who: 'tasha', moment: 'react.3', text: "Yeah, that's the one. I'm going to go drink it where nobody can see me enjoy it.", delivery: 'flat, a tiny cheer underneath' },
+  { id: 'react.2.1', who: 'tasha', moment: 'react.2', text: "It's fine. Everything's fine. This is fine-ish.", delivery: 'flat' },
+  { id: 'react.2.2', who: 'tasha', moment: 'react.2', text: 'Mid. Like, solidly mid. Not mad about it.', delivery: 'flat, deadpan' },
+  { id: 'react.2.3', who: 'tasha', moment: 'react.2', text: "Close. I'll drink it. I drink everything. That's not a compliment.", delivery: 'flat, deadpan' },
+  { id: 'react.1.1', who: 'tasha', moment: 'react.1', text: "Wow. No. I'm not even surprised, and I'm still disappointed.", delivery: 'flat, a slow blink' },
+  { id: 'react.1.2', who: 'tasha', moment: 'react.1', text: "That's not it. I'd post about it, but I have standards. Low ones. Still.", delivery: 'flat, deadpan' },
+  { id: 'react.1.3', who: 'tasha', moment: 'react.1', text: 'This smoothie fell off its board. Hard. I felt that.', delivery: 'flat, wincing a little' },
+  { id: 'react.gross.1', who: 'tasha', moment: 'react.gross', text: "Ew. Okay. That's going in my skate video. As the villain.", delivery: 'flat, disgusted' },
+
+  /* ── Marge: warm, unhurried; "the usual, hon" is a strawberry banana ───────────────────────────────────────── */
+  { id: 'greet.1', who: 'marge', moment: 'greet', text: "Hi, hon. My doctor said more fruit. I said fine, but it's coming in a cup.", delivery: 'warm, a little sly' },
+  { id: 'order.usual.1', who: 'marge', moment: 'order.usual', text: 'The usual, hon.', delivery: 'warm, expecting it to be known' },
+  { id: 'order.usual.2', who: 'marge', moment: 'order.usual', text: "The usual, hon. Strawberry banana. Forty years, and I've never needed a third fruit.", delivery: 'warm, content' },
+  { id: 'order.odd.everyFruit.1', who: 'marge', moment: 'order.odd.everyFruit', text: "Every fruit, hon. Harold from bingo says I never try anything new. Harold's going to hear about this.", delivery: 'warm, defiant' },
+  { id: 'order.odd.dogShake.1', who: 'marge', moment: 'order.odd.dogShake', text: "A small protein shake, no honey, hon. It's for my dog, Biscuit. He's fourteen and still does laps.", delivery: 'warm, proud' },
+  { id: 'react.3.1', who: 'marge', moment: 'react.3', text: "Oh, that's lovely, hon. Pretty as a church hat.", delivery: 'warm, touched' },
+  { id: 'react.3.2', who: 'marge', moment: 'react.3', text: "Perfect, sweetie. Everything in there, holding hands. Like a good marriage. Mine had more arguing.", delivery: 'warm, a little wistful' },
+  { id: 'react.3.3', who: 'marge', moment: 'react.3', text: "Now that's a smoothie. I'm telling the girls at bingo. They'll pretend they don't care.", delivery: 'warm, pleased' },
+  { id: 'react.2.1', who: 'marge', moment: 'react.2', text: "It's fine, hon. Not my usual fine, but fine.", delivery: 'warm, dry' },
+  { id: 'react.2.2', who: 'marge', moment: 'react.2', text: 'Close, sweetie. Like a bus stop with the bench missing. You can still wait there.', delivery: 'warm, forgiving' },
+  { id: 'react.2.3', who: 'marge', moment: 'react.2', text: "It'll do, hon. I've had worse at the church picnic. Gladys made it.", delivery: 'warm, matter-of-fact' },
+  { id: 'react.1.1', who: 'marge', moment: 'react.1', text: "Oh, hon. Oh, no. This isn't my smoothie. I don't know whose smoothie this is.", delivery: 'gently dismayed' },
+  { id: 'react.1.2', who: 'marge', moment: 'react.1', text: "Thirty years on a bus, hon. I've seen a lot go wrong. This is up there.", delivery: 'warm, disappointed' },
+  { id: 'react.1.3', who: 'marge', moment: 'react.1', text: "Oh, sweetie. I'll drink it. Quietly. The way I eat Gladys's casserole.", delivery: 'warm, pointed' },
+  { id: 'react.gross.1', who: 'marge', moment: 'react.gross', text: "Oh, my stars. Hon. Something in this cup is still alive. Or was.", delivery: 'a hand to the chest' },
+
+  /* ── Gus: the trucker; "two shakes, same deal" (his twin), Delores is the truck ─────────────────────────────── */
+  { id: 'greet.1', who: 'gus', moment: 'greet', text: "Howdy, buddy. Doc says more fruit. Delores says nothin'. She's a truck.", delivery: 'an easy drawl' },
+  { id: 'order.twin.1', who: 'gus', moment: 'order.twin', text: "Two of 'em, buddy. One for now, one for the road.", delivery: 'a warm drawl' },
+  { id: 'order.twin.2', who: 'gus', moment: 'order.twin', text: "Two shakes, same deal. One for me, one for Delores. She don't drink. She likes the cup holder.", delivery: 'a fond drawl' },
+  { id: 'order.odd.wipeout.1', who: 'gus', moment: 'order.odd.wipeout', text: "Everything, buddy. Every fruit, every extra, the big cup. Blend it till it hollers uncle.", delivery: 'a relishing drawl' },
+  { id: 'react.3.1', who: 'gus', moment: 'react.3', text: "Now that's worth pullin' off the highway for.", delivery: 'a satisfied drawl' },
+  { id: 'react.3.2', who: 'gus', moment: 'react.3', text: "Mm-hm. Smooth as fresh blacktop. That's a compliment where I come from.", delivery: 'reverent drawl' },
+  { id: 'react.3.3', who: 'gus', moment: 'react.3', text: "That's the stuff, buddy. Goin' right in the cup holder, where Delores can see.", delivery: 'a proud drawl' },
+  { id: 'react.2.1', who: 'gus', moment: 'react.2', text: "It'll do, buddy. Had worse at a truck stop in Nevada. It was a milkshake. Mostly sand.", delivery: 'an easygoing drawl' },
+  { id: 'react.2.2', who: 'gus', moment: 'react.2', text: "Not bad. Little off. Like a radio station fadin' in and out.", delivery: 'an amused drawl' },
+  { id: 'react.2.3', who: 'gus', moment: 'react.2', text: "Close enough for the road. I drink on the road. The road ain't picky.", delivery: 'a cheerful drawl' },
+  { id: 'react.1.1', who: 'gus', moment: 'react.1', text: "Well. I've had coffee out of a thermos older than me. This is losin' to that coffee.", delivery: 'a deadpan drawl' },
+  { id: 'react.1.2', who: 'gus', moment: 'react.1', text: "I'm gonna drink it. I'm a trucker. But I'm gonna be quiet for a few miles.", delivery: 'a resigned drawl' },
+  { id: 'react.1.3', who: 'gus', moment: 'react.1', text: "Buddy, this ain't my smoothie. This is some other fella's smoothie, and he's gonna be upset too.", delivery: 'slow, sorrowful' },
+  { id: 'react.gross.1', who: 'gus', moment: 'react.gross', text: 'Oh, no. Oh, buddy. No. I seen things on the interstate with better manners.', delivery: 'a low groan' },
+
+  /* ── Coach Bev: the protein shake is her favourite; caps are her emphasis (firm, never loud) ────────────────── */
+  { id: 'greet.1', who: 'bev', moment: 'greet', text: "Coach Bev! Hydration is a TEAM sport! I'm the captain!", delivery: 'firm, like a coach, cheerful' },
+  { id: 'order.odd.everyFruit.1', who: 'bev', moment: 'order.odd.everyFruit', text: "Every fruit you've got! Full roster! Nobody sits on the bench today!", delivery: 'firm, like a coach, rallying' },
+  { id: 'react.3.1', who: 'bev', moment: 'react.3', text: 'Now THAT is a smoothie! Clean execution! Nobody fumbled the fruit!', delivery: 'firm, like a coach, triumphant' },
+  { id: 'react.3.2', who: 'bev', moment: 'react.3', text: "Perfect! That's championship blending! Hit the showers, smoothie!", delivery: 'firm, like a coach, proud' },
+  { id: 'react.3.3', who: 'bev', moment: 'react.3', text: "YES! That's running the PLAY! This is going on the clipboard!", delivery: 'firm, like a coach, scribbling' },
+  { id: 'react.favourite.1', who: 'bev', moment: 'react.favourite', text: 'PROTEIN SHAKE! Banana, protein, the whole starting lineup!', delivery: 'firm, like a coach, fists up' },
+  { id: 'react.favourite.2', who: 'bev', moment: 'react.favourite', text: "That's my protein shake! Every player showed up! Nobody's BENCHED!", delivery: 'firm, like a coach, proud' },
+  { id: 'react.2.1', who: 'bev', moment: 'react.2', text: 'Decent effort! Weak finish! This smoothie needs more cardio!', delivery: 'firm, like a coach, assessing' },
+  { id: 'react.2.2', who: 'bev', moment: 'react.2', text: "Solid! One sloppy pass! I'm circling it on the clipboard!", delivery: 'firm, like a coach, fair' },
+  { id: 'react.2.3', who: 'bev', moment: 'react.2', text: "Close! That's a near miss! On the SMOOTHIE!", delivery: 'firm, like a coach' },
+  { id: 'react.1.1', who: 'bev', moment: 'react.1', text: "That's a foul! Technical foul! On the SMOOTHIE!", delivery: 'firm, like a coach, outraged' },
+  { id: 'react.1.2', who: 'bev', moment: 'react.1', text: 'This smoothie is running LAPS until it learns!', delivery: 'firm, like a coach, a verdict' },
+  { id: 'react.1.3', who: 'bev', moment: 'react.1', text: 'Wrong play! This smoothie never even came to practice!', delivery: 'firm, like a coach, disgusted' },
+  { id: 'react.gross.1', who: 'bev', moment: 'react.gross', text: 'TIMEOUT! TIMEOUT! Something in this cup is NOT on the roster!', delivery: 'firm, like a coach, whistle energy' },
+
+  /* ── Vernon: foppish, fussy, exact; small, oat milk, super smooth. "I will know." ─────────────────────────────── */
+  { id: 'greet.1', who: 'vernon', moment: 'greet', text: "[sigh] Good afternoon. My blend is on a laminated card. I will be checking.", delivery: 'a theatrical sigh, precise' },
+  { id: 'order.odd.notGreen.1', who: 'vernon', moment: 'order.odd.notGreen', text: 'A green smoothie. Not green. Green is a statement, and I am not ready to make one.', delivery: 'refined, a little fragile' },
+  { id: 'react.3.1', who: 'vernon', moment: 'react.3', text: "Exactly as specified. I specified it. [pause] Acceptable.", delivery: 'a long pause, then grudging' },
+  { id: 'react.3.2', who: 'vernon', moment: 'react.3', text: 'Hm. Exactly as specified. I have nothing to add. This has never happened.', delivery: 'haughty, faintly shaken' },
+  { id: 'react.3.3', who: 'vernon', moment: 'react.3', text: "Four and a half straws out of five. I don't give fives. Fives make people complacent.", delivery: 'refined, superior' },
+  { id: 'react.2.1', who: 'vernon', moment: 'react.2', text: "[sigh] A solid meh. My readers deserve better. Both of the ones who read to the end.", delivery: 'a theatrical sigh, unimpressed' },
+  { id: 'react.2.2', who: 'vernon', moment: 'react.2', text: 'Competent. Forgettable. Like a smoothie that has heard of me but never met me.', delivery: 'haughty, bored' },
+  { id: 'react.2.3', who: 'vernon', moment: 'react.2', text: "Nearly. On my blog, 'nearly' is a whole category. It's very full.", delivery: 'cool, pointed' },
+  { id: 'react.1.1', who: 'vernon', moment: 'react.1', text: "I've had warmer welcomes from a revolving door.", delivery: 'deeply unimpressed' },
+  { id: 'react.1.2', who: 'vernon', moment: 'react.1', text: 'All eleven of my followers will hear about this. Gerald may finally comment.', delivery: 'icy, almost pleased' },
+  { id: 'react.1.3', who: 'vernon', moment: 'react.1', text: "I said I would know. I know. [sigh] Knowing is a burden.", delivery: 'wounded dignity' },
+  { id: 'react.gross.1', who: 'vernon', moment: 'react.gross', text: "Something in this cup moved. I'll write about it in the third person. It deserves the distance.", delivery: 'grim, quietly thrilled' },
+
+  /* ── Sal: gruff, a bit crude; refuses, then orders anyway (his greets); spinach is rabbit food ─────────────────── */
+  // His refusals: each is followed at once by the order sentence, which is the joke.
+  { id: 'greet.1', who: 'sal', moment: 'greet', text: "Ay. I ain't orderin' nothin'. I'm just standin' here, smellin' fruit. Fine. One.", delivery: 'gruff, caving at the end' },
+  { id: 'greet.2', who: 'sal', moment: 'greet', text: "I don't drink smoothies. I don't trust a drink you gotta chew. Gimme one.", delivery: 'gruff, suspicious, then giving in' },
+  { id: 'greet.3', who: 'sal', moment: 'greet', text: "Yo. I'm only in here 'cause it's warm. I ain't buyin' nothin'. Okay, one thing.", delivery: 'gruff, folding' },
+  { id: 'greet.4', who: 'sal', moment: 'greet', text: "Fruit in a cup? No. Absolutely not. Never. What's good?", delivery: 'gruff, a firm no, then curious' },
+  { id: 'order.dislike.1', who: 'sal', moment: 'order.dislike', text: 'No spinach. Spinach is just lettuce that went to college.', delivery: 'gruff, scornful' },
+  { id: 'order.dislike.2', who: 'sal', moment: 'order.dislike', text: "And no spinach. Rabbit food don't belong in a cup. It barely belongs in a rabbit.", delivery: 'gruff, principled' },
+  { id: 'order.dislike.3', who: 'sal', moment: 'order.dislike', text: 'No spinach. Spinach is lettuce in a disguise. Do I look like a rabbit?', delivery: 'gruff, indignant' },
+  { id: 'order.odd.notGreen.1', who: 'sal', moment: 'order.odd.notGreen', text: "A green smoothie. Not green. No spinach. I wanna look healthy. That's as far as I go.", delivery: 'gruff, conspiratorial' },
+  { id: 'order.odd.wipeout.1', who: 'sal', moment: 'order.odd.wipeout', text: "Everything. Every fruit, every extra, the big cup. 'Cept the spinach. Spinach is lettuce's cousin.", delivery: 'gruff, all in, with one rule' },
+  { id: 'order.odd.wipeout.2', who: 'sal', moment: 'order.odd.wipeout', text: "The works, big cup, blended till it quits. No spinach. I got principles. Two of 'em.", delivery: 'gruff, proud' },
+  { id: 'react.3.1', who: 'sal', moment: 'react.3', text: "Huh. That's good. I didn't wanna like it. I like it.", delivery: 'gruff, grudging' },
+  { id: 'react.3.2', who: 'sal', moment: 'react.3', text: "Mm. Don't tell nobody. Sal from the hot dog cart, drinkin' fruit. I got a reputation.", delivery: 'gruff, then a glance around' },
+  { id: 'react.3.3', who: 'sal', moment: 'react.3', text: "That's the one. Cold, sweet, no rabbit food. A man could get used to this. This man won't.", delivery: 'gruff, satisfied, then firm' },
+  { id: 'react.2.1', who: 'sal', moment: 'react.2', text: "Eh. It's okay. It's a drink. I drank it. That's the review.", delivery: 'a gruff shrug' },
+  { id: 'react.2.2', who: 'sal', moment: 'react.2', text: "Close. Like my cousin's parkin'. Technically in the spot.", delivery: 'gruff, scornful' },
+  { id: 'react.2.3', who: 'sal', moment: 'react.2', text: "It's alright. My doctor'd be proud. My doctor's easily impressed.", delivery: 'gruff, resigned' },
+  { id: 'react.1.1', who: 'sal', moment: 'react.1', text: "What is this? I wouldn't give this to the pigeons, and I don't even like the pigeons.", delivery: 'gruff, disgusted' },
+  { id: 'react.1.2', who: 'sal', moment: 'react.1', text: "Ugh. I knew it. I said I wasn't orderin' nothin'. I shoulda listened to me.", delivery: 'gruff, vindicated and miserable' },
+  { id: 'react.1.3', who: 'sal', moment: 'react.1', text: 'Ay. Thirty years sellin\' hot dogs, and this is the worst thing I ever held.', delivery: 'gruff, aggrieved' },
+  { id: 'react.gross.1', who: 'sal', moment: 'react.gross', text: "Oh, that's nasty. I been on the subway at two in the mornin'. This is worse.", delivery: 'gruff, revolted' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     THE VISITORS (level 4): Reginald the critic (newest on the menu: the acai bowl) and Kai, ten
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'visitor.arrive.1', who: 'reginald', moment: 'visitor.arrive', text: "Make way. Reginald. Critic. Today, a shack. I've reviewed worse. I've stayed in worse.", delivery: 'theatrical, sweeping in' },
+  { id: 'visitor.arrive.2', who: 'reginald', moment: 'visitor.arrive', text: 'Ah. The Smoothie Shack. A thatched roof, a flamingo, a crab in sunglasses. The decor has already said too much.', delivery: 'grand, surveying the room' },
+  { id: 'visitor.arrive.3', who: 'reginald', moment: 'visitor.arrive', text: 'Good afternoon. A critic enters a smoothie shack the way a surfer enters the sea. Reluctantly, and in a scarf.', delivery: 'stately' },
+  { id: 'greet.1', who: 'reginald', moment: 'greet', text: "Whatever is newest, please. I hear there's a bowl now. I'll be the judge of that.", delivery: 'theatrical, resigned to greatness' },
+  { id: 'react.3.1', who: 'reginald', moment: 'react.3', text: 'Magnificent. The depth of a cello, the sunshine of a postcard, and a straw. Bravo.', delivery: 'rapturous, sweeping' },
+  { id: 'react.3.2', who: 'reginald', moment: 'react.3', text: "Sublime. Four stars. I'd give it five, but then where would I go from here?", delivery: 'grand, troubled by perfection' },
+  { id: 'react.3.3', who: 'reginald', moment: 'react.3', text: "Perfection. Kai, write this down. 'Cold. Bright. Correct.' No. Longer. Much longer.", delivery: 'theatrical, dictating' },
+  { id: 'react.2.1', who: 'reginald', moment: 'react.2', text: 'Hm. A drink of two halves. One half sings. The other half has wandered off to the food court.', delivery: 'theatrical, relishing it' },
+  { id: 'react.2.2', who: 'reginald', moment: 'react.2', text: "Nearly. A critic lives on 'nearly'. It pays for the scarf.", delivery: 'grave, pleased with himself' },
+  { id: 'react.2.3', who: 'reginald', moment: 'react.2', text: "Fine. Three stars. It's cold, it's in a cup, and it knows it. Self-awareness is half the battle.", delivery: 'theatrical, generous' },
+  { id: 'react.1.1', who: 'reginald', moment: 'react.1', text: "Oh, dear. I came for a smoothie, and I've been handed material.", delivery: 'a slow, delighted horror' },
+  { id: 'react.1.2', who: 'reginald', moment: 'react.1', text: 'This is not what I ordered. It is, however, my next three columns.', delivery: 'theatrical, wounded' },
+  { id: 'react.1.3', who: 'reginald', moment: 'react.1', text: "A tragedy, served with a straw. I'll be gentle in print. I won't. But I'll say I was.", delivery: 'grand, confiding' },
+  { id: 'react.gross.1', who: 'reginald', moment: 'react.gross', text: 'Good heavens. Something in this cup has its own review. And its own agent.', delivery: 'aghast, intrigued' },
+
+  { id: 'visitor.arrive.1', who: 'kai', moment: 'visitor.arrive', text: "Hi. Kai. I'm reviewing the Smoothie Shack. Reginald's outside, reviewing the giant cup on the roof.", delivery: 'bright, very serious' },
+  { id: 'visitor.arrive.2', who: 'kai', moment: 'visitor.arrive', text: "Hello. I'm here on official business. The business is smoothies.", delivery: 'bright, formal' },
+  { id: 'visitor.arrive.3', who: 'kai', moment: 'visitor.arrive', text: "Hi. My mom's in the shoe store. I have a notebook and a straw. I'm ready.", delivery: 'bright, very serious' },
+  { id: 'react.3.1', who: 'kai', moment: 'react.3', text: 'Cold. Sweet. Correct. Ten out of ten.', delivery: 'bright, decisive' },
+  { id: 'react.3.2', who: 'kai', moment: 'react.3', text: "Perfect. Smiley face. I drew teeth on it. That's my highest honour.", delivery: 'bright, solemn' },
+  { id: 'react.3.3', who: 'kai', moment: 'react.3', text: "Yes. Brain freeze. Worth it. That's the whole review.", delivery: 'bright, wincing, then decisive' },
+  { id: 'react.2.1', who: 'kai', moment: 'react.2', text: 'Mostly right. Seven out of ten. The other three went somewhere.', delivery: 'bright, serious' },
+  { id: 'react.2.2', who: 'kai', moment: 'react.2', text: "Hm. One thing's wrong. I'm drawing a face with a wobbly mouth.", delivery: 'bright, thoughtful' },
+  { id: 'react.2.3', who: 'kai', moment: 'react.2', text: "It's okay. Reginald would write a whole page. I'll write 'okay' and draw a cup.", delivery: 'bright, matter-of-fact' },
+  { id: 'react.1.1', who: 'kai', moment: 'react.1', text: 'Frowny face. I only had one left. This smoothie got it.', delivery: 'bright, grave' },
+  { id: 'react.1.2', who: 'kai', moment: 'react.1', text: "This isn't what I ordered. Two words: wrong smoothie.", delivery: 'bright, firm' },
+  { id: 'react.1.3', who: 'kai', moment: 'react.1', text: 'Reginald says a critic must be fair. Fair: this is not my smoothie. Done.', delivery: 'bright, final' },
+  { id: 'react.gross.1', who: 'kai', moment: 'react.gross', text: "Ew. Okay. New page. The page just says 'ew'. Twice.", delivery: 'bright, shaken' },
+
+] });

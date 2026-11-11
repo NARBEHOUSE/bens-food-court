@@ -1,0 +1,120 @@
+# Ben's Burritos, the script in words (content-burrito, 2026-11-09)
+
+## Voicecut (phase 3, 2026-11-10): what changed in this script
+
+The user approved cutting the voice script: no recordings exist, and every line is text to speech until a future
+voice pass. **The tables and notes below describe the script before this cut where they mention `complain.extra`,
+`.unasked`, `.missing`, `.tooMany`, `.tooFew`, `.done`, `.pick` or `.more`: those moments are gone.** Now:
+
+- **Every customer's per-food complaint lines were deleted** (they were recorded once per value, per customer). A
+  customer now says one of their own `complain` lines, which name no food and live in `packs/cast/script.js` (8 to 10
+  each, locals too; their best old jokes kept, food-free). This pack keeps two 'customer' fallbacks for `complain`.
+- **Mitch reads the mistake** (`mistake.extra`, `mistake.unasked`, `mistake.missing`, `mistake.done`, `mistake.pick`, `mistake.more`), one line each, from the ticket and so with
+  no pronoun: "The ticket said no {ings}." / "Nobody ordered {ings}." / "The ticket said {ing}. That got left off." /
+  "The ticket said {want}." / "The ticket said {wanted}.".
+  After two readouts (one after a gross-out) he says `mistake.more`; the receipt still lists every mistake in text.
+- **`complain.gross.*` lines have no blanks**: the guacamole (brown), "the beans" (hair), "the salsa" (fly): the {value} before beans and salsa was dropped.
+- **Tutorial warnings are listed only for what the tutorial order runs through** (`SC.varsFor`), and `nearly.1` no longer names the customer. `tutorial.warn.pick` uses {wanted} ("The ticket says no protein.", was "the ticket says none").
+- The file is 328 lines now. `node tools/voice-clips.cjs burrito` lists its clips; the whole game's report is
+  `docs/api/reports/3-voicecut.md`.
+
+`packs/burrito/script.js` (`BBScripts.burrito`, 384 lines, every one with a `delivery` note). Format:
+`docs/api/script.md`. Who must say what: `docs/api/packs/burrito.md` section 12. The pack says `format: 3`, so
+`tests/script.test.cjs` checks it (`BB_PACKS=burrito node --test "tests/script.test.cjs"`). The worked example it
+follows is the pizza's (`docs/api/packs/pizza-script.md`); this page says what is different and who these people are.
+
+**Check it** (from the game folder; each prints [] when right):
+
+```
+node -e "const B=require('./tests/bot.cjs'),SC=require('./js/core/script.js'),R=B.restaurants().find(r=>r.id==='burrito');console.log(B.schema.validate(R.pack),SC.check(R.pack,R.script),SC.coverage(R.pack,R.script))"
+```
+
+## 1. What lives where
+
+| Lines | File | Why |
+|---|---|---|
+| Mitch's, in the burrito uniform: shift, uniform, the tutorial at every station and the griddle's cook, every warning, every gross-out, `nearly`, the one-liners, The Burrito Challenge | `packs/burrito/script.js` | they name the griddle, the press, Rita, Inferno |
+| The `'customer'` fallbacks for every F moment (react.3/2/1 three each, react.gross, every complain.*, every order.odd.*) | `packs/burrito/script.js` | the pack must write them |
+| The locals' full sets (Inferno, Rita): greet, smalltalk, goodbye, order.gag, odd orders, reactions, favourites, complaints | `packs/burrito/script.js` | locals have no cast lines |
+| The cameo's full set (Chef Hiro, Ben's Sushi's master, a level-4 visitor here): visitor.arrive, greet, smalltalk, goodbye, reactions, complaints | `packs/burrito/script.js` | a cameo's lines live in the pack that brings him |
+| The regulars' and visitors' lines about the food here: reactions, Marge's usual, Gus's twin, Bev's favourite, Sal's and Oakes's dislikes, odd orders, complaints, one restaurant-flavoured greet each (not Kai) | `packs/burrito/script.js` | they name the food |
+| Their greet, smalltalk, goodbye (and mentions) | `packs/cast/script.js` | merged in; they count as the speaker's own |
+
+## 2. Conventions (the pizza's, plus three of this pack's)
+
+- **Ids `<moment>.<n>`**, one `each` per line naming the one blank whose value changes the words, no line starting with
+  a varying blank, `{name}` only in `nearly.1` and the event lines. Pick lines say "for the {slot}, I said {want}"
+  (a None reads "for the hot sauce, I said none"; a style "for the style, I said tacos").
+- **Two gross-outs are on picks**: `gross.hair` (the beans) and `gross.fly` (the chips' salsa) and their
+  `complain.gross.*` use `{value}` with the slot written out ("the {value} beans", "the {value} salsa", `each:
+  'value'`), never `{ing}`. `gross.brown` (the guacamole Add) uses `{ing}`; some lines name the guacamole outright
+  (it is the only thing that goes brown), which records once.
+- **Lines that may follow any order never name one item.** A customer can order a burrito, a bowl or tacos, so
+  reactions and greets talk about "lunch", "the order" or nothing in particular. The exceptions are true by
+  construction: `complain.done` may say "tortilla" (only burritos and tacos are toasted), Chef Hiro may say "the roll"
+  (he always orders a burrito: the pack's `always`), Bev's `react.favourite` counts six jalapeños (her favourite, the
+  steak burrito, always has them), Sal's lines say "no lettuce" (he never gets any).
+- **Mitch's one-liners after a reaction** follow any order too: "That lunch is going to think about what it did",
+  "I'd like to thank my bandana".
+- **Tutorial lines say "she"**: the tutorial customer is Rita. `tutorial.warn.gross` and `.grossSkip` have one line
+  with `{ing}` (the tutorial's gross-out is the brown guacamole, an Add) and one with no blank, so neither can ever
+  print an unfilled blank.
+- **`order.gag` is 20 words or fewer** and `greet` 15 or fewer (checked by a scratch lint: none over).
+- **Delivery notes** for the final voice pass: Coach Bev's say "firm, like a coach", Sal's "gruff"; Inferno's say
+  intense, proud or fierce, never loud, gravelly or roaring (the round-1 voice test: those words came out as shouting
+  and distortion).
+
+## 3. Who they are here
+
+- **Inferno** (local, 45 lines). Red from the neck up, flame hair, sunglasses, smoke from his ears, a bottle of his own
+  hot sauce in a holster. He treats heat the way other people treat sport: proud, intense, never mean. The joke is his
+  pride and the food's failure to frighten him (his ears "file a complaint", his eyebrows "leave the building", his dog
+  Habanero "has never lived up to it", he came second to a volcano). His gags: "make it hotter, then apologise to it",
+  "the kind of hot that has its own weather", and the four-chili bottle on the prep shelf that is never on any ticket.
+  `order.gag.6` ("Every sauce on that wall. In one burrito. I've trained my whole life for this lunch.") is the one that
+  fits the Burrito Challenge's finale; if the page ever lets the event pick a gag, prefer it. His odd order is his own
+  (`fireAlarm`: the fire alarm with the little mustache on the prep wall).
+- **Rita** (local, 46 lines). Construction worker on her lunch break from the site across the mall: hard hat, high-vis
+  vest, a red cooler that is only for dessert. Hearty and hungry; everything is a building ("load-bearing", "up to
+  code", "solid, level, plumb", "a demolition job", a punch list, the blueprints). "One of everything" is her gag, said
+  five ways, never made. Nothing about her break being short: she never hurries anyone. The tutorial customer.
+- **Chef Hiro** (cameo visitor, 30 lines). Ben's Sushi's master, here because his apprentice said a burrito is a very
+  large sushi roll. Calm, low, exacting, quietly funny; he judges the roll and the tuck, speaks of his apprentice and
+  his rice, and bows to the tortilla. The humour is his precision, never where he is from.
+- **The regulars**: Marge's bean and cheese ("the usual, hon"); Gus's two of one thing ("one for now, one for the
+  road"; Delores is the truck); Bev counts the jalapeños out loud on her favourite (ONE! TWO! ... SIX! FULL SQUAD!);
+  Vernon wants boundaries ("The beans have met the rice. They were never introduced."); Sal never takes lettuce ("a
+  rabbit in a sleepin' bag"); Oakes's new onion reasons are taco-shaped (they roll off; an onion has layers and hides
+  things; he prefers to cry about data). Reginald calls a burrito a novel you can hold (the cast's mention agrees); Kai
+  gets to the point.
+
+## 4. Counts per speaker and moment
+
+| Speaker | Lines | greet / smalltalk / goodbye | react.3 / .2 / .1 | react.gross | Other |
+|---|---|---|---|---|---|
+| mitch | 69 | | | | shift.start 5, shift.end 4, uniform 3; gross.brown/hair/fly 3 each; nearly 2; after.3 3, after.1 3, after.gross 2; tutorial.intro/ticket/prep/griddle/cook.griddle/chips/gross/review/serve 2 each; tutorial.warn.extra/unasked/missing/done/pick/gross/grossSkip 2 each; event.intro/celebrate/again 2 each |
+| customer (fallback) | 39 | | 3 / 3 / 3 | 2 | complain.extra/unasked/missing/done/pick/more 2 each; complain.gross.brown/hair/fly 2 each; order.odd.doubleWrap/noAvocado/hottest/fireAlarm/justTortilla 2 each |
+| inferno (local) | 45 | 5 / 5 / 4 | 4 / 3 / 3 | 2 | order.gag 6, order.odd.fireAlarm 2, react.favourite 2, complain.extra/unasked/missing/done/pick/more 1 each, complain.gross.brown/hair/fly 1 each |
+| rita (local) | 46 | 5 / 5 / 4 | 4 / 3 / 3 | 2 | order.gag 5, order.odd doubleWrap/noAvocado/hottest/justTortilla 1 each, react.favourite 2, complain.* 1 each (9) |
+| hiro (cameo visitor) | 30 | 4 / 4 / 3 | 3 / 3 / 3 | 1 | visitor.arrive 3, complain.extra/missing/done/pick/more/gross.brown 1 each |
+| marge | 21 | 1 (+ cast) | 3 / 3 / 3 | 1 | order.usual 2, order.odd doubleWrap/noAvocado/hottest/justTortilla 1 each, complain.extra/missing/pick/done 1 each |
+| gus | 18 | 1 (+ cast) | 3 / 3 / 3 | 1 | order.twin 2, order.odd doubleWrap/hottest 1 each, complain.extra/missing/done 1 each |
+| bev | 21 | 1 (+ cast) | 3 / 3 / 3 | 1 | react.favourite 3, order.odd doubleWrap/hottest 1 each, complain.extra/unasked/missing/pick/done 1 each |
+| vernon | 19 | 1 (+ cast) | 3 / 3 / 3 | 1 | order.odd noAvocado/justTortilla 1 each, complain.pick 2, complain.done/extra/missing/more 1 each |
+| sal | 20 | 1 (+ cast) | 3 / 3 / 3 | 1 | order.dislike 3, order.odd hottest/noAvocado 1 each, complain.extra/unasked/missing/done 1 each |
+| oakes | 21 | 1 (+ cast) | 3 / 3 / 3 | 1 | order.dislike 3, order.odd doubleWrap/noAvocado 1 each, complain.extra/unasked/missing/done/pick 1 each |
+| reginald (visitor) | 18 | 1 (+ cast) | 3 / 3 / 3 | 1 | visitor.arrive 3, complain.extra/missing/pick/done 1 each |
+| kai (visitor) | 17 | cast only | 3 / 3 / 3 | 1 | visitor.arrive 3, complain.extra/missing/pick/done 1 each |
+
+`SC.check` and `SC.coverage` are both empty. Every blank fills in `SC.everyClip` except the cast's `{about}`, which
+`pickMention` fills at play time. Text checked against the pizza, smoothie, cafe, diner and cast scripts: the only
+identical lines are the two catchphrases kept on purpose (Marge's "The usual, hon." and DESIGN.md's "And that's not
+even everything.").
+
+## 5. What the page should know
+
+- `order.gag` is a local-at-home moment: Inferno and Rita only. Hiro has none, on purpose.
+- `react.gross`, `complain.*` and `order.odd.*` have 'customer' fallbacks, so any customer with fewer than two own
+  lines says their own line plus those (`SC.candidates`).
+- Lines carry `[pause]` and `[sigh]` tags for the voice pass; `SC.clean` drops them for captions and text to speech.
+- Mitch's `nearly.1` names the customer (`{name}`): the open request to core-b about `{name}` clips stands.

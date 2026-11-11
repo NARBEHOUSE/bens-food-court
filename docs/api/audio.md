@@ -1,0 +1,330 @@
+# Audio: voices and sounds (phase 1, audio lane)
+
+Settled 2026-11-08. Build spec 6.6. Read this instead of the code.
+
+| File | What |
+|---|---|
+| `js/audio.js` | `BB.audio` in the page; in Node, `require()` gives the pure helpers and `create(env)` |
+| `packs/shared/sound/sounds.js` | `BBSounds`, the sound index (generated; never edit by hand) |
+| `packs/shared/sound/*.wav` | the shared UI sounds (byte copies of the originals; the only copies since phase 3) |
+| `packs/court/sound/*.wav` | the court's moments |
+| `packs/<pack>/sound/*.wav` | each restaurant's cooking sounds (`packs/diner/sound` keeps sizzle, flip, squirt) |
+| `tools/make-sounds.cjs` | makes the sounds and the index; measures them |
+| `tests/voices.test.cjs` | voices, speaking, and sounds |
+| `index.html` block `<!-- audio: ... -->` | loads `packs/shared/sound/sounds.js` before `js/audio.js`; the page agent keeps it |
+
+`js/audio.js` reads its globals when it uses them, never at load: `NarbeVoiceManager`, `NarbePlatform`,
+`SafeAudio`, `BB.save` (`sfx`, `characterVoices`), `BB.script` (`clean`, `recording`; optional), `BBCast`,
+`BBCourt`, `BBVoice`, `BBPacks`, `BBSounds`. If `BBSounds` is missing at `init()`, it adds the script tag itself.
+It never names a restaurant.
+
+## 1. `BB.audio`
+
+| Call | Does |
+|---|---|
+| `init()` | At boot. Preloads the shared and court sounds (and the pack in use), and starts waiting for the voice list. |
+| `use(pack)` | Binds the restaurant in use: its people (for voices) and its sound folder. Pass the **merged** pack (`merge(cast, pack)`) on entering a restaurant, and `use(null)` back at the court. Preloads that pack's sounds. Does not stop a line. |
+| `pack()` | The pack in use. With no `use()` and exactly one pack in `BBPacks` (today's one-pack page), that one. |
+| `say(line)` | Says a line as a character (section 2). Returns a promise that never rejects. |
+| `stop()` | Ends the current line at once; its `say()` resolves `{ stopped: true }`. Call it from `pause()`, `leaveToCourt()`, `quit()` and before any scene change that must cut a line. |
+| `busy()` | A line is being said or shown. |
+| `voiceFor(who)` | The voice a person speaks in (section 3). `who`: a person object or an id. `null` when the device has no English voices yet. |
+| `person(who)` | The person `say()` would use: the pack's manager or regular entry, with `tts` from `BBCast` when the cast has them. |
+| `ready()` | A promise: the hub's voice list has loaded (or 2.5 s passed). `say()` waits on it itself. |
+| `readingTime(text)` | `max(1300, 62 ms × characters)`: how long a caption stays when nothing is spoken. Use it for the court's chatter captions. |
+| `recorded(clip, text)` | A recording exists for these exact words **and** recordings are on. False until the voice pass. |
+| `recordings()` | `BBCourt.recordedVoices === true`. |
+| `sfx(name, vol?)` | Plays a sound (section 5). Returns its length in ms, or 0 when nothing played, so a playout can `await wait(BB.audio.sfx('court:shutter'))`. |
+| `station(st, hook, vol?)` | Plays a station's sound for a moment (section 5.2). `st`: a station object or its id in the pack in use. Returns ms like `sfx`. |
+| `sound(name)` | Where a name leads: `{ id, url, folder, name, dur, vol }` or `null`. |
+
+## 2. How a line is spoken
+
+`say({ who, text, clip?, parts?: [{ clip, text }], essential? })`:
+
+1. `stop()` ends whatever line was going.
+2. **Character Voices** (`bb-settings.characterVoices`):
+   - `off`: resolves `{ skipped: true }` at once, with no voice and no wait. Exception: `essential: true` (the tutorial's
+     lines and warnings, spec 6.1) is said in **the game's own voice** (the player's scan voice, pitch and rate). The
+     page still shows the caption.
+   - `captions`: no voice; resolves `{ captions: true }` after `readingTime(words)`.
+   - `voices` (the default): continue.
+3. **Recordings**, only when `BBCourt.recordedVoices === true` (section 4). Otherwise skip straight to text to speech.
+4. **Text to speech**:
+   - If the hub's Text to Speech is off (`NarbeVoiceManager.getSettings().ttsEnabled`), this is a silent pause of
+     `readingTime(words)`: `{ silent: true }`. The caption stays up.
+   - Otherwise: wait for `ready()`, then `NarbeVoiceManager.cancel()`, then
+     `NarbePlatform.speech.speak(words, { voice, pitch, rate, volume })`.
+     - `voice`: `voiceFor(who)`. When it is null, the option is left out and the engine uses its default.
+     - `pitch`: the person's `tts.pitch`, which replaces the player's pitch.
+     - `rate`: the player's rate × the person's `tts.rate`, clamped to 0.5-2.
+     - `volume`: the player's volume.
+   - It resolves `{ tts: true, reason: 'end' }` when the words end.
+   - The wait is capped at `NarbeVoiceManager.getSpeechTimeout(words, rate)`, which is at most 10 s. At the cap it
+     resolves `{ tts: true, capped: true }` without cutting the words off. The next line, the scanner's next label or
+     `stop()` still ends them.
+   - If the engine cannot start (`failed-to-start`, `unavailable`, or an error before starting), it waits out the rest
+     of the reading time and resolves `{ silent: true, reason }`. The caption stays readable.
+   - `words` is the text without sound tags (`[sigh]`), from `BB.script.clean`.
+
+**Scanner speech always wins.** A character line never goes through `NarbeVoiceManager.speak()`, so it never holds the
+scanner's speech ticket. When the scanner reads a label, the platform cancels the character's utterance. Its `say()`
+then resolves `{ tts: true, reason: 'cancelled' }`, and the line is never started again. `speechSynthesis` is never
+touched, and nothing in `shared/` was changed.
+
+**The page's part** (spec 5.5, 6.3):
+- Say lines only while the scan is suspended. A line said while the scan is live is cut off by the next label.
+- `await` each line, and check the run counter after every await.
+- Show the bubble before `say()` and clear it after.
+- `smalltalk` and `goodbye` are skipped by the page when Character Voices is Off.
+- Scan labels, the ticket read-out and Help stay on `NarbeVoiceManager.speak()` in the player's voice; `narrate()`
+  is unchanged.
+
+## 3. Choosing voices: `voiceFor(person)`
+
+- **The list** is `NarbeVoiceManager.getEnglishVoices()` once `waitForVoices()` has settled. Each name counts once,
+  in name order, so the engine's order never matters.
+- **Preferred fragments win.** The person's `tts.voices` are tried in order. The first fragment that matches a voice
+  name picks that voice, even if it is the player's scan voice. A fragment matches case-insensitively and only at a
+  word start: `'zira'` matches "Microsoft Zira - English (United States)", but `'ana'` does not match "Diana".
+- **Otherwise a stable hash picks one**, skipping the player's scan voice when another voice exists. This is
+  rendezvous hashing: every voice scores `hashId(id + voice name)` and the highest wins. People spread evenly, and when
+  a voice comes, goes or becomes the scan voice, only the people on that voice move.
+- **Cached** per person, and chosen again when the voice list or the scan voice changes.
+- **Who someone is:** `person(id)` takes the pack's `manager` or `regulars` entry and, when `BBCast.people[id]` exists,
+  the cast's `tts` (a persona field, spec 8). Court speakers (`pa`, and the customers cheering at the court) come from `BBCast` alone. An unknown
+  id still gets a stable voice, at pitch 1 and rate 1.
+
+**For the cast lane: `tts: { voices: [fragments], pitch, rate }`**
+- Windows can have six voices: David, Zira, Mark (US) and Hazel, George, Susan (UK). Many machines have only **David,
+  Zira and Mark**, so a recipe must work with those three.
+- Give everyone a `voices` list, best first, e.g. `['George', 'David']`, so a UK voice is used when there is one.
+- With three voices, **pitch and rate tell people apart**. No two people who can meet at one restaurant may share
+  voice, pitch and rate under any scan voice. The game's own voice (the scan voice at pitch 1, rate 1) counts as one
+  of them, so never give anyone pitch 1 with rate 1.
+- Keep pitch within about 0.6-1.6 and rate within 0.75-1.4. Kids (Kai, Lulu) sit high on pitch; Gus, Hiro and Walt
+  sit low.
+- Check recipes before writing them: `BB_CAST=<file> node --test --test-name-pattern=meet tests/voices.test.cjs`.
+
+Pure helpers for Node: `hashId(id)`, `matches(name, fragment)`, `voiceList(voices)`,
+`pickVoice(person, voices, scanVoiceName)`, `recipe(person, playerSettings) → { pitch, rate, volume }`,
+`readingTime`, `cleanWords`, `textHash`, `HOOK_DEFAULTS`, and `create(env)`. `hashId('marge')` is pinned in the test,
+because changing the hash would give every character a new voice.
+
+## 4. The recorded-voice switch
+
+- **Off until the voice pass:** recordings play only when `BBCourt.recordedVoices === true`. A missing `BBCourt`, or
+  any other value, counts as off. `recorded()` is then always false, so Mitch's `nearly` stays a caption (game.js).
+- **When on**, a clip id is looked up in `BBVoice[<pack in use>]` (files under `packs/<pack>/voice/`), then
+  `BBVoice.cast` (`packs/cast/voice/`), then `BBVoice.court` (`packs/court/voice/`). It matches only if the manifest's
+  hash equals the hash of the line's words, as `BB.script.recording` checks.
+- An order said in `parts` plays from recordings only when every part is recorded; otherwise the whole line is text
+  to speech. Each clip has a 15 s guard. A failed or stalled clip falls back to text to speech.
+- **Nothing is recorded today** (2026-11-10: every existing voice was removed; new voices are made later, from
+  scratch): the diner's old takes went to `archives/games/2026-11-10/BENSFOODCOURT-removed/packs/diner/voice`, the
+  voice designs and both voice-test rounds (all of `voice-source/`) to `.../BENSFOODCOURT-removed/voice-source`, and no
+  `voice/manifest.js` is on the page. The game ships with no recordings: every line is text to speech.
+  `tools/voice-clips.cjs` and `tools/voices.py record` treat a missing manifest as nothing recorded.
+
+## 5. Sounds
+
+### 5.1 Names and ids
+
+- **The index:** `BBSounds = { version: 1, <folder>: { <name>: { dur, vol } } }` lists every sound file there is.
+  `dur` is in seconds; `vol` is the volume the sound was made for. Only listed sounds are ever preloaded, because
+  SafeAudio caches a preload of a missing file and silently shadows the sound (ACCESSIBILITY.md §5).
+- **Resolving a name:**
+  - A bare name looks in the pack in use (`packs/<pack>/sound`), then in `shared`.
+  - `'court:chime'` or `'shared:plop'` names the folder.
+  - Names match `/^[a-z][A-Za-z0-9]*$/`. An unknown name plays nothing and warns once.
+- **SafeAudio ids** are `bb-<folder>-<name>`, for example `bb-shared-plop`, `bb-diner-sizzle` or `bb-court-chime`.
+  Two packs' `pour` never clash.
+- **Volume:** `vol` (0-1), or the index's `vol` when it is left out. Today's game.js calls keep working: `tick` at
+  0.12 for the scan highlight, and so on.
+- **Sound Effects** off (`bb-settings.sfx === false`) plays nothing, and the call returns 0.
+- Nothing loops, and no ambient sound plays under speech.
+
+### 5.2 Station sounds: `station.sounds = { add?, cook?, stage?, done?, auto? }`
+
+Each value is a sound name, resolved as in 5.1. `null` means silence. Where a station says nothing, `add` plays
+`plop`, `stage` plays `tick`, and the others play nothing. `tests/voices.test.cjs` fails a pack that names a missing
+sound or an unknown hook.
+
+When the page plays each hook (a recommendation for the page lane):
+
+| hook | when |
+|---|---|
+| `add` | An Add step adds its ingredient (each time). The diner's sauce bottles keep `squirt`, chosen by `ingredients[ing].sauce`, as now. |
+| `cook` | A cook step's food goes on or in: in Simple, when the stage is chosen, before the cooking playout; in Timed, when the clock starts. |
+| `stage` | Each Timed stage change. |
+| `done` | The station's work is finished: the food comes off or out, or the cut is made. Sushi's roll may play it once per piece, `knife` being 0.16 s. |
+| `auto` | An auto step's flourish plays (the wrap, the rolling mat, a pour). An auto step's own `sound` plays instead (the burrito's `burst`; integrate-2b). |
+
+Sounds outside stations, played by the page:
+- `ding`, `kaching`, `stars`, `ew`, `swoosh` (Skip), `toss` (Swap It) and `buzz` (a fly gross-out), as game.js plays
+  them now.
+- `burrito`'s `burst` with the bursting-burrito joke (its auto step names it: `sound: 'burst'`).
+- A sauce's squirt is `diner:squirt` at every restaurant (the sound lives in the diner's folder; integrate-2b).
+- **The court:**
+  - Grand Opening: `court:shutter` with the roll-up, then `court:chime`, then `court:paChime` before `pa` speaks.
+  - Gold sign: `court:signDrop` as it lands, `court:sparkle`, then `court:paChime` before `pa`.
+  - Celebration: `court:pop1`, `pop2` and `pop3` in turn, at most 3 a second.
+
+### 5.3 Every sound
+
+Lengths are the files' own. "original" marks the 12 first-built sounds, kept byte for byte. Suggested hooks are a
+starting point; the content agents choose.
+
+**shared** (`packs/shared/sound`)
+
+| name | for | suggested hook | length | vol |
+|---|---|---|---|---|
+| `plop` | Something lands on the food (every Add). A soft low thump. *(original)* | add (the default) | 0.16 s | 0.4 |
+| `swoosh` | An ingredient slides away (Skip). *(original)* | | 0.22 s | 0.3 |
+| `toss` | The bad one is thrown out (Swap It): a whoosh and a soft bin thunk. *(original)* | | 0.42 s | 0.4 |
+| `tick` | A Timed stage change (0.3); also the scan highlight moving (0.12). *(original)* | stage (the default) | 0.07 s | 0.3 |
+| `ding` | The counter bell: Next Customer. *(original)* | | 0.90 s | 0.4 |
+| `kaching` | The register rings the order up. *(original)* | | 0.80 s | 0.45 |
+| `stars` | The rating appears: three rising notes. *(original)* | | 0.75 s | 0.35 |
+| `buzz` | A fly is on the food (a fly gross-out). *(original)* | | 0.90 s | 0.25 |
+| `ew` | A gross-out was served: a low falling "wah". *(original)* | | 0.60 s | 0.4 |
+
+**court** (`packs/court/sound`)
+
+| name | for | length | vol |
+|---|---|---|---|
+| `shutter` | A storefront shutter rolls up (Grand Opening): a metal rattle and a clunk at the top. | 1.70 s | 0.4 |
+| `chime` | The Grand Opening chime: four warm rising bell notes. | 1.80 s | 0.38 |
+| `paChime` | The mall PA's "bing-bong" before the announcer speaks. | 1.35 s | 0.36 |
+| `signDrop` | The gold sign drops onto the sign board: a solid "clonk" and a small bounce. | 0.50 s | 0.38 |
+| `sparkle` | The gold sign sparkles: a soft shimmer of little bell notes (nothing shrill). | 1.10 s | 0.32 |
+| `pop1` | A quiet firework pop for the grand celebration (middle). | 0.40 s | 0.36 |
+| `pop2` | A quiet firework pop (deepest). | 0.40 s | 0.36 |
+| `pop3` | A quiet firework pop (lightest, most crackle). | 0.40 s | 0.36 |
+
+**diner** (`packs/diner/sound`)
+
+| name | for | suggested hook | length | vol |
+|---|---|---|---|---|
+| `sizzle` | Patties hit the grill. *(original)* | grill cook | 1.30 s | 0.35 |
+| `flip` | A quick spatula "fwip" (also the ticket going up). *(original)* | grill done | 0.18 s | 0.3 |
+| `squirt` | A squeeze bottle: each sauce's Add. *(original)* | (by `ingredients[ing].sauce`) | 0.62 s | 0.3 |
+| `fryer` | The fry basket goes into the oil: a light clank, then bubbling. | fryer cook | 1.20 s | 0.35 |
+| `fountain` | A soda fountain pours: a soft stream with a muffled fizz. | drinks add or auto | 1.20 s | 0.32 |
+| `salt` | Two shakes of a salt shaker: soft, low "tch tch". | a salt Add's station | 0.36 s | 0.35 |
+
+**pizza** (`packs/pizza/sound`)
+
+| name | for | suggested hook | length | vol |
+|---|---|---|---|---|
+| `oven` | The pizza slides into the brick oven: a soft whump, a warm roar and a few crackles. | oven cook | 1.30 s | 0.35 |
+| `peel` | The wooden peel slides the pizza out: a short scrape and a light wooden tap. | oven done | 0.46 s | 0.35 |
+| `cut` | The pizza wheel rolls across the crust: a soft, gritty roll. | cut done | 0.52 s | 0.32 |
+
+**smoothie** (`packs/smoothie/sound`)
+
+| name | for | suggested hook | length | vol |
+|---|---|---|---|---|
+| `blender` | The blender runs: a motor whirr with fruit chopping. | blender cook | 1.40 s | 0.32 |
+| `blenderStop` | The blender winds down and the jug lifts off its base with a soft clunk. | blender done | 0.70 s | 0.32 |
+| `pour` | Juice or milk glugs into the jug. | auto (a base pouring in) | 0.75 s | 0.3 |
+
+**cafe** (`packs/cafe/sound`)
+
+| name | for | suggested hook | length | vol |
+|---|---|---|---|---|
+| `pour` | Espresso runs into the cup: a thin, gentle trickle. | coffee cook (the espresso pour) | 1.20 s | 0.34 |
+| `hiss` | The espresso machine lets off steam: a muffled "pssh" and a low pump hum. | coffee done | 1.10 s | 0.28 |
+| `fryer` | A donut drops into the hot oil: a soft plop, then gentle bubbling. | donut fryer cook | 1.30 s | 0.34 |
+| `dip` | A donut is dipped in glaze: a thick, wet "schlup" and one drip. | a glaze station's done | 0.42 s | 0.3 |
+
+**sushi** (`packs/sushi/sound`)
+
+| name | for | suggested hook | length | vol |
+|---|---|---|---|---|
+| `knife` | One clean cut through the roll: a quiet "shk" and the board under it. | roll done (once per cut) | 0.16 s | 0.28 |
+| `mat` | The bamboo mat rolls the sushi: a soft wooden clatter that speeds up. | roll auto (the rolling flourish) | 0.75 s | 0.3 |
+
+**burrito** (`packs/burrito/sound`)
+
+| name | for | suggested hook | length | vol |
+|---|---|---|---|---|
+| `wrap` | The tortilla folds twice and rolls up: soft papery "fwumps". | auto (the wrap) | 0.80 s | 0.32 |
+| `press` | The griddle press comes down: a low clunk, then a sizzle that settles. | griddle cook | 1.20 s | 0.34 |
+| `burst` | An over-stuffed burrito bursts: a soft pop and a comic splat. | (the bursting-burrito joke) | 0.55 s | 0.34 |
+
+**icecream** (`packs/icecream/sound`)
+
+| name | for | suggested hook | length | vol |
+|---|---|---|---|---|
+| `scoop` | The scoop drags through the tub, and the ball lands with a soft "thup". | scoop add (each scoop) or cook | 0.42 s | 0.32 |
+| `mixer` | The shake mixer spins: a smooth, gentle whirr with the shake churning. | shake cook | 1.30 s | 0.3 |
+| `mixerStop` | The mixer winds down and the cup comes off with a light tap. | shake done | 0.60 s | 0.3 |
+| `pour` | Milk or a thick shake pours: a slow, soft glug with a few fat bubbles. | shake auto steps (the milk, the pour into the glass): each names it with `sound: 'pour'` (phase 3) | 0.60 s | 0.26 |
+
+Example: `stations: { oven: { name: 'Oven', backdrop: 'oven', redo: 'Redo the Oven', steps: [...], tool: 'peel',
+sounds: { cook: 'oven', done: 'peel' } } }`.
+
+## 6. Making sounds: `tools/make-sounds.cjs`
+
+| Command | Does |
+|---|---|
+| `node tools/make-sounds.cjs` | Every new sound, the shared copies and the index. |
+| `node tools/make-sounds.cjs pizza court:pop1` | Only these (a folder name means all its sounds), then the index. |
+| `node tools/make-sounds.cjs --check` | Measures every sound and exits 1 when a new one breaks `LIMITS`. |
+| `node tools/make-sounds.cjs --index` | Rewrites the index only. |
+| `node tools/make-sounds.cjs --doc` | Prints the tables above. |
+| `node tools/make-sounds.cjs --legacy <dir>` | Re-renders the 12 originals into `<dir>`, never into `packs/`. All but `sizzle`, which used `Math.random`, come out byte-identical. |
+
+- **The originals are never rewritten.** The nine shared ones are copied only when missing; a copy that differs from
+  its original is reported, never replaced.
+- **Every new sound has its own seeded noise**, from its folder and name, so making or changing one never changes
+  another, and a re-run is byte-identical.
+- **`LIMITS`**, checked by `--check` and the test, for every new sound:
+  - at most 5% of the energy above 2.5 kHz (3% for `burst` sounds);
+  - at least 25% from 250 Hz to 2.5 kHz, so laptop and tablet speakers play it;
+  - peak at most 0.5 (0.45 for `burst`);
+  - at most 0.8 s for `step`, 1.6 s for `order`, 0.45 s for `burst` and 2 s for `once`;
+  - starts and ends at silence, centred.
+- Today's new sounds sit at or under 1.8% above 2.5 kHz and at or over 37% in the speaker band.
+- **To add a sound:**
+  1. Add a `CATALOG` entry: `{ folder, name, kind, vol, what, hooks?, make(k) }`.
+  2. Run `node tools/make-sounds.cjs <folder>:<name>`, then `--check`.
+  3. Run the tests.
+  4. Add the sound to the table above (`--doc` prints it).
+
+## 7. Tests (`tests/voices.test.cjs`)
+
+- **Voices:**
+  - voiceFor is deterministic, and the hash is pinned.
+  - It honours preferred fragments, skips the scan voice, and spreads characters (only the people on a voice move
+    when it comes or goes).
+  - It is cached and chosen again when the voice list or scan voice changes, and the cast's `tts` wins.
+  - **With only David, Zira and Mark, no two people who can meet at one restaurant share voice, pitch and rate, under
+    every scan voice, the game's own voice included.** It skips with a message until `packs/cast/cast.js` exists.
+    "Who can meet" is spec 2.2 and 5.4 plus every id the pack itself lists. Near misses (within 0.05 on both) are
+    printed as notes.
+  - The court's mix (Mitch, `pa`, regulars) is reported only.
+- **Speaking:**
+  - A line goes `cancel()`, then `speak({ voice, pitch, rate, volume })`.
+  - Text to Speech off gives a silent pause.
+  - The `getSpeechTimeout` cap; `stop()`; scanner speech wins.
+  - Character Voices: Off, Captions, essential lines.
+  - A failed engine start keeps the caption for its reading time.
+  - The recorded-voice switch.
+  - `js/audio.js` never calls `speechSynthesis` and never names a restaurant.
+- **Sounds:**
+  - The 12 originals are byte-identical to before.
+  - The index is fresh and complete.
+  - Every new sound keeps `LIMITS`.
+  - Resolution and ids: `bb-<folder>-<name>`, pack first and then shared, hooks and their defaults, Sound Effects off,
+    no index means no sounds.
+  - Every sound a pack's stations name exists, under a known hook (honours `BB_PACKS`).
+
+## 8. Phase 3 (DONE 2026-11-10)
+
+The nine shared originals in `packs/diner/sound` (buzz, ding, ew, kaching, plop, stars, swoosh, tick and toss, phase
+1 copies, byte-identical to `packs/shared/sound`) were moved to
+`archives/games/2026-11-10/BENSFOODCOURT-removed/packs/diner/sound`. The diner keeps `sizzle`, `flip`, `squirt`,
+`fryer`, `fountain` and `salt`. `js/audio.js` only ever loaded them from `packs/shared/sound` (the index lists them
+there), and `tests/voices.test.cjs` now fails if a copy comes back to `packs/diner/sound`.

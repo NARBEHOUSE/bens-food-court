@@ -1,0 +1,620 @@
+'use strict';
+/* Ben's Food Court - a restaurant's 3D food drawn on the CPU, over its real backdrops, with no browser (dev-only;
+ * browsers are off-limits on this PC). For every food agent: look at the food before handing it over.
+ *
+ *   node tools/food-frames.cjs <pack> [out dir] [filters...]
+ *
+ *   <pack>     a pack id (pizza, diner, ...): packs/<pack>/pack.js and js/food/<pack>.js (a pack without its own
+ *              module borrows the diner's, as the game does)
+ *   [out dir]  where the PNGs go; a path (with a slash or a dot). Default: art-source/review/food-<pack>/
+ *   [filters]  words: only frames whose name contains one are drawn (line, cook, timed, gross, reduced, giant,
+ *              counter, low, or part of a name such as pepperoni). Flags: `guides` draws the backdrop's measured
+ *              surface line (green) and, at the counter, where the served customer's eyes and hips go (cyan, spec
+ *              5.2) and the painted queue that nothing may cover (yellow); `aspects` draws every counter frame at
+ *              16:10, 4:3 and 21:9 too (by default only counter-one, -combo, -twin and the event's finale are);
+ *              `nosheet` skips the contact sheets.
+ *
+ * Every counter frame is also measured, the way tests/dom-play.cjs checks the page: where the order lands on that
+ * window (on screen or cut off, its size, how far it rises above the counter line, whether its right edge passes
+ * 52% of the picture, where the painted queue starts). The lines go to the console and index.txt; `cut`, `queue`
+ * and `not on the counter top` are the ones to fix. A window wider or narrower than 16:9 is resized the way the game
+ * resizes (world.js places the order again for it).
+ *
+ * It runs the real frame (js/world.js) and the real line (js/core/line.js) in Node with a stub window: every
+ * sample order is walked step by step as game.js would (goTo, showStep, outcome, showCounter), and at the moments
+ * worth looking at the scene is rendered by NARBE Racer's tools/node_render.cjs at each set's solved camera, keyed
+ * over the backdrop picture (art-source/backdrops/<pack>-<set>.png; the diner's are unprefixed). Frames:
+ *   line-*      every station: the item so far and what waits on the line, before and after each step (each
+ *               ingredient and each slot value once), the flourishes mid-air, then the order on the counter
+ *   cook-*      every cooking set: waiting, every stage on the heat, Simple's run (going in, baking, done)
+ *   timed-*     the Timed view: on the heat from the start
+ *   gross-*     every gross-out: on the line (Full motion, the fly mid-orbit), served, on the counter
+ *   reduced-*   the same gross-outs with Motion Reduced (fx sit still)
+ *   giant-*     every event recipe on its line and on the counter, and the event's finale on the counter
+ *   counter-*   one item, a main with a side, two mains (these and the event's finale also at 16:10, 4:3, 21:9:
+ *               the frames named ...@16x10, @4x3, @21x9)
+ *   low-*       Graphics Quality Low: the fullest item on the line, on the heat and on the counter
+ * Then sheet-<n>.png: contact sheets of every frame, 12 to a sheet, and index.txt listing them (with the counter
+ * fit of each counter frame, and a summary of the ones to fix at the end).
+ */
+const path = require('path'), fs = require('fs'), zlib = require('zlib');
+const GAME = path.join(__dirname, '..');
+const HUB = path.join(GAME, '..', '..', '..');
+const NR = require(path.join(HUB, 'apps', 'games', 'NARBEKART', 'tools', 'node_render.cjs'));
+const W = 1280, H = 720;
+
+/* ── arguments ── */
+const argv = process.argv.slice(2);
+const packId = argv[0];
+if (!packId || !fs.existsSync(path.join(GAME, 'packs', packId, 'pack.js'))) {
+  console.log('usage: node tools/food-frames.cjs <pack> [out dir] [filters...]   (packs: ' +
+    fs.readdirSync(path.join(GAME, 'packs')).filter(id => fs.existsSync(path.join(GAME, 'packs', id, 'pack.js'))).join(', ') + ')');
+  process.exit(1);
+}
+const isPath = s => /[\\/.]/.test(s);
+const OUT = path.resolve(argv[1] && isPath(argv[1]) ? argv[1] : path.join(GAME, 'art-source', 'review', 'food-' + packId));
+const words = argv.slice(argv[1] && isPath(argv[1]) ? 2 : 1);
+const GUIDES = words.includes('guides'), NOSHEET = words.includes('nosheet'), ASPECTS = words.includes('aspects');
+const FILTERS = words.filter(w => w !== 'guides' && w !== 'nosheet' && w !== 'aspects');
+// The window shapes the counter must work at (spec 5.2), drawn 720 high.
+const SHAPES = { '16x10': 16 / 10, '4x3': 4 / 3, '21x9': 21 / 9 };
+// The counter's layout (spec 5.2; docs/api/page.md 7 has the page's numbers): the served customer's eyes near the
+// painted horizon (46.5% of the picture), the customer centred at 24% in the quiet left part; the painted queue of
+// three in x 52-76%, 43-77% down. The order stays left of the queue: tests/dom-play.cjs fails an order whose right
+// edge passes 52% of the picture.
+const COUNTER = { eyes: 0.465, quiet: [0.10, 0.52], queue: [0.52, 0.43, 0.76, 0.77] };
+const wanted = name => !FILTERS.length || FILTERS.some(f => name.includes(f));
+fs.mkdirSync(OUT, { recursive: true });
+
+/* ── a stub window for js/world.js: no DOM, no WebGL, a frame clock we step by hand ── */
+const quiet = fn => { const w = console.warn; console.warn = () => {}; try { return fn(); } finally { console.warn = w; } };
+const clock = { now: 0 };
+let raf = null, LOW = false;
+const motion = { value: 'full' };
+globalThis.window = globalThis; globalThis.self = globalThis;
+globalThis.innerWidth = W; globalThis.innerHeight = H; globalThis.devicePixelRatio = 1;
+const listeners = {};                       // world.js listens for 'resize': windowShape() fires it
+globalThis.addEventListener = (type, fn) => { (listeners[type] = listeners[type] || []).push(fn); };
+globalThis.removeEventListener = (type, fn) => { listeners[type] = (listeners[type] || []).filter(f => f !== fn); };
+globalThis.requestAnimationFrame = cb => { raf = cb; return 1; };
+globalThis.cancelAnimationFrame = () => {};
+try { globalThis.performance.now = () => clock.now; } catch (e) { Object.defineProperty(globalThis, 'performance', { value: { now: () => clock.now } }); }
+globalThis.document = {
+  body: { dataset: { get motion() { return motion.value; } } },
+  getElementById: () => ({ appendChild() {}, style: {} }),
+  createElement: () => ({ style: {}, appendChild() {} }),
+};
+globalThis.NarbeGraphics = {
+  openGame: () => ({ ready: Promise.resolve(), isLightweight: () => LOW, rendererOptions: o => o, pixelRatio: r => r, subscribe: () => () => {},
+    frame() {}, label: () => (LOW ? 'Low' : 'High'), cycle() {}, setChoice() {}, get: () => ({ choice: LOW ? 'low' : 'high' }), dispose() {} }),
+};
+const THREE = quiet(() => require(path.join(GAME, 'js/vendor/three.min.js')));
+let lastRender = null;
+THREE.WebGLRenderer = class FakeRenderer {
+  constructor() { this.domElement = { style: {} }; }
+  setPixelRatio() {} setSize() {} setClearColor() {} dispose() {}
+  render(scene, camera) { lastRender = { scene, camera }; }
+};
+globalThis.THREE = THREE;
+const FOOD = require(path.join(GAME, 'js/food/kit.js'));
+globalThis.BB = { food: FOOD };
+require(path.join(GAME, 'js/food/diner.js'));
+const P = require(path.join(GAME, 'packs', packId, 'pack.js'));
+const moduleFile = path.join(GAME, 'js', 'food', ((P.world && P.world.module) || P.id) + '.js');
+if (fs.existsSync(moduleFile)) require(moduleFile);
+else console.log('note: no ' + path.relative(GAME, moduleFile) + ' yet: the diner module draws this pack');
+quiet(() => require(path.join(GAME, 'js/world.js')));
+const L = require(path.join(GAME, 'js/core/line.js'));
+const world = BB.world;
+
+/* ── the frame clock: frames AND timers run on it ── */
+// world.js's wait() (k.wait in a food module: the oven's bake, the wheel between cuts, the fryer) is a setTimeout.
+// In real time those would still be pending when drive() has stepped through its frames, and the picture would be
+// taken mid-flourish. So timers are queued on the frame clock and fired by tick(), like the frames.
+const timers = [];
+let timerId = 0;
+globalThis.setTimeout = (fn, ms, ...args) => { timers.push({ at: clock.now + Math.max(0, +ms || 0), fn, args, id: ++timerId }); return timerId; };
+globalThis.clearTimeout = id => { const i = timers.findIndex(t => t.id === id); if (i >= 0) timers.splice(i, 1); };
+function tick(ms) {
+  clock.now += ms || 16.7;
+  for (;;) {
+    let due = -1;
+    for (let i = 0; i < timers.length; i++) if (timers[i].at <= clock.now && (due < 0 || timers[i].at < timers[due].at)) due = i;
+    if (due < 0) break;
+    const t = timers.splice(due, 1)[0];
+    t.fn(...t.args);
+  }
+  const cb = raf; raf = null; if (cb) cb(clock.now);
+}
+const yieldNow = () => new Promise(r => setImmediate(r));
+/** Step frames until the promise settles (snapAt: [{ ms, name }] takes pictures on the way). */
+async function drive(p, opts) {
+  let done = false;
+  Promise.resolve(p).then(() => { done = true; }, e => { done = true; console.log('  playout failed: ' + (e && e.stack || e)); });
+  const t0 = clock.now, snaps = (opts && opts.snapAt) || [];
+  for (let i = 0; !done && i < 6000; i++) {
+    tick(16.7);
+    for (const s of snaps) if (!s.done && clock.now - t0 >= s.ms) { s.done = true; await snap(s.name); }
+    await yieldNow();
+  }
+  for (const s of snaps) if (!s.done) { s.done = true; await snap(s.name); }
+}
+/** Let things that keep moving (a fly, bubbles) move on by `ms`. */
+function advance(ms) { for (let t = 0; t < ms; t += 16.7) tick(16.7); }
+
+/* ── pictures: PNG in, cover-scaled backdrop, the 3D keyed over it, PNG out ── */
+function readPNG(file) {
+  const buf = fs.readFileSync(file);
+  let pos = 8, w = 0, h = 0, depth = 0, ctype = 0, interlace = 0;
+  const idat = [];
+  while (pos + 8 <= buf.length) {
+    const len = buf.readUInt32BE(pos), type = buf.toString('ascii', pos + 4, pos + 8), data = buf.subarray(pos + 8, pos + 8 + len);
+    if (type === 'IHDR') { w = data.readUInt32BE(0); h = data.readUInt32BE(4); depth = data[8]; ctype = data[9]; interlace = data[12]; }
+    else if (type === 'IDAT') idat.push(data);
+    else if (type === 'IEND') break;
+    pos += 12 + len;
+  }
+  const ch = { 0: 1, 2: 3, 4: 2, 6: 4 }[ctype];
+  if (depth !== 8 || interlace || !ch) throw new Error('readPNG: only 8-bit, non-interlaced, non-palette PNGs: ' + file);
+  const raw = zlib.inflateSync(Buffer.concat(idat)), stride = w * ch, out = Buffer.alloc(w * h * ch);
+  let prev = Buffer.alloc(stride);
+  for (let y = 0; y < h; y++) {
+    const f = raw[y * (stride + 1)], row = raw.subarray(y * (stride + 1) + 1, (y + 1) * (stride + 1)), cur = out.subarray(y * stride, (y + 1) * stride);
+    for (let i = 0; i < stride; i++) {
+      const a = i >= ch ? cur[i - ch] : 0, b = prev[i], c = i >= ch ? prev[i - ch] : 0;
+      let v = row[i];
+      if (f === 1) v += a; else if (f === 2) v += b; else if (f === 3) v += (a + b) >> 1;
+      else if (f === 4) { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c; }
+      cur[i] = v & 255;
+    }
+    prev = cur;
+  }
+  return { W: w, H: h, ch, data: out };
+}
+/** The picture drawn with CSS `cover` into W x H, as RGB (bilinear). */
+function cover(img, W2, H2) {
+  const s = Math.max(W2 / img.W, H2 / img.H), ox = (img.W * s - W2) / 2, oy = (img.H * s - H2) / 2, out = Buffer.alloc(W2 * H2 * 3), ch = img.ch;
+  const px = (x, y, c) => { x = Math.max(0, Math.min(img.W - 1, x)); y = Math.max(0, Math.min(img.H - 1, y)); const o = (y * img.W + x) * ch; return ch < 3 ? img.data[o] : img.data[o + c]; };
+  for (let y = 0; y < H2; y++) for (let x = 0; x < W2; x++) {
+    const sx = (x + 0.5 + ox) / s - 0.5, sy = (y + 0.5 + oy) / s - 0.5, x0 = Math.floor(sx), y0 = Math.floor(sy), fx = sx - x0, fy = sy - y0;
+    for (let c = 0; c < 3; c++) {
+      const v = px(x0, y0, c) * (1 - fx) * (1 - fy) + px(x0 + 1, y0, c) * fx * (1 - fy) + px(x0, y0 + 1, c) * (1 - fx) * fy + px(x0 + 1, y0 + 1, c) * fx * fy;
+      out[(y * W2 + x) * 3 + c] = Math.round(v);
+    }
+  }
+  return { W: W2, H: H2, data: out };
+}
+const backdrops = {}, pictures = {};
+/** The backdrop for a set, by its backdrop name: <pack>-<name>.png, else <name>.png, else the theme's flat colour;
+ *  drawn with `cover` into a window w x h (default the frame's 1280 x 720). */
+function backdropFor(name, w, h) {
+  w = w || W; h = h || H;
+  const key = name + '@' + w + 'x' + h;
+  if (backdrops[key] !== undefined) return backdrops[key];
+  const dir = path.join(GAME, 'art-source', 'backdrops');
+  const file = [packId + '-' + name + '.png', name + '.png'].map(f => path.join(dir, f)).find(f => fs.existsSync(f));
+  let bg;
+  if (file) { const img = pictures[file] || (pictures[file] = readPNG(file)); bg = cover(img, w, h); bg.picture = img.W / img.H; bg.file = path.basename(file); }
+  else {
+    const hex = ((P.theme && P.theme.pageBg) || '#444444').replace('#', ''), r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
+    bg = { W: w, H: h, data: Buffer.alloc(w * h * 3) };
+    for (let i = 0; i < w * h; i++) { bg.data[i * 3] = r; bg.data[i * 3 + 1] = g; bg.data[i * 3 + 2] = b; }
+    bg.picture = FOOD.PICTURE; bg.file = null;
+    if (!backdrops['?' + name]) console.log('  no backdrop picture for "' + name + '": a flat colour');
+    backdrops['?' + name] = true;
+  }
+  return (backdrops[key] = bg);
+}
+/** The 3D scene as the game shows it now: the outline shader hulls hidden (the CPU renderer cannot run them), a
+ *  part-drawn geometry cut to what is drawn. Drawn twice, over magenta and over green, so composite() can work out
+ *  how much of each pixel is food: smoke, stink lines, a glaze and every anti-aliased edge come out as they blend
+ *  in the game, not tinted by a key colour. w x h: the window (the camera's lens is solved for its shape). */
+function render3d(w, h) {
+  w = w || W; h = h || H;
+  const { scene, camera } = world.__scene();
+  const hidden = [], cut = [];
+  scene.traverse(o => {
+    if (o.isMesh && o.material && o.material.isShaderMaterial && o.visible) { o.visible = false; hidden.push(o); }
+    else if (o.isMesh && o.geometry.index && o.geometry.drawRange.count < o.geometry.index.count) {
+      const g = o.geometry.clone(), n = Math.max(0, o.geometry.drawRange.count);
+      g.setIndex(Array.from(o.geometry.index.array.slice(0, n)));
+      cut.push([o, o.geometry]);
+      o.geometry = g;
+    }
+  });
+  const over = sky => NR.render(THREE, scene, camera, w, h, { ss: 2, sky: [sky, sky, sky] });
+  const img = { m: over('#ff00ff'), g: over('#00ff00') };
+  hidden.forEach(o => { o.visible = true; });
+  cut.forEach(([o, g]) => { o.geometry = g; });
+  return img;
+}
+// sRGB <-> linear, as the renderer blends (in linear light).
+const LIN = Array.from({ length: 256 }, (_, v) => { const c = v / 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+const SRGB = v => { v = Math.max(0, Math.min(1, v)); return Math.round((v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055) * 255); };
+/** The food over the backdrop. Over magenta (1,0,1) and green (0,1,0), a pixel with coverage a and colour F reads
+ *  a*F + (1-a)*sky, so the difference between the two pictures gives a, and the magenta one then gives a*F. */
+function composite(bg, img) {
+  const out = { W: bg.W, H: bg.H, data: Buffer.from(bg.data) }, m = img.m.data, gr = img.g.data, o = out.data;
+  for (let i = 0; i < bg.W * bg.H; i++) {
+    const k = i * 3;
+    if (m[k] === 255 && m[k + 1] === 0 && m[k + 2] === 255 && gr[k] === 0 && gr[k + 1] === 255 && gr[k + 2] === 0) continue;
+    const r1 = LIN[m[k]], g1 = LIN[m[k + 1]], b1 = LIN[m[k + 2]], r2 = LIN[gr[k]], g2 = LIN[gr[k + 1]], b2 = LIN[gr[k + 2]];
+    const a = Math.max(0, Math.min(1, ((1 - (r1 - r2)) + (1 + (g1 - g2)) + (1 - (b1 - b2))) / 3));
+    if (a <= 0.002) continue;
+    const pr = Math.max(0, r1 - (1 - a)), pg = g1, pb = Math.max(0, b1 - (1 - a));     // a*F, premultiplied
+    o[k] = SRGB(pr + (1 - a) * LIN[o[k]]);
+    o[k + 1] = SRGB(pg + (1 - a) * LIN[o[k + 1]]);
+    o[k + 2] = SRGB(pb + (1 - a) * LIN[o[k + 2]]);
+  }
+  return out;
+}
+function hline(img, y, colour, dash) {
+  if (y < 0 || y >= img.H) return;
+  for (let x = 0; x < img.W; x++) { if (dash && Math.floor(x / dash) % 2) continue; const o = (y * img.W + x) * 3; img.data[o] = colour[0]; img.data[o + 1] = colour[1]; img.data[o + 2] = colour[2]; }
+}
+function rect(img, x0, y0, x1, y1, colour) {
+  for (let x = x0; x <= x1; x++) [y0, y1].forEach(y => { if (x >= 0 && x < img.W && y >= 0 && y < img.H) { const o = (y * img.W + x) * 3; img.data[o] = colour[0]; img.data[o + 1] = colour[1]; img.data[o + 2] = colour[2]; } });
+  for (let y = y0; y <= y1; y++) [x0, x1].forEach(x => { if (x >= 0 && x < img.W && y >= 0 && y < img.H) { const o = (y * img.W + x) * 3; img.data[o] = colour[0]; img.data[o + 1] = colour[1]; img.data[o + 2] = colour[2]; } });
+}
+/** Half size, for the contact sheets. */
+function half(img) {
+  const w = img.W >> 1, h = img.H >> 1, out = { W: w, H: h, data: Buffer.alloc(w * h * 3) };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) for (let c = 0; c < 3; c++) {
+    const o = ((2 * y) * img.W + 2 * x) * 3 + c;
+    out.data[(y * w + x) * 3 + c] = (img.data[o] + img.data[o + 3] + img.data[o + img.W * 3] + img.data[o + img.W * 3 + 3]) >> 2;
+  }
+  return out;
+}
+/** Any window shape fitted into the sheet's 1280 x 720 tile (nearest pixel, dark bars round it). */
+function tile(img) {
+  if (img.W === W && img.H === H) return half(img);
+  const s = Math.min(W / img.W, H / img.H), w = Math.round(img.W * s), h = Math.round(img.H * s), ox = (W - w) >> 1, oy = (H - h) >> 1;
+  const out = { W, H, data: Buffer.alloc(W * H * 3, 40) };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const sx = Math.min(img.W - 1, Math.floor(x / s)), sy = Math.min(img.H - 1, Math.floor(y / s));
+    img.data.copy(out.data, ((oy + y) * W + ox + x) * 3, (sy * img.W + sx) * 3, (sy * img.W + sx) * 3 + 3);
+  }
+  return half(out);
+}
+/** Where a point of a backdrop picture falls on a window w x h: the picture is drawn with `cover` (world.js onScreen). */
+function onScreen(fx, fy, w, h, picture) {
+  const a = w / h, p = picture || FOOD.PICTURE;
+  return { x: (a < p ? 0.5 + (fx - 0.5) * p / a : fx) * w, y: FOOD.lineOnScreen(fy, a, p) * h };
+}
+/** The order on the counter, measured on this window: where its pixels land against the bottom of the window, the
+ *  counter line and the painted queue (spec 5.2). Every vertex of what the counter's food group draws, hulls left
+ *  out. -> { x0, x1, y0, y1, cut, above, queue } in pixels. */
+function counterFit(w, h, picture, def) {
+  const { scene, camera } = world.__scene();
+  const set = scene && scene.getObjectByName('set:counter'), F = set && set.getObjectByName('food');
+  if (!F || !F.children.length) return null;
+  F.updateMatrixWorld(true);
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, queue = false;
+  const qa = onScreen(COUNTER.queue[0], COUNTER.queue[1], w, h, picture), qb = onScreen(COUNTER.queue[2], COUNTER.queue[3], w, h, picture);
+  const v = new THREE.Vector3(), im = new THREE.Matrix4(), m = new THREE.Matrix4();
+  F.traverse(o => {
+    if (!o.isMesh || o.userData.hull || !o.visible || !o.geometry || !o.geometry.attributes.position) return;
+    for (let p = o; p && p !== F; p = p.parent) if (!p.visible) return;
+    const pos = o.geometry.attributes.position, list = [];
+    if (o.isInstancedMesh) for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, im); list.push(m.clone().multiplyMatrices(o.matrixWorld, im)); }
+    else list.push(o.matrixWorld);
+    for (const M of list) for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(M).project(camera);
+      const x = (v.x + 1) / 2 * w, y = (1 - v.y) / 2 * h;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+    }
+  });
+  const lineY = FOOD.lineOnScreen(def.line, w / h, def.picture || picture) * h;
+  queue = x1 > qa.x + 0.5;                                    // as tests/dom-play.cjs: the order's right edge past 52%
+  return { x0, x1, y0, y1, line: lineY, cut: Math.max(0, Math.ceil(y1 - h)) + Math.max(0, Math.ceil(-x0)) + Math.max(0, Math.ceil(x1 - w)),
+    above: Math.max(0, Math.round(lineY - y0)), queue, offTop: y1 <= lineY, w, h };
+}
+
+/* ── taking a picture ── */
+let n = 0, tiles = [], sheets = 0;
+const index = [], fits = [];
+/** Draw the scene as it is now. o.shape: '16x10' | '4x3' | '21x9' (a window that shape, 720 high; default 16:9). */
+/** Resize the window as the game would: world.js's resize sets the camera's shape and places the counter's order
+ *  again for it (a window that shape may show less of the counter top), then one frame draws it. */
+function windowShape(w, h) {
+  globalThis.innerWidth = w; globalThis.innerHeight = h;
+  (listeners.resize || []).forEach(fn => fn());
+  tick(1);
+}
+async function snap(name, o) {
+  if (!wanted(name)) return;
+  const shape = o && o.shape, w = shape ? Math.round(H * SHAPES[shape]) : W, h = H;
+  if (shape) windowShape(w, h);
+  tick(1);                                  // one frame, so what changed is rendered
+  if (!lastRender) { console.log('  nothing rendered yet for ' + name); return; }
+  const setName = world.set;
+  const bg = backdropFor(setName || 'counter', w, h);
+  const img = composite(bg, render3d(w, h));
+  const def = setName && world.__kit.find('sets', setName);
+  const solved = def && typeof def.line === 'number';
+  if (GUIDES && def) {
+    if (solved) {
+      const y = Math.round(FOOD.lineOnScreen(def.line, w / h, def.picture || bg.picture) * h);
+      hline(img, y, [40, 255, 60], 14);
+      NR.text(img, w - 250, y - 22, 'LINE ' + (def.line * 100).toFixed(1) + '%', 2, [40, 255, 60], [0, 0, 0]);
+    }
+    if (setName === 'counter') {
+      // Spec 5.2: the served customer stands in the quiet zone, hips at the counter line, eyes near the painted
+      // horizon; the painted queue (yellow) is never covered.
+      const eyes = onScreen(COUNTER.quiet[0], COUNTER.eyes, w, h, bg.picture), right = onScreen(COUNTER.quiet[1], COUNTER.eyes, w, h, bg.picture);
+      const hips = solved ? FOOD.lineOnScreen(def.line, w / h, def.picture || bg.picture) * h : h * 0.86;
+      rect(img, Math.round(eyes.x), Math.round(eyes.y), Math.round(right.x), Math.round(hips), [0, 220, 255]);
+      NR.text(img, Math.round(eyes.x) + 6, Math.round(eyes.y) + 6, 'CUSTOMER EYES TO HIPS', 2, [0, 220, 255], [0, 0, 0]);
+      const qa = onScreen(COUNTER.queue[0], COUNTER.queue[1], w, h, bg.picture), qb = onScreen(COUNTER.queue[2], COUNTER.queue[3], w, h, bg.picture);
+      rect(img, Math.round(qa.x), Math.round(qa.y), Math.round(qb.x), Math.round(qb.y), [255, 220, 0]);
+      NR.text(img, Math.round(qa.x) + 6, Math.round(qa.y) + 6, 'QUEUE', 2, [255, 220, 0], [0, 0, 0]);
+    }
+  }
+  let note = '';
+  if (setName === 'counter' && solved) {
+    const f = counterFit(w, h, bg.picture, def);
+    if (f) {
+      note = 'FIT ' + (shape || '16x9') + ': ' + (f.cut ? 'cut ' + f.cut + 'px off the window' : 'on screen') + ', ' + Math.round(f.x1 - f.x0) + 'x' + Math.round(f.y1 - f.y0) +
+        'px, top ' + f.above + 'px above the line, x ' + (f.x0 / w * 100).toFixed(1) + '-' + (f.x1 / w * 100).toFixed(1) + '%' +
+        (f.queue ? ', reaches the queue (right of 52% of the picture)' : '') + (f.offTop ? ', not on the counter top' : '');
+      fits.push(name + (shape ? '@' + shape : '') + '  ' + note);
+    }
+  }
+  NR.text(img, 10, h - 26, name + (shape ? ' @' + shape : ''), 2, [255, 255, 255], [27, 18, 14]);
+  const file = String(++n).padStart(2, '0') + '-' + name + (shape ? '@' + shape : '') + '.png';
+  NR.writePNG(path.join(OUT, file), img);
+  index.push(file + '  (' + (setName || '-') + (solved ? ', line ' + (def.line * 100).toFixed(1) + '%' : '') + ')' + (note ? '  ' + note : ''));
+  console.log('  ' + file + (note ? '   ' + note : ''));
+  tiles.push(tile(img));
+  if (tiles.length >= 12) flushSheet();
+  if (shape) windowShape(W, H);             // back to the 16:9 window
+  // A counter frame at every window shape the counter must work at (spec 5.2).
+  if (!shape && setName === 'counter' && (ASPECTS || /^(counter-(one|combo|twin)|giant-finale-counter)$/.test(name))) {
+    for (const s of Object.keys(SHAPES)) await snap(name, { shape: s });
+  }
+}
+function flushSheet() {
+  if (NOSHEET || !tiles.length) { tiles = []; return; }
+  const img = NR.sheet(tiles, 3);
+  NR.writePNG(path.join(OUT, 'sheet-' + String(++sheets).padStart(2, '0') + '.png'), img);
+  tiles = [];
+}
+
+/* ── sample orders: a recipe as written (every pick's normal value), or with every optional part on ── */
+function specOf(rid, o) {
+  o = o || {};
+  const R = P.recipes[rid], it = R.item || {};
+  const pickOf = name => (P.picks || {})[name] || null;
+  const val = v => (v && typeof v === 'object' && v.pick ? ((pickOf(v.pick) || {}).normal || (pickOf(v.pick) || { values: [] }).values[0] || (P.slots && P.slots[v.pick] ? P.slots[v.pick].values[0].id : undefined)) : v);
+  const spec = { recipe: rid, ing: val(it.ing), parts: [], holds: [], adds: [] };
+  if (it.size) spec.size = val(it.size);
+  if (it.done) spec.done = val(it.done);
+  (it.parts || []).filter(p => o.all || p.opt !== 'out').forEach(p => {
+    const q = { ing: val(p.ing) };
+    if (p.done) q.done = val(p.done);
+    if (p.ing && typeof p.ing === 'object') q.flavour = true;
+    if (q.ing) spec.parts.push(q);
+  });
+  if (it.slots) {
+    spec.picks = {};
+    Object.keys(it.slots).forEach(slot => {
+      const v = it.slots[slot], S = (P.slots || {})[slot], first = S && S.values && S.values[0] && S.values[0].id;
+      if (typeof v === 'string' || Array.isArray(v)) spec.picks[slot] = v;
+      else if (v && v.pick) {
+        const pk = pickOf(v.pick), normal = (pk && pk.normal) || (pk && pk.values && pk.values[0]) || first;
+        spec.picks[slot] = v.count ? Array.from({ length: v.count[0] || 1 }, () => normal) : normal;
+      }
+    });
+  }
+  if (o.picks) Object.assign(spec.picks || (spec.picks = {}), o.picks);
+  if (o.set) Object.keys(o.set).forEach(key => { if (key === 'done' || (it.done && it.done.pick === key)) spec.done = o.set[key]; });
+  return spec;
+}
+/** The right answer for a step (as tests/food.test.cjs answers), or the bad one when told to serve a gross-out. */
+function answerFor(o, q, serveGross) {
+  const want = L.expected(P, o.items[q.item], q.station, q.step);
+  const leaves = (function flat(opts) { return opts.flatMap(x => (x.row ? flat(x.row) : [x])); })(q.options || []);
+  if (q.kind === 'add') return q.gross ? (serveGross ? 'add' : 'swap') : q.have < want ? 'add' : 'skip';
+  if (q.kind === 'cook') return q.timed ? 'takeOff' : want === null ? q.options[0].id : 'cook:' + want;
+  if (q.kind === 'pick') {
+    if (q.gross) return serveGross ? 'pick:' + q.gross.value : 'swap';
+    if (q.repeat) {
+      const left = L.remaining ? L.remaining(want || [], q.picked || []) : [];
+      if (!left.length) return q.have ? 'done' : leaves.find(x => x.value !== undefined).id;
+      return leaves.find(x => x.value === left[0]).id;
+    }
+    const hit = leaves.find(x => x.value === want) || leaves.find(x => x.value !== undefined);
+    return hit.id;
+  }
+  return null;
+}
+const stepKey = q => q.kind + ':' + (q.kind === 'add' ? q.ing : q.kind === 'pick' ? (q.slot || q.of) : q.station);
+const valueOf = (q, id) => (id && id.startsWith('pick:') ? id.slice(5) : id);
+
+/** Walk one order through the line as game.js would. hooks: { before(q, made, o), after(q, made, r, o, id), mid(e, q) ->
+ *  [{ ms, name }], answer(q, o) -> id, settings, gross, ms }. Returns the order and what was made. */
+async function walk(spec, hooks) {
+  hooks = hooks || {};
+  const settings = Object.assign({ cooking: 'simple' }, hooks.settings);
+  const o = L.create(P, { customer: { id: 'x', name: 'X' }, items: [spec] }, { settings, gross: hooks.gross });
+  for (let guard = 0; o.phase === 'line' && guard < 400; guard++) {
+    const q = L.question(P, o, settings);
+    if (!q) break;
+    const made = L.made(P, o, q.item);
+    world.goTo(q.station);
+    await drive(world.showStep(q, made));
+    if (hooks.before) await hooks.before(q, made, o);
+    const id = (hooks.answer && hooks.answer(q, o)) || answerFor(o, q, hooks.serveGross);
+    if (q.kind === 'cook' && q.timed && hooks.timedTo !== undefined) {
+      // Timed: tick the clock to the wanted stage, then take it off.
+      for (let t = 0; t < 400; t++) {
+        const ev = L.tick(P, o, 0.5, settings, false) || [];
+        for (const e of ev) if (e && e.type === 'stage') { world.cookStage(e); advance(100); if (hooks.stage) await hooks.stage(e, q); }
+        const now = L.question(P, o, settings);
+        if (now && now.stage === hooks.timedTo) break;
+      }
+    }
+    const r = L.answer(P, o, id, settings);
+    if (r.refused) throw new Error('the line refused ' + id + ' at ' + q.key);
+    const after = L.made(P, o, q.item);
+    for (const e of r.events || []) await drive(world.outcome(e, after, { ms: hooks.ms || 420 }), hooks.mid ? { snapAt: hooks.mid(e, q) || [] } : null);
+    if (hooks.after) await hooks.after(q, after, r, o, id);
+  }
+  return { o, made: L.made(P, o, 0) };
+}
+async function counterOf(list, name) {
+  world.goTo('counter');
+  world.showCounter(list);
+  await snap(name);
+}
+const recipeIds = Object.keys(P.recipes || {});
+const isEvent = rid => { const R = P.recipes[rid]; return R.level === 'event' || !!(R.look && R.look.giant) || R.giant === true; };
+const everyday = recipeIds.filter(rid => !isEvent(rid));
+/** The recipe with the most on it (the fullest line). */
+const fullest = everyday.slice().sort((a, b) => ((P.recipes[b].item || {}).parts || []).length - ((P.recipes[a].item || {}).parts || []).length)[0];
+
+(async () => {
+  const t0 = Date.now();
+  await world.init();
+  world.usePack(P);
+  console.log('frames for ' + packId + ' -> ' + OUT + (FILTERS.length ? '  (only: ' + FILTERS.join(', ') + ')' : ''));
+  const seen = new Set();
+  const once = key => { if (seen.has(key)) return false; seen.add(key); return true; };
+
+  /* line: every recipe, each ingredient and each slot value pictured once, before and after its step */
+  const order = [fullest].concat(everyday.filter(r => r !== fullest));
+  for (const rid of order) {
+    await walk(specOf(rid, { all: true }), {
+      before: async q => { if (once('before:' + stepKey(q))) await snap('line-' + rid + '-' + q.station + '-' + (q.kind === 'add' ? q.ing : q.kind === 'pick' ? (q.slot || q.of) : q.kind) + '-before'); },
+      mid: (e, q) => (e.type === 'auto' && once('mid:' + (e.show || e.id)) ? [{ ms: 400, name: 'line-' + rid + '-' + q.station + '-' + (e.show || e.id) + '-mid' }] : []),
+      after: async (q, made, r, o, id) => {
+        if (q.kind === 'add' && id !== 'add') return;
+        const key = 'after:' + stepKey(q) + ':' + (q.kind === 'pick' ? valueOf(q, id) : q.kind === 'auto' ? q.key : '');
+        if (once(key)) await snap('line-' + rid + '-' + q.station + '-' + (q.kind === 'add' ? q.ing : q.kind === 'pick' ? (q.slot || q.of) + '-' + valueOf(q, id) : q.kind) + '-after');
+      },
+    }).then(({ made }) => counterOf([made], 'counter-' + rid));
+  }
+  // Every slot value not yet seen: the first recipe with that slot, with that value, pictured after the pick.
+  for (const slot of Object.keys(P.slots || {})) {
+    for (const v of P.slots[slot].values || []) {
+      if (seen.has('after:pick:' + slot + ':' + v.id)) continue;
+      const rid = everyday.find(r => ((P.recipes[r].item || {}).slots || {})[slot] !== undefined);
+      if (!rid) continue;
+      seen.add('after:pick:' + slot + ':' + v.id);
+      await walk(specOf(rid, { picks: { [slot]: v.id } }), {
+        after: async (q, made, r, o, id) => { if (q.kind === 'pick' && q.slot === slot) await snap('line-' + rid + '-' + q.station + '-' + slot + '-' + v.id + '-after'); },
+      }).then(({ made }) => counterOf([made], 'counter-' + rid + '-' + slot + '-' + v.id));
+    }
+  }
+
+  /* cook: every cooking set, every stage, Simple's run and the Timed view */
+  const cookSets = new Set();
+  Object.keys(P.stations || {}).forEach(sid => { if (P.stations[sid].steps.some(s => s.kind === 'cook')) cookSets.add(sid); });
+  const cookedIngs = new Set();
+  for (const rid of everyday) {
+    const R = P.recipes[rid];
+    const sid = R.stations.find(s => cookSets.has(s));
+    if (!sid) continue;
+    const spec = specOf(rid, { all: true });
+    const key = sid + ':' + (spec.ing || rid);
+    if (cookedIngs.has(key)) continue;
+    cookedIngs.add(key);
+    const tag = 'cook-' + (spec.ing || rid);
+    await walk(spec, {
+      before: async (q, made) => {
+        if (q.kind !== 'cook' || q.station !== sid) return;
+        await snap(tag + '-wait');
+        const names = (q.set && P.stageSets && P.stageSets[q.set] && P.stageSets[q.set].stages) || [];
+        for (let i = 0; i < names.length; i++) { world.cookStage(i); advance(300); await snap(tag + '-stage' + i + '-' + names[i]); }
+        // Back to how the step was shown, so Simple's run starts from the start.
+        await drive(world.showStep(q, made));
+      },
+      answer: (q, o) => null,
+      mid: (e, q) => (e.type === 'cooked' ? [{ ms: 110, name: tag + '-run-in' }, { ms: 300, name: tag + '-run-baking' }] : []),
+      after: async (q, made, r) => { if (q.kind === 'cook' && q.station === sid) await snap(tag + '-run-done-' + (made.done || '')); },
+      ms: 520,
+    });
+    // Timed: on the heat from the start; taken off at the wanted stage.
+    const want = spec.done || null;
+    await walk(spec, {
+      settings: { cooking: 'timed', speed: 'normal' },
+      timedTo: want,
+      before: async q => { if (q.kind === 'cook' && q.station === sid) await snap('timed-' + (spec.ing || rid) + '-start'); },
+      after: async (q, made) => { if (q.kind === 'cook' && q.station === sid) await snap('timed-' + (spec.ing || rid) + '-off-' + (made.done || '')); },
+      ms: 400,
+    });
+  }
+
+  /* gross: every gross-out on the line (Full motion), served, on the counter; then with Motion Reduced */
+  for (const E of P.gross || []) {
+    const ing = E.step === 'pick' ? null : [].concat(E.on || [])[0];
+    const rid = everyday.find(r => (E.step === 'pick' ? ((P.recipes[r].item || {}).slots || {})[E.slot] !== undefined
+      : ((P.recipes[r].item || {}).parts || []).some(p => p.ing === ing)));
+    if (!rid) { console.log('  no recipe carries the gross-out ' + E.id); continue; }
+    const spec = specOf(rid, { all: true });
+    if (E.step === 'pick') { const bad = [].concat(E.on || []).find(v => v !== 'none') || E.on[0]; spec.picks = Object.assign({}, spec.picks, { [E.slot]: bad }); }
+    const gross = E.step === 'pick' ? { item: 0, slot: E.slot, event: E.id } : { item: 0, ing, event: E.id };
+    for (const mode of ['full', 'reduced']) {
+      motion.value = mode;
+      const tag = (mode === 'full' ? 'gross-' : 'reduced-') + E.id;
+      await walk(spec, {
+        gross, serveGross: true,
+        before: async q => { if (q.gross) { advance(450); await snap(tag + '-line'); } },
+        after: async (q, made, r) => { if (mode === 'full' && q.gross) await snap(tag + '-served'); },
+      }).then(async ({ made }) => { if (mode === 'full') await counterOf([made], tag + '-counter'); });
+    }
+    motion.value = 'full';
+  }
+
+  /* giant: the event recipes on their line and the counter; the event's finale together */
+  for (const rid of recipeIds.filter(isEvent)) {
+    const stations = new Set();
+    await walk(specOf(rid), {
+      before: async q => { if (!stations.has(q.station)) { stations.add(q.station); } },
+      after: async (q, made, r, o) => {
+        const st = P.stations[q.station];
+        const last = st && st.steps && q.step === st.steps.length - 1;
+        if (last || (q.kind === 'cook')) await snap('giant-' + rid + '-' + q.station);
+      },
+    }).then(({ made }) => counterOf([made], 'giant-' + rid + '-counter'));
+  }
+  const finale = P.events && P.events.five && P.events.five.finale && P.events.five.finale.items;
+  if (finale && finale.length) {
+    const list = [];
+    for (const it of finale) { const { made } = await walk(specOf(it.recipe, { set: it.set })); list.push(made); }
+    await counterOf(list, 'giant-finale-counter');
+  }
+
+  /* counter: one item, a main with its side, two mains */
+  if (wanted('counter-one') || wanted('counter-combo') || wanted('counter-twin')) {
+    const main = everyday.find(r => !P.recipes[r].course || P.recipes[r].course === 'main') || everyday[0];
+    const side = everyday.find(r => P.recipes[r].course && P.recipes[r].course !== 'main');
+    const one = (await walk(specOf(main, { all: true }))).made;
+    await counterOf([one], 'counter-one');
+    if (side) await counterOf([one, (await walk(specOf(side))).made], 'counter-combo');
+    const other = everyday.find(r => r !== main && (!P.recipes[r].course || P.recipes[r].course === 'main'));
+    if (other) await counterOf([one, (await walk(specOf(other))).made], 'counter-twin');
+  }
+
+  /* low: Graphics Quality Low on the fullest item */
+  if (wanted('low-line') || wanted('low-cook') || wanted('low-counter')) {
+    LOW = true;
+    const sid = (P.recipes[fullest].stations || []).find(s => cookSets.has(s));
+    await walk(specOf(fullest, { all: true }), {
+      before: async q => { if (q.kind === 'cook' && q.station === sid) { world.cookStage(2); advance(200); await snap('low-cook'); } },
+      after: async (q, made, r, o) => {
+        const st = P.stations[q.station];
+        if (q.station === (P.recipes[fullest].stations || [])[0] && st && q.step === st.steps.length - 1) await snap('low-line');
+      },
+    }).then(({ made }) => counterOf([made], 'low-counter'));
+    LOW = false;
+  }
+
+  flushSheet();
+  const bad = fits.filter(f => / cut |reaches the queue|not on the counter/.test(f));
+  const summary = fits.length ? ['', 'Counter fit (spec 5.2: the order on the counter top, fully on screen, the painted queue clear): ' +
+    (fits.length - bad.length) + ' of ' + fits.length + ' frames fine'].concat(bad.map(f => '  ' + f)) : [];
+  fs.writeFileSync(path.join(OUT, 'index.txt'), index.concat(summary).join('\n') + '\n');
+  summary.forEach(s => console.log(s));
+  console.log(n + ' frames in ' + OUT + ' (' + ((Date.now() - t0) / 1000).toFixed(1) + ' s)');
+})().catch(e => { console.error(e && e.stack || e); process.exit(1); });

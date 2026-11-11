@@ -1,0 +1,6 @@
+Use case: edit an existing 2D cartoon background painting for a game (the attached image).
+Task: move ONLY the teenager in the backwards blue cap and cream jacket taking a selfie with a phone held up (the LAST person in the queue, now about 71% to 76.9% across) about 45 pixels to the LEFT, so the phone and hand end at about 74% across; they may stand a little behind the woman in the pink coat and overlap her a little. Keep this person exactly the same (same look, size, pose, outfit and floor line) and keep EVERYTHING ELSE in the picture exactly as it is: the same size (1536 x 1024), framing, perspective, colours, outlines, lighting, the other people, the furniture, the plants and every stall. Do not move, crop, zoom, re-frame, restyle or re-colour anything else.
+Where the person used to stand, paint in what is behind them so it continues naturally: the planter with flowers, the floor, the windows and the pizza stall behind them.
+Nobody stands anywhere right of 74.5% across, and nobody new is added.
+Style: exactly the picture's own style. No text. No border.
+Save the edited picture as art-source/backdrops/candidates/sushi-counter-nudge.png (1536 x 1024). Reply with the saved path. If saving into the project fails, reply with the path of the generated file.

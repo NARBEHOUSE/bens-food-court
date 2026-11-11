@@ -1,0 +1,128 @@
+/** Ben's Burger Bar - a shift: customers one at a time, each order made on the line, then
+ *  the results (DESIGN.md "What the player sees").
+ *
+ *  A shift is plain JSON with its own random numbers (s.rng), so a saved shift continues
+ *  exactly. Who comes in, what they order and where the gross-outs fall are decided here,
+ *  from the pack: at most pack.grossMax gross-outs a shift, never on the first order, never
+ *  two on one order, and only on an ingredient the ticket wants.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory(require('./rng.js'), require('./orders.js'), require('./line.js'), require('./judge.js'));
+  } else {
+    const B = root.BB = root.BB || {};
+    B.shift = factory(B.rng, B.orders, B.line, B.judge);
+  }
+})(typeof window === 'undefined' ? globalThis : window, function (R, O, L, J) {
+  'use strict';
+
+  const VERSION = 1;
+  /** Customers who can come in: the ones whose pictures exist. */
+  const castOf = pack => (pack.regulars || []).filter(c => c.art);
+  /** Recipes on offer in a build: everything up to its milestone. */
+  const recipesFor = (pack, milestone) => Object.keys(pack.recipes).filter(r => (pack.recipes[r].milestone || 0) <= milestone);
+  const regular = (pack, id) => (pack.regulars || []).find(c => c.id === id);
+
+  /** opts = { seed, settings: { cooking, speed, orders, shiftLength }, milestone | recipes, tutorial } */
+  function create(pack, opts) {
+    opts = opts || {};
+    const settings = Object.assign({ cooking: 'simple', speed: 'verySlow', orders: 'usual', shiftLength: 5 }, opts.settings);
+    const s = {
+      v: VERSION, pack: pack.id, packVersion: pack.version, rng: R.seed(opts.seed || 1), seed: opts.seed || 1,
+      settings, tutorial: !!opts.tutorial,
+      recipes: opts.recipes || recipesFor(pack, opts.milestone || 2),
+      length: opts.tutorial ? 1 : Math.max(1, +settings.shiftLength || 5),
+      n: 0, queue: [], grossPlan: [], results: [], coins: 0, order: null, done: false,
+    };
+    if (s.tutorial) { s.queue = [pack.tutorial.customer]; s.grossPlan = [false]; return s; }
+    // Everyone once before anyone twice, and never the same customer twice in a row.
+    const cast = castOf(pack).map(c => c.id);
+    while (s.queue.length < s.length) {
+      const round = R.shuffle(s, cast.slice());
+      if (s.queue.length && round.length > 1 && round[0] === s.queue[s.queue.length - 1]) round.push(round.shift());
+      s.queue.push(...round);
+    }
+    s.queue.length = s.length;
+    let left = pack.grossMax || 0;
+    for (let i = 0; i < s.length; i++) {
+      const hit = i > 0 && left > 0 && R.chance(s, pack.grossRate || 0);
+      s.grossPlan.push(hit);
+      if (hit) left -= 1;
+    }
+    return s;
+  }
+
+  /** Where a planned gross-out lands: one wanted ingredient that some event can happen to. */
+  function placeGross(pack, s, items) {
+    const spots = [];
+    items.forEach((spec, i) => {
+      for (const sid of pack.recipes[spec.recipe].stations) {
+        for (const step of pack.stations[sid].steps) {
+          if (step.kind !== 'add' || !spec.parts.some(p => p.ing === step.ing)) continue;
+          if ((pack.gross || []).some(g => g.on.includes(step.ing))) spots.push({ item: i, ing: step.ing });
+        }
+      }
+    });
+    if (!spots.length) return null;
+    const spot = R.pick(s, spots);
+    const event = R.pick(s, pack.gross.filter(g => g.on.includes(spot.ing))).id;
+    return { item: spot.item, ing: spot.ing, event };
+  }
+
+  /** The customer the ticket carries (only what scoring and speech need, so a save is small). */
+  function ticketCustomer(C) {
+    const out = { id: C.id, name: C.name };
+    ['tipScale', 'threeStarScale', 'favourite'].forEach(k => { if (C[k] !== undefined) out[k] = C[k]; });
+    return out;
+  }
+
+  /** The next customer walks up: their ticket goes on the line. */
+  function next(pack, s) {
+    if (s.done) return null;
+    if (s.order) return s.order;
+    const C = regular(pack, s.queue[s.n]);
+    let items, gross = null;
+    if (s.tutorial) {
+      items = pack.tutorial.items.map(t => O.hold(O.resolve(pack, t.recipe, s, { change: 0, set: t.set }), t.hold));
+      gross = pack.tutorial.gross ? Object.assign({}, pack.tutorial.gross) : null;
+    } else {
+      items = O.order(pack, s, { customer: C, style: s.settings.orders, recipes: s.recipes });
+      if (s.grossPlan[s.n]) gross = placeGross(pack, s, items);
+    }
+    s.order = L.create(pack, { customer: ticketCustomer(C), items }, { gross, tutorial: s.tutorial, settings: s.settings });
+    return s.order;
+  }
+
+  const answer = (pack, s, id) => (s.order ? L.answer(pack, s.order, id, s.settings) : { refused: true });
+  const tick = (pack, s, dt) => (s.order ? L.tick(pack, s.order, dt, s.settings) : []);
+  const question = (pack, s) => (s.order ? L.question(pack, s.order, s.settings) : null);
+
+  /** After Serve: the rating, the tip, and on to the next customer (or the end). */
+  function serve(pack, s) {
+    const o = s.order;
+    if (!o || o.phase !== 'served') return null;
+    const r = J.score(pack, o);
+    const result = {
+      customer: o.ticket.customer.id, name: o.ticket.customer.name, recipes: o.items.map(it => it.spec.recipe),
+      stars: r.stars, count: r.count, tip: r.tip, favourite: r.favourite,
+      grossServed: o.items.reduce((k, it) => k + it.gross.length, 0), swaps: o.items.reduce((k, it) => k + it.swaps, 0),
+    };
+    s.results.push(result);
+    s.coins += r.tip;
+    s.n += 1;
+    s.last = { order: o, score: r };
+    s.order = null;
+    s.done = s.n >= s.length;
+    return Object.assign({ mistakes: r.mistakes }, result);
+  }
+
+  function results(s) {
+    return {
+      orders: s.results.length, coins: s.coins, stars: s.results.map(r => r.stars),
+      threeStars: s.results.filter(r => r.stars === 3).length,
+      best: s.results.reduce((b, r) => (!b || r.stars > b.stars ? r : b), null),
+    };
+  }
+
+  return { VERSION, create, next, answer, tick, question, serve, results, castOf, recipesFor, placeGross };
+});

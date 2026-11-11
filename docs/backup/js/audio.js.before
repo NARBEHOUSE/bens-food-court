@@ -1,0 +1,98 @@
+/** Ben's Burger Bar - sound effects and the characters' voices (DESIGN.md "Voices and the script").
+ *
+ *  A line plays its recording when one exists for these exact words (packs/diner/voice/
+ *  manifest.js keeps the hash of the words each clip was made from); otherwise text to
+ *  speech says it, pitched for the character. Character Voices: Voices and Captions /
+ *  Captions Only (the caption stays up for reading time) / Off. An order is played from
+ *  its recorded parts only when every part is recorded, so one sentence never mixes two
+ *  voices. Sound effects are WAV files played through the hub's SafeAudio.
+ */
+(function () {
+  'use strict';
+  const pack = BBPacks.diner, SC = BB.script;
+  const SOUNDS = ['plop', 'squirt', 'swoosh', 'toss', 'sizzle', 'flip', 'tick', 'ding', 'kaching', 'stars', 'buzz', 'ew'];
+  const manifest = () => (window.BBVoice && BBVoice.diner) || {};
+  const vm = () => window.NarbeVoiceManager || null;
+  let current = null;              // { audio | ticket | timer, resolve }
+
+  function init() {
+    // Our own names: preloading a hub built-in name with a URL would shadow it (ACCESSIBILITY.md §5).
+    if (window.SafeAudio) SOUNDS.forEach(n => { try { SafeAudio.preload('bb-' + n, 'packs/diner/sound/' + n + '.wav'); } catch (e) { /* optional */ } });
+  }
+  function sfx(name, vol) {
+    if (!BB.save.get('sfx') || !window.SafeAudio) return;
+    try { SafeAudio.play('bb-' + name, vol === undefined ? 0.5 : vol); } catch (e) { /* sound is optional */ }
+  }
+
+  const person = id => (pack.manager && pack.manager.id === id ? pack.manager : (pack.regulars || []).find(c => c.id === id)) || null;
+  const readingTime = text => Math.max(1300, String(text).length * 62);
+
+  function stop() {
+    const c = current;
+    current = null;
+    if (!c) return;
+    try { if (c.audio) { c.audio.pause(); c.audio.src = ''; } } catch (e) { /* gone */ }
+    try { if (c.ticket) c.ticket.cancel(); } catch (e) { /* gone */ }
+    clearTimeout(c.timer);
+    c.resolve({ stopped: true });
+  }
+
+  /** Text to speech in a character's pitch, at the player's own rate scaled by theirs. */
+  function tts(who, words, resolve, slot) {
+    const v = vm(), P = person(who);
+    if (!v || !v.getSettings().ttsEnabled) { slot.timer = setTimeout(() => resolve({ silent: true }), readingTime(words)); return; }
+    const t = (P && P.tts) || {};
+    const base = v.getSettings().rate || 1;
+    const ticket = v.speak(words, { pitch: t.pitch || 1, rate: Math.max(0.5, Math.min(2, base * (t.rate || 1))) });
+    slot.ticket = ticket;
+    ticket.finished.then(() => resolve({ tts: true }));
+  }
+
+  /** Play files one after another (an order said in parts). */
+  function playFiles(files, slot, resolve, fail) {
+    let k = 0;
+    const next = () => {
+      if (current !== slot) return;
+      if (k >= files.length) { resolve({ recorded: true }); return; }
+      const a = new Audio('packs/diner/voice/' + files[k++]);
+      slot.audio = a;
+      const guard = setTimeout(() => fail(), 15000);
+      a.onended = () => { clearTimeout(guard); setTimeout(next, k < files.length ? 90 : 0); };
+      a.onerror = () => { clearTimeout(guard); fail(); };
+      const p = a.play();
+      if (p && p.catch) p.catch(() => { clearTimeout(guard); fail(); });
+    };
+    next();
+  }
+
+  /** Say something as a character. line = { who, text, clip? } or { who, text, parts: [{ clip, text }] }.
+   *  Resolves when it has been said (or shown for reading time), so scenes can wait for it. */
+  function say(line) {
+    stop();
+    const mode = BB.save.get('characterVoices');
+    if (mode === 'off' || !line || !line.text) return Promise.resolve({ skipped: true });
+    const words = SC.clean(line.text);
+    return new Promise(resolve => {
+      const slot = { resolve };
+      current = slot;
+      const done = r => { if (current === slot) current = null; resolve(r || {}); };
+      if (mode === 'captions') { slot.timer = setTimeout(() => done({ captions: true }), readingTime(words)); return; }
+      const M = manifest();
+      let files = null;
+      if (line.parts) {
+        const each = line.parts.map(p => SC.recording(M, p.clip, p.text));
+        files = each.every(Boolean) ? each : null;
+      } else if (line.clip) {
+        const f = SC.recording(M, line.clip, line.text);
+        files = f ? [f] : null;
+      }
+      if (files) playFiles(files, slot, done, () => { if (current === slot) tts(line.who, words, done, slot); });
+      else tts(line.who, words, done, slot);
+    });
+  }
+
+  /** Is a line recorded with these words? (for the voice tool's report and the tests) */
+  const recorded = (clip, text) => !!SC.recording(manifest(), clip, text);
+
+  BB.audio = { init, sfx, say, stop, recorded, busy: () => !!current };
+})();

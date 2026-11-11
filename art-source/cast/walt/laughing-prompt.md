@@ -1,0 +1,9 @@
+# Grandpa Walt — Laughing
+
+Generated with the built-in image_gen tool.
+
+Use case: stylized-concept. Asset type: full-body character pose for a 2D comedy diner game, one character on pure white, PNG 1024 x 1536.
+Input image 1 is the APPROVED neutral character model of GRANDPA WALT. Copy his design EXACTLY: same face structure, nose, bushy white eyebrows, white hair, hearing aid, age spots, body shape and proportions, straw boater hat with red band, burgundy-and-cream vintage letterman jacket, blue-and-cream checked shirt, red suspenders, brown cuffed trousers, bright white sneakers, wooden cane, exact palette, thick clean even black outlines and shading style. Change ONLY pose and facial expression.
+LAUGHING: Walt is doubled over laughing while standing, bending strongly forward at his waist, one hand pressed to his belly and the other hand slapping his knee. Both eyes squeezed tightly shut, open laughing mouth, visible tears of laughter. The pose must read immediately in silhouette. Retain the wooden cane tucked under his upper arm so both hands can perform the specified gesture. Exactly two arms and hands.
+He is about 85, small and stooped, cheerful and nostalgic, wants everything the way they made it in 1955. Adult dry comedy, never cute or babyish. Original TV-cartoon style, flat bright colours with ONE hard-edged cel-shadow tone per colour, simple bold shapes, large head and hands matching reference. No gradients.
+Full body including entire hat and both shoes, facing viewer and turned very slightly toward viewer's right. Centre the figure and fill approximately 88% of image height, with clear margins all round despite bent pose. Nothing cropped. Pure white background, no floor, no cast shadow, no border, no text, no extra objects, no extra characters. Preserve every costume and character-design detail from reference.

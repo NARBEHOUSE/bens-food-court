@@ -1,0 +1,16 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Scene: inside Ben's Burritos, a bright taco-truck-style burrito stall, one of the restaurants in a cheerful shopping-mall food court, seen from BEHIND its serving counter,
+looking out past the counter at the food court: tables and chairs, other storefronts far away, a big skylight, eye level
+about 1.6 m. Restaurant decor framing the view: papel picado banners in bright colours, a wall of hot sauce bottles, a striped serape draped on the counter edge, cactus pots, a chalk menu with drawings (no words).
+Composition (percent of the image):
+- Left 10% to 55%: keep this area visually quiet (a plain wall and an empty table far back), because the game draws the
+  current customer standing here, large, on top of the picture.
+- Right 55% to 85%, middle distance: a short queue of three waiting customers, small, SHARP and in focus like everything
+  else: a construction worker with a lunchbox, a woman in a sun hat, a man fanning his mouth after hot sauce. Original, funny designs.
+- Bottom 22%: just the floor (the game draws the counter top here, on top of the picture).
+Hidden funny details, small but findable: a cactus wearing a tiny sombrero hat; a fire extinguisher next to the hottest sauce; a chili pepper with a smoke cloud above it; a pinata shaped like an avocado.
+Everything sharp, nothing blurred. No text anywhere except what the details ask for. No border.
+Style: original 2D cartoon background painting for a comedy diner game, matching a TV-cartoon look: clean dark outlines, flat bright colours with simple hard-edged shading, gently exaggerated shapes, warm and inviting, slightly absurd. No people in the foreground. It is ORIGINAL and must not resemble any existing show, restaurant or brand; no real logos.
+Save as art-source/backdrops/burrito-counter.png (1536 x 1024) and the prompt as art-source/backdrops/burrito-counter-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

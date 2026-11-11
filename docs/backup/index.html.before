@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ben's Burger Bar</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../../../shared/scan-status-badge.css">
+<link rel="stylesheet" href="css/bb.css">
+<link rel="icon" type="image/png" sizes="32x32" href="../../../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../../../images/favicon-16.png">
+</head>
+<body data-scene="counter" data-motion="full" data-text="normal">
+<!-- The guided line (DESIGN.md): a 2D cartoon stage, 3D food, and every choice on a real
+     object in the diner. Layers, back to front: backdrop, customer, the 3D canvas (the
+     counter hides the customer's legs), Mitch, the real objects, the line's controls. -->
+<div id="stage">
+  <div id="backdrop"></div>
+  <img id="customer" alt="" aria-hidden="true">
+  <div id="canvasWrap"></div>
+  <img id="mitch" alt="" aria-hidden="true">
+  <div id="wheel" class="prop"></div>
+  <div id="back5" class="prop pick"><img alt="" aria-hidden="true"><span class="lb">Pause</span></div>
+  <div id="register" class="prop"><img alt="" aria-hidden="true"><span class="lb">Ring It Up</span></div>
+  <div id="bell" class="prop"><img alt="" aria-hidden="true"><span class="lb">Next Customer</span></div>
+  <div id="gauge" aria-hidden="true"></div>
+  <div id="controls"></div>
+  <div id="receipt" aria-live="polite"></div>
+  <div id="hud" aria-hidden="true"></div>
+  <div id="bubble" aria-live="polite"><b></b><span></span></div>
+</div>
+<div id="scanFrame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div id="choiceStatus"></div>
+<div id="overlay"></div>
+<div id="fade"></div>
+<div id="holdRing" aria-hidden="true"><i></i><span>Keep holding to pause</span></div>
+<div id="loading">Warming up the grill…</div>
+
+<!-- Hub shared modules first, in the hub's order (ACCESSIBILITY.md §5). -->
+<script src="../../../shared/safe-audio.js" onerror="console.warn('safe-audio.js missing')"></script>
+<script src="../../../shared/platform.js"></script>
+<script src="../../../shared/graphics-quality.js"></script>
+<script src="../../../shared/scan-status-badge.js"></script>
+<script src="../../../shared/choice-scan.js"></script>
+<script src="../../../shared/voice-manager.js" onerror="console.warn('voice-manager.js missing')"></script>
+<script src="../../../shared/communication-channel.js"></script>
+<script src="../../../shared/communication-speech.js"></script>
+<script src="../../../shared/ios-audio-fix.js" onerror="console.warn('ios-audio-fix.js missing')"></script>
+<script src="../../../shared/scan-manager.js" onerror="console.warn('scan-manager.js missing')"></script>
+<script src="../../../shared/choice-scan-adapter.js"></script>
+
+<script src="js/vendor/three.min.js"></script>
+<!-- The rules: pure, no DOM - the same files the Node tests run. -->
+<script src="js/core/rng.js"></script>
+<script src="js/core/orders.js"></script>
+<script src="js/core/line.js"></script>
+<script src="js/core/judge.js"></script>
+<script src="js/core/words.js"></script>
+<script src="js/core/script.js"></script>
+<script src="js/core/shift.js"></script>
+<script src="js/core/progress.js"></script>
+<script src="js/core/savefmt.js"></script>
+<!-- The diner: its data, its lines, and what has been drawn and recorded. -->
+<script src="packs/diner/pack.js"></script>
+<script src="packs/diner/script.js"></script>
+<script src="packs/diner/art/manifest.js" onerror="console.warn('no art manifest')"></script>
+<script src="packs/diner/voice/manifest.js" onerror="console.warn('no voice manifest yet: every line uses text to speech')"></script>
+<!-- The show. -->
+<script src="js/save.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/stage.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

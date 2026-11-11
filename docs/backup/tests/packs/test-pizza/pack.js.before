@@ -1,0 +1,76 @@
+/** Ben's Burger Bar - a test-only pizzeria (pack version 2).
+ *
+ *  Proof that a new restaurant is a new pack (DESIGN.md "Built into the engine, not the
+ *  burger"): different stations, a pizza built on the prep table and then baked whole in
+ *  the oven, its own gross-out and its own cast, with no code in js/core/ that knows about
+ *  any of it. It lives under tests/, so it is never published or downloaded with the game.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBPacks = root.BBPacks || {}).testPizza = data;
+})(typeof window === 'undefined' ? globalThis : window, {
+  id: 'test-pizza',
+  version: 2,
+  name: 'Test Pizzeria',
+
+  stageSets: {
+    bake: { stages: ['raw', 'golden', 'crispy', 'charred'], choose: ['golden', 'crispy'] },
+  },
+  stageNames: { raw: 'Raw', golden: 'Golden', crispy: 'Crispy', charred: 'Charred' },
+  cookSpeeds: { verySlow: 10, slow: 6, normal: 3 },
+  wantedScale: 2,
+  sizeSets: {},
+
+  ingredients: {
+    pizza:      { name: 'Pizza', stages: 'bake', look: { shape: 'plate' } },
+    dough:      { name: 'Dough', look: { shape: 'disc', colour: 0xf3dfa8 } },
+    sauce:      { name: 'Tomato Sauce', sauce: true, look: { shape: 'sauce', colour: 0xc8231a } },
+    mozzarella: { name: 'Mozzarella', look: { shape: 'slice', colour: 0xfff6dc } },
+    pepperoni:  { name: 'Pepperoni', look: { shape: 'chips', colour: 0xb02a1a } },
+    peppers:    { name: 'Peppers', look: { shape: 'rings', colour: 0x3aa043 } },
+    basil:      { name: 'Basil', look: { shape: 'leaf', colour: 0x2f8a2a } },
+  },
+
+  stations: {
+    prep: {
+      name: 'Prep Table', backdrop: 'prep', redo: 'Redo the Toppings', builds: { on: 'pizza', base: 'dough' },
+      steps: ['sauce', 'mozzarella', 'pepperoni', 'peppers', 'basil'].map(ing => ({ kind: 'add', ing })),
+    },
+    oven: { name: 'Oven', backdrop: 'oven', redo: 'Bake Again', steps: [{ kind: 'cook' }] },
+  },
+
+  picks: { bake: { values: ['golden', 'crispy'], normal: 'golden' } },
+  recipes: {
+    margherita: {
+      name: 'Margherita', plural: 'Margheritas', price: 8, unlock: 0, milestone: 2, stations: ['prep', 'oven'],
+      item: { ing: 'pizza', done: { pick: 'bake' }, parts: [
+        { ing: 'dough' }, { ing: 'sauce' }, { ing: 'mozzarella' }, { ing: 'basil', opt: 'in' }] },
+    },
+    pepperoni: {
+      name: 'Pepperoni Pizza', plural: 'Pepperoni Pizzas', price: 9, unlock: 0, milestone: 2, stations: ['prep', 'oven'],
+      item: { ing: 'pizza', done: { pick: 'bake' }, parts: [
+        { ing: 'dough' }, { ing: 'sauce' }, { ing: 'mozzarella' }, { ing: 'pepperoni' }, { ing: 'peppers', opt: 'out' }] },
+    },
+  },
+  orderStyles: {
+    simple: { items: [1, 1], change: 0.2, maxOptional: 1 },
+    usual:  { items: [1, 2], change: 0.3, more: 0.25 },
+    fancy:  { items: [1, 3], change: 0.5, more: 0.5 },
+  },
+
+  gross: [{ id: 'hair', on: ['mozzarella', 'basil'], say: '{name} with a hair on it', fx: { hair: true } }],
+  grossRate: 0.5,
+  grossMax: 1,
+
+  manager: { id: 'sal', name: 'Sal', art: 'sal' },
+  poses: {
+    customer: { arrive: 'neutral', order: 'talking', stars3: 'happy', stars2: 'annoyed', stars1: 'angry', gross: 'disgusted' },
+    manager: { idle: 'neutral', talk: 'talking' },
+  },
+  regulars: [
+    { id: 'nonna', name: 'Nonna', art: 'nonna', likes: [['margherita', 3]] },
+    { id: 'rocco', name: 'Rocco', art: 'rocco', likes: [['pepperoni', 3]], favourite: { recipe: 'pepperoni', bonus: 1 } },
+  ],
+  tutorial: { customer: 'nonna', items: [{ recipe: 'margherita', set: { bake: 'golden' } }], gross: { item: 0, ing: 'mozzarella', event: 'hair' } },
+  backdrops: {},
+});

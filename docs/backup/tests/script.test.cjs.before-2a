@@ -1,0 +1,284 @@
+/** The script: the Burger Bar's frozen script (picking lines without repeats, filling blanks,
+ *  recordings that match their words, the clips the cast needs), then the Food Court's (spec 5.5):
+ *  the moment registry, merging a restaurant's script with the cast's, clip ids, the blanks,
+ *  checks and coverage, and every finished restaurant's, the cast's and the court's scripts. */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const { golden: pack, goldenScript: script, CAST, merge, restaurants, castScript, courtScript, scriptDone, load, exists, SC, W } = require('./bot.cjs');
+const ladder = merge(require('./fixtures/ladder-pizza.js'));
+
+/* ── the Burger Bar's script (frozen) ──────────────────────────────────── */
+const customers = ['marge', 'gus', 'bev', 'vernon', 'sal'];
+
+test('every line is well formed, with unique ids per speaker', () => {
+  const seen = new Set();
+  for (const l of script.lines) {
+    assert.ok(l.id && l.who && l.moment && l.text, JSON.stringify(l));
+    const k = l.who + '/' + l.id;
+    assert.ok(!seen.has(k), 'twice: ' + k);
+    seen.add(k);
+    const blanks = (l.text.match(/\{(\w+)\}/g) || []).map(b => b.slice(1, -1));
+    if (blanks.length) assert.ok(l.each, k + ' has blanks but no each');
+    blanks.forEach(b => assert.ok(['ing', 'ings', 'want', 'name'].includes(b), k + ' unknown blank ' + b));
+    assert.ok(['customer', pack.manager.id, ...pack.regulars.map(c => c.id)].includes(l.who), k + ' unknown speaker');
+  }
+});
+
+test('the moments the Burger Bar asks for all have lines', () => {
+  const need = ['shift.start', 'shift.end', 'greet', 'react.3', 'react.2', 'react.1', 'react.gross', 'complain.extra', 'complain.unasked',
+    'complain.missing', 'complain.tooMany', 'complain.tooFew', 'complain.done', 'complain.pick', 'complain.more',
+    'after.3', 'after.1', 'after.gross', 'nearly',
+    'tutorial.intro', 'tutorial.ticket', 'tutorial.grill', 'tutorial.cook', 'tutorial.board', 'tutorial.gross', 'tutorial.review', 'tutorial.serve',
+    'tutorial.warn.extra', 'tutorial.warn.unasked', 'tutorial.warn.missing', 'tutorial.warn.tooMany', 'tutorial.warn.tooFew', 'tutorial.warn.done',
+    'tutorial.warn.gross', 'tutorial.warn.grossSkip', 'tutorial.warn.pick']
+    .concat(pack.gross.map(g => 'gross.' + g.id)).concat(pack.gross.map(g => 'complain.gross.' + g.id));
+  for (const m of need) {
+    const speakers = m.startsWith('react') || m.startsWith('complain') || m === 'greet' ? customers : [pack.manager.id];
+    for (const sp of speakers) assert.ok(SC.candidates(script, sp, m, sp === pack.manager.id ? null : 'customer').length, sp + ' has nothing for ' + m);
+  }
+});
+
+test('lines are picked without repeats until a moment runs out, own lines first; the Burger Bar keeps today\'s clip ids', () => {
+  const used = new Set();
+  let r = 0;
+  const rnd = () => ((r = (r * 9301 + 49297) % 233280) / 233280);
+  const got = [];
+  for (let k = 0; k < 6; k++) got.push(SC.pick(pack, script, 'marge', 'greet', {}, used, rnd, 'customer').line.id);
+  assert.deepStrictEqual([...new Set(got.slice(0, 3))].sort(), ['greet.1', 'greet.2', 'greet.3'], 'all three before a repeat');
+  const one = SC.pick(pack, script, 'vernon', 'complain.extra', { ing: 'pickles' }, new Set(), () => 0, 'customer');
+  assert.strictEqual(one.text, 'There are pickles on this. I said no pickles. I will be writing about this.');
+  assert.strictEqual(one.clip, 'vernon/extra.1.pickles');
+  const shared = SC.pick(pack, script, 'gus', 'complain.done', { want: 'mediumWell' }, new Set(), () => 0, 'customer');
+  assert.strictEqual(shared.text, 'I asked for medium well.');
+  assert.strictEqual(shared.clip, 'gus/customer.done.1.mediumWell', 'a shared line is filed under its kind');
+  // Merged with plainIds (the Burger Bar's own script), the same ids; the cast's lines say where they are from.
+  const merged = SC.merge(pack, Object.assign({ plainIds: true }, script), { lines: [{ id: 'greet.c1', who: 'marge', moment: 'greet', text: 'Hello again.' }] });
+  assert.strictEqual(SC.pick(pack, merged, 'vernon', 'complain.extra', { ing: 'pickles' }, new Set(), () => 0, 'customer').clip, 'vernon/extra.1.pickles');
+  assert.strictEqual(SC.pick(pack, merged, 'gus', 'complain.done', { want: 'mediumWell' }, new Set(), () => 0, 'customer').clip, 'gus/customer.done.1.mediumWell');
+  const greets = new Set();
+  for (let k = 0; k < 4; k++) greets.add(SC.pick(pack, merged, 'marge', 'greet', {}, greets, rnd, 'customer').clip);
+  assert.deepStrictEqual([...greets].sort(), ['marge/cast:greet.c1', 'marge/greet.1', 'marge/greet.2', 'marge/greet.3']);
+});
+
+test('a recording only plays while its words still match', () => {
+  const text = 'Hi, hon.';
+  const manifest = { 'marge/greet.1': { file: 'marge/greet.1.mp3', hash: SC.hash(text) } };
+  assert.strictEqual(SC.recording(manifest, 'marge/greet.1', text), 'marge/greet.1.mp3');
+  assert.strictEqual(SC.recording(manifest, 'marge/greet.1', 'Hi, hon!'), null);
+  assert.strictEqual(SC.recording(manifest, 'marge/greet.2', text), null);
+  assert.notStrictEqual(SC.hash('a'), SC.hash('b'));
+  assert.strictEqual(SC.hash('Hi, hon.'), SC.hash('Hi, hon.'));
+});
+
+test('the full clip list: every speaker, every value of a changing blank', () => {
+  const clips = SC.everyClip(pack, script, { customers });
+  const ids = new Set(clips.map(c => c.clip));
+  assert.ok(ids.has('vernon/extra.1.cheese') && ids.has('marge/missing.1.bacon'));
+  assert.ok(ids.has('mitch/hair.1.tomato') && ids.has('mitch/nearly.1.mediumWell'));
+  assert.ok(ids.has('gus/customer.done.1.rare'), 'Gus has no doneness complaints of his own, so he says the shared ones');
+  assert.ok(ids.has('vernon/customer.done.1.rare') && ids.has('vernon/done.1.rare'), 'one own line plus the shared ones, never colliding');
+  assert.ok(!ids.has('mitch/hair.1.patty') && !ids.has('mitch/customer.extra.1.patty') && ids.has('mitch/fly.1.bacon'), 'blank values come from the pack');
+  assert.ok(!ids.has('vernon/done.1.rare') || clips.find(c => c.clip === 'vernon/done.1.rare').text.includes('across the room'));
+  assert.ok(!clips.some(c => /\{|\}/.test(c.text)), 'every blank filled');
+  assert.strictEqual(clips.find(c => c.clip === 'bev/extra.1.onion').text, 'I said NO onions! This burger is running laps!');
+  console.log('clips to record:', clips.length, '(+ order parts:', W.allOrderParts(pack).length, 'per customer)');
+});
+
+/* ── the Food Court's script (spec 5.5) ────────────────────────────────── */
+test('the moment registry: every moment of spec 5.5, once, each with its speakers, files and blanks', () => {
+  const ids = SC.MOMENTS.map(m => m.id);
+  assert.strictEqual(new Set(ids).size, ids.length, 'no moment twice');
+  const spec = ['greet', 'visitor.arrive', 'order.usual', 'order.twin', 'order.dislike', 'order.gag', 'order.odd.{odd}', 'smalltalk', 'react.3', 'react.2',
+    'react.1', 'react.favourite', 'react.gross', 'complain.extra', 'complain.unasked', 'complain.missing', 'complain.tooMany', 'complain.tooFew',
+    'complain.done', 'complain.pick', 'complain.more', 'complain.gross.{gross}', 'goodbye', 'mention', 'shift.start', 'shift.end', 'uniform',
+    'tutorial.intro', 'tutorial.ticket', 'tutorial.review', 'tutorial.serve', 'tutorial.gross', 'tutorial.{station}', 'tutorial.cook.{cookStation}',
+    'tutorial.warn.extra', 'tutorial.warn.unasked', 'tutorial.warn.missing', 'tutorial.warn.tooMany', 'tutorial.warn.tooFew', 'tutorial.warn.done',
+    'tutorial.warn.pick', 'tutorial.warn.gross', 'tutorial.warn.grossSkip', 'gross.{gross}', 'nearly', 'after.3', 'after.1', 'after.gross',
+    'event.intro', 'event.celebrate', 'event.again', 'court.return', 'court.unlock', 'court.goldSign', 'court.celebrate', 'court.promoted',
+    'court.announce.open', 'court.announce.gold', 'court.chatter', 'court.cheer'];
+  assert.deepStrictEqual(ids.slice().sort(), spec.slice().sort());
+  for (const m of SC.MOMENTS) {
+    assert.ok(m.files.length && m.files.every(f => ['pack', 'cast', 'court'].includes(f)), m.id);
+    assert.ok(m.blanks.every(b => SC.BLANKS.includes(b)), m.id);
+    assert.ok(m.min >= 1 && typeof m.when === 'string', m.id);
+  }
+  assert.deepStrictEqual(SC.BLANKS, ['ing', 'ings', 'want', 'got', 'name', 'slot', 'value', 'count', 'goal', 'about']);
+  assert.deepStrictEqual(SC.MOMENTS.filter(m => m.files.includes('cast')).map(m => m.id), ['greet', 'smalltalk', 'goodbye', 'mention']);
+  // Variety (spec 5.5): three of each everyday customer moment, two of every Mitch tutorial and gross-out moment.
+  for (const id of ['greet', 'smalltalk', 'goodbye', 'react.3', 'react.2', 'react.1']) assert.strictEqual(SC.entryFor(id).min, 3, id);
+  for (const id of ['tutorial.intro', 'tutorial.prep', 'tutorial.cook.oven', 'tutorial.warn.pick', 'gross.hair']) assert.strictEqual(SC.entryFor(id).min, 2, id);
+  assert.strictEqual(SC.entryFor('tutorial.cook.oven').id, 'tutorial.cook.{cookStation}');
+  assert.strictEqual(SC.entryFor('tutorial.warn.nope'), null);
+  // No station may be called like one of the tutorial's own moments (tutorial.<station> would clash).
+  for (const w of SC.TUTORIAL_WORDS) {
+    assert.ok(require('./bot.cjs').schema.RESERVED_STATIONS.includes(w), w + ' is reserved');
+    assert.ok(ids.some(id => id === 'tutorial.' + w || id.startsWith('tutorial.' + w + '.')), w + ' is a tutorial moment');
+  }
+});
+
+test('a restaurant\'s moments: who must say what, from its pack', () => {
+  const by = Object.fromEntries(SC.moments(ladder).map(m => [m.moment, m]));
+  assert.deepStrictEqual(by['visitor.arrive'].speakers, ['reginald', 'kai']);
+  assert.deepStrictEqual(by['order.usual'].speakers, ['marge']);
+  assert.deepStrictEqual(by['order.twin'].speakers, ['gus']);
+  assert.deepStrictEqual(by['order.dislike'].speakers, ['sal', 'tony']);
+  assert.deepStrictEqual(by['order.gag'].speakers, ['tony', 'pam'], 'locals at home');
+  assert.deepStrictEqual(by['react.favourite'].speakers, ['bev']);
+  assert.deepStrictEqual(by['order.odd.salKnots'].speakers, ['sal']);
+  assert.ok(!by['order.odd.justCrust'].speakers.includes('reginald'), 'visitors never get an odd order');
+  assert.ok(by['react.3'].fallback && by['react.3'].min === 3 && by['react.3'].speakers.length === 9);
+  assert.deepStrictEqual(by['gross.skin'].blanks, ['slot', 'value'], 'a gross-out on a pick names a slot and a value');
+  assert.deepStrictEqual(by['complain.gross.hair'].blanks, ['ing', 'ings']);
+  for (const m of ['tutorial.prep', 'tutorial.oven', 'tutorial.cutter', 'tutorial.warmer', 'tutorial.cook.oven', 'tutorial.cook.warmer', 'tutorial.gross',
+    'event.intro', 'event.celebrate', 'event.again', 'uniform']) assert.deepStrictEqual(by[m].speakers, ['mitch'], m);
+  assert.ok(!by['tutorial.cook.prep'] && !by['tutorial.cook.cutter'], 'only stations that cook');
+  assert.deepStrictEqual(by.mention.speakers, [], 'anyone may gossip; nobody must');
+  // The live Burger Bar is on the ladder with its event (the Burger Eating Contest); the frozen golden copy has none.
+  assert.ok(SC.moments(merge(load('packs/diner/pack.js'))).some(m => m.moment === 'event.intro'), 'the live diner has its event');
+  assert.ok(!SC.moments(pack).some(m => m.moment.startsWith('event.')), 'no events.five, no event moments');
+  const court = Object.fromEntries(SC.courtMoments(CAST).map(m => [m.moment, m.speakers]));
+  assert.deepStrictEqual([court['court.return'], court['court.announce.open'], court['court.chatter']], [['mitch'], ['pa'], ['shopper']]);
+  assert.ok(court['court.cheer'].includes('marge') && court['court.cheer'].includes('kai') && !court['court.cheer'].includes('tony'));
+});
+
+test('merging: the pack\'s lines and the cast\'s, both the speaker\'s own; clip ids say where a line is from', () => {
+  const packScript = { lines: [
+    { id: 'react3.1', who: 'gus', moment: 'react.3', text: 'Now that is a pizza.' },
+    { id: 'react3.1', who: 'customer', moment: 'react.3', text: 'Good pizza.' },
+    { id: 'pick.1', who: 'customer', moment: 'complain.pick', each: 'want', text: 'I said {want} {slot}.' },
+  ] };
+  const castScript = { lines: [
+    { id: 'greet.c1', who: 'gus', moment: 'greet', text: 'Howdy.' },
+    { id: 'greet.c1', who: 'dale', moment: 'greet', text: 'Hey.' },        // Dale doesn't come here
+  ] };
+  const m = SC.merge(ladder, packScript, castScript);
+  assert.deepStrictEqual(m.lines.map(l => l.who + ':' + l.src), ['gus:ladderPizza', 'customer:ladderPizza', 'customer:ladderPizza', 'gus:cast']);
+  assert.strictEqual(SC.pick(ladder, m, 'gus', 'react.3', {}, null, () => 0, 'customer').clip, 'gus/ladderPizza:react3.1');
+  assert.strictEqual(SC.pick(ladder, m, 'bev', 'react.3', {}, null, () => 0, 'customer').clip, 'bev/ladderPizza:customer.react3.1');
+  assert.strictEqual(SC.pick(ladder, m, 'gus', 'greet', {}, null, () => 0, 'customer').clip, 'gus/cast:greet.c1');
+  const pick = SC.pick(ladder, m, 'vernon', 'complain.pick', { kind: 'pick', of: 'slot', slot: 'sauce', want: 'white', got: 'red' }, null, () => 0, 'customer');
+  assert.deepStrictEqual([pick.text, pick.clip], ['I said white sauce.', 'vernon/ladderPizza:customer.pick.1.sauce.white']);
+  assert.strictEqual(SC.court({ lines: [{ id: 'return.1', who: 'mitch', moment: 'court.return', text: 'x' }] }).lines[0].src, 'court');
+  assert.strictEqual(SC.clipId(SC.court({ lines: [{ id: 'return.1', who: 'mitch', moment: 'court.return', text: 'x' }] }).lines[0], 'mitch', {}), 'mitch/court:return.1');
+  assert.ok(!('src' in packScript.lines[0]), 'the files are never changed');
+});
+
+test('the blanks: slots and values, counts, stages, gross-outs on picks, and the court\'s words', () => {
+  const fill = (text, vars) => SC.fill(ladder, text, vars);
+  assert.strictEqual(fill('I said {want} {slot}, not {got}.', { kind: 'pick', of: 'slot', slot: 'sauce', want: 'white', got: 'bare' }), 'I said white sauce, not none.');
+  assert.strictEqual(fill('I said {want} {slot}.', { slot: 'crust', want: 'deepDish' }), 'I said deep dish crust.');
+  assert.strictEqual(fill('{value} {slot} with a skin.', { kind: 'gross', slot: 'sauce', value: 'red', event: 'skin' }), 'red sauce with a skin.');
+  assert.strictEqual(fill('Only {count} {ings}?', { kind: 'count', ing: 'garlic', want: 3, got: 1 }), 'Only three garlic cloves?');
+  assert.strictEqual(fill('I wanted {count}.', { kind: 'tooFew', of: 'slot', slot: 'dips', want: 2, have: 1 }), 'I wanted two.');
+  assert.strictEqual(fill('Nearly {want}.', { want: 'crispy' }), 'Nearly crispy.');
+  assert.strictEqual(fill('A hair in my {ing}.', { ing: 'mozzarella' }), 'A hair in my mozzarella.');
+  assert.strictEqual(SC.fill(null, 'Next up: {goal}. Then {name}. {count} more. {about}.', { goal: 'get all three to three stars', name: "Ben's Sushi", count: 2, about: 'the Cafe' }),
+    "Next up: get all three to three stars. Then Ben's Sushi. two more. the Cafe.");
+  assert.strictEqual(fill('{nothing} stays {ing}', {}), '{nothing} stays {ing}', 'a blank with nothing to say stays');
+});
+
+test('a mention: only another restaurant that is open, said the way a sentence names it', () => {
+  const m = SC.merge(ladder, { lines: [] }, { lines: [
+    { id: 'mention.1', who: 'gus', moment: 'mention', about: 'sushi', text: 'Went to {about}. Two of every roll. Mistakes were made.' },
+    { id: 'mention.2', who: 'gus', moment: 'mention', about: 'ladderPizza', text: 'This place.' },
+  ] });
+  const ctx = { here: 'ladderPizza', open: ['ladderPizza', 'diner', 'cafe'], said: { sushi: "Ben's Sushi" } };
+  assert.strictEqual(SC.pickMention(ladder, m, 'gus', ctx, new Set(), () => 0), null, 'the sushi place is shut, and never this one');
+  const r = SC.pickMention(ladder, m, 'gus', Object.assign({}, ctx, { open: ctx.open.concat(['sushi']) }), new Set(), () => 0);
+  assert.deepStrictEqual([r.text, r.about, r.clip], ["Went to Ben's Sushi. Two of every roll. Mistakes were made.", 'sushi', 'gus/cast:mention.1']);
+});
+
+/** A script that says every moment a pack needs, as often as it must. */
+function complete(p) {
+  const lines = [];
+  for (const m of SC.moments(p)) {
+    if (m.fallback) lines.push({ id: m.moment + '.f', who: 'customer', moment: m.moment, text: 'Anyone: ' + m.moment + '.' });
+    for (const sp of m.speakers) for (let k = 1; k <= m.min; k++) lines.push({ id: m.moment + '.' + k, who: sp, moment: m.moment, text: sp + ': ' + m.moment + ' ' + k + '.' });
+  }
+  return { lines };
+}
+function completeCourt() {
+  const lines = [];
+  for (const m of SC.courtMoments(CAST)) for (const sp of m.speakers) for (let k = 1; k <= m.min; k++) lines.push({ id: m.moment + '.' + k, who: sp, moment: m.moment, text: sp + ' ' + k + (m.blanks.length ? ' {' + m.blanks[0] + '}' : '') });
+  return { lines };
+}
+
+test('check: a complete script passes; every kind of mistake in a line is caught', () => {
+  const ok = SC.merge(ladder, complete(ladder), { lines: [{ id: 'greet.c1', who: 'marge', moment: 'greet', text: 'Morning.' }] });
+  assert.deepStrictEqual(SC.check(ladder, ok), []);
+  assert.deepStrictEqual(SC.coverage(ladder, ok), []);
+  const bad = SC.merge(ladder, { lines: [
+    { id: 'x.1', who: 'marge', moment: 'greeting', text: 'Hi.' },                               // no such moment
+    { id: 'x.2', who: 'dale', moment: 'greet', text: 'Hi.' },                                   // doesn't come here
+    { id: 'x.3', who: 'marge', moment: 'react.3', each: 'ing', text: 'Lovely {ing}.' },          // a blank react.3 doesn't have
+    { id: 'x.4', who: 'mitch', moment: 'gross.hair', text: 'A hair on the {value}.' },          // an Add gross-out has {ing}, not {value}
+    { id: 'x.5', who: 'customer', moment: 'complain.extra', text: 'No {ing}!' },                 // a changing blank but no each
+    { id: 'x.6', who: 'mitch', moment: 'tutorial.grill', text: 'The grill.' },                   // no grill here
+    { id: 'x.7', who: 'marge', moment: 'mention', about: 'sushi', text: 'Sushi.' },               // mentions live in the cast script
+    { id: 'x.8', who: 'marge', moment: 'shift.start', text: 'Open!' },                            // Mitch's moment
+    { id: 'x.9', who: 'mitch', moment: 'nearly', each: 'want', text: 'Nearly {wnat}.' },          // an unknown blank
+    { id: 'x 10', who: 'mitch', moment: 'after.3', text: 'Nice.' },                               // a space in an id
+  ] }, { lines: [
+    { id: 'x.1', who: 'marge', moment: 'greet', text: 'Hi.' },                                    // the same id as a pack line of hers
+    { id: 'x.11', who: 'marge', moment: 'react.3', text: 'Good.' },                               // a food moment in the cast script
+    { id: 'x.12', who: 'marge', moment: 'mention', text: 'Somewhere.' },                          // a mention without its restaurant
+  ] });
+  const errs = SC.check(ladder, bad).join('\n');
+  for (const want of [/unknown moment greeting/, /dale does not say greet here/, /\{ing\} is not a blank of react.3/, /\{value\} is not a blank of gross.hair/,
+    /has \{ing\} but no each/, /tutorial.grill names no station of this pack/, /mention lines live in cast scripts/, /marge does not say shift.start/,
+    /unknown blank \{wnat\}/, /id "x 10"/, /id used twice by marge/, /react.3 lines live in pack scripts/, /a mention names its restaurant/]) assert.match(errs, want);
+});
+
+test('coverage: says what each speaker still lacks, and where the pack has no fallback', () => {
+  const full = complete(ladder);
+  const drop = (pred) => SC.coverage(ladder, SC.merge(ladder, { lines: full.lines.filter(l => !pred(l)) }, null));
+  assert.deepStrictEqual(drop(l => l.who === 'kai' && l.moment === 'visitor.arrive'), [{ moment: 'visitor.arrive', who: 'kai', have: 0, min: 1, kind: 'missing' }]);
+  assert.deepStrictEqual(drop(l => l.who === 'gus' && l.id === 'react.3.3'), [{ moment: 'react.3', who: 'gus', have: 2, min: 3, kind: 'few' }]);
+  assert.deepStrictEqual(drop(l => l.who === 'customer' && l.moment === 'complain.gross.skin'), [{ moment: 'complain.gross.skin', who: 'customer', have: 0, min: 1, kind: 'fallback' }]);
+  // A customer with no line of their own for a fallback moment is covered by the pack's 'customer' lines.
+  assert.deepStrictEqual(drop(l => l.who === 'pam' && l.moment === 'complain.more'), []);
+  assert.deepStrictEqual(drop(l => l.who === 'mitch' && l.id === 'tutorial.cook.oven.2'), [{ moment: 'tutorial.cook.oven', who: 'mitch', have: 1, min: 2, kind: 'few' }]);
+});
+
+test('the court\'s script: a complete one passes; the cast script holds only lines that work anywhere', () => {
+  const court = completeCourt();
+  assert.deepStrictEqual(SC.checkCourt(CAST, court), []);
+  assert.deepStrictEqual(SC.courtCoverage(CAST, court), []);
+  const bad = { lines: [{ id: 'a', who: 'pa', moment: 'court.return', text: 'x' }, { id: 'b', who: 'mitch', moment: 'court.unlock', text: '{goal}' },
+    { id: 'c', who: 'tony', moment: 'court.cheer', text: 'Bravo!' }, { id: 'd', who: 'mitch', moment: 'greet', text: 'Hi' }] };
+  const errs = SC.checkCourt(CAST, bad).join('\n');
+  for (const want of [/pa does not say court.return/, /\{goal\} is not a blank of court.unlock/, /greet lines live in pack scripts or cast scripts/]) assert.match(errs, want);
+  assert.ok(!/tony/.test(errs), 'any customer of the cast may cheer');
+  assert.deepStrictEqual(SC.courtCoverage(CAST, { lines: court.lines.filter(l => l.who !== 'pa') }).map(x => x.moment), ['court.announce.open', 'court.announce.gold']);
+  const cast = { lines: [{ id: 'g.1', who: 'marge', moment: 'greet', text: 'Hi.' }, { id: 'g.2', who: 'mitch', moment: 'greet', text: 'Hi.' },
+    { id: 'm.1', who: 'gus', moment: 'mention', about: 'mars', text: 'Mars.' }, { id: 'r.1', who: 'gus', moment: 'react.3', text: 'Good.' }] };
+  const cerrs = SC.checkCast(CAST, cast, ['diner', 'pizza']).join('\n');
+  for (const want of [/mitch does not say greet/, /about mars is not a restaurant/, /react.3 lines live in pack scripts/]) assert.match(cerrs, want);
+});
+
+/* ── every restaurant's script, the cast's and the court's ─────────────── */
+for (const R0 of restaurants()) {
+  test(R0.id + ': its script (with the cast\'s lines) is well formed and covers every moment for every speaker', t => {
+    if (R0.error) assert.fail(R0.id + ' does not load: ' + R0.error);
+    if (!scriptDone(R0.pack)) { t.skip('format < 3: the script is not finished yet (set format: 3 when it is)'); return; }
+    assert.deepStrictEqual(SC.check(R0.pack, R0.script), []);
+    const missing = SC.coverage(R0.pack, R0.script).map(x => x.kind + ' ' + x.moment + ' ' + x.who + (x.kind === 'few' ? ' (' + x.have + ' of ' + x.min + ')' : ''));
+    assert.deepStrictEqual(missing, []);
+  });
+}
+
+test('the cast script (packs/cast/script.js), when it exists, holds only lines that work anywhere', t => {
+  const cs = castScript();
+  if (!cs) { t.skip('packs/cast/script.js is not written yet'); return; }
+  const court = exists('packs/court/court.js') ? load('packs/court/court.js') : null;
+  const ids = court ? court.restaurants.map(r => r.pack) : null;
+  assert.deepStrictEqual(SC.checkCast(CAST, cs, ids), []);
+});
+
+test('the court script (packs/court/script.js), when it exists, is well formed; covered once it says format 3', t => {
+  const cs = courtScript();
+  if (!cs) { t.skip('packs/court/script.js is not written yet'); return; }
+  assert.deepStrictEqual(SC.checkCourt(CAST, cs), []);
+  if (+cs.format >= 3) assert.deepStrictEqual(SC.courtCoverage(CAST, cs), []);
+});

@@ -1,0 +1,134 @@
+/** Words: tickets, order parts for recorded voices, the review's description, step labels,
+ *  receipt lines and saved settings. */
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert');
+const { diner: pack, O, L, S, W, R, F, right, play } = require('./bot.cjs');
+
+const spec = (recipe, ctx) => O.resolve(pack, recipe, { rng: R.seed(1) }, Object.assign({ change: 0 }, ctx));
+const ticket = items => ({ customer: { id: 'x', name: 'X' }, items });
+
+test('customers order the way people do', () => {
+  assert.strictEqual(W.said(pack, ticket([spec('cheeseburger', { set: { doneness: 'mediumWell' } })])), 'Cheeseburger, medium well.');
+  assert.strictEqual(W.said(pack, ticket([O.hold(spec('baconCheeseburger'), ['onion'])])), 'Bacon Cheeseburger, medium, no onions.');
+  const one = spec('hamburger', { set: { doneness: 'rare' } });
+  assert.strictEqual(W.said(pack, ticket([one, JSON.parse(JSON.stringify(one))])), 'Two Hamburgers, rare.');
+  assert.strictEqual(W.said(pack, ticket([spec('cheeseburger'), spec('hamburger')])), 'Cheeseburger, medium and Hamburger, medium.');
+  const simple = O.resolve(pack, 'hamburger', { rng: R.seed(4) }, { style: 'simple', change: 0 });
+  assert.match(W.said(pack, ticket([simple])), /with just \w+ and \w+\./);
+});
+
+test('the ticket spells out every patty and everything that goes on, in the line\'s order', () => {
+  assert.strictEqual(W.ticket(pack, ticket([spec('cheeseburger', { set: { doneness: 'mediumWell' } })])),
+    'Cheeseburger: one patty, medium well, with cheese, lettuce, tomato, pickles and ketchup.');
+  assert.strictEqual(W.ticket(pack, ticket([O.hold(spec('baconCheeseburger'), ['onion'])])),
+    'Bacon Cheeseburger: one patty, medium, with cheese, bacon, lettuce, tomato and ketchup.');
+  const one = spec('hamburger', { set: { doneness: 'rare' } });
+  assert.strictEqual(W.ticket(pack, ticket([one, JSON.parse(JSON.stringify(one))])),
+    'Two Hamburgers, each: one patty, rare, with lettuce, tomato, pickles and ketchup.');
+  assert.strictEqual(W.ticket(pack, ticket([spec('doubleCheeseburger'), spec('hamburger')])),
+    'Double Cheeseburger: two patties, medium, with cheese, lettuce, pickles, onion, ketchup and mustard. ' +
+    'Hamburger: one patty, medium, with lettuce, tomato, pickles and ketchup.');
+  const bare = O.hold(spec('hamburger'), ['lettuce', 'tomato', 'pickles', 'ketchup']);
+  assert.strictEqual(W.item(pack, bare), 'Hamburger: one patty, medium, nothing else on it');
+});
+
+test('the ticket lists exactly what the line expects, for any order', () => {
+  for (let seed = 1; seed <= 300; seed++) {
+    const s = S.create(pack, { seed, settings: { orders: ['simple', 'usual', 'fancy'][seed % 3], shiftLength: 4 } });
+    while (!s.done) {
+      const o = S.next(pack, s);
+      o.items.forEach((item, i) => {
+        const sp = W.spelled(pack, item.spec);
+        for (const sid of L.stationsOf(pack, item)) {
+          pack.stations[sid].steps.forEach((st, n) => {
+            if (st.kind !== 'add') return;
+            const want = L.expected(pack, item, sid, n) || 0, word = W.lower(W.name(pack, st.ing));
+            if ((st.max || 1) > 1) assert.ok(sp.cooked.some(c => c.startsWith(W.NUMBER[want] + ' ')), 'seed ' + seed + ' item ' + i + ': ' + want + ' ' + st.ing + ' not on ' + JSON.stringify(sp));
+            else assert.strictEqual(sp.on.includes(word), want > 0, 'seed ' + seed + ' item ' + i + ': ' + st.ing + ' (wanted ' + want + ') vs ' + JSON.stringify(sp.on));
+          });
+        }
+      });
+      play(pack, s, (q, ord) => right(pack, ord, q));
+    }
+  }
+});
+
+test('every order part any order needs is in the recording list, with the same words', () => {
+  const all = new Map(W.allOrderParts(pack).map(p => [p.id, p.text]));
+  for (let seed = 1; seed <= 400; seed++) {
+    const s = S.create(pack, { seed, settings: { orders: ['simple', 'usual', 'fancy'][seed % 3], shiftLength: 5 } });
+    while (!s.done) {
+      const o = S.next(pack, s);
+      for (const part of W.orderParts(pack, o.ticket)) {
+        assert.ok(all.has(part.id), 'missing part ' + part.id);
+        assert.strictEqual(all.get(part.id), part.text);
+      }
+      play(pack, s, (q, ord) => right(pack, ord, q));
+    }
+  }
+});
+
+test('the parts say the same order as the customer does', () => {
+  const t = ticket([O.hold(spec('baconCheeseburger', { set: { doneness: 'well' } }), ['onion', 'tomato'])]);
+  assert.deepStrictEqual(W.orderParts(pack, t).map(p => p.text), ['Bacon Cheeseburger', 'well done', 'no onions', 'no tomatoes']);
+  assert.strictEqual(W.said(pack, t), 'Bacon Cheeseburger, well done, no onions, no tomatoes.');
+});
+
+test('the review describes what was made, never whether it is right', () => {
+  const o = L.create(pack, ticket([spec('cheeseburger')]), { settings: {}, gross: { item: 0, ing: 'cheese', event: 'mouldy' } });
+  L.answer(pack, o, 'add', {}); L.answer(pack, o, 'add', {}); L.answer(pack, o, 'skip', {}); L.answer(pack, o, 'cook:rare', {});
+  for (const id of ['add', 'skip', 'add', 'skip', 'skip', 'add', 'skip', 'skip', 'skip']) L.answer(pack, o, id, {});
+  const said = W.made(pack, L.made(pack, o, 0), o.items[0].spec);
+  assert.strictEqual(said, 'Cheeseburger: two patties, rare, with the green cheese, lettuce and onion.');
+  const none = L.create(pack, ticket([spec('hamburger')]), { settings: {} });
+  L.answer(pack, none, 'skip', {});
+  for (let k = 0; k < 9; k++) L.answer(pack, none, 'skip', {});
+  assert.strictEqual(W.made(pack, L.made(pack, none, 0), none.items[0].spec), 'Hamburger: no patty, nothing else on it.');
+});
+
+test('every step has a prompt and a label for every answer', () => {
+  for (const cooking of ['simple', 'timed']) {
+    const s = S.create(pack, { seed: 5, settings: { cooking, shiftLength: 3, orders: 'fancy' } });
+    while (!s.done) {
+      play(pack, s, (q, o) => {
+        assert.ok(W.prompt(pack, q, o).length > 3, 'prompt for ' + q.kind);
+        for (const opt of q.options) {
+          const l = W.option(pack, q, opt, o);
+          assert.ok(l.label && l.say, q.kind + ' ' + opt.id);
+          assert.ok(!/undefined|null|\{/.test(l.label + l.say), l.label + ' / ' + l.say);
+        }
+        return right(pack, o, q);
+      });
+    }
+  }
+});
+
+test('labels for the grill and a bad ingredient', () => {
+  const q = { kind: 'add', ing: 'patty', max: 3, have: 1, offer: 2, options: [] };
+  assert.strictEqual(W.option(pack, q, { id: 'add' }).say, 'Add a second patty');
+  assert.deepStrictEqual(W.option(pack, q, { id: 'skip' }), { label: 'Done', say: 'Done, one patty' });
+  const g = { kind: 'add', ing: 'tomato', max: 1, have: 0, offer: 1, gross: { event: 'hair' }, options: [] };
+  assert.strictEqual(W.option(pack, g, { id: 'add' }).say, 'Add tomato with a hair on it');
+  assert.strictEqual(W.option(pack, g, { id: 'swap' }).label, 'Swap It');
+});
+
+test('receipt lines name each mistake in words', () => {
+  assert.strictEqual(W.mistake(pack, { kind: 'extra', ing: 'cheese' }), 'Cheese: not wanted');
+  assert.strictEqual(W.mistake(pack, { kind: 'missing', ing: 'pickles' }), 'Pickles: left off');
+  assert.strictEqual(W.mistake(pack, { kind: 'count', ing: 'patty', want: 2, got: 1 }), 'Patties: wanted 2, got 1');
+  assert.strictEqual(W.mistake(pack, { kind: 'done', ing: 'patty', want: 'medium', got: 'well' }), 'Patty: wanted medium, got well done');
+  assert.strictEqual(W.mistake(pack, { kind: 'gross', ing: 'cheese', event: 'mouldy' }), 'Cheese: green cheese');
+});
+
+test('settings: a version 1 save is upgraded; a newer save is never written over', () => {
+  const v1 = JSON.stringify({ v: 1, kind: 'settings', data: { cooking: 'timed', mitch: 'off', star: true, customersAtOnce: 2, shiftLength: 8 } });
+  const r = F.read('settings', v1, pack);
+  assert.ok(r.ok);
+  assert.deepStrictEqual([r.data.cooking, r.data.manager, r.data.shiftLength], ['timed', 'off', 8]);
+  assert.ok(!('star' in r.data) && !('customersAtOnce' in r.data) && !('mitch' in r.data));
+  const newer = JSON.stringify({ v: 9, kind: 'settings', data: {} });
+  assert.deepStrictEqual(F.read('settings', newer, pack), { ok: false, reason: 'newer', keep: true });
+  assert.ok(!F.canWrite('settings', newer));
+  assert.ok(F.read('shift', JSON.stringify(F.wrap('shift', { id: 'diner', version: 1 }, {})), pack).reason === 'packVersion');
+});

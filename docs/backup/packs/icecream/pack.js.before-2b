@@ -1,0 +1,347 @@
+/** Ben's Ice Cream Emporium - the restaurant, as data (docs/api/pack-format.md; in words: docs/api/packs/icecream.md).
+ *
+ *  An old-fashioned pink-and-white parlour with a long freezer case, a swirly sign and a mint-green shake machine
+ *  (FOODCOURT-BUILD.md 5.3, BENS-FOOD-COURT "Ben's Ice Cream Emporium"). The fourth and last restaurant to unlock (the
+ *  right arm, lower). The engine (js/core) reads this and nothing else; the food is js/food/icecream.js
+ *  (food-icecream), the lines are packs/icecream/script.js (content-icecream), who everyone IS is packs/cast/cast.js.
+ *
+ *  The line (a one-scoop cone is 10 presses in Simple, Serve makes 11):
+ *    scoop (Freezer Case)     Holder: Cone / Waffle Cone / Cup -> (the scoop dips in the warm-water well, a flourish)
+ *                             -> Simple: How big? Small / Regular / Huge. Timed: watch the scoop grow and Stop the
+ *                             Scoop (left on, it ends an Avalanche: Timed's last stage, never a gross-out)
+ *                             -> Scoop: the flavour, one scoop at a time (Vanilla, Chocolate, Strawberry on the
+ *                             first screen; Mint Chip, Cookie Dough, Rocky Road, Bubblegum behind More...), then Done
+ *    toppings (Topping Bar)   Add or Skip each topping as it comes down the line: sprinkles, hot fudge, caramel,
+ *                             whipped cream, nuts, cherry
+ *  Milkshakes (level 2 up, the second course) go to the shake machine on the toppings backdrop: Flavour: Vanilla /
+ *  Chocolate / Strawberry -> (the milk glugs in) -> Simple: How thick? Thick / Creamy / Thin. Timed: Stop the Mixer
+ *  (left on, it ends a Melted Puddle) -> (it pours into the tall glass) -> Add or Skip whipped cream, a cherry.
+ *  4 presses (Serve makes 5).
+ *  Banana splits (level 3) skip the holder (a boat dish): size, three scoops, the banana halves tuck in (a flourish),
+ *  then the topping bar.
+ *
+ *  The scoops are a repeat pick ("one scoop at a time", spec 5.3): the level decides how many (one at levels 1-2 on a
+ *  cone or cup, up to two after), never the customer. The toppings are Add or Skip steps, one at a time (pilot.md
+ *  5.2): that is where the hair in the sprinkles and the cherry that is actually a tomato sit, and where Sal's cherry
+ *  is held. The freezer-burned ice cream sits on the shake's flavour pick (three values, spec 4.6).
+ *
+ *  Plain data only: no functions, no Math.random. Ids match /^\w+$/.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBPacks = root.BBPacks || {}).icecream = data;
+})(typeof window === 'undefined' ? globalThis : window, {
+  id: 'icecream',
+  version: 1,
+  name: "Ben's Ice Cream Emporium",
+  format: 3,                      // packs/icecream/script.js covers every moment (content-icecream, 2026-11-10)
+
+  help: "Ben's Ice Cream Emporium. Everything starts at the freezer case: pick a cone, a waffle cone or a cup, then the scoop " +
+    'size: in Simple, pick Small, Regular or Huge; in Timed, watch the scoop grow and Stop the Scoop at the size on ' +
+    'the ticket. Then pick the flavour of each scoop, one at a time, and Done when there are enough. The first two ' +
+    'flavours are on the first screen; More shows the rest. Then the topping bar: Add or Skip each topping as it ' +
+    'comes down the line. A milkshake goes to the shake machine: pick the flavour, then how thick, then Add or Skip ' +
+    "the whipped cream and the cherry. The ticket lists everything: add what's on it, skip what isn't. If something " +
+    'looks wrong, Swap It brings a fresh one.',
+
+  /* ── colours (spec 5.6): pastel pink. The highlight sits on deep raspberry panels and boards (pastel pink under the
+     yellow highlight would be about 1.2:1); the pastel pink is the plates, the ticket's current line, the logo and the
+     boards' frame. Contrast worked out in docs/api/packs/icecream.md section 14. ── */
+  theme: {
+    pageBg: '#4a1030',                 // behind everything (loading, fades): deep berry
+    panelTop: '#b02a63',               // the line's control panel: raspberry ripple (the highlight sits on it)
+    panelBottom: '#7f1c47',
+    panelLip: '#460c29',
+    plateTop: '#fff7fb',               // the scoop and shake plates: white enamel, ink words
+    plateBottom: '#fde0ec',            // pastel pink
+    mark: '#6b3a1f',                   // the size and thickness marks on a plate: chocolate
+    labelBg: 'rgba(70,12,41,.9)',      // white words on a prop's label
+    ticketAccent: '#a3215a',           // the customer's name on the ticket (on paper)
+    ticketNow: '#ffe0ee',              // the item being made, on the ticket (ink words): strawberry milk
+    perforation: '#e7b3c9',
+    hudBg: 'rgba(76,16,49,.86)',       // white words
+    gaugeBg: 'rgba(52,10,34,.92)',     // the Timed gauge: white words, the highlight marks the stage now
+    star: '#c97c00',                   // butterscotch stars: 3:1 on the receipt's paper and on the board and its glow
+    boardGlow: '#7a1d48',              // menu boards: a raspberry board in a pastel pink frame
+    woodInset: '#460c29',
+    cardValue: '#ffe7a3',
+    logoTop: '#ffd6e7',                // bubblegum
+    logoMain: '#fff7fb',
+    wheelInk: '#2a1020',
+    wheelSteel: '#ece4e8',
+    wheelDark: '#b02a63',              // the ticket wheel's spokes, painted raspberry
+    board: '#5a1238',
+    wood: '#ffc6dc',                   // the boards' frame: pastel pink, like the parlour's striped walls
+  },
+  courses: ['scoop', 'shake'],    // a two-item order (level 3 up) is an ice cream and a milkshake, or Gus's two of one thing
+  levels: {},                     // the engine's ladder unchanged (pack-format.md 12); put only what differs here
+
+  manager: { id: 'mitch', art: 'mitch-icecream' },   // the striped shirt, bow tie and paper soda-jerk hat
+
+  /* ── cooking ────────────────────────────────────────────────────────────── */
+  // The scoop: the scoop grows in the scooper, from a scrape to an avalanche; it sets the size of every scoop on the
+  // item. The shake: the mixer turns lumps to a milkshake, then (left on) to a melted puddle (the proposal's melted
+  // puddle lands here, as Timed's last stage: one mistake, complain.done, never a gross-out).
+  stageSets: {
+    size: { stages: ['scrape', 'small', 'regular', 'huge', 'avalanche'], choose: ['small', 'regular', 'huge'],
+      ask: 'How big?', stop: 'Stop the Scoop' },
+    shake: { stages: ['lumpy', 'thick', 'creamy', 'thin', 'puddle'], choose: ['thick', 'creamy', 'thin'],
+      ask: 'How thick?', stop: 'Stop the Mixer' },
+  },
+  stageNames: { scrape: 'Scrape', small: 'Small', regular: 'Regular', huge: 'Huge', avalanche: 'Avalanche',
+    lumpy: 'Lumpy', thick: 'Thick', creamy: 'Creamy', thin: 'Thin', puddle: 'Melted Puddle' },
+  cookSpeeds: { verySlow: 12, slow: 8, normal: 5 },   // the Burger Bar's grill: seconds a stage
+  wantedScale: 2,                                     // the ticket's stage lasts twice as long
+
+  /* ── what goes on (looks: docs/api/packs/icecream.md section 10 has the table food-icecream draws from) ── */
+  ingredients: {
+    // The items. Ice cream (cones, cups, sundaes) sits in the holder picked; its ramp is the scoop's size at each
+    // stage, for the size plates. A banana split sits in its boat dish, the Kitchen Sink in an actual sink, a
+    // milkshake in the steel mixing cup, then a tall glass.
+    iceCream:     { name: 'Ice Cream', plural: 'Ice Creams', look: { shape: 'scoopBall', colour: 0xfbf1d6,
+      sizes: { scrape: 0.35, small: 0.7, regular: 0.9, huge: 1.15, avalanche: 1.45 } } },
+    bananaSplit:  { name: 'Banana Split', plural: 'Banana Splits', look: { shape: 'bananaBoat', colour: 0xfff7fb } },
+    kitchenSink:  { name: 'Kitchen Sink', plural: 'Kitchen Sinks', look: { shape: 'sinkBasin', colour: 0xd9dde2 } },
+    milkshake:    { name: 'Milkshake', plural: 'Milkshakes',
+      look: { shape: 'shakeCup', ramp: { lumpy: 0xa8794a, thick: 0xc99a5f, creamy: 0xe2bf8a, thin: 0xf3e2c4, puddle: 0xfffaf0 } } },
+    // The toppings, in the order the topping bar has them (the toppings backdrop, left to right).
+    sprinkles:    { name: 'Sprinkles', plural: 'Sprinkles', look: { shape: 'rainbowSprinkles', colour: 0xf26fa3 } },
+    hotFudge:     { name: 'Hot Fudge', plural: 'Hot Fudge', look: { shape: 'fudgeDrizzle', colour: 0x4a2412 } },
+    caramel:      { name: 'Caramel', plural: 'Caramel', look: { shape: 'caramelDrizzle', colour: 0xc9802a } },
+    whippedCream: { name: 'Whipped Cream', plural: 'Whipped Cream', look: { shape: 'whippedSwirl', colour: 0xfffdf8 } },
+    nuts:         { name: 'Nuts', plural: 'Nuts', look: { shape: 'choppedNuts', colour: 0xc89a5c } },
+    cherry:       { name: 'Cherry', plural: 'Cherries', look: { shape: 'maraschino', colour: 0xd0101c } },
+  },
+
+  /* ── named picks ────────────────────────────────────────────────────────── */
+  // The ticket reads "Ice Cream Cone: in a waffle cone, regular, two chocolate scoops and one vanilla scoop, with
+  // sprinkles". The scoop slot is named for one scoop, so a repeat reads "two chocolate scoops".
+  slots: {
+    holder: { name: 'Holder', say: 'in a {value}', values: [
+      { id: 'cone', name: 'Cone', look: { shape: 'plainCone', colour: 0xe2a95a } },
+      { id: 'waffleCone', name: 'Waffle Cone', look: { shape: 'waffleCone', colour: 0xc98a3c } },
+      { id: 'cup', name: 'Cup', look: { shape: 'stripedCup', colour: 0xf6a5c4 } }] },
+    scoops: { name: 'Scoop', plural: 'Scoops', values: [
+      { id: 'vanilla', name: 'Vanilla', look: { shape: 'scoopBall', colour: 0xfbf1d6 } },
+      { id: 'chocolate', name: 'Chocolate', look: { shape: 'scoopBall', colour: 0x6b3a1f } },
+      { id: 'strawberry', name: 'Strawberry', look: { shape: 'scoopBall', colour: 0xf4a3b8, flecks: 0xd8243c } },
+      { id: 'mintChip', name: 'Mint Chip', look: { shape: 'scoopBall', colour: 0xb6ecc8, flecks: 0x3a2214 } },
+      { id: 'cookieDough', name: 'Cookie Dough', look: { shape: 'scoopBall', colour: 0xf1d9a8, chunks: 0xa0682e } },
+      { id: 'rockyRoad', name: 'Rocky Road', look: { shape: 'scoopBall', colour: 0x5a301a, chunks: 0xfaf6f0, flecks: 0xc89a5c } },
+      { id: 'bubblegum', name: 'Bubblegum', look: { shape: 'scoopBall', colour: 0xf7a8d2, flecks: 0x4aa8f0 } }] },
+    shakeFlavour: { name: 'Flavour', say: '{value}', values: [
+      { id: 'vanilla', name: 'Vanilla', look: { shape: 'shakeScoop', colour: 0xfbf1d6 } },
+      { id: 'chocolate', name: 'Chocolate', look: { shape: 'shakeScoop', colour: 0x6b3a1f } },
+      { id: 'strawberry', name: 'Strawberry', look: { shape: 'shakeScoop', colour: 0xf4a3b8 } }] },
+  },
+
+  /* ── stations ───────────────────────────────────────────────────────────── */
+  stations: {
+    scoop: {
+      name: 'Freezer Case', backdrop: 'scoop', redo: 'Scoop Again', tool: 'scoop', sounds: { cook: 'scoop', done: 'scoop' },
+      steps: [
+        // Cones, cups and sundaes only: a banana split comes in its boat, the Kitchen Sink in its sink.
+        { kind: 'pick', slot: 'holder', when: { recipes: ['cone', 'cup', 'fudgeSundae', 'caramelSundae', 'waffleDeluxe'] } },
+        { kind: 'auto', id: 'dip', show: 'scoopDip' },             // the scoop dips in the warm-water well
+        { kind: 'cook', stages: 'size' },
+        { kind: 'pick', slot: 'scoops', repeat: { max: 3 } },
+        { kind: 'auto', id: 'banana', show: 'bananaTuck', when: { recipes: ['bananaSplit'] } },   // the halves tuck in
+      ],
+    },
+    toppings: {
+      name: 'Topping Bar', backdrop: 'toppings', redo: 'Redo the Toppings',
+      steps: [
+        { kind: 'add', ing: 'sprinkles' },
+        { kind: 'add', ing: 'hotFudge' },
+        { kind: 'add', ing: 'caramel' },
+        { kind: 'add', ing: 'whippedCream' },
+        { kind: 'add', ing: 'nuts' },
+        { kind: 'add', ing: 'cherry' },
+      ],
+    },
+    shake: {
+      name: 'Shake Machine', backdrop: 'toppings', redo: 'Mix Again', tool: 'blenderSwitch',
+      sounds: { cook: 'mixer', done: 'mixerStop' },
+      steps: [
+        { kind: 'pick', slot: 'shakeFlavour' },
+        { kind: 'auto', id: 'milk', show: 'milkPour', sound: 'pour' },    // the milk glugs into the steel cup
+        { kind: 'cook', stages: 'shake' },
+        { kind: 'auto', id: 'glass', show: 'shakePour', sound: 'pour' },  // it pours into the tall glass
+        { kind: 'add', ing: 'whippedCream' },
+        { kind: 'add', ing: 'cherry' },
+      ],
+    },
+  },
+
+  /* ── how orders choose values (level 5 uses the fancy lists) ───────────── */
+  // The five first flavours from level 1; Rocky Road and Bubblegum come with the level-2 recipes (allFlavours) and
+  // with level 5's fancy lists. Every flavour a customer wants is on the first screen, so nobody's order takes more
+  // presses than anyone else's.
+  picks: {
+    coneHolder:   { values: ['cone', 'waffleCone'], normal: 'cone' },
+    size:         { values: ['small', 'regular', 'huge'], normal: 'regular' },
+    classic:      { values: ['vanilla', 'chocolate', 'strawberry', 'mintChip', 'cookieDough'], normal: 'vanilla',
+      fancy: ['vanilla', 'chocolate', 'strawberry', 'mintChip', 'cookieDough', 'rockyRoad', 'bubblegum'] },
+    allFlavours:  { values: ['vanilla', 'chocolate', 'strawberry', 'mintChip', 'cookieDough', 'rockyRoad', 'bubblegum'],
+      normal: 'chocolate' },
+    shakeFlavour: { values: ['vanilla', 'chocolate', 'strawberry'], normal: 'chocolate' },
+    thickness:    { values: ['thick', 'creamy', 'thin'], normal: 'creamy' },
+  },
+
+  /* ── the menu (spec 4.3): level is the only gate ───────────────────────── */
+  // Every scoop item names its holder (fixed or a pick), its size and its scoops; opt 'in' parts can be held ("no
+  // nuts"), opt 'out' parts can be added ("add sprinkles"). Recipe looks name the layout the food draws the item with.
+  recipes: {
+    cone: {
+      name: 'Ice Cream Cone', plural: 'Ice Cream Cones', price: 3, level: 1, course: 'scoop', look: { shape: 'coneStack' },
+      stations: ['scoop', 'toppings'],
+      item: { ing: 'iceCream', done: { pick: 'size' },
+        slots: { holder: { pick: 'coneHolder' }, scoops: { pick: 'classic', count: [1, 2] } },
+        parts: [{ ing: 'sprinkles', opt: 'out' }, { ing: 'hotFudge', opt: 'out' }, { ing: 'nuts', opt: 'out' }] },
+    },
+    cup: {
+      name: 'Cup of Ice Cream', plural: 'Cups of Ice Cream', price: 3, level: 1, course: 'scoop', look: { shape: 'cupStack' },
+      stations: ['scoop', 'toppings'],
+      item: { ing: 'iceCream', done: { pick: 'size' },
+        slots: { holder: 'cup', scoops: { pick: 'classic', count: [1, 2] } },
+        parts: [{ ing: 'sprinkles', opt: 'out' }, { ing: 'caramel', opt: 'out' }, { ing: 'whippedCream', opt: 'out' }] },
+    },
+    fudgeSundae: {
+      name: 'Hot Fudge Sundae', plural: 'Hot Fudge Sundaes', price: 5, level: 1, course: 'scoop', look: { shape: 'sundaeCup' },
+      stations: ['scoop', 'toppings'],
+      item: { ing: 'iceCream', done: { pick: 'size' },
+        slots: { holder: 'cup', scoops: { pick: 'classic', count: [2, 2] } },
+        parts: [{ ing: 'hotFudge' }, { ing: 'whippedCream' }, { ing: 'nuts', opt: 'in' }, { ing: 'cherry', opt: 'in' }] },
+    },
+    // Level 2: Rocky Road and Bubblegum join the flavours; the milkshake machine opens.
+    caramelSundae: {
+      name: 'Caramel Sundae', plural: 'Caramel Sundaes', price: 5, level: 2, course: 'scoop', look: { shape: 'sundaeCup' },
+      stations: ['scoop', 'toppings'],
+      item: { ing: 'iceCream', done: { pick: 'size' },
+        slots: { holder: 'cup', scoops: { pick: 'allFlavours', count: [2, 2] } },
+        parts: [{ ing: 'caramel' }, { ing: 'whippedCream' }, { ing: 'nuts', opt: 'in' }, { ing: 'sprinkles', opt: 'out' },
+          { ing: 'cherry', opt: 'in' }] },
+    },
+    waffleDeluxe: {
+      name: 'Waffle Cone Deluxe', plural: 'Waffle Cone Deluxes', price: 6, level: 2, course: 'scoop', look: { shape: 'coneStack' },
+      stations: ['scoop', 'toppings'],
+      item: { ing: 'iceCream', done: { pick: 'size' },
+        slots: { holder: 'waffleCone', scoops: { pick: 'allFlavours', count: [2, 2] } },
+        parts: [{ ing: 'sprinkles', opt: 'in' }, { ing: 'hotFudge' }, { ing: 'nuts', opt: 'in' }] },
+    },
+    milkshake: {
+      name: 'Milkshake', plural: 'Milkshakes', price: 4, level: 2, course: 'shake', look: { shape: 'shakeGlass' },
+      stations: ['shake'],
+      item: { ing: 'milkshake', done: { pick: 'thickness' }, slots: { shakeFlavour: { pick: 'shakeFlavour' } },
+        parts: [{ ing: 'whippedCream', opt: 'in' }, { ing: 'cherry', opt: 'in' }] },
+    },
+    // Level 3: three scoops in a boat dish with the banana halves tucked in, the three classic toppings.
+    bananaSplit: {
+      name: 'Banana Split', plural: 'Banana Splits', price: 7, level: 3, course: 'scoop', look: { shape: 'bananaSplit' },
+      stations: ['scoop', 'toppings'],
+      item: { ing: 'bananaSplit', done: { pick: 'size' },
+        slots: { scoops: { pick: 'classic', count: [3, 3] } },
+        parts: [{ ing: 'hotFudge' }, { ing: 'whippedCream' }, { ing: 'nuts', opt: 'in' }, { ing: 'caramel', opt: 'out' },
+          { ing: 'cherry', opt: 'in' }] },
+    },
+    // The five-star event's giant: made on the normal line (three scoops, every topping), drawn in an actual kitchen
+    // sink and 1.6 times bigger. The sink is its look, never a holder value (that would add a choice to every cone).
+    kitchenSink: {
+      name: 'Kitchen Sink Sundae', plural: 'Kitchen Sink Sundaes', price: 20, level: 'event', course: 'scoop',
+      look: { shape: 'kitchenSinkSundae', giant: true },
+      stations: ['scoop', 'toppings'],
+      item: { ing: 'kitchenSink', done: { pick: 'size' },
+        slots: { scoops: ['vanilla', 'chocolate', 'strawberry'] },
+        parts: [{ ing: 'sprinkles' }, { ing: 'hotFudge' }, { ing: 'caramel' }, { ing: 'whippedCream' }, { ing: 'nuts' },
+          { ing: 'cherry' }] },
+    },
+  },
+
+  /* ── gross-outs (spec 4.6): two on Add steps, one on a pick of three; the label names it, Swap It brings a fresh one ── */
+  // The avalanche and the melted puddle are not here: they are the last stages of the size and shake sets, in Timed
+  // only. The freezer-burned ice cream sits on the shake's flavour pick (three values plus Swap It: four answers);
+  // the scoops are a repeat, which can't carry one.
+  gross: [
+    { id: 'hair', on: ['sprinkles'], say: '{name} with a hair in them', fx: { hair: true } },
+    { id: 'tomato', on: ['cherry'], say: 'a {name} that is actually a tomato', fx: { tomato: true } },   // a cherry tomato, green stem and all
+    { id: 'freezerBurn', step: 'pick', slot: 'shakeFlavour', on: ['vanilla', 'chocolate', 'strawberry'],
+      say: '{name} ice cream, freezer-burned', fx: { frost: true, tint: 0xc9d6de } },             // a grey, frosted crust
+  ],
+
+  /* ── people (spec 2.2, 2.3, 5.4): what each orders here; who they are is the cast's ── */
+  regulars: [
+    // "Vanilla in a cup": her usual, as written (one regular scoop).
+    { id: 'marge', likes: [['cup', 3]],
+      usual: [{ recipe: 'cup', set: { size: 'regular', classic: 'vanilla' } }] },
+    // "Two cones": two of one thing where the level allows two items (his cast twin).
+    { id: 'gus', likes: [['cone', 3], ['waffleDeluxe', 1]] },
+    // "A sundae for the team": her favourite; the team is spoken of at the event, where she orders the Kitchen Sink.
+    { id: 'bev', likes: [['fudgeSundae', 3], ['caramelSundae', 2]], favourite: { recipe: 'fudgeSundae', bonus: 2 } },
+    // "Single scoop, exact": a regular scoop in a cup, and his cast `exact` strays further from the recipe. How many
+    // scoops is the level's (spec 0.6), so his lines are about the size and the rim, never the count.
+    { id: 'vernon', likes: [['cup', 3], ['cone', 1]], set: { size: 'regular', thickness: 'creamy' } },
+    // "Chocolate, no rabbit food": every scoop chocolate; the cherry is fruit, so he holds it wherever it is optional
+    // (sundaes, splits, shakes) and says why.
+    { id: 'sal', likes: [['cone', 2], ['fudgeSundae', 2], ['milkshake', 1]], dislikes: ['cherry'],
+      wants: { classic: 'chocolate', allFlavours: 'chocolate', shakeFlavour: 'chocolate' } },
+    // The deadpan skater (spec 2.2, 5.4): "Whatever. Huge."
+    { id: 'tasha', likes: [['milkshake', 3], ['waffleDeluxe', 2], ['cone', 1]], set: { size: 'huge' } },
+    // The locals. Little Lulu agonises out loud over every flavour, then picks vanilla: the ticket shows her final
+    // pick, so every scoop she orders is vanilla (wants). Grandpa Walt wants it the way they made it in 1955: thick
+    // shakes, the hot fudge sundae (his favourite), the banana split.
+    { id: 'lulu', likes: [['cone', 3], ['cup', 2], ['fudgeSundae', 1]],
+      wants: { classic: 'vanilla', allFlavours: 'vanilla', shakeFlavour: 'vanilla' } },
+    { id: 'walt', likes: [['fudgeSundae', 3], ['milkshake', 2], ['bananaSplit', 2]], favourite: { recipe: 'fudgeSundae', bonus: 2 },
+      wants: { thickness: 'thick' } },
+    // Special visitors from level 4, one a shift, never first: the critic, his ten-year-old fan, and a cameo (spec
+    // 2.2): Brock from the Smoothie Shack, the gym bro, on his cheat day (Pam's voice is too near Lulu's to share a shift).
+    { id: 'reginald', likes: [['bananaSplit', 2], ['caramelSundae', 1]], visitor: { level: 4 } },
+    { id: 'kai', likes: [['cone', 2], ['milkshake', 2]], visitor: { level: 4 } },
+    { id: 'brock', likes: [['milkshake', 3], ['bananaSplit', 2], ['waffleDeluxe', 2]], visitor: { level: 4 } },
+  ],
+
+  /* ── the tutorial: one guided order through every station, with a gross-out to Swap ── */
+  // Grandpa Walt's hot fudge sundae (freezer case, topping bar) and a thick chocolate shake (the shake machine); the
+  // cherry comes down the line as a tomato.
+  tutorial: {
+    customer: 'walt',
+    items: [
+      { recipe: 'fudgeSundae', set: { size: 'regular', classic: 'vanilla' } },
+      { recipe: 'milkshake', set: { shakeFlavour: 'chocolate', thickness: 'thick' } },
+    ],
+    gross: { item: 0, ing: 'cherry', event: 'tomato' },
+  },
+
+  /* ── ridiculous orders (level 4+, at most one a shift): said in order.odd.<id>; the ticket stays plain ── */
+  // An odd order is made as written: a customer's wants don't reach it, so the two whose character is a flavour
+  // (Lulu's vanilla, Sal's chocolate) are left out of any that names another.
+  oddOrders: [
+    // "A ten-scoop tower." Three huge scoops, as high as a cone goes. Ten is said, never made.
+    { id: 'tenScoop', level: 5, recipe: 'cone', set: { size: 'huge' }, picks: { scoops: ['chocolate', 'vanilla', 'strawberry'] },
+      who: ['marge', 'gus', 'bev', 'vernon', 'tasha', 'walt'], say: 'order.odd.tenScoop' },
+    // "Ice cream with ketchup." No ketchup on this line: a strawberry cup ("it's red").
+    { id: 'ketchup', recipe: 'cup', picks: { scoops: ['strawberry'] },
+      who: ['marge', 'gus', 'bev', 'vernon', 'tasha', 'walt'], say: 'order.odd.ketchup' },
+    // "A sundae that's just the cherry." The hot fudge sundae with only its cherry (it still needs the scoops to sit
+    // on). Never Sal: he never takes the cherry.
+    { id: 'justCherry', recipe: 'fudgeSundae', holds: ['hotFudge', 'whippedCream', 'nuts'],
+      who: ['marge', 'gus', 'bev', 'vernon', 'tasha', 'lulu', 'walt'], say: 'order.odd.justCherry' },
+    // Walt's own: "a malted, like 1955." No malt on this line: a thick chocolate shake.
+    { id: 'malted', recipe: 'milkshake', set: { thickness: 'thick' }, picks: { shakeFlavour: 'chocolate' },
+      who: ['walt'], say: 'order.odd.malted' },
+  ],
+
+  /* ── the five-star event (spec 4.4): the Little League team, spoken of, never shown ── */
+  // Shift Length orders at level-4 complexity from the families after the big game; the last is always Coach Bev's:
+  // the giant Kitchen Sink Sundae for the whole team, in an actual sink, and a chocolate shake for the coach.
+  events: {
+    five: {
+      name: 'The Kitchen Sink',
+      customers: ['marge', 'gus', 'vernon', 'sal', 'tasha', 'lulu', 'walt', 'reginald', 'kai'],
+      finale: { customer: 'bev', items: [
+        { recipe: 'kitchenSink', set: { size: 'huge' } },
+        { recipe: 'milkshake', set: { shakeFlavour: 'chocolate', thickness: 'thick' } },
+      ] },
+    },
+  },
+});

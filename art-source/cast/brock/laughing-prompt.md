@@ -1,0 +1,8 @@
+# Brock — laughing
+
+Generated with the built-in image generation tool.
+
+Use case: identity-preserve. Asset: one full-body 2D comedy diner game character pose, 1024 x 1536 PNG.
+Image 1 is the APPROVED reference model for BROCK. Copy his exact identity, small head, face structure, brown buzz cut, white/red sweatband, enormous muscular torso and arms, comically skinny legs, yellow stringer tank, red shorts with white piping, white high socks with red stripes, red/white sneakers, black fingerless lifting gloves, black/red shoulder gym bag, and giant cream-filled red-lidded protein shaker. Match the reference colours, thick clean even black outlines, simple bold shapes and one hard-edged cel-shadow tone per colour. Change ONLY pose and facial expression.
+LAUGHING: Brock is doubled over laughing while standing on both feet, torso bent forward, one gloved hand pressing his belly and the other slapping his knee. Eyes squeezed shut, tears of laughter, mouth wide in a huge laugh. Maintain clear hand-on-belly and hand-on-knee gestures; retain shaker tucked under the belly-side upper arm so both hands can perform the requested gestures. Gym bag remains over his shoulder. Exactly two arms and two hands. Loud, eager, friendly adult gym bro, about 28; exaggerated adult comedy, never babyish.
+ONE character, full body including top of head and all shoes, facing viewer and turned slightly toward viewer's right. Strong silhouette that communicates doubled-over laughter. Centre and scale the bent figure to fill about 88% of canvas height, clear margins all around, nothing cropped. Pure solid white background, no floor, no cast shadow, no border, no text, no other objects. Original design as supplied, no resemblance to existing shows or brands.

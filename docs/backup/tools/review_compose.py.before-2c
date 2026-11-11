@@ -1,0 +1,434 @@
+"""Ben's Food Court - lay the 2D stage over each review frame, the way css/bb.css does (dev-only).
+
+  python tools/review_compose.py <frames dir> [--guides]     (frames from: node tools/review-frames.cjs <frames dir>)
+
+Writes <frame>.png per frame and sheet-<session>.png per session. Each frame's JSON says the window's size and, at
+the counter, the layout stage.js worked out from the counter's line (BB.stage.placed); the rest of the geometry
+mirrors css/bb.css in vw/vh, so keep the two in step when the layout changes. --guides draws the counter's line
+(green) and the painted queue's box (cyan: nothing but the served customer may cover it above the line). Text uses
+Arial; it is a review picture, not the game.
+"""
+import json
+import sys
+from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFont, ImageMath
+
+GAME = Path(__file__).resolve().parent.parent
+YELLOW = (255, 212, 0)
+INK = (27, 18, 14)
+# The counter pictures' painted queue, in fractions of the picture (stage.js PIC): across 52%-76%, heads from 43%,
+# feet at about 77%.
+QUEUE = (0.52, 0.43, 0.76, 0.77)
+
+
+def font(size, bold=True):
+    for name in (('ariblk.ttf', 'arialbd.ttf') if bold else ('arial.ttf',)):
+        try:
+            return ImageFont.truetype(name, max(6, round(size)))
+        except OSError:
+            pass
+    return ImageFont.load_default()
+
+
+def font_file(name, size):
+    try:
+        return ImageFont.truetype(name, max(6, round(size)))
+    except OSError:
+        return font(size)
+
+
+def cover(img, w, h):
+    s = max(w / img.width, h / img.height)
+    img = img.resize((round(img.width * s), round(img.height * s)), Image.LANCZOS)
+    x, y = (img.width - w) // 2, (img.height - h) // 2
+    return img.crop((x, y, x + w, y + h))
+
+
+def by_height(path, h):
+    im = Image.open(path).convert('RGBA')
+    return im.resize((max(1, round(im.width * h / im.height)), max(1, round(h))), Image.LANCZOS)
+
+
+def by_width(path, w):
+    im = Image.open(path).convert('RGBA')
+    return im.resize((max(1, round(w)), max(1, round(im.height * w / im.width))), Image.LANCZOS)
+
+
+def key_magenta(im):
+    """The 3D frame, with the magenta 'sky' made transparent (soft at anti-aliased edges)."""
+    im = im.convert('RGB')
+    r, g, b = im.split()
+    a = ImageMath.lambda_eval(lambda e: e['convert'](e['min']((e['r'] * -1 + 255 + e['g'] + e['b'] * -1 + 255) * 4 / 3, 255), 'L'), r=r, g=g, b=b)
+    out = im.convert('RGBA')
+    out.putalpha(a)
+    return out
+
+
+class Stage:
+    """The window: vw/vh units and the CSS sizes that depend on them."""
+
+    def __init__(self, state):
+        self.W, self.H = state.get('size') or (1280, 720)
+        self.vw, self.vh = self.W / 100, self.H / 100
+        text = state.get('text') or 'normal'
+        lab = {'normal': (18, 2.2, 34), 'large': (22, 2.8, 42), 'xlarge': (26, 3.4, 52)}[text]
+        sml = {'normal': (14, 1.4, 22), 'large': (17, 1.8, 27), 'xlarge': (20, 2.2, 32)}[text]
+        self.label = max(lab[0], min(lab[1] * self.vw, lab[2]))
+        self.small = max(sml[0], min(sml[1] * self.vw, sml[2]))
+        self.narrow = self.W / self.H <= 4 / 3 + 1e-6
+
+    def onscreen(self, fx, fy, ratio=1.5):
+        a = self.W / self.H
+        x = 0.5 + (fx - 0.5) * ratio / a if a < ratio else fx
+        y = 0.5 + (fy - 0.5) * a / ratio if a > ratio else fy
+        return x * self.W, y * self.H
+
+
+def label(d, xy, text, size, fill=(255, 255, 255), bg=INK, anchor='mm', pad=6):
+    f = font(size)
+    box = d.textbbox(xy, text, font=f, anchor=anchor)
+    d.rounded_rectangle((box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad), radius=8, fill=bg, outline=(255, 255, 255), width=2)
+    d.text(xy, text, font=f, fill=fill, anchor=anchor)
+
+
+def lit(d, box):
+    d.rounded_rectangle((box[0] - 8, box[1] - 8, box[2] + 8, box[3] + 8), radius=10, outline=YELLOW, width=7)
+
+
+def wrap(d, text, f, width):
+    words, lines, cur = text.split(), [], ''
+    for wd in words:
+        t = (cur + ' ' + wd).strip()
+        if d.textlength(t, font=f) > width and cur:
+            lines.append(cur)
+            cur = wd
+        else:
+            cur = t
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def ticket_image(lines, tw, small, many=False):
+    """The order ticket as css/bb.css draws it: paper, a dashed top edge, the customer's name, then each item's
+    lines (its name in heavy type, then what goes on); numbered only when there are several."""
+    f, fh, fw = font_file('trebucbd.ttf', small), font_file('ariblk.ttf', small * 0.95), font_file('ariblk.ttf', small * 0.9)
+    lh = round(small * 1.3)
+    probe = ImageDraw.Draw(Image.new('RGBA', (8, 8)))
+    rows = [(lines[0], fw, False, (138, 42, 32))]
+    indent = round(small * 1.2) if many else 0
+    for n, item in enumerate(lines[1:], 1):
+        now = item.startswith('> ')
+        for k, part in enumerate((item[2:] if now else item).split(' | ')):
+            for j, ln in enumerate(wrap(probe, part, fh if k == 0 else f, tw - 2 * 14 - indent - 6)):
+                lead = ('%d.' % n) if (many and k == 0 and j == 0) else ''
+                rows.append(((lead, ln), fh if k == 0 else f, now and many, INK))
+    th = round(8 + 10 + len(rows) * lh + 12)
+    im = Image.new('RGBA', (round(tw), th), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle((0, 0, tw - 1, th - 1), radius=8, fill=(255, 250, 240), outline=INK, width=3)
+    for x in range(4, round(tw) - 4, 14):
+        d.line((x, 3, x + 8, 3), fill=(201, 193, 176), width=7)
+    y = 15
+    for text, fnt, hi, col in rows:
+        if hi:
+            d.rectangle((10, y - 2, tw - 10, y + lh - 2), fill=(255, 242, 168))
+        if isinstance(text, tuple):
+            lead, ln = text
+            if lead:
+                d.text((14, y), lead, font=f, fill=col)
+            d.text((14 + indent, y), ln, font=fnt, fill=col)
+        else:
+            d.text((14, y), text, font=fnt, fill=col)
+        y += lh
+    return im
+
+
+def draw_wheel(canvas, wheel, ticket, is_lit, small, many=False):
+    """The ticket wheel from stage.js's own numbers: the rod, the ring and spokes, the clips, the order."""
+    d = ImageDraw.Draw(canvas)
+    cx, cy, R, ry, tw = wheel['cx'], wheel['cy'], wheel['R'], wheel['ry'], wheel['tw']
+    sw = max(5, R * 0.035)
+    steel, dark = (214, 220, 225), (154, 164, 173)
+
+    def arc(top, col, width, dy=0):
+        e = width / 2
+        d.arc((cx - R - e, cy - ry - e + dy, cx + R + e, cy + ry + e + dy), 180 if top else 0, 360 if top else 180, fill=col, width=max(1, round(width)))
+
+    def spokes(slots):
+        for p in slots:
+            d.line((cx, cy, p['x'], p['y']), fill=INK, width=round(sw * 0.5 + 4))
+        for p in slots:
+            d.line((cx, cy, p['x'], p['y']), fill=dark, width=round(sw * 0.5))
+
+    def slot(i, p):
+        k = max(0.02, abs(p['cz'])) * p['scale']
+        shade = p['shade'] if p['cz'] < 0.995 else 1
+        cw, ch = tw * 0.22 * k, tw * 0.12 * p['scale']
+        top = p['y'] - tw * 0.035 * p['scale']
+        clip = (p['x'] - cw / 2, top, p['x'] + cw / 2, top + ch)
+        if i == 0 and ticket and p['paper'] > 0:
+            im = ticket_image(ticket, tw, small, many)
+            im = im.resize((max(2, round(im.width * k)), max(2, round(im.height * p['scale']))), Image.LANCZOS)
+            if shade < 1 or p['paper'] < 1:
+                rr, gg, bb, aa = im.split()
+                rr, gg, bb = (c.point(lambda v: round(v * shade)) for c in (rr, gg, bb))
+                aa = aa.point(lambda v: round(v * p['paper']))
+                im = Image.merge('RGBA', (rr, gg, bb, aa))
+            tx, ty = round(p['x'] - im.width / 2), round(top + ch - tw * 0.04 * p['scale'])
+            canvas.alpha_composite(im, (tx, ty))
+            if is_lit:
+                d.rounded_rectangle((tx - 12, ty - 12, tx + im.width + 12, ty + im.height + 12), radius=10, outline=YELLOW, width=7)
+        col = tuple(round(c * shade) for c in (238, 241, 244))
+        d.rounded_rectangle(clip, radius=5, fill=col, outline=INK, width=3)
+        d.line((clip[0] + cw * 0.14, clip[3] - ch * 0.24, clip[2] - cw * 0.14, clip[3] - ch * 0.24), fill=INK, width=3)
+
+    slots = list(enumerate(wheel['slots']))
+    d.rectangle((cx - R * 0.025, -20, cx + R * 0.025, cy), fill=steel, outline=INK, width=3)
+    arc(True, INK, sw + 6)
+    arc(True, dark, sw)
+    spokes([p for _, p in slots if p['cz'] < 0])
+    d.ellipse((cx - R * 0.075, cy - R * 0.045, cx + R * 0.075, cy + R * 0.045), fill=steel, outline=INK, width=3)
+    spokes([p for _, p in slots if p['cz'] >= 0])
+    for i, p in sorted([s for s in slots if s[1]['cz'] < 0], key=lambda s: s[1]['cz']):
+        slot(i, p)
+    arc(False, INK, sw + 6)
+    arc(False, steel, sw)
+    arc(False, (255, 255, 255), sw * 0.25, -sw * 0.22)
+    for i, p in sorted([s for s in slots if s[1]['cz'] >= 0], key=lambda s: s[1]['cz']):
+        slot(i, p)
+
+
+def compose(frame3d, state, guides=False):
+    S = Stage(state)
+    W, H, vw, vh = S.W, S.H, S.vw, S.vh
+    canvas = Image.new('RGBA', (W, H), (58, 36, 24, 255))
+    if state.get('backdrop') and (GAME / state['backdrop']).exists():
+        canvas.alpha_composite(cover(Image.open(GAME / state['backdrop']).convert('RGBA'), W, H))
+    counter = state.get('place') == 'counter'
+    P = state.get('placed') or {}
+    lit_id = state.get('lit')
+
+    def place_char(src, x, y, h):
+        p = GAME / src
+        if p.exists():
+            im = by_height(p, h)
+            canvas.alpha_composite(im, (round(x), round(y)))
+
+    # The served customer and Mitch at the counter stand behind the 3D counter (css z-index 2).
+    if state.get('customer') and counter and P:
+        cs = state.get('cs') or 1
+        h = P['h'] * cs
+        place_char(state['customer'], P['cx'] - h / 3, P['top'] + P['h'] * (1 - cs), h)
+    if state.get('mitch') and counter and P:
+        place_char(state['mitch'], P['mx'] - P['h'] / 3, P['top'], P['h'])
+    if frame3d is not None:
+        canvas.alpha_composite(key_magenta(frame3d.resize((W, H))))
+    if state.get('mitch') and not counter:
+        mh = 60 * vh if S.narrow else 78 * vh
+        place_char(state['mitch'], -4 * vw, (40 if S.narrow else 33) * vh, mh)        # the kitchen: from the left
+    if state.get('wheel') and state.get('place') == 'kitchen':
+        draw_wheel(canvas, state['wheel'], state.get('ticket'), lit_id == 'ticket', S.small, state.get('ticketMany', False))
+    d = ImageDraw.Draw(canvas)
+    props = state.get('props') or {}
+
+    def prop(src, x, bottom, w, text, size, lid, below=False):
+        p = GAME / src if src else None
+        if p and p.exists():
+            im = by_width(p, w)
+            y = H - bottom - im.height
+            canvas.alpha_composite(im, (round(x), round(y)))
+            ly = y + im.height + size * 1.0 if below else y + im.height - size * 0.6
+            label(d, (x + im.width / 2, ly), text, size)
+            if lit_id == lid:
+                lit(d, (x, y, x + im.width, y + im.height + (size * 1.5 if below else 0)))
+
+    # The Back in 5 sign (Pause): bottom left; at the counter it stands on the counter top.
+    if state.get('place') != 'court':
+        if counter and P:
+            prop(props.get('back5'), 1.5 * vw, max(P['propB'], S.small * 1.9), min(11 * vw, 17 * vh), 'Pause', S.small, 'pause', below=True)
+        else:
+            prop(props.get('back5'), 1.5 * vw, 5 * vh, min(12 * vw, 18 * vh), 'Pause', S.small, 'pause', below=True)
+    # The register and the bell, on the counter top.
+    if counter and P and props.get('register'):
+        rw = min(16 * vw, 28 * vh)
+        prop(props['register'], W - 2 * vw - rw, P['propB'], rw, props.get('registerLabel') or 'Ring It Up', S.label * 0.8, 'serve')
+    if counter and P and props.get('bell'):
+        bw = min(9 * vw, 15 * vh)
+        prop(props['bell'], P['bellX'] - bw / 2, P['propB'], bw, props.get('bellLabel') or 'Next Customer', S.label * 0.8, 'next')
+    # The line's controls: a column on the right (at the counter under the corner count).
+    ctl = state.get('controls') or []
+    if ctl:
+        lf = font(S.label * 0.8)
+        sizes = []
+        for c in ctl:
+            k = c['kind']
+            if k == 'btn':
+                sizes.append((min(12 * vw, 19 * vh),) * 2)
+            elif k == 'plate':
+                sizes.append((min(18 * vw, 27 * vh), min(12.5 * vh, 9 * vw)))
+            elif k == 'tool':
+                sizes.append((min(16 * vw, 27 * vh),) * 2)
+            else:
+                short = counter or 'ticketSlip' in c['cls']
+                sizes.append((max(min(16 * vw, 26 * vh), d.textlength(c['label'], font=lf) + 30), min(8.5 * vh, 7 * vw) if short else min(13 * vh, 10 * vw)))
+        gap = (1.1 if counter else 1.6) * vh
+        colw = max(s[0] for s in sizes)
+        total = sum(s[1] for s in sizes) + gap * (len(sizes) - 1)
+        x_right = W - 2.5 * vw - 1.2 * vw
+        top = 9 * vh + 1.6 * vh if counter else 0.55 * H - total / 2
+        if not state.get('bare'):
+            # The panel: the restaurant's theme (panelTop), else bb.css's default.
+            hexcol = ((state.get('theme') or {}).get('panelTop') or '#626c75').lstrip('#')
+            panel = tuple(int(hexcol[i:i + 2], 16) for i in (0, 2, 4)) if len(hexcol) == 6 else (98, 108, 117)
+            d.rounded_rectangle((x_right - colw - 1.2 * vw, top - 1.6 * vh, x_right + 1.2 * vw, top + total + 1.6 * vh), radius=10,
+                                fill=panel, outline=INK, width=4)
+        y = top
+        colours = {'add': (47, 168, 79), 'skip': (139, 143, 150), 'swap': (255, 138, 28)}
+        for c, (cw, ch) in zip(ctl, sizes):
+            x = x_right - colw / 2 - cw / 2
+            box = (x, y, x + cw, y + ch)
+            k = c['kind']
+            if k == 'btn':
+                col = next((v for kk, v in colours.items() if kk in c['cls']), (176, 48, 36))
+                d.ellipse(box, fill=col, outline=INK, width=5)
+                d.text(((box[0] + box[2]) / 2, (box[1] + box[3]) / 2), c['label'], font=font(S.label * 0.8), fill=(255, 255, 255), anchor='mm', stroke_width=2, stroke_fill=(0, 0, 0))
+            elif k == 'tool' and c.get('img') and (GAME / c['img']).exists():
+                sp = by_width(GAME / c['img'], cw * 0.8)
+                canvas.alpha_composite(sp, (round(x + cw * 0.1), round(y)))
+                label(d, ((box[0] + box[2]) / 2, box[3] - 18), c['label'], S.label * 0.7)
+            else:
+                d.rounded_rectangle(box, radius=10, fill=(242, 244, 246) if k == 'plate' else (255, 250, 240), outline=INK, width=4)
+                if 'ticketSlip' in c['cls']:
+                    for xx in range(round(box[0]) + 8, round(box[2]) - 8, 14):
+                        d.line((xx, box[1] + 4, xx + 8, box[1] + 4), fill=(201, 193, 176), width=7)
+                lines = wrap(d, c['label'], lf, cw - 16)
+                for i, ln in enumerate(lines):
+                    d.text(((box[0] + box[2]) / 2, (box[1] + box[3]) / 2 + (i - (len(lines) - 1) / 2) * S.label * 0.9 + (14 if k == 'plate' else 0)), ln, font=lf, fill=INK, anchor='mm')
+                for m in range(c.get('marks') or 0):
+                    mx = box[0] + cw / 2 - c['marks'] * 8 + m * 16
+                    d.line((mx, box[1] + 12, mx + 6, box[1] + 30), fill=(107, 58, 34), width=5)
+            if c.get('lit') or lit_id == c['id']:
+                lit(d, box)
+            y += ch + gap
+    # The Timed gauge.
+    if state.get('gauge'):
+        f = font(S.small)
+        parts = state['gauge']
+        widths = [d.textlength(p['t'], font=f) + 20 for p in parts]
+        tw = sum(widths) + 8 * (len(parts) + 1)
+        gx, gy = 0.42 * W - tw / 2, 53 * vh
+        d.rounded_rectangle((gx, gy, gx + tw, gy + S.small * 2.4), radius=10, fill=INK, outline=(255, 255, 255), width=3)
+        x = gx + 8
+        for p, wdt in zip(parts, widths):
+            if p['now']:
+                d.rounded_rectangle((x, gy + 6, x + wdt, gy + S.small * 2.4 - 6), radius=6, fill=(74, 45, 28), outline=YELLOW, width=3)
+            d.text((x + wdt / 2, gy + S.small * 1.2), p['t'], font=f, fill=(255, 255, 255) if p['now'] else (150, 140, 130), anchor='mm')
+            if p['want']:
+                d.line((x + 8, gy + S.small * 2.4 - 9, x + wdt - 8, gy + S.small * 2.4 - 9), fill=(255, 255, 255), width=3)
+            x += wdt + 8
+    # The speech bubble: at the counter it grows upwards from above the painted queue's heads.
+    b = state.get('bubble')
+    if b:
+        f, fn = font(S.label, bold=False), font(S.small)
+        child = 'child' in b['kind'].split()
+        kind = 'customer' if 'customer' in b['kind'].split() else 'mitch'
+        maxw = P['kidSayW'] if (child and counter and P) else 34 * vw
+        lines = wrap(d, b['text'], f, maxw - 0.9 * S.label * 2)
+        bw = min(maxw, max(d.textlength(ln, font=f) for ln in lines) + 1.8 * S.label)
+        bh = S.small * 1.25 + len(lines) * S.label * 1.2 + 1.2 * S.label
+        if counter and P:
+            bx = P['kidSayX'] if child else P['sayX'] if kind == 'customer' else W - P['mitchSayR'] - bw
+            by = H - (P['kidSayB'] if child else P['sayB']) - bh
+            if by < 4:
+                by = vh
+        elif kind == 'mitch':
+            bx, by = 22 * vw, 31 * vh
+        else:
+            bx, by = 34 * vw, 8 * vh
+        d.rounded_rectangle((bx, by, bx + bw, by + bh), radius=22, fill=(255, 255, 255), outline=INK, width=4)
+        tail_y = by + bh - 0.6 * S.label - 0.9 * S.label if counter else by + bh * 0.4
+        if child and counter:
+            tx = bx + 3.5 * S.label
+            d.polygon([(tx, by + bh), (tx + 0.45 * S.label, by + bh + 1.0 * S.label), (tx + 0.9 * S.label, by + bh)], fill=INK)
+        elif kind == 'customer' or not counter:
+            d.polygon([(bx, tail_y), (bx - 1.6 * S.label * 0.6, tail_y + 0.45 * S.label), (bx, tail_y + 0.9 * S.label)], fill=INK)
+        else:
+            d.polygon([(bx + bw, tail_y), (bx + bw + 1.6 * S.label * 0.6, tail_y + 0.45 * S.label), (bx + bw, tail_y + 0.9 * S.label)], fill=INK)
+        d.text((bx + 0.9 * S.label, by + 0.6 * S.label), b['name'], font=fn, fill=(138, 42, 32))
+        for i, ln in enumerate(lines):
+            d.text((bx + 0.9 * S.label, by + 0.6 * S.label + S.small * 1.25 + i * S.label * 1.2), ln, font=f, fill=INK)
+    # The receipt: right of centre, under the corner count.
+    r = state.get('receipt')
+    if r:
+        f, fh, fs = font_file('courbd.ttf', S.small), font(S.label), font_file('seguisym.ttf', S.label * 1.6)
+        rw = min(29 * vw, 50 * vh)
+        rx, ry = 50 * vw, 9 * vh
+        body = []
+        for ln in r['lines']:
+            body += wrap(d, ('- ' if len(r['lines']) > 1 or ln != 'Everything as ordered.' else '') + ln, f, rw - 2.4 * S.small)
+        tip = wrap(d, r['tip'], f, rw - 2.4 * S.small)
+        lh = S.small * 1.35
+        rh = S.small + S.label * 1.2 + S.label * 1.9 + (len(body) + len(tip)) * lh + S.small * 1.6
+        d.rectangle((rx, ry, rx + rw, ry + rh), fill=(255, 250, 240), outline=INK, width=3)
+        y = ry + S.small
+        d.text((rx + rw / 2, y), r['name'], font=fh, fill=INK, anchor='mt')
+        y += S.label * 1.2
+        d.text((rx + rw / 2, y), ''.join('★' if i < r['stars'] else '☆' for i in range(3)), font=fs, fill=(240, 165, 0), anchor='mt')
+        y += S.label * 1.9
+        for ln in body:
+            d.text((rx + 1.2 * S.small, y), ln, font=f, fill=INK)
+            y += lh
+        d.line((rx + 1.2 * S.small, y + 3, rx + rw - 1.2 * S.small, y + 3), fill=INK, width=2)
+        for ln in tip:
+            d.text((rx + 1.2 * S.small, y + 8), ln, font=f, fill=INK)
+            y += lh
+    if state.get('hud'):
+        label(d, (W - 1.5 * vw, 1.5 * vh + S.small * 0.8), state['hud'], S.small, anchor='rm')
+    if guides and counter and P:
+        y = round(P['line'])
+        for x in range(0, W, 16):
+            d.line((x, y, x + 8, y), fill=(40, 255, 60), width=3)
+        x0, y0 = S.onscreen(QUEUE[0], QUEUE[1])
+        x1, y1 = S.onscreen(QUEUE[2], QUEUE[3])
+        d.rectangle((x0, y0, x1, y1), outline=(0, 220, 255), width=2)
+        d.text((x0 + 4, y0 + 4), 'painted queue', font=font(14), fill=(0, 220, 255))
+        d.text((W - 260, y - 22), 'counter line %.1f%%' % (P['line'] / H * 100), font=font(15), fill=(40, 255, 60))
+    return canvas.convert('RGB')
+
+
+def main():
+    out = Path(sys.argv[1])
+    guides = '--guides' in sys.argv[2:]
+    sessions = {}
+    for js in sorted(out.glob('*.json')):
+        state = json.loads(js.read_text(encoding='utf-8'))
+        p3 = js.with_name(js.stem + '.3d.png')
+        frame = Image.open(p3) if p3.exists() else None
+        img = compose(frame, state, guides)
+        dst = js.with_name(js.stem + '.png')
+        img.save(dst)
+        sessions.setdefault(js.stem.split('-')[0], []).append((js.stem, img))
+        print('composed', dst.name)
+    for name, tiles in sessions.items():
+        cols = 2
+        tw = 640
+        rows = []
+        for stem, img in tiles:
+            th = round(img.height * tw / img.width)
+            rows.append((stem, img.resize((tw, th), Image.LANCZOS)))
+        cell_h = max(t.height for _, t in rows) + 24
+        sheet = Image.new('RGB', (cols * tw, ((len(rows) + cols - 1) // cols) * cell_h), (40, 40, 44))
+        d = ImageDraw.Draw(sheet)
+        for k, (stem, t) in enumerate(rows):
+            x, y = (k % cols) * tw, (k // cols) * cell_h
+            sheet.paste(t, (x, y + 24))
+            d.text((x + 6, y + 3), stem, font=font(16), fill=(255, 255, 255))
+        dst = out / ('sheet-' + name.replace('@', '-') + '.png')
+        sheet.save(dst)
+        print('sheet', dst.name, sheet.size)
+
+
+if __name__ == '__main__':
+    main()

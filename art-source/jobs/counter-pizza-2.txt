@@ -1,0 +1,19 @@
+Use case: background painting for a 2D game
+Asset type: game backdrop, 1536 x 1024, landscape
+Attached image 1 is THIS restaurant's storefront, cut out of the food court picture (attached image 2), seen from above.
+Draw the same restaurant from INSIDE it: its materials, colours, roof and awning, blank sign shape, counter front and
+props must match image 1 exactly, so a player who zooms in from the court recognises it at once.
+Scene: inside Ben's Pizza Parlor, a red-brick pizzeria stall with a terracotta tile roof, a giant pizza slice on top and a brick oven, one of the restaurants in a cheerful shopping-mall food court, seen from BEHIND its serving counter,
+looking straight down the court toward its OPEN far end (the mall concourse with benches and palms, far away). THE SEATING FILLS THE MIDDLE DISTANCE, exactly as in image 2: several round tables with red chairs, two red booths, square planters with palms and pink flowers, and the round stone plinth in the centre of it all. It must be clearly there, never an empty floor. Because you look down the picture, the court's LEFT side is on YOUR RIGHT: close on the right edge of the view stands the smoothie shack (thatched roof, giant smoothie cup, teal), and further down on the right the burrito stall (orange tiled roof, papel picado). On the far LEFT of the view, further away, stand the sushi bar (navy tiled roof, lanterns) and the ice cream parlor (pink and white), under the mall's big skylight, eye level about 1.6 m. The stall's own side walls, pillars and roof edge
+frame the view on the left edge, the right edge and across the top, seen from inside (its kitchen is behind the viewer,
+out of sight). The stall's decor: red brick side walls, a red-and-white striped awning edge across the top, a red-and-white checked tile panel, a stack of pizza boxes on a side shelf, hanging vines and garlic braids, red stools on the customers' side, a chalkboard menu with little drawings of pizzas (no words).
+Composition (percent of the image):
+- Left 10% to 55%: keep this area visually quiet (a plain wall of the stall and an empty table far back), because the
+  game draws the current customer standing here, large, on top of the picture.
+- Right 55% to 85%, middle distance: a short queue of three waiting customers, small, SHARP and in focus like everything
+  else: a man in a tracksuit squinting at the menu, a woman with shopping bags checking her watch, a kid holding a balloon. Original, funny designs.
+- Bottom 22%: just the floor (the game draws the counter top here, on top of the picture).
+Hidden funny details, small but findable: a sign reading NO PINEAPPLE with a tiny pineapple in sunglasses sneaking past it; a dough ball stuck to the ceiling; a garden gnome holding a pizza slice; a framed photo of a pizza in a graduation cap.
+Everything sharp, nothing blurred. No text anywhere except what the details ask for. No border.
+Save as art-source/backdrops/candidates/pizza-counter-2.png (1536 x 1024) and the prompt as art-source/backdrops/candidates/pizza-counter-2-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.

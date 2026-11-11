@@ -1,0 +1,8 @@
+Use case: character model for a 2D game
+Asset type: full-body character pose on plain white
+Style: original 2D cartoon art for a comedy diner game, TV-cartoon look. Thick, clean, even black outlines; flat bright colours with ONE hard-edged cel-shadow tone per colour; simple bold shapes; slightly exaggerated proportions (big head, big hands, big expressive eyes and mouth); a strong, readable silhouette. Funny for adults: dry, deadpan comedy, never cute, never babyish. It is an ORIGINAL design and must not resemble any existing cartoon character, show or brand.
+Character: A mom pushing a stroller with a baby holding a balloon. Background extra.
+Pose: NEUTRAL: standing relaxed and natural, a calm, pleasant face, hands at rest. This is the character's model pose.
+Framing: ONE character, full body from the top of the head to the shoes, standing, facing the viewer and turned very slightly toward the viewer's right. The figure fills about 88% of the image height, centred, with a clear margin all round; nothing is cropped (hands, hat and feet all inside the frame). Plain pure white background, no floor, no cast shadow, no border, no text other than what the character description asks for, no other objects except what the character holds.
+Save as art-source/cast/shopper2/neutral.png (1024 x 1536, portrait) and the prompt as art-source/cast/shopper2/neutral-prompt.md.
+Reply with the saved paths. If saving into the project fails, reply with the path of the generated file.
