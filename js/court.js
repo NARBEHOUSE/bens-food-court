@@ -1,0 +1,1021 @@
+/** Ben's Food Court - the court: the main menu over it, and the restaurants on the picture (FOODCOURT-BUILD.md 6.1,
+ *  6.2, 6.3; docs/api/page.md "The court").
+ *
+ *  #court is a layer over packs/court/art/court.webp, laid out like object-fit: contain (layoutBox; with no picture
+ *  the storefronts are drawn as plain shapes). Everything in it is placed in percent of the picture:
+ *    storefronts   at BBCourt.layout's boxes, each with a name plate and a star sign drawn in code at Text Size on its
+ *                  sign board, and its shutter ("Coming Soon"), Grand Opening banner or gold sign
+ *                  (BB.courtRules.storefront). A closed restaurant is greyed out (desaturated and dimmed, shutter
+ *                  down, its name still readable) and is never a scan stop; so is one whose pack is not loaded (a
+ *                  development state).
+ *    the board     on the plinth: BB.courtRules.nextGoal().board, drawn in code
+ *    the crowd     BB.courtRules.crowd and .floor (the user, 2026-11-10): each open storefront's line, standing
+ *                  still, and its diners at the tables eating its own food, by popularity; all of them the game's
+ *                  own customers (that restaurant's locals and regulars, its level-4 visitors), each character at
+ *                  most once on the court. Nothing moves. Nobody overlaps a sign or stands in front of the board
+ *                  (the board stands in front of whoever is behind it; the lit storefront is lifted over everyone).
+ *  The same court is the scene behind the main menu, OUT OF FOCUS: a CSS blur on the layer (its radius a share of the
+ *  picture's height, so it looks the same at every window size), dimmed so the card reads. Play closes the card,
+ *  pulls the court into focus (0.6 s; a cut under Reduced), plays any moments, and opens the storefront scan on the
+ *  picture at -1: the open shops (four or fewer) or the parts of the U (five or more; a part is a row with a spoken
+ *  Back stop), then the Back in 5 sign (Pause). There is never a list of restaurants on a card.
+ *
+ *  Moments (BB.courtRules.news), all before the scan opens: the Grand Opening (the shutter rolls up, the storefront
+ *  un-greys, chime, the PA's bing-bong, pa then Mitch), the gold sign (it drops onto the sign board with sparkles),
+ *  the grand celebration (fireworks; every drawn customer cheers; Mitch is promoted). Mitch says court.return when
+ *  the goal has changed since he last said it. Chatter is a caption over a customer on the floor (court.chatter, their
+ *  own lines), never spoken, never over the highlighted storefront. Choosing a storefront zooms in (a cut under Reduced) and BB.game.enter()s it; leaving a
+ *  restaurant zooms back out and plays any news.
+ *
+ *  Hooks the rest of the page calls (docs/api/page.md section 6): menu() (the main menu over the blurred court: boot,
+ *  Main Menu), play() (Play), show({ from }) (back from a restaurant), enter(id), pause(), resume(), help(), refresh(),
+ *  goalKey. For the checks: hit(x, y), scene(), state(), stops().
+ */
+(function () {
+  'use strict';
+  const R = () => BB.courtRules, C = () => window.BBCourt, SC = () => BB.script;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const reduced = () => document.body.dataset.motion === 'reduced';
+  const state = () => BB.save.court();
+  const courtArt = () => ((window.BBArt && BBArt.court) || { picture: false, props: [], food: {} });
+  const cast = () => ((window.BBCast && BBCast.people) || {});
+  const propSrc = n => ((courtArt().props || []).includes(n) ? 'packs/court/art/props/' + n + '.webp' : null);
+  const PICTURE = 'packs/court/art/court.webp';
+  const pc = v => (Math.round(v * 1000) / 1000) + '%';
+  /** The name plate's room on its sign board (fractions of the board) and its smallest letters (px): fitPlates(). */
+  const PLATE_FIT = { w: 0.94, h: 0.9, min: 11 };
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const voicesOn = () => BB.save.get('characterVoices') !== 'off';
+  const mitchOn = () => voicesOn() && BB.save.get('manager') !== 'off';
+
+  /* ══ the picture ═══════════════════════════════════════════════════════════════════════════════════════════ */
+  // Measured from art-source/backdrops/court.png (1536 x 1024), in percent of the picture. BBCourt.layout holds the
+  // boxes, sign boards, the plinth and the crowd's spots; these are the page's own drawing aids: each storefront's
+  // outline (its greyed-out copy, the lifted highlight, pointer hits) and its counter opening (the shutter, the
+  // Grand Opening banner).
+  const OUTLINE = {
+    burrito: [[0, 61.2], [2.4, 59.5], [4.0, 58.5], [7.4, 57.8], [9.0, 56.2], [12.5, 55.9], [15.2, 56.5], [16.0, 55.9], [17.2, 56.4], [19.0, 57.3], [21.0, 60.0], [23.0, 62.5], [24.2, 64.5], [24.0, 66.2], [22.6, 67.5], [22.6, 83.0], [19.8, 84.5], [19.4, 86.0], [16.0, 86.0], [15.0, 87.5], [11.5, 88.6], [9.0, 88.6], [5.0, 87.8], [4.5, 88.5], [2.0, 88.5], [0.4, 86.5], [0, 86.0]],
+    smoothie: [[0, 33.5], [3.5, 29.0], [5.5, 25.5], [8.0, 22.8], [9.0, 20.5], [11.3, 18.8], [12.4, 19.5], [13.5, 23.5], [15.2, 25.0], [16.5, 26.3], [18.5, 28.6], [20.5, 31.8], [22.4, 36.0], [21.4, 38.0], [21.2, 50.8], [19.6, 51.6], [19.2, 54.0], [17.8, 54.6], [13.0, 55.6], [11.3, 56.5], [6.2, 56.2], [5.3, 58.2], [2.4, 58.2], [2.3, 54.0], [1.0, 53.0], [0, 52.0]],
+    pizza: [[15.2, 12.8], [19.6, 7.0], [22.6, 8.2], [26.0, 1.5], [28.3, 0.0], [30.5, 0.3], [31.5, 3.0], [32.4, 6.0], [34.5, 8.0], [37.0, 11.5], [36.6, 13.0], [37.2, 21.5], [36.2, 24.5], [36.2, 31.8], [34.6, 32.2], [33.4, 34.4], [23.0, 34.4], [21.6, 33.2], [19.5, 29.8], [16.5, 26.6], [15.0, 24.0], [14.3, 15.5]],
+    diner: [[37.0, 9.5], [38.0, 6.6], [40.6, 5.4], [40.6, 4.0], [45.6, 4.0], [46.3, 1.6], [48.5, 0.5], [51.5, 0.5], [53.6, 1.6], [54.4, 4.0], [59.4, 4.0], [59.4, 5.4], [62.0, 6.6], [63.0, 9.5], [63.9, 12.0], [63.9, 15.5], [63.2, 16.5], [63.2, 32.5], [61.5, 33.5], [59.2, 34.0], [41.0, 34.0], [38.6, 33.5], [37.0, 32.5], [37.0, 16.5], [36.2, 15.5], [36.2, 12.0]],
+    cafe: [[63.4, 16.8], [64.5, 14.0], [66.3, 6.0], [68.6, 6.0], [69.2, 3.0], [71.5, 0.4], [73.6, 0.4], [76.0, 2.2], [77.2, 5.4], [78.3, 2.0], [79.2, 2.4], [79.8, 5.8], [81.2, 7.6], [81.5, 9.5], [83.5, 11.5], [85.3, 14.3], [84.9, 16.0], [84.7, 25.8], [82.2, 26.6], [79.0, 29.0], [76.8, 32.0], [75.8, 34.4], [66.6, 34.4], [65.5, 32.0], [63.3, 31.6], [63.5, 17.5]],
+    sushi: [[76.3, 35.6], [78.0, 33.0], [80.5, 28.5], [82.4, 26.2], [85.0, 25.7], [86.0, 23.5], [88.0, 22.0], [91.5, 22.2], [93.0, 23.5], [95.6, 23.0], [96.2, 24.0], [95.2, 26.5], [96.5, 28.5], [100, 32.5], [100, 56.0], [95.5, 56.0], [94.5, 55.0], [90.0, 55.8], [87.0, 56.0], [84.5, 54.0], [80.5, 53.0], [78.0, 51.8], [78.0, 44.0], [75.8, 43.0], [75.8, 38.0], [76.6, 37.0]],
+    icecream: [[75.6, 66.5], [76.0, 63.0], [78.0, 60.3], [81.5, 58.6], [84.5, 57.6], [87.2, 57.0], [87.6, 55.6], [89.0, 55.0], [91.2, 55.4], [92.6, 54.8], [92.8, 56.6], [94.0, 58.2], [96.5, 59.6], [99.0, 61.8], [100, 63.5], [100, 87.0], [97.5, 88.5], [95.0, 88.0], [91.0, 88.8], [89.5, 89.0], [85.5, 87.6], [82.3, 86.5], [80.0, 86.4], [79.2, 84.8], [76.8, 84.8], [76.0, 83.5], [76.6, 70.0], [75.6, 68.5]],
+  };
+  const OPENING = {
+    pizza: [18.5, 18.6, 34.4, 27.3], smoothie: [6.3, 40.4, 19.6, 46.8], diner: [39.4, 16.4, 60.6, 26.6], cafe: [64.8, 18.6, 83.4, 26.6],
+    sushi: [79.2, 37.7, 94.0, 47.5], burrito: [5.6, 70.0, 20.9, 79.0], icecream: [78.8, 72.8, 95.4, 79.2],
+  };
+  // A storefront drawn as a plain shape when the picture is missing (spec 3): its colour.
+  const PAINT = { pizza: '#c8402f', diner: '#d6342f', cafe: '#8a5a32', smoothie: '#2aa3a0', sushi: '#2f3f75', burrito: '#e0782a', icecream: '#ef8fc0' };
+  // The scan frame's box round each storefront: its outline's bounds, kept clear of a neighbour's sign board (the
+  // corner brackets stand about 2% out: the Pizza Parlor's and the Cafe's outer corners would sit on the Smoothie
+  // Shack's and Sushi's signs).
+  const FRAME = {};
+  Object.keys(OUTLINE).forEach(id => {
+    const xs = OUTLINE[id].map(p => p[0]), ys = OUTLINE[id].map(p => p[1]);
+    FRAME[id] = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+  });
+  FRAME.pizza[0] = 23.6;
+  FRAME.cafe[2] = 78.7;
+  // The progress board stands on the plinth (BBCourt.layout.board, its top), centred; its foot at BOARD.base, on the
+  // plinth's top just short of its front edge (people whose feet are behind that line are behind the board).
+  const PLINTH = (window.BBCourt && BBCourt.layout && BBCourt.layout.board) || [43.9, 47.6, 56.1, 55.1];
+  const BOARD = { x: (PLINTH[0] + PLINTH[2]) / 2, base: PLINTH[3] + 1.9 };
+  // fitBoard(): the board's top stays this far (% of the picture) under the lowest foot of the lines behind it, its
+  // letters never under this share of their Text Size.
+  const BOARD_CEIL = 0.8, BOARD_MIN = 0.72;
+  // The grand celebration: every drawn customer on the open floor at the bottom of the court, in two rows.
+  const LINEUP = [{ y: 91.6, x0: 12, x1: 88 }, { y: 98.4, x0: 16, x1: 84 }];
+  // Out of focus: the blur's radius as a share of the picture's height (8.6 px at 720 p, 13 px at 1080 p).
+  const BLUR = 0.012;
+  const FOCUS_MS = 600, ZOOM_MS = 460;
+  // A grown-up's height in percent of the picture's height, by where their feet are (the picture's mild perspective:
+  // measured on the counter stools, 4.6% tall at the top row, 5.4% at the bottom).
+  const tall = y => 9.3 + 3.3 * y / 100;
+  const CANVAS = { feet: 0.955, hip: 0.56, figure: 0.905 };   // the cast's 768 x 1152 canvas
+  // The poses on the floor: the front of a line at the counter, the rest of it waiting, a diner eating (the seated
+  // EATING pose, no food in it: the restaurant's own food stands on the table; a character without it sits happy).
+  const POSE = { front: 'neutral', line: 'waiting', seated: 'eating', seatedElse: 'happy' };
+  // A dish on a table, fitted into a box this share of a grown-up's height (width, height).
+  const DISH = { w: 0.40, h: 0.30 };
+
+  /* ══ where the picture is on this window ═══════════════════════════════════════════════════════════════════ */
+  let geo = { W: 1280, H: 720, w: 1080, h: 720, left: 100, top: 0 };
+  function picSize() { const p = C() && C().layout && C().layout.picture; return p && p.w && p.h ? p : { w: 1536, h: 1024 }; }
+  /** object-fit: contain, done by hand so the numbers exist without a layout engine (the checks, the review frames). */
+  function layoutBox() {
+    const W = window.innerWidth || 1280, H = window.innerHeight || 720, P = picSize(), ratio = P.w / P.h;
+    const w = Math.min(W, H * ratio), h = w / ratio;
+    geo = { W, H, w, h, left: (W - w) / 2, top: (H - h) / 2 };
+    const el = $('court');
+    if (el) {
+      Object.assign(el.style, { left: geo.left + 'px', top: geo.top + 'px', width: w + 'px', height: h + 'px' });
+      el.style.setProperty('--blur', (Math.round(h * BLUR * 10) / 10) + 'px');
+    }
+    return geo;
+  }
+  /** A window point in percent of the picture, or null outside it. */
+  function toPic(cx, cy) {
+    const x = (cx - geo.left) / geo.w * 100, y = (cy - geo.top) / geo.h * 100;
+    return x >= 0 && x <= 100 && y >= 0 && y <= 100 ? { x, y } : null;
+  }
+  /** The px of bb.css's --small and --label for this window and Text Size (the same clamp() numbers). */
+  const SIZES = { small: { normal: [14, 1.4, 22], large: [17, 1.8, 27], xlarge: [20, 2.2, 32] },
+    label: { normal: [18, 2.2, 34], large: [22, 2.8, 42], xlarge: [26, 3.4, 52] } };
+  function textPx(kind) {
+    const t = SIZES[kind][document.body.dataset.text] || SIZES[kind].normal;
+    return clamp(t[1] * (window.innerWidth || 1280) / 100, t[0], t[2]);
+  }
+
+  /* ══ hits ══════════════════════════════════════════════════════════════════════════════════════════════════ */
+  function inPoly(poly, x, y) {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [xi, yi] = poly[i], [xj, yj] = poly[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  }
+  const inBox = (b, x, y) => x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3];
+  const overlap = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+  /** The storefront at a point of the picture (percent): inside its drawn outline first, else inside its box. Where
+   *  two overlap (a side stall stands in front of a top-row corner) the one whose box reaches lower wins: the one
+   *  drawn in front (spec 6.2). -> pack id or null */
+  function hit(x, y) {
+    const L = C().layout.stores, ids = C().restaurants.map(r => r.pack).filter(id => L[id]);
+    let list = ids.filter(id => OUTLINE[id] && inPoly(OUTLINE[id], x, y));
+    if (!list.length) list = ids.filter(id => inBox(L[id].store, x, y));
+    if (!list.length) return null;
+    return list.slice().sort((a, b) => L[b].store[3] - L[a].store[3])[0];
+  }
+
+  /* ══ what the court shows ══════════════════════════════════════════════════════════════════════════════════ */
+  const built = id => BB.packs.has(id);
+  const savedIds = () => (BB.save.shift && BB.save.shift.savedIds ? BB.save.shift.savedIds() : []);
+  /** The stores, as they are now (before any pending moment), plus what a moment in play has done to one. */
+  const momentOn = {};                                   // pack -> Set of moment classes (rollup, bannerIn, goldOn, drop)
+  function stores() {
+    const st = state(), L = C().layout.stores, saved = savedIds();
+    return C().restaurants.filter(r => L[r.pack]).map(r => {
+      const f = R().storefront(C(), st, r.pack), b = L[r.pack], on = momentOn[r.pack] || new Set();
+      const shutter = f.shutter && !on.has('opened');
+      const isBuilt = built(r.pack);
+      return { pack: r.pack, arm: r.arm, name: r.name, short: r.short, open: f.open, built: isBuilt,
+        scan: f.open && isBuilt && !f.shutter, greyed: !f.open || !isBuilt || shutter, shutter, rolling: on.has('rollup') && !on.has('opened'),
+        stars: f.stars, gold: f.goldSign || on.has('goldOn'), drop: on.has('drop'), banner: f.banner || on.has('bannerIn'),
+        eventDue: f.eventDue, saved: saved.includes(r.pack), busy: f.busy, popularity: f.popularity,
+        sign: b.sign, box: b.store, frame: FRAME[r.pack] || b.store, outline: OUTLINE[r.pack] || null, opening: OPENING[r.pack] || null,
+        label: R().label(C(), st, r.pack, { saved }) };
+    });
+  }
+  /** The scan's stops: BB.courtRules.stops without the shops whose pack is not loaded (a part left with one shop is
+   *  that shop; one left with none goes). */
+  function scanStops() {
+    const out = [], st = state();
+    for (const s of R().stops(C(), st, { saved: savedIds() })) {
+      if (s.kind === 'shop') { if (built(s.pack)) out.push(s); continue; }
+      const shops = s.stops.filter(x => built(x.pack));
+      if (shops.length === 1) out.push(shops[0]);
+      else if (shops.length === s.stops.length) out.push(s);
+      else if (shops.length) {
+        const arm = C().arms.find(a => a.id === s.arm) || { name: s.arm };
+        out.push(Object.assign({}, s, { stops: shops, label: arm.name + '. ' + shops.map(x => R().restaurant(C(), x.pack).short).join(', ') + '.' }));
+      }
+    }
+    return out;
+  }
+  const scannable = id => scanStops().some(s => (s.kind === 'shop' ? s.pack === id : s.stops.some(x => x.pack === id)));
+
+  /* ── the crowd ─────────────────────────────────────────────────────────────────────────────────────────── */
+  function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h; }
+  const castPoses = folder => (((window.BBArt && BBArt.cast && BBArt.cast.people) || {})[folder] || []);
+  function castPic(id, pose) {
+    const P = cast()[id];
+    const src = P && P.art && BB.stage.castSrc ? BB.stage.castSrc(P.art, pose || 'neutral') : null;
+    return src ? { src, w: 768, h: 1152, kind: 'cast', id, scale: P.scale || 1 } : null;
+  }
+  /** A diner: eating, or happy for a character not drawn eating yet. */
+  function seatedPose(id) { const P = cast()[id]; return P && P.art && castPoses(P.art).includes(POSE.seated) ? POSE.seated : POSE.seatedElse; }
+  /** Where a figure goes, in percent of the picture: feet (or, seated, hips) at x, y. */
+  function figure(pic, x, y, seated) {
+    const adult = tall(y), P = picSize();
+    const h = adult / CANVAS.figure * (pic.scale || 1), top = 1 - CANVAS.figure - (1 - CANVAS.feet);
+    const w = h * (pic.w / pic.h) * (P.h / P.w);
+    const t = seated ? y - CANVAS.hip * h : y - CANVAS.feet * h;
+    // The figure's own box (a cast canvas has room round the figure), for overlap checks.
+    const inset = 0.24;
+    const rect = [x - w * (0.5 - inset), t + top * h, x + w * (0.5 - inset), y];
+    return { left: x - w / 2, top: t, w, h, hip: seated ? CANVAS.hip : 1, rect };
+  }
+  /** Who eats at each restaurant, from its pack and the cast (only the drawn customers): its locals, its regulars, and
+   *  its level-4 visitors who are nobody's local (a cameo local stays at home). BB.courtRules.floor deals them out. */
+  function pools() {
+    const drawn = new Set(window.BBCast && BBCast.drawn ? BBCast.drawn(window.BBArt && BBArt.cast) : []);
+    const out = {};
+    for (const r of C().restaurants) {
+      const v = BB.packs.get(r.pack);
+      if (!v || !v.pack) continue;
+      const P = { locals: [], regulars: [], visitors: [] };
+      for (const c of v.pack.regulars || []) {
+        if (!drawn.has(c.id)) continue;
+        const role = (cast()[c.id] || {}).role;
+        if (c.visitor) { if (role === 'visitor') P.visitors.push(c.id); }
+        else if (role === 'local') P.locals.push(c.id);
+        else if (role === 'regular') P.regulars.push(c.id);
+      }
+      out[r.pack] = P;
+    }
+    return out;
+  }
+  /** A diner's dish: one of the restaurant's own (BBArt.court.food, '<pack>-<name>'), the same one for them every time. */
+  function dishFor(pack, who, fx, fy) {
+    const all = courtArt().food || {}, names = Object.keys(all).filter(n => n.indexOf(pack + '-') === 0).sort();
+    if (!names.length || fx === undefined) return null;
+    const name = names[hash(who + ':' + pack) % names.length], [pw, ph] = all[name], P = picSize();
+    const box = { w: DISH.w * tall(fy), h: DISH.h * tall(fy) };            // in percent of the picture's height
+    const k = Math.min(box.w / pw, box.h / ph), h = ph * k, w = pw * k * P.h / P.w;
+    return { name, src: 'packs/court/art/food/' + name + '.webp', left: fx - w / 2, top: fy - h / 2, w, h, x: fx, y: fy,
+      rect: [fx - w / 2, fy - h / 2, fx + w / 2, fy + h / 2] };
+  }
+  /** Which way a storefront's line faces: towards its front (the art faces a little to the viewer's right; flipped
+   *  when the front of the line is to the left). */
+  function lineFlips(pack) {
+    const q = (C().layout.stores[pack] || {}).queue || [];
+    return q.length > 1 && q[0][0] < q[1][0] - 0.3;
+  }
+  let boardRect = [37, 44, 63, BOARD.base];
+  /** Everyone on the floor now (BB.courtRules.floor over the storefronts being scanned): { key, id, pose, pic, x, y,
+   *  seated, flip, front, rect, dish } (dish: the food on the table in front of a diner). */
+  function people(list) {
+    const out = [], L = C().layout.stores;
+    const shops = list.filter(s => s.scan && L[s.pack]).map(s => s.pack);
+    const fl = R().floor(C(), state(), pools(), { only: shops });
+    for (const pack of shops) {
+      const f = fl[pack] || { queue: [], seats: [] }, flip = lineFlips(pack);
+      f.queue.forEach((m, i) => {
+        const [x, y] = m.at, pose = i === 0 ? POSE.front : POSE.line, pic = castPic(m.id, pose);
+        if (pic) out.push(Object.assign({ key: pack + ':q' + i + ':' + m.id, id: m.id, pack, pose, pic, x, y, seated: false, flip }, figure(pic, x, y, false)));
+      });
+      f.seats.forEach((m, i) => {
+        const [x, y, fx, fy] = m.at, pose = seatedPose(m.id), pic = castPic(m.id, pose);
+        if (!pic) return;
+        out.push(Object.assign({ key: pack + ':s' + i + ':' + m.id, id: m.id, pack, pose, pic, x, y, seated: true, flip: fx !== undefined && fx < x,
+          dish: dishFor(pack, m.id, fx, fy) }, figure(pic, x, y, true)));
+      });
+    }
+    // Nobody stands over a sign, and nobody in front of the board overlaps it (behind it, the board hides them).
+    // (The layout's spots are set so that nobody is ever left out: `dropped` says who was, for the checks.)
+    const signs = list.map(s => s.sign);
+    dropped = [];
+    return out.filter(p => {
+      p.front = p.y >= BOARD.base;
+      if (signs.some(b => overlap(p.rect, b)) || (p.front && overlap(p.rect, boardRect))) { dropped.push(p.key); return false; }
+      if (p.dish && (signs.some(b => overlap(p.dish.rect, b)) || (p.dish.y >= BOARD.base && overlap(p.dish.rect, boardRect)))) { dropped.push(p.key + ':dish'); p.dish = null; }
+      return true;
+    });
+  }
+  let dropped = [];
+
+  /* ── the progress board ────────────────────────────────────────────────────────────────────────────────── */
+  /** Its lines (BB.courtRules.nextGoal().board) and where it stands: measured once laid out, else worked out from the
+   *  text (bb.css: width clamp(28%, 20 x --small, 50%); a sentence wraps at about half an em a letter; the short
+   *  tallies, "Five stars: 2 of 7", share a line when they fit). */
+  function boardLines() {
+    // A Grand Opening not yet played, or still rolling its shutter (before its banner step): the board keeps the goal it
+    // had while that storefront was shut, so it never names the next goal over a shutter that still says Coming Soon.
+    const st = state();
+    const shut = C().restaurants.filter(r => {
+      const e = st && st.restaurants && st.restaurants[r.pack], on = momentOn[r.pack];
+      return e && e.opened && !e.grandOpeningSeen && !(on && on.has('opened'));
+    });
+    if (!shut.length) return R().nextGoal(C(), st).board.slice();
+    const before = JSON.parse(JSON.stringify(st));
+    shut.forEach(r => { before.restaurants[r.pack].opened = false; });
+    return R().nextGoal(C(), before).board.slice();
+  }
+  const TALLY = 22;                                       // a board line this short is a tally
+  /** The lines grouped as drawn: a sentence on its own, consecutive tallies together. */
+  function boardRows(lines) {
+    const rows = [];
+    lines.forEach((ln, i) => {
+      const short = i > 0 && ln.length <= TALLY, last = rows[rows.length - 1];
+      if (short && last && last.tally) last.bits.push(ln); else rows.push({ tally: short, bits: [ln] });
+    });
+    return rows;
+  }
+  function estimateBoard(lines) {
+    const sm = textPx('small'), wPx = clamp(20 * sm, 0.28 * geo.w, 0.50 * geo.w), inner = wPx - 2.4 * sm, em = 0.5 * sm;
+    let n = 0;
+    boardRows(lines).forEach(r => {
+      if (!r.tally) { n += Math.max(1, Math.ceil(r.bits[0].length * em / inner)); return; }
+      let row = 0, k = 1;
+      r.bits.forEach(b => { const wd = b.length * em + 0.8 * sm; if (row && row + wd > inner) { k++; row = 0; } row += wd; });
+      n += k;
+    });
+    const hPx = n * 1.22 * sm + 2.3 * sm;
+    const w = wPx / geo.w * 100, h = hPx / geo.h * 100;
+    return [BOARD.x - w / 2, BOARD.base - h, BOARD.x + w / 2, BOARD.base];
+  }
+  function measureBoard() {
+    const el = document.querySelector('#courtCam .board'), cam = $('court');
+    const r = el && el.getBoundingClientRect(), c = cam && cam.getBoundingClientRect();
+    if (!r || !r.width || !c || !c.width) return null;
+    return [(r.left - c.left) / c.width * 100, (r.top - c.top) / c.height * 100, (r.right - c.left) / c.width * 100, (r.bottom - c.top) / c.height * 100];
+  }
+
+  /* ══ drawing it ════════════════════════════════════════════════════════════════════════════════════════════ */
+  let plan = { stores: [], people: [], board: [] }, crowdHidden = false;
+  const els = {};                                         // pack -> { box, group }
+  function cam() { return $('courtCam'); }
+  const layer = cls => document.querySelector('#courtCam > .' + cls.replace(/ /g, '.'));
+  /** The layers, back to front (bb.css): the picture, the drawn storefronts (no picture), the greyed-out copies,
+   *  the crowd behind the board, the board, the crowd in front of it, the storefronts' signs (and the lifted copy of
+   *  the highlighted one), the parts of the U, effects, a bubble. Made once; render() fills them. */
+  function skeleton() {
+    const c = cam();
+    if (!c || c.querySelector('.pic')) return c;
+    c.innerHTML = '<div class="pic"></div><div class="paints"></div><div class="greys"></div><div class="crowd back"></div><div class="board"></div>' +
+      '<div class="crowd front"></div><div class="stores"></div><div class="parts"></div><div class="fx"></div><div class="say"><b></b><span></span></div>';
+    $('court').addEventListener('click', onClick);
+    return c;
+  }
+  /** Draw the court as it is now: storefronts, the board, the crowd. Walkers keep their place along their line, and
+   *  effects and bubbles stay where they are. */
+  function render() {
+    const c = skeleton();
+    layoutBox();
+    if (!c) return;
+    const list = stores(), pic = !!courtArt().picture;
+    plan.stores = list;
+    const shape = (s, cls) => '<div class="' + cls + '" data-pack="' + s.pack + '" style="clip-path:' + clip(s.outline) +
+      (pic ? '' : ';background:' + (cls.startsWith('grey') ? '#7d7d7d' : PAINT[s.pack] || '#999')) + '"></div>';
+    const p = layer('pic');
+    p.classList.toggle('none', !pic);
+    p.style.backgroundImage = pic ? 'url("' + PICTURE + '")' : '';
+    layer('paints').innerHTML = pic ? '' : list.map(s => shape(s, 'paint')).join('');
+    layer('greys').innerHTML = list.filter(s => s.greyed && s.outline).map(s => shape(s, 'grey' + (s.rolling && s.built && s.open ? ' fade' : ''))).join('');
+    // The storefronts' level: every scan box, then every lifted copy (under every sign), then every storefront's signs
+    // (bb.css and liftRules() pair them by data-pack).
+    liftRules();
+    layer('stores').innerHTML = list.map(boxHTML).join('') + list.map(liftHTML).join('') + list.map(storeHTML).join('');
+    layer('parts').innerHTML = partHTML();
+    list.forEach(s => { els[s.pack] = { box: c.querySelector('.store[data-pack="' + s.pack + '"]'), group: c.querySelector('.group[data-pack="' + s.pack + '"]') }; });
+    renderBoard();
+    renderCrowd(true);
+    fitPlates();
+  }
+  /** Each name plate fits its sign board at every window shape and Text Size (phase 3 art-polish): the plate is held
+   *  to the board (PLATE_FIT of its width and height), its words wrap at spaces, and where they still spill (a long
+   *  word, a short board, Extra Large text) its letters step down a pixel at a time, never under PLATE_FIT.min px.
+   *  A browser measures; without layout (jsdom) nothing changes. tools/review_compose.py draws the same rule. */
+  function fitPlates() {
+    const c = cam();
+    if (!c) return;
+    c.querySelectorAll('.plate').forEach(p => {
+      p.style.fontSize = '';
+      let f = parseFloat(getComputedStyle(p).fontSize) || 0;
+      const over = () => p.scrollWidth > p.clientWidth + 1 || p.scrollHeight > p.clientHeight + 1;
+      while (f > PLATE_FIT.min && over()) { f = Math.max(PLATE_FIT.min, f - 1); p.style.fontSize = f + 'px'; }
+    });
+  }
+  const clip = poly => (poly ? 'polygon(' + poly.map(([x, y]) => pc(x) + ' ' + pc(y)).join(',') + ')' : 'none');
+  function starsHTML(n) {
+    return '<span class="glyphs" aria-hidden="true"><b>' + '★'.repeat(n) + '</b><i>' + '☆'.repeat(Math.max(0, 5 - n)) + '</i></span> <span class="num">' + n + '</span>';
+  }
+  /** The lift and the signs grow from the storefront's foot (BBCourt's box: its middle, its bottom). */
+  const origin = s => pc((s.box[0] + s.box[2]) / 2) + ' ' + pc(s.box[3]);
+  /** The scan's box: the frame the brackets go round (pointer hits test the outline, then BBCourt's box). */
+  function boxHTML(s) {
+    const fr = s.frame, id = s.scan ? ' data-id="shop:' + s.pack + '"' : '';
+    return '<div class="store' + (s.scan ? ' open' : '') + '" data-pack="' + s.pack + '" data-arm="' + s.arm + '"' + id +
+      ' style="left:' + pc(fr[0]) + ';top:' + pc(fr[1]) + ';width:' + pc(fr[2] - fr[0]) + ';height:' + pc(fr[3] - fr[1]) + '"></div>';
+  }
+  /** The lifted copy of the storefront, shown with its halo while it is highlighted. */
+  function liftHTML(s) {
+    return '<div class="lift" data-pack="' + s.pack + '" style="transform-origin:' + origin(s) + '"><div class="shape" style="clip-path:' + clip(s.outline) +
+      (courtArt().picture ? '' : ';background:' + (PAINT[s.pack] || '#999')) + '"></div></div>';
+  }
+  /** Per storefront, the rules that show its lifted copy and lift its signs with it while its scan box is lit (or its
+   *  part is): made from BBCourt, so the stylesheet names no restaurant. */
+  function liftRules() {
+    if ($('courtLift')) return;
+    const css = C().restaurants.map(r => {
+      const on = '#courtCam .store[data-pack="' + r.pack + '"]:is(.lit, .litMember) ~ ';
+      return on + '.lift[data-pack="' + r.pack + '"] { display: block; }\n' + on + '.group[data-pack="' + r.pack + '"] { z-index: 3; }\n' +
+        'body[data-motion="full"] ' + on + ':is(.lift, .group)[data-pack="' + r.pack + '"] { transform: translateY(-.8%) scale(1.035); }';
+    }).join('\n');
+    const el = document.createElement('style');
+    el.id = 'courtLift';
+    el.textContent = css;
+    document.head.appendChild(el);
+  }
+  /** What is drawn on a storefront: its shutter, banner, gold sign, name plate and star sign. */
+  function storeHTML(s) {
+    const sg = s.sign, sx = (sg[0] + sg[2]) / 2, sy = (sg[1] + sg[3]) / 2, sw = sg[2] - sg[0], sh = sg[3] - sg[1];
+    let h = '<div class="group' + (s.greyed ? ' greyed' : '') + (s.gold ? ' goldOn' : '') + '" data-pack="' + s.pack + '" style="transform-origin:' + origin(s) + '">';
+    if (s.shutter && s.opening) {
+      const o = s.opening, src = propSrc('shutter');
+      h += '<div class="shutter' + (s.rolling ? ' rolling' : '') + '" style="left:' + pc(o[0]) + ';top:' + pc(o[1]) + ';width:' + pc(o[2] - o[0]) + ';height:' + pc(o[3] - o[1]) + '">' +
+        (src ? '<img alt="" src="' + src + '">' : '') + '<span class="note">Coming Soon</span></div>';
+    }
+    if (s.banner && s.opening && !s.shutter) {
+      const o = s.opening, src = propSrc('grandOpening');
+      if (src) {
+        h += '<div class="banner' + (s.rolling ? ' in' : '') + '" style="left:' + pc((o[0] + o[2]) / 2) + ';top:' + pc(o[3]) + ';--bw:' + pc((o[2] - o[0]) * 1.05) + '">' +
+          '<img alt="" src="' + src + '"></div>';
+      }
+    }
+    // The gold sign: the name plate turns gold (bb.css) under the gold sign's star crest (the top of goldSign.webp).
+    if (s.gold) {
+      const src = propSrc('goldSign');
+      h += '<div class="gold' + (s.drop ? ' drop' : '') + '" style="left:' + pc(sx) + ';top:' + pc(sg[1]) + (src ? ';background-image:url(&quot;' + src + '&quot;)' : '') + '"></div>';
+    }
+    // The name plate on the sign board, and the star sign hanging under it (stars as glyphs plus the number). The plate
+    // never grows past its board (phase 3): its words wrap, then fitPlates() shrinks them until they fit.
+    h += '<div class="plate" style="left:' + pc(sx) + ';top:' + pc(sy) + ';min-width:' + pc(sw * 0.86) + ';min-height:' + pc(sh * 0.74) +
+      ';max-width:' + pc(sw * PLATE_FIT.w) + ';max-height:' + pc(sh * PLATE_FIT.h) + '"><span>' + esc(s.short) + '</span></div>';
+    if (s.open && !s.shutter) {
+      // In the scan label's own words (BB.courtRules.label), so what is said is what is shown.
+      const tag = s.eventDue ? 'Five-star event next' : s.saved ? 'Shift in progress' : s.banner ? 'Grand Opening' : '';
+      h += '<div class="stars" style="left:' + pc(sx) + ';top:' + pc(sg[3] + 0.5) + '">' + starsHTML(s.stars) + (tag ? '<em>' + tag + '</em>' : '') + '</div>';
+    }
+    return h + '</div>';
+  }
+  /** The parts of the U as scan targets: a box round each part's open shops. */
+  function partHTML() {
+    return scanStops().filter(s => s.kind === 'part').map(s => {
+      const boxes = s.stops.map(x => FRAME[x.pack] || C().layout.stores[x.pack].store);
+      const b = [Math.min(...boxes.map(v => v[0])), Math.min(...boxes.map(v => v[1])), Math.max(...boxes.map(v => v[2])), Math.max(...boxes.map(v => v[3]))];
+      return '<div class="part" data-arm="' + s.arm + '" data-id="' + s.id + '" data-members="' + s.stops.map(x => x.pack).join(' ') +
+        '" style="left:' + pc(b[0]) + ';top:' + pc(b[1]) + ';width:' + pc(b[2] - b[0]) + ';height:' + pc(b[3] - b[1]) + '"></div>';
+    }).join('');
+  }
+  function renderBoard() {
+    const el = layer('board');
+    if (!el) return;
+    const lines = boardLines();
+    plan.board = lines;
+    el.style.left = pc(BOARD.x); el.style.bottom = pc(100 - BOARD.base);
+    el.innerHTML = boardRows(lines).map((r, i) => (r.tally ? '<p class="tally">' + r.bits.map(b => '<span>' + esc(b) + '</span>').join(' ') + '</p>'
+      : '<p' + (i ? '' : ' class="goal"') + '>' + esc(r.bits[0]) + '</p>')).join('');
+    fitBoard(el);
+    boardRect = measureBoard() || estimateBoard(lines);
+  }
+  /** The board grows upwards from the plinth with its words (Text Size). At Large and Extra Large on a short window its
+   *  top would reach the storefront lines behind it and hide the legs of the people in them: its letters step down a
+   *  pixel at a time until its top is under the lowest foot of those lines (BOARD_CEIL), never under BOARD_MIN of their
+   *  size (legibility first). A browser measures; without layout (jsdom) nothing changes. */
+  function fitBoard(el) {
+    el.style.fontSize = '';
+    // Measured in the court picture's own layout (offsets: the camera's zoom does not change them).
+    const box = el.offsetParent, H = box && box.offsetHeight, W = box && box.offsetWidth;
+    if (!H || !W || !el.offsetHeight) return;
+    const top = () => el.offsetTop / H * 100;
+    const x0 = el.offsetLeft - el.offsetWidth / 2;            // bb.css centres it on its left with translateX(-50%)
+    const ceil = boardCeil([x0 / W * 100, 0, (x0 + el.offsetWidth) / W * 100]);
+    if (top() >= ceil) return;
+    const f0 = parseFloat(getComputedStyle(el).fontSize) || 0, min = f0 * BOARD_MIN;
+    let f = f0;
+    while (f > min && top() < ceil) { f = Math.max(min, f - 1); el.style.fontSize = f + 'px'; }
+  }
+  /** The lowest foot (in % of the picture) of the storefront lines behind the board that stand over its width. */
+  function boardCeil(rect) {
+    let y = 0;
+    const L = C().layout.stores;
+    Object.keys(L).forEach(id => (L[id].queue || []).forEach(([x, fy]) => {
+      if (fy < BOARD.base - 5 && x > rect[0] - 3 && x < rect[2] + 3) y = Math.max(y, fy);
+    }));
+    return y ? y + BOARD_CEIL : 0;
+  }
+  /** The crowd: placed again (a new crowd, a new text size). Everyone stands (or sits) still. */
+  function renderCrowd(force) {
+    const back = layer('crowd back'), front = layer('crowd front');
+    if (!back || !front) return;
+    boardRect = measureBoard() || estimateBoard(plan.board);
+    const list = crowdHidden ? [] : people(plan.stores);
+    const key = list.map(p => p.key + '@' + p.pic.src + (p.dish ? '+' + p.dish.name : '')).join('|') + '#' + boardRect.map(v => v.toFixed(1)).join(',');
+    if (!force && key === crowdKey) return;
+    crowdKey = key;
+    plan.people = list;
+    back.innerHTML = ''; front.innerHTML = '';
+    for (const p of list) {
+      const el = document.createElement('div');
+      el.className = 'p castp' + (p.seated ? ' seated' : '') + (p.flip ? ' flip' : '');
+      el.dataset.key = p.key;
+      el.dataset.id = p.id;
+      Object.assign(el.style, { left: pc(p.left), top: pc(p.top), width: pc(p.w), height: pc(p.seated ? p.h * p.hip : p.h), zIndex: String(Math.round(p.y * 10)) });
+      el.innerHTML = '<img alt="" src="' + esc(p.pic.src) + '"' + (p.seated ? ' style="height:' + pc(100 / p.hip) + '"' : '') + '>';
+      (p.front ? front : back).appendChild(el);
+      if (p.dish) {
+        // The dish on the table in front of the diner, over their hips (the table's near side).
+        const d = p.dish, f = document.createElement('div');
+        f.className = 'dish';
+        f.dataset.key = p.key + ':dish';
+        Object.assign(f.style, { position: 'absolute', pointerEvents: 'none', left: pc(d.left), top: pc(d.top), width: pc(d.w), height: pc(d.h),
+          zIndex: String(Math.round(d.y * 10) + 1) });
+        f.innerHTML = '<img alt="" src="' + esc(d.src) + '" style="display:block;width:100%;height:100%">';
+        (d.y >= BOARD.base ? front : back).appendChild(f);
+      }
+    }
+  }
+  let crowdKey = '';
+
+  /* ── the clock: only the chatter's guard runs on it (nobody moves) ─────────────────────────────────────── */
+  let raf = 0;
+  function startClock() { if (!raf) raf = requestAnimationFrame(tick); }
+  function tick() {
+    raf = 0;
+    if (document.body.dataset.place !== 'court') return;    // a restaurant: stopped (arrive() starts it again)
+    guardSay();
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* ══ the camera: out of focus, focus pull, zoom ════════════════════════════════════════════════════════════ */
+  /** Out of focus (the main menu) or in focus. instant: no pull (a cut). */
+  function soft(on, instant) {
+    const el = $('court');
+    if (!el) return;
+    if (instant) { el.classList.add('cut'); void el.offsetWidth; }
+    el.classList.toggle('soft', !!on);
+    document.body.dataset.court = on ? 'soft' : 'focus';
+    if (instant) { void el.offsetWidth; el.classList.remove('cut'); }
+  }
+  /** The focus pull after Play: about 0.6 s, a cut under Reduced. */
+  async function focusPull() { soft(false, reduced()); if (!reduced()) await wait(FOCUS_MS); }
+  function zoomOf(id) {
+    const b = C().layout.stores[id].store, bw = b[2] - b[0], bh = b[3] - b[1];
+    const s = Math.min(100 / bw, 100 / bh) * 0.92, cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+    return 'translate(' + pc(50 - cx * s) + ',' + pc(50 - cy * s) + ') scale(' + s.toFixed(3) + ')';
+  }
+  function setZoom(t, instant) {
+    const c = cam();
+    if (!c) return;
+    if (instant) { c.classList.add('cut'); c.style.transform = t; void c.offsetWidth; c.classList.remove('cut'); }
+    else c.style.transform = t;
+  }
+  /** Choosing a storefront: zoom into it (a cut under Reduced). */
+  async function zoomIn(id) { if (reduced()) return; setZoom(zoomOf(id)); await wait(ZOOM_MS); }
+  /** Back from a restaurant: from that storefront out to the whole court. */
+  async function zoomOut(id) {
+    if (reduced() || !id || !C().layout.stores[id]) { setZoom('', true); return; }
+    setZoom(zoomOf(id), true);
+    await wait(30);
+    setZoom('');
+    await wait(ZOOM_MS);
+  }
+
+  /* ══ speaking ══════════════════════════════════════════════════════════════════════════════════════════════ */
+  let script = null;
+  const lines = () => script || (script = SC().court(window.BBScripts && BBScripts.court));
+  const used = new Set();                                 // court lines said this session (none repeats until a moment runs out)
+  /** A court line: Mitch and the announcer in the stage's bubble, anyone else in a bubble over them on the floor
+   *  (at: their figure). Resolves when it has been said (a scene never cuts it off). */
+  async function speak(who, moment, vars, opts) {
+    opts = opts || {};
+    if (!voicesOn()) return null;
+    const l = SC().pick(null, lines(), who, moment, vars || {}, used, Math.random, null);
+    if (!l) return null;
+    const name = (cast()[who] || {}).name || who;
+    if (opts.at) say(opts.at, name, l.text);
+    else BB.stage.bubble(who === 'pa' ? 'pa' : 'mitch', who === 'pa' ? '📢 ' + name : name, l.text);
+    await BB.audio.say({ who, text: l.text, clip: l.clip });
+    if (opts.at) say(null); else BB.stage.bubble(null);
+    return l;
+  }
+  /** Mitch at the court, in his shirt and tie, on the side away from the storefront the moment is about. */
+  async function mitchSays(moment, vars, pose, near) {
+    document.body.dataset.mitchSide = near && C().layout.stores[near] && (C().layout.stores[near].store[0] + C().layout.stores[near].store[2]) / 2 > 50 ? 'left' : 'right';
+    BB.stage.mitch(pose || 'talking');
+    const l = await speak('mitch', moment, vars);
+    return l;
+  }
+  /** A bubble over someone on the floor (a cheer, or a customer's chatter caption). at: { x, y } in percent (their head). */
+  function say(at, name, text, cls) {
+    const el = document.querySelector('#courtCam .say');
+    if (!el) return;
+    if (!at) { el.className = 'say'; sayAt = null; return; }
+    el.className = 'say on' + (cls ? ' ' + cls : '');
+    el.querySelector('b').textContent = name || '';
+    el.querySelector('span').textContent = SC().clean(text);
+    // Kept inside the picture (bb.css: at most 34% wide, a chatter caption 30%); the tail still points at the speaker.
+    const half = cls === 'chatter' ? 16 : 18, x = clamp(at.x, half, 100 - half), tail = clamp(50 + (at.x - x) / (2 * half) * 100, 8, 92);
+    el.style.left = pc(x); el.style.bottom = pc(100 - at.y + 1.2);
+    el.style.setProperty('--tail', pc(tail));
+    sayAt = { x, y: at.y, cls, tail };
+  }
+  let sayAt = null, chatterTimer = null;
+  /** Chatter never stands over the highlighted storefront: it goes as the highlight arrives. */
+  function guardSay() {
+    if (!sayAt || sayAt.cls !== 'chatter') return;
+    const lit = document.querySelector('#courtCam .store.lit, #courtCam .part.lit, #courtCam .store.litMember');
+    if (lit && overlap(sayRect(sayAt), boxOf(lit))) say(null);
+  }
+  const boxOf = el => [parseFloat(el.style.left), parseFloat(el.style.top), parseFloat(el.style.left) + parseFloat(el.style.width), parseFloat(el.style.top) + parseFloat(el.style.height)];
+  function sayRect(at) {
+    const sm = textPx('small'), w = Math.min(0.3 * geo.w, 14 * sm) / geo.w * 100, h = 4.2 * sm / geo.h * 100;
+    return [at.x - w / 2, at.y - 1.2 - h, at.x + w / 2, at.y - 1.2];
+  }
+  function chatterSoon() {
+    clearTimeout(chatterTimer);
+    chatterTimer = setTimeout(chatter, 9000 + Math.random() * 9000);
+  }
+  /** A customer on the floor shows one of their own court.chatter lines as a caption (never spoken). */
+  function chatter() {
+    if (mode !== 'scan') return;
+    chatterSoon();
+    if (!voicesOn() || sayAt) return;
+    const lit = document.querySelector('#courtCam .store.lit, #courtCam .part.lit');
+    const litBox = lit ? boxOf(lit) : null;
+    const who = plan.people.filter(p => p.y < 97 && SC().candidates(lines(), p.id, 'court.chatter', null).length)
+      .map(p => ({ id: p.id, x: p.x, y: p.rect[1] })).filter(at => !litBox || !overlap(sayRect(at), litBox));
+    if (!who.length) return;
+    const at = who[Math.floor(Math.random() * who.length)];
+    const l = SC().pick(null, lines(), at.id, 'court.chatter', {}, used, Math.random, null);
+    if (!l) return;
+    say(at, (cast()[at.id] || {}).name || '', l.text, 'chatter');
+    const ms = Math.max(4000, BB.audio.readingTime ? BB.audio.readingTime(SC().clean(l.text)) : 4000);
+    setTimeout(() => { if (sayAt && sayAt.cls === 'chatter') say(null); }, ms);
+  }
+  function hush() { clearTimeout(chatterTimer); say(null); }
+
+  /* ══ effects: sparkles, confetti, fireworks ════════════════════════════════════════════════════════════════ */
+  function fx(html, ms) {
+    const box = document.querySelector('#courtCam .fx');
+    if (!box) return null;
+    const el = document.createElement('div');
+    el.innerHTML = html;
+    const node = el.firstChild;
+    box.appendChild(node);
+    setTimeout(() => node.remove(), ms);
+    return node;
+  }
+  const still = () => (reduced() ? ' still' : '');
+  /** Sparkles round a sign (a gold sign landing; a shutter going up): still ones that fade under Reduced. */
+  function sparkles(id, n) {
+    const sg = C().layout.stores[id].sign, cx = (sg[0] + sg[2]) / 2, cy = (sg[1] + sg[3]) / 2, rx = (sg[2] - sg[0]) * 0.75, ry = (sg[3] - sg[1]) * 1.2;
+    for (let i = 0; i < (n || 9); i++) {
+      const a = i / (n || 9) * Math.PI * 2 + 0.3, x = cx + Math.cos(a) * rx, y = cy + Math.sin(a) * ry;
+      fx('<i class="spark' + still() + '" style="left:' + pc(x) + ';top:' + pc(y) + ';animation-delay:' + (i * 90) + 'ms"></i>', 2200);
+    }
+  }
+  function confetti(id) {
+    if (reduced()) return;
+    const o = OPENING[id] || C().layout.stores[id].sign, cols = ['#ff6b4a', '#ffd36b', '#4fc3f7', '#8bd650', '#ff8ad8'];
+    for (let i = 0; i < 18; i++) {
+      const x = o[0] + (o[2] - o[0]) * (i + 0.5) / 18;
+      fx('<i class="conf" style="left:' + pc(x) + ';top:' + pc(o[1] - 4) + ';background:' + cols[i % cols.length] + ';animation-delay:' + ((i * 53) % 400) + 'ms"></i>', 2600);
+    }
+  }
+  /** Fireworks for the grand celebration: never a full-screen flash, a new burst at most every 350 ms (under 3 a
+   *  second), pops at most 3 a second and only while nobody is speaking; under Reduced, still bursts that fade. */
+  const fw = { timer: null, pops: false, n: 0, every: 700 };
+  function burst() {
+    const cols = ['#ff6b4a', '#ffd36b', '#7ad7ff', '#b4ff7a', '#ff8ad8'], P = picSize(), signs = plan.stores.map(s => s.sign);
+    // Over the court, never over a sign board.
+    let x = 50, y = 20, size = 10;
+    for (let k = 0; k < 12; k++) {
+      x = 8 + Math.random() * 84; y = 4 + Math.random() * 30; size = 9 + Math.random() * 6;
+      const r = size / 2, ry = r * P.w / P.h;
+      if (!signs.some(b => overlap([x - r, y - ry, x + r, y + ry], [b[0] - 1, b[1] - 3, b[2] + 1, b[3] + 6]))) break;
+    }
+    const col = cols[fw.n % cols.length];
+    let rays = '';
+    for (let i = 0; i < 12; i++) rays += '<i style="transform:rotate(' + (i * 30) + 'deg)"></i>';
+    fx('<div class="burst' + still() + '" style="left:' + pc(x) + ';top:' + pc(y) + ';width:' + pc(size) + ';--c:' + col + '">' + rays + '</div>', 1500);
+    if (fw.pops) BB.audio.sfx('court:pop' + (1 + (fw.n % 3)));
+    fw.n++;
+  }
+  function fireworks(on, opts) {
+    clearInterval(fw.timer); fw.timer = null;
+    if (!on) return;
+    fw.pops = !!(opts && opts.pops);
+    fw.every = Math.max(350, (opts && opts.every) || 700);
+    burst();
+    fw.timer = setInterval(burst, fw.every);
+  }
+
+  /* ══ the moments ═══════════════════════════════════════════════════════════════════════════════════════════ */
+  let run = 0, mode = 'off', moment = null, goalKey = null, lineup = [];
+  /** Where the court is: off | menu | arrive | moment | scan | paused | zoom | away (body[data-court-mode], for bb.css). */
+  function setMode(m) { mode = m; document.body.dataset.courtMode = m; }
+  const stale = t => t !== run;
+  function mark(id, cls, on) {
+    const set = momentOn[id] || (momentOn[id] = new Set());
+    if (on === false) set.delete(cls); else set.add(cls);
+  }
+  async function sound(name, min) { const ms = BB.audio.sfx(name) || 0; await wait(Math.max(ms, min || 0)); }
+  /** The Grand Opening: the shutter rolls up (a cut under Reduced) and the storefront un-greys; shutter sound, then
+   *  the chime, then the PA's bing-bong before the announcer; then Mitch. The banner stays until the first visit. */
+  async function grandOpening(t, n) {
+    const id = n.pack;
+    mark(id, 'rollup'); mark(id, 'opened', false);
+    if (reduced()) { mark(id, 'opened'); mark(id, 'bannerIn'); }
+    render();
+    BB.audio.sfx('court:shutter');
+    confetti(id);
+    await wait(reduced() ? 300 : 1500);
+    if (stale(t)) return;
+    mark(id, 'opened'); mark(id, 'bannerIn');
+    render();
+    sparkles(id, 8);
+    await sound('court:chime', 600);
+    if (stale(t)) return;
+    await sound('court:paChime', 300);
+    if (stale(t)) return;
+    await speak('pa', 'court.announce.open', { name: n.name });
+    if (stale(t)) return;
+    if (mitchOn()) { await mitchSays('court.unlock', { name: n.name }, 'thumbsUp', id); BB.stage.mitch(null); }
+  }
+  /** The gold sign drops onto the sign board with sparkles: the drop, then the sparkle, then the bing-bong; pa, then
+   *  Mitch. */
+  async function goldSign(t, n) {
+    const id = n.pack;
+    mark(id, 'goldOn');
+    if (!reduced()) mark(id, 'drop');
+    render();
+    await wait(reduced() ? 150 : 430);
+    if (stale(t)) return;
+    BB.audio.sfx('court:signDrop');
+    sparkles(id, 10);
+    await sound('court:sparkle', 700);
+    if (stale(t)) return;
+    mark(id, 'drop', false);
+    await sound('court:paChime', 300);
+    if (stale(t)) return;
+    await speak('pa', 'court.announce.gold', { name: n.name });
+    if (stale(t)) return;
+    if (mitchOn()) { await mitchSays('court.goldSign', { name: n.name }, 'thumbsUp', id); BB.stage.mitch(null); }
+  }
+  /** Every drawn customer on the floor at the bottom of the court, happy, in two rows. */
+  function showLineup(ids) {
+    const front = document.querySelector('#courtCam .crowd.front');
+    lineup = [];
+    if (!front) return;
+    const rows = [ids.filter((_, i) => i % 2 === 0), ids.filter((_, i) => i % 2 === 1)];
+    rows.forEach((row, r) => row.forEach((id, i) => {
+      const L = LINEUP[r], x = row.length > 1 ? L.x0 + (L.x1 - L.x0) * i / (row.length - 1) : 50, y = L.y;
+      const pic = castPic(id, 'happy');
+      if (!pic) return;
+      const f = figure(pic, x, y, false), el = document.createElement('div');
+      el.className = 'p castp cheer';
+      el.dataset.key = 'cheer:' + id;
+      Object.assign(el.style, { left: pc(f.left), top: pc(f.top), width: pc(f.w), height: pc(f.h), zIndex: String(2000 + Math.round(y * 10)) });
+      el.innerHTML = '<img alt="" src="' + esc(pic.src) + '">';
+      front.appendChild(el);
+      lineup.push({ id, el, x, y, head: f.rect[1], pic });
+    }));
+  }
+  function pose(person, p) {
+    const pic = castPic(person.id, p);
+    if (pic) person.el.querySelector('img').src = pic.src;
+    if (!reduced()) { person.el.classList.remove('pop'); void person.el.offsetWidth; person.el.classList.add('pop'); }
+  }
+  /** The grand celebration, once: fireworks (no full-screen flash, at most 3 flashes and 3 pops a second); every drawn
+   *  regular and local on the floor, happy or laughing, says one court.cheer; Mitch says court.celebrate, then
+   *  court.promoted as he shows the 'promoted' pose. Then the board reads "All seven at five stars". */
+  async function celebrate(t) {
+    const ids = window.BBCast && BBCast.drawn ? BBCast.drawn(window.BBArt && BBArt.cast) : [];
+    crowdHidden = true;
+    renderCrowd(true);
+    showLineup(ids);
+    fireworks(true, { pops: true, every: 450 });
+    await wait(reduced() ? 1800 : 3600);
+    if (stale(t)) { fireworks(false); return; }
+    fireworks(true, { pops: false, every: 1100 });
+    if (!voicesOn()) { lineup.forEach((p, i) => { if (i % 2) pose(p, 'laughing'); }); await wait(2600); }
+    else {
+      for (const person of lineup) {
+        if (stale(t)) break;
+        pose(person, 'laughing');
+        await speak(person.id, 'court.cheer', {}, { at: { x: person.x, y: person.head } });
+        pose(person, 'happy');
+      }
+    }
+    if (stale(t)) { fireworks(false); return; }
+    document.body.dataset.mitchSide = 'right';
+    if (mitchOn()) {
+      await mitchSays('court.celebrate', {}, 'laughing');
+      if (stale(t)) { fireworks(false); return; }
+      await mitchSays('court.promoted', {}, 'promoted');
+    } else { BB.stage.mitch('promoted'); await wait(2600); }
+    if (stale(t)) { fireworks(false); return; }
+    fireworks(true, { pops: true, every: 400 });
+    await wait(reduced() ? 1200 : 2600);
+    fireworks(false);
+    BB.stage.mitch(null);
+    lineup.forEach(p => p.el.remove());
+    lineup = [];
+    crowdHidden = false;
+  }
+  /** Every pending moment, in the rules' order, each marked seen and saved once it has played. */
+  async function moments(t, news) {
+    for (const n of news) {
+      setMode('moment'); moment = n.kind;
+      if (n.kind === 'grandOpening') await grandOpening(t, n);
+      else if (n.kind === 'goldSign') await goldSign(t, n);
+      else if (n.kind === 'celebration') await celebrate(t, n);
+      if (stale(t)) return;
+      R().seen(C(), state(), n);
+      BB.save.saveCourt();
+      if (n.pack) delete momentOn[n.pack];
+      render();
+    }
+    moment = null;
+  }
+  /** Mitch's reminder of the goal, when it has changed since he last said it (once a session at least). -> the goal's
+   *  words for the prompt when he won't say them. */
+  async function remind(t) {
+    const g = R().nextGoal(C(), state());
+    const changed = g.key !== goalKey;
+    goalKey = g.key;
+    if (!changed) return '';
+    if (g.goal && mitchOn()) {
+      await mitchSays('court.return', { goal: g.goal }, 'pointing');
+      if (!stale(t)) BB.stage.mitch(null);
+      return '';
+    }
+    return g.words;
+  }
+
+  /* ══ the scan ══════════════════════════════════════════════════════════════════════════════════════════════ */
+  function storeEl(id) { return document.querySelector('#courtCam .store[data-pack="' + id + '"]'); }
+  function partEl(arm) { return document.querySelector('#courtCam .part[data-arm="' + arm + '"]'); }
+  const shopItem = s => ({ id: s.id, label: () => s.label, element: storeEl(s.pack), ref: { id: s.id, pack: s.pack } });
+  /** The court's root: the open shops (or the parts of the U, each a row with a spoken Back stop), then Pause. */
+  function root() {
+    const items = scanStops().map(s => (s.kind === 'part'
+      ? { id: s.id, label: () => s.label, element: partEl(s.arm), ref: { id: s.id, row: true, rowItems: () => s.stops.map(shopItem) } }
+      : shopItem(s)));
+    const sign = $('back5');
+    if (sign) sign.dataset.id = 'pause';                  // a click or tap on the sign (ui.js)
+    items.push({ id: 'pause', label: () => 'Pause', element: sign, ref: { id: 'pause' } });
+    return { key: 'court', kind: 'court', items, onChoice, onPause: pause, direct };
+  }
+  function onChoice(ref) {
+    if (!ref || mode !== 'scan') return;
+    if (ref.id === 'pause') return pause();
+    if (ref.pack) return choose(ref.pack);
+  }
+  /** A click or tap on a storefront (or the Pause sign), from any level of the scan. */
+  function direct(id) {
+    if (mode !== 'scan') return;
+    if (id === 'pause') return pause();
+    const m = /^shop:(\w+)$/.exec(id || '');
+    if (m && scannable(m[1])) choose(m[1]);
+  }
+  function onClick(e) {
+    const p = toPic(e.clientX, e.clientY);
+    e.stopPropagation();
+    if (!p || mode !== 'scan') return;
+    const id = hit(p.x, p.y);
+    if (id && scannable(id) && BB.ui.pick) BB.ui.pick('shop:' + id);
+  }
+  function openScan(text) {
+    setMode('scan');
+    BB.ui.line(root(), true, text);
+    chatterSoon();
+  }
+  /** The court's prompt: "Food court.", plus the news and the goal that nobody has said. */
+  function prompt(news, goalWords) {
+    const bits = ['Food court.'];
+    if (!voicesOn()) news.forEach(n => bits.push(n.words));
+    if (goalWords) bits.push(goalWords);
+    return bits.join(' ');
+  }
+
+  /* ══ the routes ════════════════════════════════════════════════════════════════════════════════════════════ */
+  /** On the court: nothing of a restaurant is drawn or heard. */
+  async function arrive() {
+    BB.stage.usePack(null);
+    BB.world.goTo(null);
+    BB.audio.use(null);
+    BB.stage.mitch(null); BB.stage.bubble(null);
+    layoutBox();
+    await BB.stage.setScene('court');
+    startClock();
+  }
+  /** The main menu: the live court out of focus behind the title card (boot, and Main Menu from either Pause). */
+  async function menu() {
+    const t = ++run;
+    const from = mode;
+    setMode('menu'); moment = null;
+    hush(); fireworks(false);
+    BB.ui.suspend();
+    await arrive();
+    if (stale(t)) return;
+    setZoom('', true);
+    render();
+    soft(true, from !== 'paused' || reduced());
+    BB.ui.openCard('title');
+  }
+  /** Open the court in focus: after Play (focus: the focus pull), or back from a restaurant (from: the storefront to
+   *  zoom out of). Then the moments, Mitch's reminder, the prompt and the storefront scan at -1. */
+  async function show(opts) {
+    opts = opts || {};
+    const t = ++run;
+    setMode('arrive'); moment = null;
+    hush();
+    BB.ui.suspend(); BB.ui.closeCard(); BB.ui.context = 'none';
+    await arrive();
+    if (stale(t)) return;
+    const news = R().news(C(), state());
+    render();
+    if (opts.focus) await focusPull();
+    else { soft(false, true); await zoomOut(opts.from); }
+    if (stale(t)) return;
+    await moments(t, news);
+    if (stale(t)) return;
+    const goal = await remind(t);
+    if (stale(t)) return;
+    BB.stage.mitch(null);
+    openScan(prompt(news, goal));
+  }
+  /** Play on the main menu: the card closes and the court comes into focus. */
+  function play() { return show({ focus: true }); }
+  /** Into a storefront: zoom in, then the restaurant (BB.game.enter: the first-visit offer, a saved shift, the event
+   *  card or a new shift). */
+  async function choose(id) {
+    if (mode !== 'scan' || !scannable(id)) return;
+    const t = ++run;
+    setMode('zoom');
+    hush();
+    BB.ui.suspend(); BB.ui.context = 'none';
+    BB.audio.sfx('swoosh', 0.25);
+    await zoomIn(id);
+    if (stale(t)) return;
+    setMode('away');
+    BB.game.enter(id);
+    setTimeout(() => { if (mode === 'away') setZoom('', true); }, 400);
+  }
+  function enter(id) { return choose(id); }
+  /** The court's Pause (the Back in 5 sign, or holding Enter 5 s once the scan is live). */
+  function pause() {
+    if (mode !== 'scan') return;
+    run++;
+    setMode('paused');
+    hush();
+    BB.ui.openCard('courtPause');
+  }
+  /** Continue: back to the storefronts, at -1. */
+  function resume() {
+    run++;
+    BB.ui.closeCard();
+    soft(false, true);
+    render();
+    openScan('Food court.');
+  }
+  const help = () => R().help(C(), state(), { saved: savedIds() });
+  /** Settings changed what the court shows (Reset Progress): draw it again. */
+  function refresh() { if (document.body.dataset.place === 'court') render(); }
+
+  /* ══ for the checks and the review frames ══════════════════════════════════════════════════════════════════ */
+  /** Everything the court draws, in percent of the picture, for tools/review_compose.py and the jsdom checks. */
+  function scene() {
+    const lit = document.querySelector('#courtCam .store.lit, #courtCam .part.lit');
+    const el = document.querySelector('#courtCam .say');
+    return {
+      box: Object.assign({}, geo), soft: !!($('court') && $('court').classList.contains('soft')), zoom: (cam() && cam().style.transform) || '',
+      picture: courtArt().picture ? PICTURE : null, mode, moment, text: document.body.dataset.text, motion: document.body.dataset.motion,
+      stores: plan.stores.map(s => Object.assign({}, s, {
+        lit: !!(els[s.pack] && els[s.pack].box && els[s.pack].box.classList.contains('lit')),
+        litMember: !!(els[s.pack] && els[s.pack].box && els[s.pack].box.classList.contains('litMember')),
+        braked: !!(els[s.pack] && els[s.pack].box && els[s.pack].box.classList.contains('braked')) })),
+      parts: [...document.querySelectorAll('#courtCam .part')].map(p => ({ arm: p.dataset.arm, box: boxOf(p), lit: p.classList.contains('lit'), members: p.dataset.members.split(' ') })),
+      people: plan.people.map(p => ({ key: p.key, id: p.id, pack: p.pack, pose: p.pose, src: p.pic.src, kind: p.pic.kind, left: p.left, top: p.top, w: p.w, h: p.h,
+        hip: p.hip, seated: p.seated, flip: p.flip, front: p.front, rect: p.rect, x: p.x, y: p.y, dx: 0, dy: 0 })),
+      dishes: plan.people.filter(p => p.dish).map(p => ({ key: p.key + ':dish', who: p.id, pack: p.pack, name: p.dish.name, src: p.dish.src, left: p.dish.left,
+        top: p.dish.top, w: p.dish.w, h: p.dish.h, y: p.dish.y, front: p.dish.y >= BOARD.base, rect: p.dish.rect })),
+      lineup: lineup.map(p => ({ id: p.id, src: p.el.querySelector('img').getAttribute('src'), left: parseFloat(p.el.style.left), top: parseFloat(p.el.style.top),
+        w: parseFloat(p.el.style.width), h: parseFloat(p.el.style.height) })),
+      board: { lines: plan.board.slice(), rect: boardRect.slice(), base: BOARD.base, ceil: boardCeil(boardRect), min: BOARD_MIN },
+      fx: [...document.querySelectorAll('#courtCam .fx > *')].map(e => ({ kind: e.className.split(' ')[0], still: e.classList.contains('still'), left: parseFloat(e.style.left), top: parseFloat(e.style.top),
+        w: parseFloat(e.style.width) || 0, color: e.style.getPropertyValue('--c') || e.style.background || '' })),
+      say: el && el.classList.contains('on') ? { cls: el.className, name: el.querySelector('b').textContent, text: el.querySelector('span').textContent, at: sayAt } : null,
+      lit: lit ? (lit.dataset.pack || lit.dataset.arm) : null, dropped: dropped.slice(),
+      mitchSide: document.body.dataset.mitchSide || 'right',
+    };
+  }
+  function debugState() {
+    return { mode, moment, soft: !!($('court') && $('court').classList.contains('soft')), zoom: (cam() && cam().style.transform) || '', goalKey,
+      walkers: 0, people: plan.people.length, dishes: plan.people.filter(p => p.dish).length, lineup: lineup.length, scan: scanStops().map(s => s.id) };
+  }
+
+  window.addEventListener('resize', () => {
+    if (document.body.dataset.place !== 'court' || !cam()) return;
+    layoutBox();
+    renderCrowd(false);
+    fitPlates();
+  });
+  if (BB.save && BB.save.onChange) BB.save.onChange(k => {
+    if (document.body.dataset.place !== 'court') return;
+    // A new text size changes the board (applied to the page first, so wait a moment).
+    if (k === 'textSize' || k === 'motion') setTimeout(() => { renderBoard(); renderCrowd(true); fitPlates(); }, 0);
+    if (k === 'characterVoices' && BB.save.get('characterVoices') === 'off') say(null);
+  });
+
+  BB.court = { menu, play, show, enter, pause, resume, help, refresh, hit, scene, state: debugState, stops: scanStops, layout: layoutBox,
+    get goalKey() { return goalKey; }, get mode() { return mode; } };
+})();

@@ -1,0 +1,418 @@
+/** Ben's Ice Cream Emporium - every line about this restaurant's food (FOODCOURT-BUILD.md 5.5; docs/api/script.md is
+ *  the format; docs/api/packs/icecream.md section 12 says who must have what; docs/api/packs/icecream-script.md is
+ *  this file in words).
+ *
+ *  What is here: Mitch's lines in his soda-jerk uniform (the shift, the tutorial at every station, every warning,
+ *  every gross-out, the Timed heads-up, the one-liners, the Kitchen Sink), the 'customer' fallbacks for every F
+ *  moment, the locals' full sets (Little Lulu, Grandpa Walt), the cameo's (Brock, the Smoothie Shack's gym bro, here
+ *  on his cheat day as a level-4 visitor), and every regular's and visitor's lines about the ice cream (reactions,
+ *  favourites, the dislike, odd orders, complaints). greet, smalltalk and goodbye for everyone who is not a local or
+ *  the cameo come from packs/cast/script.js and are merged in; the few here for them are restaurant-flavoured extras.
+ *
+ *  A line is { id, who, moment, text, each?, delivery? }. Ids are <moment>.<n>, unique per speaker (the cast script
+ *  uses .c<n>). Clip ids: <speaker>/icecream:<id>[.<value>]. `each` names the one blank whose value changes the words
+ *  (one recording per value): {ing}/{ings} on Add moments, {want} on stage and pick moments, {value} on the
+ *  freezer-burn (a gross-out on a pick). A pick line says "for the {slot}, I said {want}" (the slots are holder, scoop
+ *  and flavour). No line starts with a lower-cased blank. The scoop counts (complain.tooMany/tooFew) name the scoops
+ *  outright: the scoops are the only repeat, and nothing else here has a count. [sigh]-style tags are kept for the
+ *  recording and dropped for text to speech and captions. delivery: for the final voice pass.
+ *
+ *  Tone (spec 0.5, DESIGN.md "Writing tone"): adult and dry; the joke is on the customer, the food or Mitch, never
+ *  the player; nothing about speed or skill; nobody hurries anyone (ice cream melting is the ice cream's problem,
+ *  never a clock); PG. Customer rules (spec 0.6): a gag is one line of 8 seconds or less over a normal order; the ten
+ *  scoops, the ketchup, the malt and the team's sink-load are said, never made. Lulu's agonising is in her words:
+ *  her order is always vanilla, and the ticket shows it.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBScripts = root.BBScripts || {}).icecream = data;
+})(typeof window === 'undefined' ? globalThis : window, { format: 3, lines: [
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     MITCH, in the striped shirt, the bow tie and the paper soda-jerk hat
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* ── the shift ─────────────────────────────────────────────────────────────────────────────────────────────── */
+  { id: 'shift.start.1', who: 'mitch', moment: 'shift.start', text: "Doors are open. Freezer's at minus ten, the fudge is warm, and the penguin on the shelf is judging me.", delivery: 'upbeat, a sideways look at the penguin' },
+  { id: 'shift.start.2', who: 'mitch', moment: 'shift.start', text: "Ice Cream Emporium, open for business. Emporium means big store. We are a medium store with a big word.", delivery: 'cheerful, then confiding' },
+  { id: 'shift.start.3', who: 'mitch', moment: 'shift.start', text: "Here we go. Cone, scoop, toppings. Three things. I've written them on my hand. It's starting to run.", delivery: 'brisk, squinting at his palm' },
+  { id: 'shift.start.4', who: 'mitch', moment: 'shift.start', text: "Shift's on! Corporate says smile with your eyes. I've been smiling with my eyes since eight. They're tired.", delivery: 'eager, blinking' },
+  { id: 'shift.start.5', who: 'mitch', moment: 'shift.start', text: "Let's scoop. If Lulu comes in, clear your afternoon. Emotionally, I mean. She'll still order fine.", delivery: 'upbeat, fond' },
+  { id: 'shift.end.1', who: 'mitch', moment: 'shift.end', text: "That's the shift. Nobody got a tomato. Well. Nobody kept a tomato.", delivery: 'relieved, then honest' },
+  { id: 'shift.end.2', who: 'mitch', moment: 'shift.end', text: "And we're done. I'm going to stand in the freezer for a minute. Professionally.", delivery: 'tired, content' },
+  { id: 'shift.end.3', who: 'mitch', moment: 'shift.end', text: "Shift over. The sprinkles are everywhere. On the floor, on the ceiling, in my hat. Good shift.", delivery: 'satisfied, brushing off his shoulders' },
+  { id: 'shift.end.4', who: 'mitch', moment: 'shift.end', text: "That's a wrap. Walt says we're almost as good as 1955. From Walt, that's a medal.", delivery: 'proud, touched' },
+  { id: 'uniform.1', who: 'mitch', moment: 'uniform', text: "Yes, the hat is paper. It's a soda-jerk hat. Jerk is the job title. I asked HR to change it. HR said no.", delivery: 'pre-empting the question, deadpan' },
+  { id: 'uniform.2', who: 'mitch', moment: 'uniform', text: "The bow tie is a clip-on. It has fallen into the hot fudge twice. It is now a fudge tie.", delivery: 'grave, adjusting it' },
+  { id: 'uniform.3', who: 'mitch', moment: 'uniform', text: "Pink and white stripes. Corporate said I look like a candy cane. Corporate is my mom. She meant it nicely.", delivery: 'proud, then a little less proud' },
+
+  /* ── the tutorial: Grandpa Walt's hot fudge sundae and a thick chocolate shake ────────────────────────────── */
+  { id: 'tutorial.intro.1', who: 'mitch', moment: 'tutorial.intro', text: "First day at the Emporium? Great. I'm Mitch, assistant manager, and today, soda jerk. One order together, start to finish.", delivery: 'friendly, welcoming' },
+  { id: 'tutorial.intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Welcome to the Ice Cream Emporium. I'm Mitch. Yes, it's a paper hat. We'll get to that. First, one order, together.", delivery: 'friendly, heading off the hat question' },
+  { id: 'tutorial.ticket.1', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. Walt's sundae and his shake. Forget the order, pick Ticket, and you hear it again.", delivery: 'clear, pointing up' },
+  { id: 'tutorial.ticket.2', who: 'mitch', moment: 'tutorial.ticket', text: "There's the ticket on the wheel. Everything Walt wants, in order. Pick Ticket any time and it reads itself again.", delivery: 'clear, helpful' },
+  { id: 'tutorial.scoop.1', who: 'mitch', moment: 'tutorial.scoop', text: "This is the freezer case. First, what it goes in: a cone, a waffle cone or a cup. Walt's sundae goes in a cup.", delivery: 'teaching, patting the freezer' },
+  { id: 'tutorial.scoop.2', who: 'mitch', moment: 'tutorial.scoop', text: "Freezer case. Cup first, then how big, then the scoops. Seven tubs. I've tried them all. For training.", delivery: 'teaching, a guilty aside' },
+  { id: 'tutorial.cook.scoop.1', who: 'mitch', moment: 'tutorial.cook.scoop', text: "How big a scoop? Walt said regular. Pick Regular. Then pick each scoop: Vanilla, Vanilla again, then Done.", delivery: 'teaching, counting on his fingers' },
+  { id: 'tutorial.cook.scoop.2', who: 'mitch', moment: 'tutorial.cook.scoop', text: "Small, regular or huge. The ticket says regular. In Timed you'd Stop the Scoop yourself. Then two vanilla scoops, and Done. More shows the other flavors.", delivery: 'teaching, steady' },
+  { id: 'tutorial.toppings.1', who: 'mitch', moment: 'tutorial.toppings', text: "The topping bar. Each topping comes down the line. On the ticket? Add. Not on the ticket? Skip.", delivery: 'teaching, clear' },
+  { id: 'tutorial.toppings.2', who: 'mitch', moment: 'tutorial.toppings', text: "Toppings, one at a time. Walt wants hot fudge, whipped cream, nuts and a cherry. Skip the rest. Even the sprinkles. Especially the sprinkles.", delivery: 'teaching, wary of the sprinkles' },
+  { id: 'tutorial.shake.1', who: 'mitch', moment: 'tutorial.shake', text: "The shake machine. Pick the flavor, the milk pours itself, the mixer mixes. Walt wants chocolate.", delivery: 'teaching, admiring the machine' },
+  { id: 'tutorial.shake.2', who: 'mitch', moment: 'tutorial.shake', text: "Over to the shake machine. Mint green, built in 1955. Walt says he knew it as a boy. It was a different machine.", delivery: 'teaching, then dry' },
+  { id: 'tutorial.cook.shake.1', who: 'mitch', moment: 'tutorial.cook.shake', text: "How thick? Walt wants thick. Pick Thick. In Timed you'd watch the mixer and Stop the Mixer at Thick.", delivery: 'teaching, clear' },
+  { id: 'tutorial.cook.shake.2', who: 'mitch', moment: 'tutorial.cook.shake', text: "Thick, creamy or thin. Walt says thick enough to stand a straw in. That's Thick. Pick Thick.", delivery: 'teaching, miming a straw' },
+  { id: 'tutorial.gross.1', who: 'mitch', moment: 'tutorial.gross', text: "See that cherry? That is not a cherry. That is a tomato. Pick Swap It and you get a real one.", delivery: 'teaching, a grimace at the tomato' },
+  { id: 'tutorial.gross.2', who: 'mitch', moment: 'tutorial.gross', text: "When something comes down the line looking wrong, pick Swap It for a fresh one. Skip sends it away, and Walt still wants a cherry. So: Swap It.", delivery: 'teaching, firm on the last two words' },
+  { id: 'tutorial.review.1', who: 'mitch', moment: 'tutorial.review', text: "Here it is, on the counter. Anything wrong? Redo that station now. All right? Ring it up.", delivery: 'teaching, clear' },
+  { id: 'tutorial.review.2', who: 'mitch', moment: 'tutorial.review', text: "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Walt's telling the stools about 1955.", delivery: 'teaching, a glance at Walt' },
+  { id: 'tutorial.serve.1', who: 'mitch', moment: 'tutorial.serve', text: "And that's the job. Get something wrong and the customer will tell you. Walt will tell you about 1955 first. Ready for a real shift?", delivery: 'wrapping up, encouraging' },
+  { id: 'tutorial.serve.2', who: 'mitch', moment: 'tutorial.serve', text: "That's one order, start to finish. Every sundae goes the same way. The customers don't. Ready for a real shift?", delivery: 'wrapping up, dry' },
+
+  /* ── tutorial warnings: before a mistake lands ─────────────────────────────────────────────────────────────── */
+  { id: 'tutorial.warn.extra.1', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ings', text: "Hold on. Walt said no {ings}. Skip that one.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.extra.2', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ings', text: "Whoa, not the {ings}. It's not on the ticket. Skip.", delivery: 'quick, light' },
+  { id: 'tutorial.warn.unasked.1', who: 'mitch', moment: 'tutorial.warn.unasked', each: 'ings', text: "Wait. The ticket doesn't have {ings}. Skip it.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.unasked.2', who: 'mitch', moment: 'tutorial.warn.unasked', each: 'ings', text: "Hang on. Nobody asked for {ings}. Check the ticket and skip it.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.missing.1', who: 'mitch', moment: 'tutorial.warn.missing', each: 'ing', text: "Hold on. Walt wants the {ing}. It's on the ticket. Add it.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.missing.2', who: 'mitch', moment: 'tutorial.warn.missing', each: 'ing', text: "Wait, the ticket says {ing}. Add it, or Walt will tell us about 1955.", delivery: 'gentle correction, wincing' },
+  { id: 'tutorial.warn.tooMany.1', who: 'mitch', moment: 'tutorial.warn.tooMany', text: "Whoa. That's more scoops than the ticket says. Two scoops, then Done.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.tooMany.2', who: 'mitch', moment: 'tutorial.warn.tooMany', text: "Easy. One more scoop and it's a tower. The ticket says two. Pick Done.", delivery: 'quick, alarmed' },
+  { id: 'tutorial.warn.tooFew.1', who: 'mitch', moment: 'tutorial.warn.tooFew', text: "Not done yet. The ticket wants another scoop. Pick one more.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.tooFew.2', who: 'mitch', moment: 'tutorial.warn.tooFew', text: "Hold on. Count the scoops on the ticket. We're one short.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.done.1', who: 'mitch', moment: 'tutorial.warn.done', each: 'want', text: "Hold on. Walt said {want}. Pick that one.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.done.2', who: 'mitch', moment: 'tutorial.warn.done', each: 'want', text: "Wait. The ticket says {want}. Let's give him {want}.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.pick.1', who: 'mitch', moment: 'tutorial.warn.pick', each: 'wanted', text: "Hold on. Walt said {wanted}. Pick that.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.pick.2', who: 'mitch', moment: 'tutorial.warn.pick', each: 'wanted', text: "Wait. The ticket says {wanted}. Try that one.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.gross.1', who: 'mitch', moment: 'tutorial.warn.gross', each: 'ing', text: "Whoa, don't add that. Look at the {ing}. Pick Swap It.", delivery: 'urgent but kind' },
+  { id: 'tutorial.warn.gross.2', who: 'mitch', moment: 'tutorial.warn.gross', each: 'ing', text: "No no no. That {ing} is wrong. Swap It gets a fresh one.", delivery: 'alarmed, then calm' },
+  { id: 'tutorial.warn.grossSkip.1', who: 'mitch', moment: 'tutorial.warn.grossSkip', each: 'ing', text: "Careful. Walt does want {ing}, just not that one. Pick Swap It.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.grossSkip.2', who: 'mitch', moment: 'tutorial.warn.grossSkip', each: 'ing', text: "Don't skip it. The ticket has {ing}. Swap It, and we get a good one.", delivery: 'a quick stop, helpful' },
+
+  /* ── gross-outs: Mitch spots it as it comes down the line ──────────────────────────────────────────────────── */
+  { id: 'gross.hair.1', who: 'mitch', moment: 'gross.hair', each: 'ings', text: "Ugh. There's a hair in the {ings}. Rainbow sprinkles don't come in brown.", delivery: 'disgusted, quick' },
+  { id: 'gross.hair.2', who: 'mitch', moment: 'gross.hair', each: 'ings', text: "Is that a hair in the {ings}? It's longer than mine. I'm going to wear my hat tighter.", delivery: 'grossed out, adjusting the hat' },
+  { id: 'gross.hair.3', who: 'mitch', moment: 'gross.hair', each: 'ings', text: "Hair in the {ings}. Whose is it? Don't answer. I don't want to know whose it is.", delivery: 'squeamish' },
+  { id: 'gross.tomato.1', who: 'mitch', moment: 'gross.tomato', each: 'ing', text: "That {ing} has a green stem and no shine. That's a tomato. Somebody's been in the salad bar.", delivery: 'suspicious, peering' },
+  { id: 'gross.tomato.2', who: 'mitch', moment: 'gross.tomato', each: 'ing', text: "Is that {ing} a tomato? It's a tomato. On a sundae. That's a pizza decision.", delivery: 'appalled' },
+  { id: 'gross.tomato.3', who: 'mitch', moment: 'gross.tomato', each: 'ing', text: "Watch the {ing}. It's a cherry tomato. The word cherry is doing a lot of lying there.", delivery: 'dry, warning' },
+  { id: 'gross.freezerBurn.1', who: 'mitch', moment: 'gross.freezerBurn', each: 'value', text: "That {value} is freezer-burned. It's got frost on it like a car windshield.", delivery: 'disgusted, quick' },
+  { id: 'gross.freezerBurn.2', who: 'mitch', moment: 'gross.freezerBurn', each: 'value', text: "Look at that {value}. Gray and crunchy. Ice cream should never be crunchy by accident.", delivery: 'grim' },
+  { id: 'gross.freezerBurn.3', who: 'mitch', moment: 'gross.freezerBurn', each: 'value', text: "Freezer burn on the {value}. That tub's been in the back since the penguin was a baby.", delivery: 'squeamish, a nod at the penguin' },
+
+  /* ── Timed: one stage before the ticket's ─────────────────────────────────────────────────────────────────── */
+  { id: 'nearly.1', who: 'mitch', moment: 'nearly', each: 'want', text: "Almost {want}. That's the one on the ticket.", delivery: 'quick, a little nervous' },
+  { id: 'nearly.2', who: 'mitch', moment: 'nearly', each: 'want', text: "Heads up. It's almost {want}. Get ready.", delivery: 'quick, a little nervous' },
+
+  /* ── Mitch: the mistake, read after the customer's complaint (voicecut, 2026-11-10): one line per value, his voice only ── */
+  { id: 'mistake.extra.1', who: 'mitch', moment: 'mistake.extra', each: 'ings', text: 'The ticket said no {ings}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.unasked.1', who: 'mitch', moment: 'mistake.unasked', each: 'ings', text: 'Nobody ordered {ings}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.missing.1', who: 'mitch', moment: 'mistake.missing', each: 'ing', text: 'The ticket said {ing}. That got left off.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.tooMany.1', who: 'mitch', moment: 'mistake.tooMany', each: 'wanted', text: 'The ticket said {wanted}. We went over.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.tooFew.1', who: 'mitch', moment: 'mistake.tooFew', each: 'wanted', text: 'The ticket said {wanted}. We came up short.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.done.1', who: 'mitch', moment: 'mistake.done', each: 'want', text: 'The ticket said {want}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.pick.1', who: 'mitch', moment: 'mistake.pick', each: 'wanted', text: 'The ticket said {wanted}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.more.1', who: 'mitch', moment: 'mistake.more', text: "And more. It's on the receipt. The receipt is melting a little. From stress.", delivery: 'resigned, dry' },
+
+  /* ── one-liners after a reaction ───────────────────────────────────────────────────────────────────────────── */
+  { id: 'after.3.1', who: 'mitch', moment: 'after.3', text: "Another happy customer. I'd tip my hat, but it's paper, and it's been through a lot.", delivery: 'warm, touching the hat' },
+  { id: 'after.3.2', who: 'mitch', moment: 'after.3', text: "Beautiful. That one's going on the wall. Not the ice cream. The memory.", delivery: 'pleased, sentimental' },
+  { id: 'after.3.3', who: 'mitch', moment: 'after.3', text: "See? Ice cream, done right. The penguin approves. I think. He always looks like that.", delivery: 'smug, then unsure' },
+  { id: 'after.1.1', who: 'mitch', moment: 'after.1', text: "We'll call that a learning experience. For the sundae.", delivery: 'diplomatic, strained' },
+  { id: 'after.1.2', who: 'mitch', moment: 'after.1', text: "I'm going to go stand under the Brain Freeze Safety Zone sign for a minute.", delivery: 'quiet, already moving' },
+  { id: 'after.1.3', who: 'mitch', moment: 'after.1', text: "Okay. The freezer's fine. The fudge is fine. Something else happened. Moving on.", delivery: 'brisk, not looking at it' },
+  { id: 'after.gross.1', who: 'mitch', moment: 'after.gross', text: "In my defense, I made a face. A big one. With my eyebrows.", delivery: 'defensive, small' },
+  { id: 'after.gross.2', who: 'mitch', moment: 'after.gross', text: "The rubber duck on the shelf saw that. The duck saw everything.", delivery: 'grim, resigned' },
+
+  /* ── the five-star event: the Little League team, spoken of, never shown ──────────────────────────────────── */
+  { id: 'event.intro.1', who: 'mitch', moment: 'event.intro', text: "It's {name}! The Little League team won their game. Every family's coming in, and Coach Bev ordered dessert in a sink. An actual sink.", delivery: 'excited, a little overwhelmed' },
+  { id: 'event.intro.2', who: 'mitch', moment: 'event.intro', text: "Here we go: {name}. The families order first. The last order goes in a kitchen sink. I've cleaned it. Twice.", delivery: 'brave, building' },
+  { id: 'event.celebrate.1', who: 'mitch', moment: 'event.celebrate', text: "{name} was a hit! Twelve kids, one sink, zero leftovers. The gold sign's going up!", delivery: 'joyful, laughing' },
+  { id: 'event.celebrate.2', who: 'mitch', moment: 'event.celebrate', text: "That's {name} done, and that's five stars. Coach Bev gave me a participation medal. I'm wearing it on the bow tie.", delivery: 'triumphant, proud of the medal' },
+  { id: 'event.again.1', who: 'mitch', moment: 'event.again', text: "{name} didn't quite get there. The team says good game anyway. We go again whenever you're ready.", delivery: 'kind, upbeat' },
+  { id: 'event.again.2', who: 'mitch', moment: 'event.again', text: "Not this time. The sink is still here. The sink will always be here. We'll try {name} again.", delivery: 'gentle, a glance at the sink' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     'customer': the fallbacks, for anyone with fewer than two lines of their own
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'react.3.1', who: 'customer', moment: 'react.3', text: 'Oh, that is perfect. That is exactly what I wanted.', delivery: 'delighted' },
+  { id: 'react.3.2', who: 'customer', moment: 'react.3', text: "Look at that. I'm going to look at it for a minute before I eat it.", delivery: 'happy, admiring' },
+  { id: 'react.3.3', who: 'customer', moment: 'react.3', text: 'Now that is ice cream. Thank you.', delivery: 'warm, satisfied' },
+  { id: 'react.2.1', who: 'customer', moment: 'react.2', text: "Close enough. It's ice cream. Ice cream forgives.", delivery: 'easygoing' },
+  { id: 'react.2.2', who: 'customer', moment: 'react.2', text: "Not quite what I said. Still cold, though. I'll take it.", delivery: 'mild, shrugging' },
+  { id: 'react.2.3', who: 'customer', moment: 'react.2', text: "Hm. Almost. I'll eat it slowly and think about it.", delivery: 'thoughtful' },
+  { id: 'react.1.1', who: 'customer', moment: 'react.1', text: "This isn't what I ordered. It's ice cream, technically.", delivery: 'disappointed, dry' },
+  { id: 'react.1.2', who: 'customer', moment: 'react.1', text: "Oh. Oh no. That's someone else's dessert.", delivery: 'let down' },
+  { id: 'react.1.3', who: 'customer', moment: 'react.1', text: "Well. I've had worse. Not here. But I've had worse.", delivery: 'flat, polite' },
+  { id: 'react.gross.1', who: 'customer', moment: 'react.gross', text: "Excuse me. There is something on this that should not be on ice cream.", delivery: 'horrified, polite' },
+  { id: 'react.gross.2', who: 'customer', moment: 'react.gross', text: 'Eugh! No. No, thank you. No.', delivery: 'disgusted, recoiling' },
+  // A complaint that names no food (voicecut): everyone has their own in packs/cast/script.js; these stand in for anyone short.
+  { id: 'complain.1', who: 'customer', moment: 'complain', text: "That's not what I ordered.", delivery: 'mildly put out' },
+  { id: 'complain.2', who: 'customer', moment: 'complain', text: "Hm. This isn't quite what I asked for.", delivery: 'polite, disappointed' },
+  { id: 'complain.gross.hair.1', who: 'customer', moment: 'complain.gross.hair', text: 'There is a hair in the sprinkles. A long one.', delivery: 'disgusted' },
+  { id: 'complain.gross.hair.2', who: 'customer', moment: 'complain.gross.hair', text: "Is that a hair? In the sprinkles? I'm going to need a new spoon. And a new day.", delivery: 'horrified, dry' },
+  { id: 'complain.gross.tomato.1', who: 'customer', moment: 'complain.gross.tomato', text: 'This cherry is a tomato. I bit it. It was a tomato the whole way through.', delivery: 'betrayed' },
+  { id: 'complain.gross.tomato.2', who: 'customer', moment: 'complain.gross.tomato', text: 'Why does my cherry taste like a salad?', delivery: 'confused, grossed out' },
+  { id: 'complain.gross.freezerBurn.1', who: 'customer', moment: 'complain.gross.freezerBurn', text: 'This shake is freezer-burned. It tastes like the inside of an ice tray.', delivery: 'disgusted' },
+  { id: 'complain.gross.freezerBurn.2', who: 'customer', moment: 'complain.gross.freezerBurn', text: 'The shake crunched. Shakes are not supposed to crunch.', delivery: 'flat, grossed out' },
+  { id: 'order.odd.tenScoop.1', who: 'customer', moment: 'order.odd.tenScoop', text: "Ten scoops on a cone, please. Or as many as it'll hold before it becomes a building.", delivery: 'hopeful' },
+  { id: 'order.odd.tenScoop.2', who: 'customer', moment: 'order.odd.tenScoop', text: "I'd like the ten-scoop tower. Huge scoops. I'll settle for however many fit. I'm not a monster.", delivery: 'grand, then reasonable' },
+  { id: 'order.odd.ketchup.1', who: 'customer', moment: 'order.odd.ketchup', text: "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.", delivery: 'matter-of-fact' },
+  { id: 'order.odd.ketchup.2', who: 'customer', moment: 'order.odd.ketchup', text: "One scoop of strawberry in a cup. I'm going to pretend it's ketchup. Don't ask. I don't know either.", delivery: 'dry, mysterious' },
+  { id: 'order.odd.justCherry.1', who: 'customer', moment: 'order.odd.justCherry', text: "A hot fudge sundae, but just the cherry. The ice cream can stay. It's holding the cherry up.", delivery: 'very precise' },
+  { id: 'order.odd.justCherry.2', who: 'customer', moment: 'order.odd.justCherry', text: "I want a sundae that's just the cherry. No fudge, no cream, no nuts. The cherry is the sundae.", delivery: 'earnest' },
+  { id: 'order.odd.malted.1', who: 'customer', moment: 'order.odd.malted', text: "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.", delivery: 'cheerful' },
+  { id: 'order.odd.malted.2', who: 'customer', moment: 'order.odd.malted', text: "One chocolate malted, thick as they come. A shake will do. A shake is a malted that didn't try.", delivery: 'nostalgic, wry' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     LITTLE LULU (local): seven, agonises out loud over every flavour, then picks vanilla. Every scoop she orders is
+     vanilla (pack `wants`), so every line here stays true; the agonising is in her words, never in her order.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'greet.1', who: 'lulu', moment: 'greet', text: "[sigh] Okay. I've been thinking about this since breakfast. Since yesterday's breakfast.", delivery: 'a huge sigh, then very sure of herself' },
+  { id: 'greet.2', who: 'lulu', moment: 'greet', text: 'Hi. I have seven flavors in my heart and only one mouth.', delivery: 'dramatic, hand on heart' },
+  { id: 'greet.3', who: 'lulu', moment: 'greet', text: 'Hi! I made a list of every flavor. Pros and cons. Mostly pros.', delivery: 'bright, holding up a crumpled list' },
+  { id: 'greet.4', who: 'lulu', moment: 'greet', text: '[sigh] Hello. This is the biggest decision of my whole week.', delivery: 'grave, a big dramatic sigh first' },
+  { id: 'greet.5', who: 'lulu', moment: 'greet', text: "Hi. I brought my lucky spoon. It's helped me decide before.", delivery: 'serious, showing the spoon' },
+  { id: 'order.gag.1', who: 'lulu', moment: 'order.gag', text: 'I almost said mint chip. Then bubblegum. Then rocky road. Then I said vanilla. Like always.', delivery: 'agonised, speeding up, then calm and certain' },
+  { id: 'order.gag.2', who: 'lulu', moment: 'order.gag', text: 'Vanilla. Final answer. [pause] Final final answer. Vanilla.', delivery: 'decisive, a pause, then even more decisive' },
+  { id: 'order.gag.3', who: 'lulu', moment: 'order.gag', text: 'Chocolate looked at me. I looked back. Then I looked at vanilla. Sorry, chocolate.', delivery: 'solemn, a little guilty' },
+  { id: 'order.gag.4', who: 'lulu', moment: 'order.gag', text: 'I asked my lucky spoon. It said vanilla. It always says vanilla. It is a very good spoon.', delivery: 'confiding, proud of the spoon' },
+  { id: 'order.gag.5', who: 'lulu', moment: 'order.gag', text: "Bubblegum is my favorite color. Vanilla is my favorite flavor. It's complicated.", delivery: 'thoughtful, a big sigh' },
+  { id: 'smalltalk.1', who: 'lulu', moment: 'smalltalk', text: 'My brother picks his flavor in one second. One second! He is going to have a very sad life.', delivery: 'scandalised' },
+  { id: 'smalltalk.2', who: 'lulu', moment: 'smalltalk', text: "At school we voted for a class pet. I voted for all of them. Then the hamster. It's always the hamster.", delivery: 'matter-of-fact, wise' },
+  { id: 'smalltalk.3', who: 'lulu', moment: 'smalltalk', text: 'Grandma says I am thoughtful. Dad says I am thorough. Mom says, Lulu. Just, Lulu.', delivery: 'proud, then quoting Mom flatly' },
+  { id: 'smalltalk.4', who: 'lulu', moment: 'smalltalk', text: "When I grow up I'm going to be a scientist. Or a vet. Or a scientist vet. I'm narrowing it down.", delivery: 'serious, counting on her fingers' },
+  { id: 'smalltalk.5', who: 'lulu', moment: 'smalltalk', text: "I have three best friends. I'm not saying which one is the best. That's a whole thing.", delivery: 'diplomatic, very grown-up' },
+  { id: 'goodbye.1', who: 'lulu', moment: 'goodbye', text: "Thank you! I'm going to think about whether I picked right. I did. Bye!", delivery: 'cheerful, certain' },
+  { id: 'goodbye.2', who: 'lulu', moment: 'goodbye', text: "Bye! Next time I'm getting something different. [pause] I'm not. Bye!", delivery: 'bold, a pause, then honest and cheerful' },
+  { id: 'goodbye.3', who: 'lulu', moment: 'goodbye', text: 'Thank you! My lucky spoon and I are very happy. Mostly the spoon.', delivery: 'sweet, patting the spoon' },
+  { id: 'goodbye.4', who: 'lulu', moment: 'goodbye', text: "Bye-bye! I'm telling everyone at school. They won't care. I'm telling them anyway.", delivery: 'bright, waving' },
+  { id: 'react.3.1', who: 'lulu', moment: 'react.3', text: 'Vanilla! I knew it. I knew it the whole time. I just had to check everything else first.', delivery: 'delighted, very sure of herself' },
+  { id: 'react.3.2', who: 'lulu', moment: 'react.3', text: "It's perfect. It's exactly the one I picked, after I didn't pick all the others.", delivery: 'happy, a satisfied sigh' },
+  { id: 'react.3.3', who: 'lulu', moment: 'react.3', text: "[gasp] Look at it. I'm going to give it a name. I'm naming it Vanilla.", delivery: 'awed, then very practical' },
+  { id: 'react.2.1', who: 'lulu', moment: 'react.2', text: "It's good. It's mostly what I said. I said a lot of things before, though.", delivery: 'fair-minded' },
+  { id: 'react.2.2', who: 'lulu', moment: 'react.2', text: "Hmm. Close. I'm eating it anyway, because it's ice cream and I'm seven.", delivery: 'pragmatic' },
+  { id: 'react.2.3', who: 'lulu', moment: 'react.2', text: "That's almost it. My lucky spoon is making a face. Spoons can't make faces. It's making one.", delivery: 'suspicious, peering at the spoon' },
+  { id: 'react.1.1', who: 'lulu', moment: 'react.1', text: "[sigh] That's not what I picked. And I picked for a really, really long time.", delivery: 'a huge sigh, crestfallen' },
+  { id: 'react.1.2', who: 'lulu', moment: 'react.1', text: "This is wrong. I'm only seven, and even I can tell.", delivery: 'disappointed, matter-of-fact' },
+  { id: 'react.1.3', who: 'lulu', moment: 'react.1', text: "Oh no. Now I have to decide how I feel about this. That takes me ages.", delivery: 'dismayed, then resigned' },
+  { id: 'react.gross.1', who: 'lulu', moment: 'react.gross', text: "Eww! There's something on my ice cream that isn't ice cream!", delivery: 'horrified, holding it at arm\'s length' },
+  { id: 'complain.gross.hair.1', who: 'lulu', moment: 'complain.gross.hair', text: "There's a hair in my sprinkles! It's not mine. Mine are in braids.", delivery: 'horrified, touching her braids' },
+  { id: 'complain.gross.tomato.1', who: 'lulu', moment: 'complain.gross.tomato', text: 'My cherry is a tomato! Tomatoes go in sandwiches! Everybody knows that!', delivery: 'outraged' },
+  { id: 'complain.gross.freezerBurn.1', who: 'lulu', moment: 'complain.gross.freezerBurn', text: 'My shake is all crunchy and white. It looks like a sad snowman.', delivery: 'disappointed, peering in' },
+  { id: 'order.odd.justCherry.1', who: 'lulu', moment: 'order.odd.justCherry', text: "A sundae with just the cherry, please. I'm keeping the vanilla too. The cherry needs somewhere to sit.", delivery: 'thoughtful, very reasonable' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     GRANDPA WALT (local): wants it the way they made it in 1955. Letterman jacket, straw boater, brand-new sneakers.
+     The tutorial customer; his favourite is the hot fudge sundae; his shakes are thick; his own odd order is a malted.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'greet.1', who: 'walt', moment: 'greet', text: 'Well, hello there! A real ice cream parlor. Stools and everything. I\'m home.', delivery: 'cheerful, delighted, a little slow' },
+  { id: 'greet.2', who: 'walt', moment: 'greet', text: "Afternoon! Jacket's from '55. Sneakers are from Tuesday. I'm a mix.", delivery: 'proud, showing both' },
+  { id: 'greet.3', who: 'walt', moment: 'greet', text: "Hi there, sport. In '55, this is where you took your best girl.", delivery: 'warm, nostalgic, tipping his boater' },
+  { id: 'greet.4', who: 'walt', moment: 'greet', text: 'Hello! Is that a mint-green mixer? Oh, my. Give me a moment.', delivery: 'awed, hand on heart' },
+  { id: 'greet.5', who: 'walt', moment: 'greet', text: "Howdy! I'll have what I had in 1955. Give or take.", delivery: 'cheerful, a little slow' },
+  { id: 'order.gag.1', who: 'walt', moment: 'order.gag', text: 'Just like 1955. Except in 1955 it cost a dime, and the dime was mine.', delivery: 'cheerful, wistful' },
+  { id: 'order.gag.2', who: 'walt', moment: 'order.gag', text: "See that knotted cherry stem under the glass? I tied that in '55. With my tongue. Still got it.", delivery: 'proud, pointing at the dome' },
+  { id: 'order.gag.3', who: 'walt', moment: 'order.gag', text: 'In 1955 we called that dessert. You still call it dessert. Some things you kept.', delivery: 'warm, approving' },
+  { id: 'order.gag.4', who: 'walt', moment: 'order.gag', text: "Make it like they did in '55. They didn't do it any different. But make it like that.", delivery: 'cheerful, completely serious' },
+  { id: 'smalltalk.1', who: 'walt', moment: 'smalltalk', text: "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up.", delivery: 'fond, chuckling' },
+  { id: 'smalltalk.2', who: 'walt', moment: 'smalltalk', text: "The jukebox at Murray's played one song for six months. Nobody minded. It was a good song.", delivery: 'nostalgic, humming a bar' },
+  { id: 'smalltalk.3', who: 'walt', moment: 'smalltalk', text: "I've had this jacket since senior year. It still fits. In the arms.", delivery: 'proud, then honest' },
+  { id: 'smalltalk.4', who: 'walt', moment: 'smalltalk', text: "My grandson says my sneakers are retro. I bought them Tuesday. They're shoes.", delivery: 'amused, a little baffled' },
+  { id: 'smalltalk.5', who: 'walt', moment: 'smalltalk', text: 'We used to sit at the counter all evening over one shake. Two straws. Very romantic. Very sticky.', delivery: 'dreamy, then practical' },
+  { id: 'goodbye.1', who: 'walt', moment: 'goodbye', text: "Thank you kindly! Best I've had since Eisenhower. Don't tell Eisenhower.", delivery: 'cheerful, tipping his boater' },
+  { id: 'goodbye.2', who: 'walt', moment: 'goodbye', text: "So long! I'm going to sit on a stool and spin around once. Just once. Doctor's orders.", delivery: 'mischievous, a little slow' },
+  { id: 'goodbye.3', who: 'walt', moment: 'goodbye', text: "Much obliged! You'd have done fine at Murray's. That's a compliment from 1955.", delivery: 'warm, sincere' },
+  { id: 'goodbye.4', who: 'walt', moment: 'goodbye', text: "Toodle-oo! If anyone needs me, I'll be telling the penguin about the old days.", delivery: 'cheerful, wandering off' },
+  { id: 'react.favourite.1', who: 'walt', moment: 'react.favourite', text: "Now that is a hot fudge sundae. That's 1955 in a cup. I might cry. I might.", delivery: 'moved, voice catching, then a chuckle' },
+  { id: 'react.favourite.2', who: 'walt', moment: 'react.favourite', text: "The fudge runs down the side just right. Murray would have hired you on the spot. Murray hired nobody.", delivery: 'admiring, then confiding' },
+  { id: 'react.3.1', who: 'walt', moment: 'react.3', text: "Swell! Just swell. That's the way they made it. Exactly the way.", delivery: 'delighted, beaming' },
+  { id: 'react.3.2', who: 'walt', moment: 'react.3', text: "Well, would you look at that. I feel seventeen again. My knees don't, but I do.", delivery: 'awed, then a chuckle' },
+  { id: 'react.3.3', who: 'walt', moment: 'react.3', text: "Perfect. Better than '55, and I'll deny I ever said that.", delivery: 'happy, a conspiratorial wink' },
+  { id: 'react.2.1', who: 'walt', moment: 'react.2', text: "Not bad, not bad. In 1955 we'd have called that pretty good. We said pretty good a lot.", delivery: 'kind, nostalgic' },
+  { id: 'react.2.2', who: 'walt', moment: 'react.2', text: 'Close! Like a song you almost remember the words to.', delivery: 'warm, humming' },
+  { id: 'react.2.3', who: 'walt', moment: 'react.2', text: "That'll do, sport. It's not 1955. Then again, nothing is.", delivery: 'gentle, wistful' },
+  { id: 'react.1.1', who: 'walt', moment: 'react.1', text: "Oh, dear. That's not how they made it. That's not how anybody made it.", delivery: 'disappointed, gentle' },
+  { id: 'react.1.2', who: 'walt', moment: 'react.1', text: "Well. In 1955 we'd have sent that back. Politely. With a note.", delivery: 'dignified, a little sad' },
+  { id: 'react.1.3', who: 'walt', moment: 'react.1', text: "Hmm. I'll eat it, and think about a better one.", delivery: 'wistful, a little slow' },
+  { id: 'react.gross.1', who: 'walt', moment: 'react.gross', text: 'Good gravy! In 1955, the worst thing you found in a sundae was a penny. Somebody else\'s penny.', delivery: 'shocked, then rueful' },
+  { id: 'complain.gross.hair.1', who: 'walt', moment: 'complain.gross.hair', text: "There's a hair in these sprinkles. Not mine. Mine left years ago.", delivery: 'grossed out, lifting his boater' },
+  { id: 'complain.gross.tomato.1', who: 'walt', moment: 'complain.gross.tomato', text: "This cherry is a tomato! I haven't been fooled like that since 1955.", delivery: 'indignant, then almost impressed' },
+  { id: 'complain.gross.freezerBurn.1', who: 'walt', moment: 'complain.gross.freezerBurn', text: 'This shake is freezer-burned. Tastes like the icebox we had before we had a fridge.', delivery: 'grimacing, nostalgic' },
+  { id: 'order.odd.malted.1', who: 'walt', moment: 'order.odd.malted', text: "A chocolate malted, thick, like Murray's in '55. No malt? Then a thick shake, and I'll pretend.", delivery: 'cheerful, hopeful' },
+  { id: 'order.odd.malted.2', who: 'walt', moment: 'order.odd.malted', text: "I'd like a malted. Nobody makes malteds. Then make it thick and chocolate, and call it one for me.", delivery: 'wistful, then brightening' },
+  { id: 'order.odd.tenScoop.1', who: 'walt', moment: 'order.odd.tenScoop', text: "Ten scoops on a cone, like the dare in '55. I lost that dare. Stack it as high as it goes.", delivery: 'mischievous' },
+  { id: 'order.odd.ketchup.1', who: 'walt', moment: 'order.odd.ketchup', text: "Ice cream with ketchup, like my brother ate it in '55. Strawberry will do. He was a strange boy.", delivery: 'fond, shaking his head' },
+  { id: 'order.odd.justCherry.1', who: 'walt', moment: 'order.odd.justCherry', text: "A sundae, just the cherry. I'm after the stem. I tie knots in them. It's a talent.", delivery: 'proud, wiggling his eyebrows' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     BROCK (cameo: the Smoothie Shack's gym bro, a level-4 visitor here): his once-a-year cheat day. Kevin is his
+     shaker bottle. Notes say pumped or eager, never loud (cast-script.md 3).
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'visitor.arrive.1', who: 'brock', moment: 'visitor.arrive', text: "Brock! Smoothie Shack guy. Today's cheat day. I've been planning it since March.", delivery: 'pumped, friendly' },
+  { id: 'visitor.arrive.2', who: 'brock', moment: 'visitor.arrive', text: "Yo! Don't tell the Smoothie Shack I'm here. Kevin knows. Kevin's being cool about it.", delivery: 'conspiratorial, eager' },
+  { id: 'visitor.arrive.3', who: 'brock', moment: 'visitor.arrive', text: "Cheat day, bro! One day a year. Kevin stayed home. He couldn't watch.", delivery: 'hyped, then tender' },
+  { id: 'greet.1', who: 'brock', moment: 'greet', text: "Sup, chief! Is there protein in ice cream? Don't answer. Let me have this.", delivery: 'eager, hopeful' },
+  { id: 'greet.2', who: 'brock', moment: 'greet', text: 'Brock here! Did a hundred squats in the car park to earn this. People clapped.', delivery: 'proud, beaming' },
+  { id: 'greet.3', who: 'brock', moment: 'greet', text: 'Hey, bro! My trainer said treat yourself. I am my trainer.', delivery: 'pumped, earnest' },
+  { id: 'greet.4', who: 'brock', moment: 'greet', text: "What's up! I'm carb loading. For nothing. Just loading.", delivery: 'cheerful, unashamed' },
+  { id: 'smalltalk.1', who: 'brock', moment: 'smalltalk', text: "Kevin's not talking to me today. He's a shaker bottle, so that's normal, but it feels personal.", delivery: 'hurt, sincere' },
+  { id: 'smalltalk.2', who: 'brock', moment: 'smalltalk', text: 'My mom saw me walk in here. She texted a heart. Then another heart. Then: Brock.', delivery: 'warm, then quoting his mom flatly' },
+  { id: 'smalltalk.3', who: 'brock', moment: 'smalltalk', text: "Cheat day's a lot of pressure, bro. You only get one. I've been training for it all year.", delivery: 'earnest, rolling his shoulders' },
+  { id: 'smalltalk.4', who: 'brock', moment: 'smalltalk', text: 'I tried to bench press a chest freezer once. The store asked me to leave. Fair.', delivery: 'cheerful, accepting' },
+  { id: 'goodbye.1', who: 'brock', moment: 'goodbye', text: "Thanks, chief! Back to the gym. Tomorrow. Today I'm going to lie down.", delivery: 'contented, sinking a little' },
+  { id: 'goodbye.2', who: 'brock', moment: 'goodbye', text: "Later, bro! I'm going to walk it off. Twice round the court. Maybe once.", delivery: 'cheerful, honest' },
+  { id: 'goodbye.3', who: 'brock', moment: 'goodbye', text: "Peace out! Whatever happens, don't tell Kevin about today.", delivery: 'conspiratorial, jogging off' },
+  { id: 'react.3.1', who: 'brock', moment: 'react.3', text: "Bro. Bro! Best cheat day of my life. And I've had one other.", delivery: 'overjoyed, then sincere' },
+  { id: 'react.3.2', who: 'brock', moment: 'react.3', text: "Perfect. I'd flex, but I'm holding ice cream. That's kind of a flex too.", delivery: 'proud, holding it up' },
+  { id: 'react.3.3', who: 'brock', moment: 'react.3', text: "Chief, that's beautiful. I'm going to eat it slow. Like a rep.", delivery: 'reverent' },
+  { id: 'react.2.1', who: 'brock', moment: 'react.2', text: "Solid. Like a seven out of ten. Cheat day's still a ten, though.", delivery: 'upbeat, fair' },
+  { id: 'react.2.2', who: 'brock', moment: 'react.2', text: 'Not bad, bro. Not perfect form, but not bad.', delivery: 'coaching tone, friendly' },
+  { id: 'react.2.3', who: 'brock', moment: 'react.2', text: 'Close! Still counts. Every rep counts.', delivery: 'encouraging' },
+  { id: 'react.1.1', who: 'brock', moment: 'react.1', text: "Bro. That's not it. That's the rest day of desserts.", delivery: 'deflated' },
+  { id: 'react.1.2', who: 'brock', moment: 'react.1', text: "Oof. Kevin's going to say I told you so. He can't talk, but he'll say it.", delivery: 'rueful' },
+  { id: 'react.1.3', who: 'brock', moment: 'react.1', text: 'Aw, man. Cheat day, and it cheated me.', delivery: 'disappointed, a slow headshake' },
+  { id: 'react.gross.1', who: 'brock', moment: 'react.gross', text: "Bro! There's something on this that is not protein and not dessert!", delivery: 'horrified, eager voice cracking' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     THE REGULARS: their lines about the ice cream (greet, smalltalk and goodbye are the cast's; one greet each here
+     for colour). Reactions name "ice cream" or nothing, so they stay true for a cone, a sundae or a shake.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Marge: "vanilla in a cup" ─────────────────────────────────────────────────────────────────────────────── */
+  { id: 'greet.1', who: 'marge', moment: 'greet', text: 'Hi, hon. Ice cream for lunch. At my age, lunch is whatever I say.', delivery: 'warm, pleased with herself' },
+  { id: 'order.usual.1', who: 'marge', moment: 'order.usual', text: "The usual, hon. Vanilla in a cup, with a spoon. Cones drip on the bus seats.", delivery: 'warm, knowing' },
+  { id: 'order.usual.2', who: 'marge', moment: 'order.usual', text: 'My usual, sweetie. One vanilla in a cup. Thirty years of vanilla, and not one bad day.', delivery: 'warm, contented' },
+  { id: 'react.3.1', who: 'marge', moment: 'react.3', text: "Oh, that's lovely, hon. Plain and perfect. Like me.", delivery: 'warm, a little pleased with herself' },
+  { id: 'react.3.2', who: 'marge', moment: 'react.3', text: "That's exactly right, sweetie. The ticket remembered. Good ticket.", delivery: 'delighted, patting the counter' },
+  { id: 'react.3.3', who: 'marge', moment: 'react.3', text: "Perfect, hon. I'm taking it to bingo. It won't make it to bingo.", delivery: 'warm, already eating' },
+  { id: 'react.2.1', who: 'marge', moment: 'react.2', text: 'Close, hon. I ate the bus depot pudding for twenty years. I can manage close.', delivery: 'warm, forgiving' },
+  { id: 'react.2.2', who: 'marge', moment: 'react.2', text: "Not quite, sweetie, but it's cold and it's sweet. So am I, mostly.", delivery: 'warm, a wink' },
+  { id: 'react.2.3', who: 'marge', moment: 'react.2', text: "Almost. I'll pretend it's exactly right. I'm good at that. Ask my husband.", delivery: 'wry' },
+  { id: 'react.1.1', who: 'marge', moment: 'react.1', text: "Oh, hon. That's not it. That's not it at all.", delivery: 'disappointed, gentle' },
+  { id: 'react.1.2', who: 'marge', moment: 'react.1', text: "Well, I've had better, sweetie. I've had better out of a vending machine.", delivery: 'dry' },
+  { id: 'react.1.3', who: 'marge', moment: 'react.1', text: 'Hon, I drove a school bus for thirty years. I know a wrong turn when I see one.', delivery: 'patient, pointed' },
+  { id: 'react.gross.1', who: 'marge', moment: 'react.gross', text: 'Oh, hon, no. That is going straight in the bin, and so is my appetite.', delivery: 'grossed out, pushing it away' },
+  { id: 'order.odd.justCherry.1', who: 'marge', moment: 'order.odd.justCherry', text: "A sundae, hon, but just the cherry. My doctor said cut back. That's me cutting back.", delivery: 'warm, very reasonable' },
+  { id: 'order.odd.ketchup.1', who: 'marge', moment: 'order.odd.ketchup', text: "Strawberry in a cup, hon, and I'll pretend it's ketchup. My grandson eats it that way. I'm trying to understand him.", delivery: 'warm, bewildered' },
+  { id: 'order.odd.tenScoop.1', who: 'marge', moment: 'order.odd.tenScoop', text: "Ten scoops on a cone, hon. It's my birthday. Not today. But it was, once.", delivery: 'mischievous' },
+
+  /* ── Gus: "two cones" ───────────────────────────────────────────────────────────────────────────────────────── */
+  { id: 'greet.1', who: 'gus', moment: 'greet', text: 'Howdy. Parked the rig in the shade. Ice cream is a shade kind of thing.', delivery: 'easy drawl' },
+  { id: 'order.twin.1', who: 'gus', moment: 'order.twin', text: "Two of 'em, buddy. One for now, and one for also now.", delivery: 'warm drawl, a grin' },
+  { id: 'order.twin.2', who: 'gus', moment: 'order.twin', text: "Make it two. One for me, one for Delores. Delores is home. I'll tell her all about it.", delivery: 'fond drawl' },
+  { id: 'react.3.1', who: 'gus', moment: 'react.3', text: "Now that's ice cream, buddy. That'll keep me cool clear across Nebraska.", delivery: 'happy drawl' },
+  { id: 'react.3.2', who: 'gus', moment: 'react.3', text: "Well, I'll be. Perfect. I'm eatin' this in the cab with the air on full.", delivery: 'delighted drawl' },
+  { id: 'react.3.3', who: 'gus', moment: 'react.3', text: "Good stuff, buddy. Delores is gonna be jealous. I'm gonna describe it to her. Slowly.", delivery: 'contented drawl, a chuckle' },
+  { id: 'react.2.1', who: 'gus', moment: 'react.2', text: 'Pretty good, buddy. Like a truck stop sundae, only closer to home.', delivery: 'easy drawl' },
+  { id: 'react.2.2', who: 'gus', moment: 'react.2', text: 'Not bad. Not right, not wrong. Like most of Ohio.', delivery: 'thoughtful drawl' },
+  { id: 'react.2.3', who: 'gus', moment: 'react.2', text: "Close enough for the open road, buddy. The road ain't picky.", delivery: 'easygoing drawl' },
+  { id: 'react.1.1', who: 'gus', moment: 'react.1', text: "Aw, buddy. That ain't it. That ain't even in the same county.", delivery: 'disappointed drawl' },
+  { id: 'react.1.2', who: 'gus', moment: 'react.1', text: 'Well, shoot. The truck stop in Tucumcari does better, and they mostly do jerky.', delivery: 'rueful drawl' },
+  { id: 'react.1.3', who: 'gus', moment: 'react.1', text: "That's a no from me, buddy. And I say yes to near about everything.", delivery: 'gentle drawl' },
+  { id: 'react.gross.1', who: 'gus', moment: 'react.gross', text: 'Whoa, now! That is worse than the time a raccoon got in the cab.', delivery: 'alarmed drawl' },
+  { id: 'order.odd.tenScoop.1', who: 'gus', moment: 'order.odd.tenScoop', text: "Ten scoops, buddy. Stack 'em high. I got a long drive and a tall appetite.", delivery: 'hungry drawl' },
+  { id: 'order.odd.ketchup.1', who: 'gus', moment: 'order.odd.ketchup', text: "Ice cream with ketchup, buddy. Long-haul thing. Strawberry'll pass, if you squint.", delivery: 'matter-of-fact drawl' },
+  { id: 'order.odd.justCherry.1', who: 'gus', moment: 'order.odd.justCherry', text: "Sundae, just the cherry. Doc says no sweets. A cherry's a fruit. That's practically a salad.", delivery: 'sly drawl' },
+
+  /* ── Coach Bev: "a sundae for the team"; her favourite is the hot fudge sundae; the Kitchen Sink is hers ──── */
+  { id: 'greet.1', who: 'bev', moment: 'greet', text: 'Coach Bev! The team ran laps. I ran the stopwatch. I am EXHAUSTED!', delivery: 'firm, like a coach, cheerful' },
+  { id: 'order.gag.1', who: 'bev', moment: 'order.gag', text: "And it's for the TEAM! Twelve kids, twelve spoons, one sink! That's TEAMWORK!", delivery: 'firm, like a coach, proud' },
+  { id: 'order.gag.2', who: 'bev', moment: 'order.gag', text: "For the TEAM! They won! First win in three seasons! We're eating out of a SINK!", delivery: 'firm, like a coach, overjoyed' },
+  { id: 'react.favourite.1', who: 'bev', moment: 'react.favourite', text: "THAT is a hot fudge sundae! A CHAMPIONSHIP sundae! I'm framing the spoon!", delivery: 'firm, like a coach, thrilled' },
+  { id: 'react.favourite.2', who: 'bev', moment: 'react.favourite', text: "Hot fudge sundae! Every player in POSITION! That's what I call FUNDAMENTALS!", delivery: 'firm, like a coach, proud' },
+  { id: 'react.3.1', who: 'bev', moment: 'react.3', text: "PERFECT! That's a five-star EFFORT! We only give out four, but still!", delivery: 'firm, like a coach, delighted' },
+  { id: 'react.3.2', who: 'bev', moment: 'react.3', text: 'Now THAT is what I call EXECUTION! Proud of everybody involved!', delivery: 'firm, like a coach, beaming' },
+  { id: 'react.3.3', who: 'bev', moment: 'react.3', text: "BEAUTIFUL! That's going in the team newsletter! Page one!", delivery: 'firm, like a coach, proud' },
+  { id: 'react.2.1', who: 'bev', moment: 'react.2', text: "Good EFFORT! We'll work on the details at practice!", delivery: 'firm, like a coach, encouraging' },
+  { id: 'react.2.2', who: 'bev', moment: 'react.2', text: 'Not a win, not a loss! A TIE! We CELEBRATE ties!', delivery: 'firm, like a coach, upbeat' },
+  { id: 'react.2.3', who: 'bev', moment: 'react.2', text: 'Close! Solid fundamentals! Keep building!', delivery: 'firm, like a coach, clapping once' },
+  { id: 'react.1.1', who: 'bev', moment: 'react.1', text: "Oof! That's a REBUILDING year! We've ALL had those!", delivery: 'firm, like a coach, sympathetic' },
+  { id: 'react.1.2', who: 'bev', moment: 'react.1', text: "That's not the play I called! This sundae ran the wrong ROUTE!", delivery: 'firm, like a coach, baffled' },
+  { id: 'react.1.3', who: 'bev', moment: 'react.1', text: 'Tough one! Shake it off! Not the shake! The feeling! Shake off the FEELING!', delivery: 'firm, like a coach, rallying' },
+  { id: 'react.gross.1', who: 'bev', moment: 'react.gross', text: 'FOUL! That is a FOUL! Something on here is OFFSIDE!', delivery: 'firm, like a coach, outraged' },
+  { id: 'order.odd.tenScoop.1', who: 'bev', moment: 'order.odd.tenScoop', text: 'Ten scoops! Stack it like a PYRAMID! Huge ones on the bottom, huge ones on the top!', delivery: 'firm, like a coach, ambitious' },
+  { id: 'order.odd.ketchup.1', who: 'bev', moment: 'order.odd.ketchup', text: 'Ice cream with KETCHUP! The team dared me! Strawberry counts! The ref says strawberry COUNTS!', delivery: 'firm, like a coach, game for anything' },
+  { id: 'order.odd.justCherry.1', who: 'bev', moment: 'order.odd.justCherry', text: "A sundae, just the CHERRY! I'm cutting sugar! The cherry is my ONE cheat!", delivery: 'firm, like a coach, disciplined' },
+
+  /* ── Vernon: "single scoop, exact"; the size and the rim, never the count ──────────────────────────────────── */
+  { id: 'greet.1', who: 'vernon', moment: 'greet', text: "Vernon. Of the blog. Today I'm reviewing the roundness of your scoops.", delivery: 'haughty, precise' },
+  // His mention elsewhere says "exactly one" scoop; the level may give him more (voicecut, for content-icecream). True either way.
+  { id: 'smalltalk.scoop', who: 'vernon', moment: 'smalltalk', text: 'I take one scoop. Exactly one. The ticket may say otherwise. The ticket does not have a blog.', delivery: 'precise, grave, then a small sniff' },
+  { id: 'react.3.1', who: 'vernon', moment: 'react.3', text: 'Regulation. Round, level, correct. My readers will be told.', delivery: 'precise, grudgingly pleased' },
+  { id: 'react.3.2', who: 'vernon', moment: 'react.3', text: 'Correct in every particular. I will write about this. Briefly. I have a word limit. I set it.', delivery: 'precise, a flicker of joy' },
+  { id: 'react.3.3', who: 'vernon', moment: 'react.3', text: 'Exact. I measured it with my eyes. My eyes are calibrated.', delivery: 'haughty, satisfied' },
+  { id: 'react.2.1', who: 'vernon', moment: 'react.2', text: 'Nearly. Nearly is a word I use on the blog. It hurts people.', delivery: 'precise, cool' },
+  { id: 'react.2.2', who: 'vernon', moment: 'react.2', text: 'Acceptable, with notes. Eleven notes. One per reader.', delivery: 'precise, dry' },
+  { id: 'react.2.3', who: 'vernon', moment: 'react.2', text: 'Close. I will know. I already know.', delivery: 'grave' },
+  { id: 'react.1.1', who: 'vernon', moment: 'react.1', text: 'No. I said it precisely, and this is imprecise.', delivery: 'cold, precise' },
+  { id: 'react.1.2', who: 'vernon', moment: 'react.1', text: 'I will know. I do know. The blog will know by evening.', delivery: 'grave, ominous' },
+  { id: 'react.1.3', who: 'vernon', moment: 'react.1', text: 'A sundae of errors. That is the headline. It writes itself.', delivery: 'dry, pleased with the headline' },
+  { id: 'react.gross.1', who: 'vernon', moment: 'react.gross', text: 'There is a foreign object. I have photographed it. For the archive.', delivery: 'cold, precise' },
+  { id: 'order.odd.tenScoop.1', who: 'vernon', moment: 'order.odd.tenScoop', text: 'Ten scoops, huge. I am testing your structural engineering. I will know if it leans.', delivery: 'precise, a challenge' },
+  { id: 'order.odd.ketchup.1', who: 'vernon', moment: 'order.odd.ketchup', text: "Strawberry, which I will refer to as ketchup. It's for a piece on misleading menus.", delivery: 'precise, scheming' },
+  { id: 'order.odd.justCherry.1', who: 'vernon', moment: 'order.odd.justCherry', text: 'A sundae. Just the cherry. The rest is scaffolding. I will review the cherry only.', delivery: 'haughty, exact' },
+
+  /* ── Sal: "chocolate, no rabbit food": every scoop chocolate; the cherry is fruit, so it never goes on ─────── */
+  { id: 'greet.1', who: 'sal', moment: 'greet', text: "Ay. Sal. It's hot out there by the cart. The pigeons are sweatin'.", delivery: 'gruff, mopping his brow' },
+  { id: 'order.dislike.1', who: 'sal', moment: 'order.dislike', text: "And no cherry. A cherry's a fruit. Fruit's rabbit food. I ain't a rabbit.", delivery: 'gruff, principled' },
+  { id: 'order.dislike.2', who: 'sal', moment: 'order.dislike', text: 'Hold the cherry. I see a cherry, I think of salad. I come here not to think of salad.', delivery: 'gruff, pained' },
+  { id: 'order.dislike.3', who: 'sal', moment: 'order.dislike', text: 'No cherry on it. Last time the pigeons saw the cherry. They followed me home.', delivery: 'gruff, haunted' },
+  { id: 'react.3.1', who: 'sal', moment: 'react.3', text: "Now that's chocolate. That's the real deal. No rabbit food nowhere.", delivery: 'gruff, satisfied' },
+  { id: 'react.3.2', who: 'sal', moment: 'react.3', text: "Ay, perfect. I'd give you a hot dog for that. Don't take me up on it.", delivery: 'gruff, warm underneath' },
+  { id: 'react.3.3', who: 'sal', moment: 'react.3', text: "Beautiful. I'm eatin' it before the pigeons find out.", delivery: 'gruff, glancing at the door' },
+  { id: 'react.2.1', who: 'sal', moment: 'react.2', text: "It's okay. Ice cream's never bad. Just disappointin'.", delivery: 'gruff, philosophical' },
+  { id: 'react.2.2', who: 'sal', moment: 'react.2', text: "Eh. Close. My cousin'd eat it. My cousin eats the inventory.", delivery: 'gruff, resigned' },
+  { id: 'react.2.3', who: 'sal', moment: 'react.2', text: 'Not bad. Not great. Like the weather out by the cart.', delivery: 'gruff, shrugging' },
+  { id: 'react.1.1', who: 'sal', moment: 'react.1', text: "Ay, what is this? This ain't what I said.", delivery: 'gruff, aggrieved' },
+  { id: 'react.1.2', who: 'sal', moment: 'react.1', text: "Nope. I wouldn't feed this to the pigeons. Well, I would. They ain't picky.", delivery: 'gruff, then honest' },
+  { id: 'react.1.3', who: 'sal', moment: 'react.1', text: "What happened here? Somethin' happened here.", delivery: 'gruff, suspicious' },
+  { id: 'react.gross.1', who: 'sal', moment: 'react.gross', text: "Ay! What is that? I run a hot dog cart, and even I'm offended!", delivery: 'gruff, appalled' },
+
+  /* ── Tasha: the deadpan skater; "whatever, huge" ──────────────────────────────────────────────────────────── */
+  { id: 'greet.1', who: 'tasha', moment: 'greet', text: "Sup. I skated here. It's downhill. Ice cream is the reward for downhill.", delivery: 'flat, deadpan' },
+  { id: 'react.3.1', who: 'tasha', moment: 'react.3', text: "Huge. Correct. I respect it. I'm not saying that twice.", delivery: 'flat, a flicker of approval' },
+  { id: 'react.3.2', who: 'tasha', moment: 'react.3', text: "That's good. I'm going to eat it on a bench, alone, like in a movie.", delivery: 'flat, secretly thrilled' },
+  { id: 'react.3.3', who: 'tasha', moment: 'react.3', text: "Nailed it. Whatever. It's great. I'm fine. It's great.", delivery: 'flat, cracking slightly' },
+  { id: 'react.2.1', who: 'tasha', moment: 'react.2', text: "It's okay. It's ice cream-shaped. I'll allow it.", delivery: 'flat' },
+  { id: 'react.2.2', who: 'tasha', moment: 'react.2', text: 'Mid. Solid, chilly mid. Still eating it.', delivery: 'flat, deadpan' },
+  { id: 'react.2.3', who: 'tasha', moment: 'react.2', text: 'Close. I finish everything. Life is long.', delivery: 'flat, philosophical' },
+  { id: 'react.1.1', who: 'tasha', moment: 'react.1', text: "No. That's not it. I'm not even mad. I'm just looking at it.", delivery: 'flat, staring' },
+  { id: 'react.1.2', who: 'tasha', moment: 'react.1', text: "Wow. I'd skate away, but I already paid.", delivery: 'flat, a slow blink' },
+  { id: 'react.1.3', who: 'tasha', moment: 'react.1', text: "Nope. I'll eat it in silence. That's how I eat everything, so nobody will notice.", delivery: 'flat, deadpan' },
+  { id: 'react.gross.1', who: 'tasha', moment: 'react.gross', text: "Ew. Okay. That's the first time I've reacted to anything this year.", delivery: 'flat, then a genuine flinch' },
+  { id: 'order.odd.tenScoop.1', who: 'tasha', moment: 'order.odd.tenScoop', text: "Ten scoops. Huge. I'm going to skate with it for a video. Nobody will watch the video.", delivery: 'flat, deadpan' },
+  { id: 'order.odd.ketchup.1', who: 'tasha', moment: 'order.odd.ketchup', text: "Strawberry, but I'm calling it ketchup. Don't ask. I won't explain. I can't.", delivery: 'flat, mysterious' },
+  { id: 'order.odd.justCherry.1', who: 'tasha', moment: 'order.odd.justCherry', text: "A sundae, just the cherry. I just like the cherry. It's the only thing up there that commits.", delivery: 'flat, thoughtful' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     THE VISITORS (level 4): Reginald the critic and Kai, his ten-year-old fan
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'visitor.arrive.1', who: 'reginald', moment: 'visitor.arrive', text: 'Reginald. Critic. I have come to review the Emporium. Emporium. A bold word. Let us see if it is earned.', delivery: 'theatrical, sweeping' },
+  { id: 'visitor.arrive.2', who: 'reginald', moment: 'visitor.arrive', text: 'Good afternoon. I review ice cream once a decade. It is that decade.', delivery: 'grand, unwinding the scarf' },
+  { id: 'visitor.arrive.3', who: 'reginald', moment: 'visitor.arrive', text: 'Reginald. My scarf and I are here to taste everything, and to be seen tasting it.', delivery: 'theatrical, gracious' },
+  { id: 'react.3.1', who: 'reginald', moment: 'react.3', text: 'Sublime. The scoop a sphere, the sauce a waterfall. Five stars, in spirit.', delivery: 'rapturous, theatrical' },
+  { id: 'react.3.2', who: 'reginald', moment: 'react.3', text: 'Oh, my. I may weep into my scarf. The scarf has seen worse.', delivery: 'moved, theatrical' },
+  { id: 'react.3.3', who: 'reginald', moment: 'react.3', text: 'Magnificent. I shall need a new adjective. Several.', delivery: 'awed, sweeping' },
+  { id: 'react.2.1', who: 'reginald', moment: 'react.2', text: 'Competent. A word I use when I have run out of kind ones.', delivery: 'dry, theatrical' },
+  { id: 'react.2.2', who: 'reginald', moment: 'react.2', text: 'It has promise. Promise is what I say about the young and the unfinished.', delivery: 'condescending, gracious' },
+  { id: 'react.2.3', who: 'reginald', moment: 'react.2', text: 'Pleasant. Pleasant is not a review. And yet, here we are.', delivery: 'resigned, theatrical' },
+  { id: 'react.1.1', who: 'reginald', moment: 'react.1', text: 'A tragedy in one scoop. I shall review it in three acts.', delivery: 'tragic, theatrical' },
+  { id: 'react.1.2', who: 'reginald', moment: 'react.1', text: 'Dear me. My notebook has flinched.', delivery: 'pained, quiet' },
+  { id: 'react.1.3', who: 'reginald', moment: 'react.1', text: 'No. Simply no. Even my scarf is disappointed.', delivery: 'grave, theatrical' },
+  { id: 'react.gross.1', who: 'reginald', moment: 'react.gross', text: 'I came for a sundae. I have received a crime scene.', delivery: 'appalled, theatrical' },
+
+  { id: 'visitor.arrive.1', who: 'kai', moment: 'visitor.arrive', text: "Hi. I'm Kai. I review food. I keep it short. Ice cream is a short food.", delivery: 'bright, very serious' },
+  { id: 'visitor.arrive.2', who: 'kai', moment: 'visitor.arrive', text: "Hello. Reginald is parking. I'm reviewing without him. Don't tell him.", delivery: 'bright, conspiratorial' },
+  { id: 'visitor.arrive.3', who: 'kai', moment: 'visitor.arrive', text: 'Kai. Food reviewer. I have my notebook and a brain freeze strategy.', delivery: 'bright, very serious' },
+  { id: 'react.3.1', who: 'kai', moment: 'react.3', text: "Review: cold, correct, excellent. Three words. That's my longest review.", delivery: 'bright, very serious' },
+  { id: 'react.3.2', who: 'kai', moment: 'react.3', text: 'Review: yes.', delivery: 'bright, a firm nod' },
+  { id: 'react.3.3', who: 'kai', moment: 'react.3', text: "This is perfect. I'm writing perfect in capitals. That's rare.", delivery: 'bright, writing carefully' },
+  { id: 'react.2.1', who: 'kai', moment: 'react.2', text: 'Review: good, mostly. The mostly is doing a lot of work.', delivery: 'bright, thoughtful' },
+  { id: 'react.2.2', who: 'kai', moment: 'react.2', text: 'Review: close. Not close enough for capitals.', delivery: 'bright, very serious' },
+  { id: 'react.2.3', who: 'kai', moment: 'react.2', text: "Review: fine. Reginald would say more. I don't have to.", delivery: 'bright, matter-of-fact' },
+  { id: 'react.1.1', who: 'kai', moment: 'react.1', text: 'Review: no.', delivery: 'bright, very serious' },
+  { id: 'react.1.2', who: 'kai', moment: 'react.1', text: 'Review: wrong. Sad face. I drew the sad face.', delivery: 'bright, showing the notebook' },
+  { id: 'react.1.3', who: 'kai', moment: 'react.1', text: "Review: not what I ordered. I'm underlining not.", delivery: 'bright, underlining firmly' },
+  { id: 'react.gross.1', who: 'kai', moment: 'react.gross', text: "Review: gross. I'm drawing what I found. It's a bad drawing of a bad thing.", delivery: 'bright, grossed out, still writing' },
+
+] });

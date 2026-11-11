@@ -1,0 +1,588 @@
+/** Ben's Food Court - the assembly line: one order, made one step at a time
+ *  (DESIGN.md "The assembly line"; docs/api/line.md is the format).
+ *
+ *  An order runs each of its items through the stations its recipe names, in order. A
+ *  station is a list of steps from the pack, and every step is one of four kinds:
+ *    add    offer one ingredient: add | skip (| swap, when the ingredient is bad); max > 1
+ *           offers it again, and Skip becomes Done
+ *    cook   Simple: cook:<stage> (or by itself, for a stage set with simple: 'auto');
+ *           Timed: takeOff, while tick() moves the food on
+ *    pick   pick:<value>: `slot` (the pack's slots; repeat: { max } picks again, with Done
+ *           after the first), or the diner's `from` / `of`. More than four answers page
+ *           with More… rows. A pick of three or fewer values can carry a bad value (swap).
+ *    auto   a flourish with no answer (wrapping, a spin): it runs by itself
+ *  `when` ({ recipes } or { slot, in }) is read from the ticket: a step the ticket does not
+ *  use passes with a null answer, and the judge skips it.
+ *  Then a review (serve | redo:<item>:<station>) and the serve.
+ *
+ *  Every step has the answer the ticket wants (expected()). The judge compares answers
+ *  with it after the serve; the tutorial compares before a choice lands and warns
+ *  instead of applying it. Nothing here names an ingredient, a station or a recipe.
+ *
+ *  Pure: no DOM, no timers, no random numbers. An order is plain JSON, so a shift saves.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else (root.BB = root.BB || {}).line = factory();
+})(typeof window === 'undefined' ? globalThis : window, function () {
+  'use strict';
+
+  /** Answers per step: four, so that with Ticket a screen has five choices (DESIGN.md "Choice limits"). */
+  const MAX_ANSWERS = 4;
+  /** A More… row of values holds at most five entries; the review's rows of items, four. */
+  const ROW = MAX_ANSWERS + 1;
+
+  const keyOf = (sid, n) => sid + '.' + n;
+  const stationsOf = (pack, item) => pack.recipes[item.spec.recipe].stations;
+  const stepsOf = (pack, sid) => pack.stations[sid].steps;
+  const asList = v => (Array.isArray(v) ? v : v === undefined || v === null ? [] : [v]);
+  const isTimed = (o, settings) => !o.tutorial && !!settings && settings.cooking === 'timed';
+  const isSlot = step => step.kind === 'pick' && step.slot !== undefined;
+
+  /** Does a step belong to this ticket? `when` is read from the ticket (spec), never from what
+   *  was made, so the same ticket always asks the same steps and the ticket can list them. */
+  function applies(step, spec) {
+    const w = step.when;
+    if (!w) return true;
+    if (w.recipes && !w.recipes.includes(spec.recipe)) return false;
+    if (w.slot !== undefined) {
+      const have = asList((spec.picks || {})[w.slot]);
+      if (!have.some(v => (w.in || []).includes(v))) return false;
+    }
+    return true;
+  }
+
+  /* ── what each step asks, and what the ticket wants ─────────────────────── */
+  /** The ingredient a cook step cooks: its own, or what this station picked, or the item's. */
+  function cookIng(pack, item, sid, step) {
+    if (step.ing) return step.ing;
+    const steps = stepsOf(pack, sid);
+    const p = steps.findIndex(s => s.kind === 'pick' && s.from);
+    const picked = p >= 0 ? item.answers[keyOf(sid, p)] : null;
+    return picked || item.spec.ing;
+  }
+  /** The stage set a cook step uses: its own (`stages`), otherwise its ingredient's. -> id | null */
+  function setIdOf(pack, item, sid, step) {
+    if (step.stages) return step.stages;
+    const I = pack.ingredients[cookIng(pack, item, sid, step)];
+    return I && I.stages ? I.stages : null;
+  }
+  function stageSet(pack, item, sid, step) {
+    const id = setIdOf(pack, item, sid, step);
+    return id ? pack.stageSets[id] || null : null;
+  }
+  /** Seconds a stage lasts at a Cooking Speed: the stage set's own `speed`, else the pack's. */
+  function stageSeconds(pack, set, settings) {
+    const speeds = Object.assign({}, pack.cookSpeeds, set && set.speed);
+    return speeds[(settings && settings.speed) || 'verySlow'] || speeds.verySlow;
+  }
+  /** How many times longer the ticket's stage lasts: the stage set's own, else the pack's. */
+  const wantedScaleOf = (pack, set) => (set && set.wantedScale !== undefined ? set.wantedScale : pack.wantedScale || 1);
+
+  /** The values a pick step offers. */
+  function pickValues(pack, item, step) {
+    if (step.slot !== undefined) {
+      const S = (pack.slots || {})[step.slot];
+      return S ? S.values.map(v => v.id) : [];
+    }
+    if (step.from) return step.from.slice();
+    if (step.of === 'size') {
+      const I = pack.ingredients[item.spec.ing];
+      return I && I.sizes ? pack.sizeSets[I.sizes].map(z => z.id) : [];
+    }
+    if (step.of === 'flavour') {
+      const tp = pack.recipes[item.spec.recipe].item.parts.find(p => p.ing && typeof p.ing === 'object' && p.ing.pick);
+      return tp ? pack.picks[tp.ing.pick].values.slice() : [];
+    }
+    return [];
+  }
+  /** What the ticket wants at a step: add, how many; cook, the stage; pick, the value (a repeat
+   *  pick, the list of values); auto, or a step the ticket does not use, null. */
+  function expected(pack, item, sid, n) {
+    const step = stepsOf(pack, sid)[n], spec = item.spec;
+    if (!applies(step, spec)) return null;
+    if (step.kind === 'add') return Math.min(spec.parts.filter(p => p.ing === step.ing).length, step.max || 1);
+    if (step.kind === 'cook') {
+      if (step.want !== undefined) { const v = (spec.picks || {})[step.want]; return v === undefined || v === null ? null : v; }
+      if (step.ing) { const p = spec.parts.find(q => q.ing === step.ing && q.done); return p ? p.done : null; }
+      return spec.done || null;
+    }
+    if (step.kind === 'pick') {
+      if (step.slot !== undefined) {
+        const v = (spec.picks || {})[step.slot];
+        if (v === undefined || v === null) return null;
+        return step.repeat ? asList(v).slice() : Array.isArray(v) ? v[0] : v;
+      }
+      if (step.from) return step.from.find(x => x === spec.ing || spec.parts.some(p => p.ing === x)) || null;
+      if (step.of === 'size') return spec.size || null;
+      if (step.of === 'flavour') { const p = spec.parts.find(q => q.flavour); return p ? p.ing : null; }
+    }
+    return null;
+  }
+  /** The values of `want` not yet in `have`, each counted once (a repeat pick's order does not matter). */
+  function remaining(want, have) {
+    const left = want.slice();
+    for (const v of have) { const k = left.indexOf(v); if (k >= 0) left.splice(k, 1); }
+    return left;
+  }
+
+  /* ── an order ────────────────────────────────────────────────────────────── */
+  /** ticket = { customer, items: [spec] }. opts.gross: a bad thing waiting on one item's step:
+   *  { item, ing, event } on an Add step, or { item, slot, event } on that slot's pick (the bad
+   *  value is the one the ticket wants). opts.tutorial warns before mistakes. */
+  function create(pack, ticket, opts) {
+    opts = opts || {};
+    const o = {
+      ticket,
+      items: ticket.items.map(spec => ({ spec, answers: {}, gross: [], swaps: 0 })),
+      at: { item: 0, st: 0, step: 0 },
+      phase: 'line',               // line | review | served
+      pending: opts.gross ? Object.assign({}, opts.gross) : null,
+      gross0: opts.gross ? Object.assign({}, opts.gross) : null,   // as dealt, so the order can start over (shift.js restartOrder)
+      tutorial: !!opts.tutorial,
+      redo: null,                  // { item, station } while a redo runs
+      timer: null,                 // Timed cooking: { key, s, t }
+      fresh: true,                 // the current question opens a new phase
+    };
+    settle(pack, o, [], opts.settings);
+    return o;
+  }
+
+  function current(pack, o) {
+    if (o.phase !== 'line') return null;
+    const item = o.items[o.at.item], sid = stationsOf(pack, item)[o.at.st];
+    return { item, i: o.at.item, sid, n: o.at.step, step: stepsOf(pack, sid)[o.at.step], key: keyOf(sid, o.at.step) };
+  }
+  /** The bad thing waiting on this step, if any: an Add step's ingredient, or the wanted value of
+   *  a single slot pick whose values plus Swap It fit on one screen (never a paged pick). */
+  function grossHere(pack, o, c) {
+    const p = o.pending;
+    if (!p || p.item !== c.i) return null;
+    if (c.step.kind === 'add') return p.slot === undefined && p.ing === c.step.ing ? p : null;
+    if (isSlot(c.step) && !c.step.repeat && p.slot === c.step.slot) {
+      if (pickValues(pack, c.item, c.step).length + 1 > MAX_ANSWERS) return null;
+      return expected(pack, c.item, c.sid, c.n) !== null ? p : null;
+    }
+    return null;
+  }
+  /** How many of an ingredient this item has had added at a station. */
+  function addedAt(pack, item, sid, ing) {
+    let n = 0;
+    stepsOf(pack, sid).forEach((s, k) => { if (s.kind === 'add' && s.ing === ing) n += item.answers[keyOf(sid, k)] || 0; });
+    return n;
+  }
+  /** A cook step with nothing on the heat (no patties added) is passed by. */
+  function nothingToCook(pack, item, sid, step) {
+    if (!step.ing) return false;
+    const adds = stepsOf(pack, sid).some(s => s.kind === 'add' && s.ing === step.ing);
+    return adds && addedAt(pack, item, sid, step.ing) === 0;
+  }
+  /** Does a station ask this item anything (a step that applies and is not a flourish)? */
+  const asks = (pack, item, sid) => stepsOf(pack, sid).some(s => s.kind !== 'auto' && applies(s, item.spec));
+
+  /** Move past finished steps: passes steps the ticket does not use, flourishes, empty cook steps
+   *  and Simple's automatic cooking, starts the Timed clock, ends a phase, an item, a redo, or
+   *  the line (the review). Pushes what happened onto ev. */
+  function settle(pack, o, ev, settings) {
+    for (;;) {
+      if (o.phase !== 'line') return;
+      const item = o.items[o.at.item], sts = stationsOf(pack, item), sid = sts[o.at.st];
+      const steps = stepsOf(pack, sid);
+      if (o.at.step < steps.length) {
+        const step = steps[o.at.step], key = keyOf(sid, o.at.step);
+        if (!applies(step, item.spec)) {
+          item.answers[key] = null;
+          ev.push({ type: 'passed', item: o.at.item, station: sid, key });
+          o.at.step += 1;
+          continue;
+        }
+        if (step.kind === 'auto') {
+          item.answers[key] = true;
+          ev.push({ type: 'auto', item: o.at.item, station: sid, key, id: step.id, show: step.show });
+          o.at.step += 1;
+          continue;
+        }
+        if (step.kind === 'cook' && nothingToCook(pack, item, sid, step)) {
+          item.answers[key] = null;
+          ev.push({ type: 'nothingToCook', item: o.at.item, station: sid });
+          o.at.step += 1;
+          continue;
+        }
+        if (step.kind === 'cook' && !isTimed(o, settings)) {
+          const set = stageSet(pack, item, sid, step);
+          if (set && set.simple === 'auto') {
+            // Simple cooks this one by itself, to exactly what the ticket says.
+            const stage = expected(pack, item, sid, o.at.step) || (set.choose || [])[0] || set.stages[1] || set.stages[0];
+            item.answers[key] = stage;
+            ev.push({ type: 'cooked', item: o.at.item, ing: cookIng(pack, item, sid, step), stage, count: step.ing ? addedAt(pack, item, sid, step.ing) : 1, auto: true, key });
+            o.at.step += 1;
+            continue;
+          }
+        }
+        if (step.kind === 'cook' && isTimed(o, settings) && !(o.timer && o.timer.key === key)) {
+          o.timer = { key, s: 0, t: 0 };
+          ev.push({ type: 'cooking', item: o.at.item, ing: cookIng(pack, item, sid, step), stage: stageSet(pack, item, sid, step).stages[0] });
+        }
+        return;
+      }
+      ev.push({ type: 'phaseDone', item: o.at.item, station: sid });
+      o.fresh = true;
+      if (o.redo) {
+        o.redo = null;
+        o.phase = 'review';
+        ev.push({ type: 'review' });
+        return;
+      }
+      if (o.at.st + 1 < sts.length) o.at = { item: o.at.item, st: o.at.st + 1, step: 0 };
+      else if (o.at.item + 1 < o.items.length) o.at = { item: o.at.item + 1, st: 0, step: 0 };
+      else { o.phase = 'review'; ev.push({ type: 'review' }); return; }
+      ev.push({ type: 'phase', item: o.at.item, station: stationsOf(pack, o.items[o.at.item])[o.at.st] });
+    }
+  }
+
+  /* ── paging ──────────────────────────────────────────────────────────────── */
+  /** A row that holds `fit` entries; past that, its first `keep` and a More… row of the rest,
+   *  which pages the same way. More… ids: 'more', then 'more:2', 'more:3' a page deeper. */
+  function pageRow(list, fit, keep, page) {
+    if (list.length <= fit) return list;
+    return list.slice(0, keep).concat([{ id: page > 1 ? 'more:' + page : 'more', row: pageRow(list.slice(keep), fit, keep, page + 1) }]);
+  }
+  /** A pick's answers: the values, then its extras (Done, Swap It), never more than MAX_ANSWERS on
+   *  the screen. Too many values: the first ones and a More… row of up to five (past five, four
+   *  and a further More…), so up to eight values need one row. `reserve` keeps room for an extra
+   *  that comes later (a repeat's Done), so the values never move between the screen and the row. */
+  function pickOptions(values, extras, reserve) {
+    const room = MAX_ANSWERS - Math.max(extras.length, reserve || 0);
+    const opts = values.map(v => ({ id: 'pick:' + v, value: v }));
+    const top = opts.length <= room ? opts : opts.slice(0, room - 1).concat([{ id: 'more', row: pageRow(opts.slice(room - 1), ROW, ROW - 1, 2) }]);
+    return top.concat(extras);
+  }
+
+  /* ── the question on screen ─────────────────────────────────────────────── */
+  function question(pack, o, settings) {
+    if (o.phase === 'review') return { kind: 'review', fresh: o.fresh, options: reviewOptions(pack, o) };
+    const c = current(pack, o);
+    if (!c) return null;
+    const q = { kind: c.step.kind, item: c.i, station: c.sid, step: c.n, key: c.key, fresh: o.fresh };
+    if (c.step.kind === 'add') {
+      q.ing = c.step.ing;
+      q.max = c.step.max || 1;
+      q.have = c.item.answers[c.key] || 0;
+      q.offer = q.have + 1;
+      const g = grossHere(pack, o, c);
+      q.gross = g ? { event: g.event } : null;
+      q.options = [{ id: 'add' }, { id: 'skip' }].concat(g ? [{ id: 'swap' }] : []);
+    } else if (c.step.kind === 'cook') {
+      q.ing = cookIng(pack, c.item, c.sid, c.step);
+      q.count = c.step.ing ? addedAt(pack, c.item, c.sid, c.step.ing) : 1;
+      const set = stageSet(pack, c.item, c.sid, c.step);
+      if (isTimed(o, settings)) {
+        q.timed = true;
+        const s = o.timer && o.timer.key === c.key ? o.timer.s : 0;
+        q.stage = set.stages[s];
+        q.options = [{ id: 'takeOff' }];
+      } else q.options = set.choose.map(st => ({ id: 'cook:' + st, value: st }));
+      q.set = setIdOf(pack, c.item, c.sid, c.step);
+    } else if (isSlot(c.step)) {
+      q.of = 'slot';
+      q.slot = c.step.slot;
+      const values = pickValues(pack, c.item, c.step), extras = [];
+      if (c.step.repeat) {
+        const have = asList(c.item.answers[c.key]);
+        q.repeat = { max: c.step.repeat.max || 1 };
+        q.have = have.length;
+        q.offer = have.length + 1;
+        q.picked = have.slice();
+        if (have.length) extras.push({ id: 'done' });         // Done after the first
+        q.gross = null;
+        q.options = pickOptions(values, extras, 1);
+      } else {
+        const g = grossHere(pack, o, c);
+        q.gross = g ? { event: g.event, value: expected(pack, c.item, c.sid, c.n) } : null;
+        if (g) extras.push({ id: 'swap' });
+        q.options = pickOptions(values, extras, 0);
+      }
+    } else if (c.step.kind === 'pick') {
+      q.of = c.step.of || 'ing';
+      q.options = pickOptions(pickValues(pack, c.item, c.step), [], 0);
+    }
+    return q;
+  }
+
+  /** Serve, then the redo choices. Up to three redo choices sit beside Serve; more go in
+   *  a row of the items, each a row of its stations when it has more than one. A row of more
+   *  than four pages: four and a More… row. A station that asks this item nothing (every step
+   *  passed by `when`, or only flourishes) is never offered. */
+  function reviewOptions(pack, o) {
+    const flat = [];
+    o.items.forEach((item, i) => stationsOf(pack, item).forEach(sid => {
+      if (asks(pack, item, sid)) flat.push({ id: 'redo:' + i + ':' + sid, item: i, station: sid });
+    }));
+    if (flat.length <= MAX_ANSWERS - 1) return [{ id: 'serve' }].concat(flat);
+    const rows = [];
+    o.items.forEach((item, i) => {
+      const own = flat.filter(x => x.item === i);
+      if (own.length === 1) rows.push(own[0]);
+      else if (own.length) rows.push({ id: 'redo:' + i, item: i, row: pageRow(own, MAX_ANSWERS, MAX_ANSWERS, 1) });
+    });
+    return [{ id: 'serve' }, { id: 'redo', row: pageRow(rows, MAX_ANSWERS, MAX_ANSWERS, 1) }];
+  }
+
+  /* ── answering ──────────────────────────────────────────────────────────── */
+  /** In the tutorial: what would be wrong about this answer, or null. */
+  function warning(pack, o, c, id) {
+    const want = expected(pack, c.item, c.sid, c.n);
+    if (c.step.kind === 'add') {
+      const have = c.item.answers[c.key] || 0, g = grossHere(pack, o, c), many = (c.step.max || 1) > 1;
+      if (id === 'add' && g) return { kind: 'gross', ing: c.step.ing, event: g.event };
+      // held: the customer said "no" to it; otherwise it simply is not on the ticket.
+      if (id === 'add' && have + 1 > want) return { kind: many ? 'tooMany' : 'extra', ing: c.step.ing, want, have, held: (c.item.spec.holds || []).includes(c.step.ing) };
+      if (id === 'skip' && want > have) return { kind: g ? 'grossSkip' : many ? 'tooFew' : 'missing', ing: c.step.ing, want, have, event: g ? g.event : undefined };
+    } else if (c.step.kind === 'cook') {
+      const got = id.startsWith('cook:') ? id.slice(5) : null;
+      if (want && got && got !== want) return { kind: 'done', ing: cookIng(pack, c.item, c.sid, c.step), want, got };
+    } else if (isSlot(c.step)) {
+      const slot = c.step.slot, got = id.startsWith('pick:') ? id.slice(5) : null;
+      if (want === null) return null;
+      if (c.step.repeat) {
+        const have = asList(c.item.answers[c.key]), left = remaining(want, have);
+        if (id === 'done') return left.length ? { kind: 'tooFew', of: 'slot', slot, want: want.length, have: have.length } : null;
+        if (!got) return null;
+        if (!left.length) return { kind: 'tooMany', of: 'slot', slot, want: want.length, have: have.length };
+        return left.includes(got) ? null : { kind: 'pick', of: 'slot', slot, want: left[0], got };
+      }
+      const g = grossHere(pack, o, c);
+      if (g && got) return got === want ? { kind: 'gross', slot, value: got, event: g.event } : { kind: 'grossSkip', slot, want, got, event: g.event };
+      if (got && got !== want) return { kind: 'pick', of: 'slot', slot, want, got };
+    } else if (c.step.kind === 'pick') {
+      const got = id.startsWith('pick:') ? id.slice(5) : null;
+      if (want && got && got !== want) return { kind: 'pick', of: c.step.of || 'ing', want, got };
+    }
+    return null;
+  }
+
+  /** A slot pick. -> a result to return now (refused, or another pick on the same step), or null
+   *  when the step is finished and the line moves on. */
+  function answerSlot(pack, o, c, id, ev) {
+    const step = c.step, slot = step.slot, values = pickValues(pack, c.item, step);
+    const value = id.startsWith('pick:') ? id.slice(5) : null;
+    if (step.repeat) {
+      const have = asList(c.item.answers[c.key]);
+      if (id === 'done') {
+        if (!have.length) return { refused: true };
+        ev.push({ type: 'pickDone', item: c.i, slot, values: have.slice(), n: have.length });
+        return null;
+      }
+      if (!value || !values.includes(value)) return { refused: true };
+      const next = have.concat([value]);
+      c.item.answers[c.key] = next;
+      ev.push({ type: 'picked', item: c.i, of: 'slot', slot, value, n: next.length });
+      if (next.length < (step.repeat.max || 1)) { o.fresh = false; return { events: ev }; }     // offer another
+      return null;
+    }
+    const g = grossHere(pack, o, c), want = g ? expected(pack, c.item, c.sid, c.n) : null;
+    if (id === 'swap') {
+      if (!g) return { refused: true };
+      o.pending = null;
+      c.item.swaps += 1;
+      o.fresh = false;
+      ev.push({ type: 'swapped', item: c.i, slot, value: want, event: g.event });
+      return { events: ev };
+    }
+    if (!value || !values.includes(value)) return { refused: true };
+    c.item.answers[c.key] = value;
+    ev.push({ type: 'picked', item: c.i, of: 'slot', slot, value });
+    if (g) {
+      if (value === want) {
+        c.item.gross.push({ slot, value, event: g.event, key: c.key });
+        ev.push({ type: 'grossServed', item: c.i, slot, value, event: g.event });
+      }
+      o.pending = null;                                                    // served, or the bad one goes back
+    }
+    return null;
+  }
+
+  /** Apply one choice. -> { events } | { refused: true } | { warn, events: [] } (tutorial). */
+  function answer(pack, o, id, settings) {
+    const ev = [];
+    if (o.phase === 'review') return review(pack, o, id, settings);
+    const c = current(pack, o);
+    if (!c || typeof id !== 'string') return { refused: true };
+    if (o.tutorial) {
+      const w = warning(pack, o, c, id);
+      if (w) return { warn: w, events: [] };
+    }
+    const step = c.step;
+    if (step.kind === 'add') {
+      const have = c.item.answers[c.key] || 0, g = grossHere(pack, o, c), max = step.max || 1;
+      if (id === 'swap') {
+        if (!g) return { refused: true };
+        o.pending = null;
+        c.item.swaps += 1;
+        o.fresh = false;
+        ev.push({ type: 'swapped', item: c.i, ing: step.ing, event: g.event });
+        return { events: ev };
+      }
+      if (id === 'add') {
+        c.item.answers[c.key] = have + 1;
+        ev.push({ type: 'added', item: c.i, ing: step.ing, n: have + 1 });
+        if (g) {
+          c.item.gross.push({ ing: step.ing, event: g.event, key: c.key });
+          o.pending = null;
+          ev.push({ type: 'grossServed', item: c.i, ing: step.ing, event: g.event });
+        }
+        if (have + 1 < max) { o.fresh = false; return { events: ev }; }      // offer another
+      } else if (id === 'skip') {
+        c.item.answers[c.key] = have;
+        if (g) o.pending = null;                                             // the bad one goes back
+        ev.push({ type: 'skipped', item: c.i, ing: step.ing, gross: g ? g.event : undefined });
+      } else return { refused: true };
+    } else if (step.kind === 'cook') {
+      const ing = cookIng(pack, c.item, c.sid, step), set = stageSet(pack, c.item, c.sid, step);
+      let stage = null;
+      if (isTimed(o, settings)) {
+        if (id !== 'takeOff' || !o.timer || o.timer.key !== c.key) return { refused: true };
+        stage = set.stages[o.timer.s];
+        o.timer = null;
+      } else {
+        stage = id.startsWith('cook:') ? id.slice(5) : null;
+        if (!stage || !set.choose.includes(stage)) return { refused: true };
+      }
+      c.item.answers[c.key] = stage;
+      ev.push({ type: 'cooked', item: c.i, ing, stage, count: step.ing ? addedAt(pack, c.item, c.sid, step.ing) : 1 });
+    } else if (isSlot(step)) {
+      const r = answerSlot(pack, o, c, id, ev);
+      if (r) return r;
+    } else if (step.kind === 'pick') {
+      const value = id.startsWith('pick:') ? id.slice(5) : null;
+      if (!value || !pickValues(pack, c.item, step).includes(value)) return { refused: true };
+      c.item.answers[c.key] = value;
+      ev.push({ type: 'picked', item: c.i, of: step.of || 'ing', value });
+    } else return { refused: true };
+    o.fresh = false;
+    o.at.step += 1;
+    settle(pack, o, ev, settings);
+    return { events: ev };
+  }
+
+  function review(pack, o, id, settings) {
+    if (id === 'serve') { o.phase = 'served'; o.fresh = true; return { events: [{ type: 'served' }] }; }
+    const m = /^redo:(\d+):(\w+)$/.exec(id || '');
+    if (!m) return { refused: true };
+    const i = +m[1], sid = m[2], item = o.items[i];
+    const st = item ? stationsOf(pack, item).indexOf(sid) : -1;
+    if (st < 0) return { refused: true };
+    // That station starts again: its answers, and any bad ingredient served there, go.
+    stepsOf(pack, sid).forEach((s, n) => { delete item.answers[keyOf(sid, n)]; });
+    item.gross = item.gross.filter(g => !g.key.startsWith(sid + '.'));
+    o.phase = 'line';
+    o.at = { item: i, st, step: 0 };
+    o.redo = { item: i, station: sid };
+    o.timer = null;
+    o.fresh = true;
+    const ev = [{ type: 'redo', item: i, station: sid }];
+    settle(pack, o, ev, settings);
+    return { events: ev };
+  }
+
+  /* ── Timed cooking ──────────────────────────────────────────────────────── */
+  /** Move the food on by dt seconds. The stage the ticket wants lasts wantedScale times as
+   *  long; the last stage (Charred) is where food left on stops. Never changes the step.
+   *  hold: a switch is down. The clock stands still while it is (ACCESSIBILITY: no short
+   *  taps), so Take It Off takes the stage that was showing when the press began. */
+  function tick(pack, o, dt, settings, hold) {
+    if (!o.timer || o.phase !== 'line' || hold) return [];
+    const c = current(pack, o);
+    if (!c || c.key !== o.timer.key) return [];
+    const ing = cookIng(pack, c.item, c.sid, c.step), set = stageSet(pack, c.item, c.sid, c.step), list = set.stages;
+    const want = list.indexOf(expected(pack, c.item, c.sid, c.n));
+    const base = stageSeconds(pack, set, settings), scale = wantedScaleOf(pack, set);
+    const dur = s => base * (s === want ? scale : 1);
+    const ev = [];
+    o.timer.t += dt;
+    while (o.timer.s < list.length - 1 && o.timer.t >= dur(o.timer.s)) {
+      o.timer.t -= dur(o.timer.s);
+      o.timer.s += 1;
+      ev.push({ type: 'stage', item: c.i, ing, stage: list[o.timer.s], s: o.timer.s, last: o.timer.s === list.length - 1 });
+      if (want > 0 && o.timer.s === want - 1) ev.push({ type: 'nearly', item: c.i, ing, stage: list[want] });
+    }
+    if (o.timer.s >= list.length - 1) o.timer.t = 0;
+    return ev;
+  }
+  /** How far into the current stage the Timed food is, 0..1 (the gauge). */
+  function timerProgress(pack, o, settings) {
+    if (!o.timer) return 0;
+    const c = current(pack, o);
+    const set = stageSet(pack, c.item, c.sid, c.step), list = set.stages;
+    if (o.timer.s >= list.length - 1) return 1;
+    const want = list.indexOf(expected(pack, c.item, c.sid, c.n));
+    return Math.min(1, o.timer.t / (stageSeconds(pack, set, settings) * (o.timer.s === want ? wantedScaleOf(pack, set) : 1)));
+  }
+
+  /* ── what was made ──────────────────────────────────────────────────────── */
+  /** The item as the player made it, for the 3D food and the review's words:
+   *  { recipe, ing, size?, done?, parts: [{ ing, done?, layer?, flavour?, gross? }], gross,
+   *    picks: { <slot>: value | [values in line order] }, counts: { <ing>: n }, auto: [ids] }
+   *  picks holds every slot pick made, and the stage of a cook step that names a `want`;
+   *  counts, how many of each ingredient an Add step with max above 1 got; auto, the flourishes
+   *  that ran. */
+  function made(pack, o, i) {
+    const item = o.items[i], sts = stationsOf(pack, item);
+    const out = { recipe: item.spec.recipe, ing: item.spec.ing, parts: [], gross: item.gross.slice() };
+    const picks = {}, counts = {}, auto = [];
+    const cooked = [];                   // cookable parts made before the station that builds
+    let building = null;
+    for (const sid of sts) {
+      const st = pack.stations[sid], steps = stepsOf(pack, sid);
+      const doneOf = ing => {
+        const k = steps.findIndex(s => s.kind === 'cook' && cookIng(pack, item, sid, s) === ing);
+        return k >= 0 ? item.answers[keyOf(sid, k)] : undefined;
+      };
+      if (st.builds) { building = st.builds; out.ing = st.builds.on || out.ing; }
+      const eachOf = {};
+      const loose = [];
+      steps.forEach((s, k) => {
+        const key = keyOf(sid, k), a = item.answers[key];
+        if (s.kind === 'add') {
+          const n = a || 0, I = pack.ingredients[s.ing];
+          if ((s.max || 1) > 1 && a !== undefined && a !== null) counts[s.ing] = (counts[s.ing] || 0) + n;
+          for (let x = 0; x < n; x++) {
+            const part = { ing: s.ing };
+            if (item.gross.some(g => g.key === key)) part.gross = item.gross.find(g => g.key === key).event;
+            if (I.stages) { part.done = doneOf(s.ing) || null; cooked.push(part); }
+            else if (I.each) (eachOf[I.each] = eachOf[I.each] || []).push(part);
+            else loose.push(part);
+          }
+        } else if (s.kind === 'pick' && a) {
+          if (s.slot !== undefined) picks[s.slot] = Array.isArray(a) ? a.slice() : a;
+          else if (s.from) out.ing = a;
+          else if (s.of === 'size') out.size = a;
+          else if (s.of === 'flavour') loose.push({ ing: a, flavour: true });
+        } else if (s.kind === 'cook' && a) {
+          if (s.want !== undefined) picks[s.want] = a;
+          else if (!s.ing) out.done = a;
+        } else if (s.kind === 'auto' && a) auto.push(s.id);
+      });
+      if (st.builds) {
+        if (st.builds.base) out.parts.push({ ing: st.builds.base, layer: 'bottom' });
+        for (const c of cooked) {
+          out.parts.push(c);
+          // An "each" ingredient goes on every one of its kind (a slice on each patty).
+          const each = eachOf[c.ing];
+          if (each && each.length) out.parts.push(Object.assign({}, each[0]));
+        }
+        Object.keys(eachOf).filter(k => !cooked.some(c => c.ing === k)).forEach(k => eachOf[k].forEach(p => out.parts.push(p)));
+        loose.forEach(p => out.parts.push(p));
+        if (st.builds.cap) out.parts.push({ ing: st.builds.cap, layer: 'top' });
+      } else loose.forEach(p => out.parts.push(p));
+    }
+    if (!building && cooked.length) cooked.forEach(p => out.parts.unshift(p));
+    out.picks = picks;
+    out.counts = counts;
+    out.auto = auto;
+    return out;
+  }
+
+  return { MAX_ANSWERS, ROW, keyOf, stationsOf, applies, asks, cookIng, setIdOf, stageSet, stageSeconds, wantedScaleOf, pickValues, expected, remaining,
+    create, question, answer, tick, timerProgress, made, current };
+});

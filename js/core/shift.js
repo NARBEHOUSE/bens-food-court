@@ -1,0 +1,327 @@
+/** Ben's Food Court - a shift: customers one at a time, each order made on the line, then
+ *  the results (FOODCOURT-BUILD.md 4; docs/api/shift.md is the API).
+ *
+ *  A shift is plain JSON with its own random numbers (s.rng), so a saved shift continues
+ *  exactly. Who comes in, what they order and where the gross-outs fall are decided here,
+ *  from the pack and the restaurant's star level (the ladder, spec 4.3):
+ *    level 1-2  one item; level 2 adds the recipes of level 2 and longer tickets
+ *    level 3    one or two items (combos by recipe.course); gross-outs, at most 2 a shift
+ *    level 4-5  as 3, plus one ridiculous order now and then (pack.oddOrders) and exactly one
+ *               special visitor (a regular with `visitor`), never first, when one is drawn
+ *  pack.levels[n] overrides the engine's numbers (LEVELS). Order Size "One Item"
+ *  (settings.orders 'one') makes every order one item. recipe.level (default 1) is the only
+ *  recipe gate; level 'event' recipes come only in the five-star event.
+ *  The event (opts.event, pack.events.<id>): Shift Length orders at level-4 complexity, at most
+ *  three items each, from the event's customers; the last is always the finale.
+ *  Only drawn customers come in (opts.drawn: ids whose pictures are all there). A tutorial
+ *  customer or event orderer who isn't drawn is replaced by the first drawn regular; with
+ *  nobody drawn, the shift is finished and empty.
+ *  Gross-outs: never on the first order, never two on one order, only on something the ticket
+ *  wants, on an Add step or on a pick of three or fewer values (spec 4.6).
+ *  Without a level (the old Burger Bar page, and tests) a shift is off the ladder: every recipe
+ *  but the event's, the style named by settings.orders in pack.orderStyles, the pack's own
+ *  grossRate and grossMax, and no visitors or odd orders.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory(require('./rng.js'), require('./orders.js'), require('./line.js'), require('./judge.js'));
+  } else {
+    const B = root.BB = root.BB || {};
+    B.shift = factory(B.rng, B.orders, B.line, B.judge);
+  }
+})(typeof window === 'undefined' ? globalThis : window, function (R, O, L, J) {
+  'use strict';
+
+  const VERSION = 2;
+  const TOP = 5;
+  /** The ladder (spec 4.3), the engine's numbers. pack.levels[n] overrides any of them.
+   *  items [lo, hi] and more: how many items (each past the first at `more` odds); change: how
+   *  far an order strays from the recipe as written; maxOptional: the most optional toppings
+   *  kept; repeat: the odds of each repeat pick past the lowest count; fancy: picks use their
+   *  fancy lists; grossRate / grossMax: the odds of a gross-out on an order (never the first)
+   *  and the most in a shift; odd: the odds that a shift has one ridiculous order. */
+  const LEVELS = {
+    1: { items: [1, 1], change: 0.2, maxOptional: 2, repeat: 0, grossRate: 0, grossMax: 0, odd: 0 },
+    2: { items: [1, 1], change: 0.3, repeat: 0.3, grossRate: 0, grossMax: 0, odd: 0 },
+    3: { items: [1, 2], more: 0.35, change: 0.3, repeat: 0.4, grossRate: 0.3, grossMax: 2, odd: 0 },
+    4: { items: [1, 2], more: 0.35, change: 0.4, repeat: 0.5, grossRate: 0.3, grossMax: 2, odd: 0.5 },
+    5: { items: [1, 2], more: 0.45, change: 0.5, repeat: 0.5, fancy: true, grossRate: 0.35, grossMax: 2, odd: 0.6 },
+  };
+  /** An event order: level-4 complexity, never more than this many items. */
+  const EVENT_ITEMS = 3;
+  /** The level an odd order comes from, and a visitor visits from, when it names none. */
+  const ODD_LEVEL = 4;
+  const VISITOR_LEVEL = 4;
+
+  const clampLevel = n => Math.max(1, Math.min(TOP, Math.round(+n) || 1));
+  /** A level of the ladder: the engine's numbers with the pack's on top. */
+  function levelOf(pack, level) {
+    const n = clampLevel(level);
+    return Object.assign({ level: n }, LEVELS[n], (pack.levels || {})[n]);
+  }
+  /** A recipe's level: 1 unless it says; 'event' for an event-only recipe. */
+  const recipeLevel = X => (X.level === undefined ? 1 : X.level);
+  /** The recipes on offer at a level (every one but the event's when no level is given). */
+  const recipesFor = (pack, level) => Object.keys(pack.recipes).filter(r => {
+    const l = recipeLevel(pack.recipes[r]);
+    return l !== 'event' && (level === undefined || level === null || l <= level);
+  });
+  /** Customers who can come in: pictures, and drawn when a drawn list is given. */
+  const castOf = (pack, drawn) => (pack.regulars || []).filter(c => c.art && (!drawn || drawn.includes(c.id)));
+  const regular = (pack, id) => (pack.regulars || []).find(c => c.id === id);
+  /** The event of a shift, or null. */
+  const eventOf = (pack, s) => (s.event && pack.events && pack.events[s.event]) || null;
+  const one = st => Object.assign({}, st, { items: [1, 1] });
+
+  /** The order style of a shift: its level's (or, off the ladder, the named orderStyle), one
+   *  item each with Order Size "One Item"; an event's is level 4's with up to three items. */
+  function styleFor(pack, s) {
+    let st;
+    const E = eventOf(pack, s);
+    if (E) {
+      st = levelOf(pack, 4);
+      const items = E.items || st.items;
+      st = Object.assign({}, st, E.style, { items: [Math.min(items[0], EVENT_ITEMS), Math.min(items[1], EVENT_ITEMS)] });
+    } else if (s.level) st = levelOf(pack, s.level);
+    else st = O.styleOf(pack, s.settings.orders);
+    return s.settings.orders === 'one' ? one(st) : st;
+  }
+  /** The gross-out odds and limit for a shift. */
+  function grossFor(pack, s) {
+    if (s.level || eventOf(pack, s)) { const lv = eventOf(pack, s) ? levelOf(pack, 4) : levelOf(pack, s.level); return { rate: lv.grossRate || 0, max: lv.grossMax || 0 }; }
+    return { rate: pack.grossRate || 0, max: pack.grossMax || 0 };
+  }
+
+  /** A finished shift with no one in it: nobody who could come in is drawn (spec 4.5). */
+  function empty(s) {
+    s.length = 0; s.queue = []; s.plan = []; s.grossPlan = []; s.done = true;
+    return s;
+  }
+  /** Rounds of the pool, shuffled: everyone once before anyone twice, and never the same
+   *  customer twice in a row. */
+  function rounds(s, pool, length) {
+    const queue = [];
+    while (queue.length < length) {
+      const round = R.shuffle(s, pool.slice());
+      if (queue.length && round.length > 1 && round[0] === queue[queue.length - 1]) round.push(round.shift());
+      queue.push(...round);
+    }
+    queue.length = length;
+    return queue;
+  }
+  function plan(s, rate, max) {
+    let left = max;
+    const out = [];
+    for (let i = 0; i < s.length; i++) {
+      const hit = i > 0 && left > 0 && R.chance(s, rate);
+      out.push(hit);
+      if (hit) left -= 1;
+    }
+    return out;
+  }
+
+  /** opts = { seed, settings: { cooking, speed, orders: 'stars' | 'one', shiftLength }, level: 1-5,
+   *  event: <pack.events id>, drawn: [ids], tutorial, recipes?: [ids] }.
+   *  level: the restaurant's stars (BB.courtRules.level); leave it out for a shift off the ladder. */
+  function create(pack, opts) {
+    opts = opts || {};
+    const settings = Object.assign({ cooking: 'simple', speed: 'verySlow', orders: 'stars', shiftLength: 5 }, opts.settings);
+    const level = opts.level !== undefined && opts.level !== null ? clampLevel(opts.level) : null;
+    const event = !opts.tutorial && opts.event && pack.events && pack.events[opts.event] ? opts.event : null;
+    const s = {
+      v: VERSION, pack: pack.id, packVersion: pack.version, rng: R.seed(opts.seed || 1), seed: opts.seed || 1,
+      settings, level, event, tutorial: !!opts.tutorial, drawn: opts.drawn ? opts.drawn.slice() : null,
+      recipes: null, length: opts.tutorial ? 1 : Math.max(1, +settings.shiftLength || 5),
+      n: 0, queue: [], plan: [], grossPlan: [], results: [], coins: 0, order: null, done: false, counted: false,
+    };
+    const E = eventOf(pack, s);
+    s.recipes = opts.recipes ? opts.recipes.slice() : E ? (E.recipes || recipesFor(pack, 4)).slice() : recipesFor(pack, level);
+    const drawn = castOf(pack, s.drawn);
+    const isIn = id => drawn.some(c => c.id === id);
+    const regulars = drawn.filter(c => !c.visitor);
+    const firstRegular = () => (regulars[0] || drawn[0] || {}).id;
+
+    if (s.tutorial) {
+      const T = pack.tutorial || {};
+      const who = isIn(T.customer) ? T.customer : firstRegular();
+      if (!who || !T.items) return empty(s);
+      s.queue = [who]; s.grossPlan = [false]; s.plan = [{}];
+      return s;
+    }
+    if (E) {
+      const finale = E.finale || {};
+      const fin = isIn(finale.customer) ? finale.customer : firstRegular();
+      const pool = (E.customers ? drawn.filter(c => E.customers.includes(c.id)) : drawn).map(c => c.id);
+      if (!fin) return empty(s);
+      s.queue = rounds(s, pool.length ? pool : [fin], s.length - 1).concat([fin]);
+      s.plan = s.queue.map((x, i) => (i === s.length - 1 ? { finale: true } : {}));
+      const g = grossFor(pack, s);
+      s.grossPlan = plan(s, g.rate, g.max);
+      return s;
+    }
+    // Everyone once before anyone twice, and never the same customer twice in a row.
+    const pool = regulars.map(c => c.id);
+    if (!pool.length) return empty(s);
+    s.queue = rounds(s, pool, s.length);
+    s.plan = s.queue.map(() => ({}));
+    const g = grossFor(pack, s);
+    s.grossPlan = plan(s, g.rate, g.max);
+    if (level) {
+      // Exactly one special visitor a shift (never first), when one is drawn for this level.
+      const visitors = drawn.filter(c => c.visitor && level >= (c.visitor.level || VISITOR_LEVEL));
+      if (visitors.length && s.length > 1) {
+        const at = 1 + R.int(s, s.length - 1);
+        s.queue[at] = R.pick(s, visitors).id;
+        s.plan[at].visitor = true;
+      }
+      // At most one ridiculous order a shift, never first, never the visitor's.
+      const odds = (pack.oddOrders || []).filter(t => level >= (t.level || ODD_LEVEL) && s.recipes.includes(t.recipe));
+      if (odds.length && s.length > 1 && R.chance(s, levelOf(pack, level).odd || 0)) {
+        const spots = R.shuffle(s, s.queue.map((id, i) => i).filter(i => i > 0 && !s.plan[i].visitor));
+        for (const i of spots) {
+          const fit = odds.filter(t => !t.who || t.who.includes(s.queue[i]));
+          if (fit.length) { s.plan[i].odd = R.pick(s, fit).id; break; }
+        }
+      }
+    }
+    return s;
+  }
+
+  /** A new shift like this one (Restart Shift): the same level, event, drawn and settings. */
+  function restart(pack, s, opts) {
+    opts = opts || {};
+    return create(pack, { seed: opts.seed || ((s.seed * 31 + 7) >>> 0) || 1, settings: Object.assign({}, s.settings, opts.settings),
+      level: s.level, event: s.event, drawn: s.drawn, tutorial: s.tutorial });
+  }
+
+  /** Where a planned gross-out lands: one thing the ticket wants that some gross-out can happen
+   *  to, on an Add step or on a single pick of three or fewer values whose wanted value it lists.
+   *  Steps this ticket doesn't use are left out. -> { item, ing, event } | { item, slot, event } | null */
+  function placeGross(pack, s, items) {
+    const spots = [];
+    const gross = pack.gross || [];
+    items.forEach((spec, i) => {
+      for (const sid of pack.recipes[spec.recipe].stations) {
+        for (const step of pack.stations[sid].steps) {
+          if (!L.applies(step, spec)) continue;
+          if (step.kind === 'add') {
+            if (!spec.parts.some(p => p.ing === step.ing)) continue;
+            const events = gross.filter(g => (g.step || 'add') === 'add' && (g.on || []).includes(step.ing));
+            if (events.length) spots.push({ item: i, ing: step.ing, events });
+          } else if (step.kind === 'pick' && step.slot !== undefined && !step.repeat) {
+            const S = (pack.slots || {})[step.slot], want = (spec.picks || {})[step.slot];
+            if (!S || want === undefined || want === null || Array.isArray(want) || S.values.length + 1 > L.MAX_ANSWERS) continue;
+            const events = gross.filter(g => g.step === 'pick' && g.slot === step.slot && (g.on || []).includes(want));
+            if (events.length) spots.push({ item: i, slot: step.slot, events });
+          }
+        }
+      }
+    });
+    if (!spots.length) return null;
+    const spot = R.pick(s, spots);
+    const event = R.pick(s, spot.events).id;
+    return spot.slot !== undefined ? { item: spot.item, slot: spot.slot, event } : { item: spot.item, ing: spot.ing, event };
+  }
+
+  /** The customer the ticket carries (only what scoring and speech need, so a save is small). */
+  function ticketCustomer(C) {
+    const out = { id: C.id, name: C.name };
+    ['tipScale', 'threeStarScale', 'favourite'].forEach(k => { if (C[k] !== undefined) out[k] = C[k]; });
+    return out;
+  }
+  /** The newest recipe on offer (Reginald orders it): the first of the highest level. */
+  function newestOf(pack, recipes) {
+    let best = null;
+    for (const r of recipes) { const l = recipeLevel(pack.recipes[r]); if (typeof l === 'number' && (!best || l > best.l)) best = { r, l }; }
+    return best ? best.r : null;
+  }
+
+  /** The next customer walks up: their ticket goes on the line. The ticket carries
+   *  { customer, items } plus visitor: true (say visitor.arrive first), odd: <id> (they say
+   *  order.odd.<id> instead of the order), event: <id> and finale: true. */
+  function next(pack, s) {
+    if (s.done) return null;
+    if (s.order) return s.order;
+    const C = regular(pack, s.queue[s.n]) || { id: s.queue[s.n], name: s.queue[s.n] };
+    const P = (s.plan || [])[s.n] || {};
+    const E = eventOf(pack, s);
+    let items, gross = null;
+    if (s.tutorial) {
+      items = pack.tutorial.items.map(t => O.fixed(pack, s, t));
+      gross = pack.tutorial.gross ? Object.assign({}, pack.tutorial.gross) : null;
+    } else if (P.finale && E) {
+      items = E.finale.items.slice(0, s.settings.orders === 'one' ? 1 : EVENT_ITEMS).map(t => O.fixed(pack, s, t, { dislikes: C.dislikes }));
+    } else if (P.odd) {
+      const tpl = (pack.oddOrders || []).find(t => t.id === P.odd);
+      items = [O.fixed(pack, s, tpl, { dislikes: C.dislikes })];
+    } else {
+      items = O.order(pack, s, { customer: C, style: styleFor(pack, s), recipes: s.recipes, newest: newestOf(pack, s.recipes) });
+    }
+    if (!s.tutorial && s.grossPlan[s.n]) gross = placeGross(pack, s, items);
+    const ticket = { customer: ticketCustomer(C), items };
+    if (P.visitor) ticket.visitor = true;
+    if (P.odd) ticket.odd = P.odd;
+    if (s.event) ticket.event = s.event;
+    if (P.finale) ticket.finale = true;
+    s.order = L.create(pack, ticket, { gross, tutorial: s.tutorial, settings: s.settings });
+    return s.order;
+  }
+
+  const answer = (pack, s, id) => (s.order ? L.answer(pack, s.order, id, s.settings) : { refused: true });
+  /** hold: either switch is down (the Timed clock stands still, spec 0.7). */
+  const tick = (pack, s, dt, hold) => (s.order ? L.tick(pack, s.order, dt, s.settings, hold) : []);
+  const question = (pack, s) => (s.order ? L.question(pack, s.order, s.settings) : null);
+
+  /** After Serve: the rating, the tip, and on to the next customer (or the end). */
+  function serve(pack, s) {
+    const o = s.order;
+    if (!o || o.phase !== 'served') return null;
+    const r = J.score(pack, o);
+    const result = {
+      customer: o.ticket.customer.id, name: o.ticket.customer.name, recipes: o.items.map(it => it.spec.recipe),
+      stars: r.stars, count: r.count, tip: r.tip, favourite: r.favourite,
+      grossServed: o.items.reduce((k, it) => k + it.gross.length, 0), swaps: o.items.reduce((k, it) => k + it.swaps, 0),
+    };
+    ['visitor', 'odd', 'finale'].forEach(k => { if (o.ticket[k]) result[k] = o.ticket[k]; });
+    s.results.push(result);
+    s.coins += r.tip;
+    s.n += 1;
+    s.last = { order: o, score: r };
+    s.order = null;
+    s.done = s.n >= s.length;
+    return Object.assign({ mistakes: r.mistakes }, result);
+  }
+
+  /** The shift's results (spec 4.1): { pack, level, event, tutorial, orders, stars: [1-3 per
+   *  order], avgStars, coins }, plus finished, threeStars and best. */
+  function results(s) {
+    const stars = s.results.map(r => r.stars);
+    return {
+      pack: s.pack, level: s.level === undefined ? null : s.level, event: s.event || null, tutorial: !!s.tutorial,
+      orders: stars.length, stars, avgStars: stars.length ? stars.reduce((a, b) => a + b, 0) / stars.length : 0, coins: s.coins,
+      finished: !!s.done, threeStars: stars.filter(x => x === 3).length,
+      best: s.results.reduce((b, r) => (!b || r.stars > b.stars ? r : b), null),
+    };
+  }
+  /** A finished shift counts once (spec 4.2): its results the first time, null after that (and
+   *  while it is still going). Save the shift after claiming, or clear it. */
+  function claim(s) {
+    if (!s || !s.done || s.counted) return null;
+    s.counted = true;
+    return results(s);
+  }
+  /** Can this saved shift be carried on here? (Not finished, this pack, this pack version.) */
+  /** A saved shift opened again (the user, 2026-11-11): an order left half made starts over for the same customer,
+   *  with the same ticket and the same gross-out as dealt, so they walk up and say it again. The shift's earlier
+   *  customers, coins and results stay. An order already served is left as it is. */
+  function restartOrder(pack, s) {
+    const o = s && s.order;
+    if (!o || o.phase === 'served') return o || null;
+    s.order = L.create(pack, o.ticket, { gross: o.gross0 || o.pending || null, tutorial: s.tutorial, settings: s.settings });
+    return s.order;
+  }
+  const resumable = (pack, s) => !!s && typeof s === 'object' && s.pack === pack.id && s.packVersion === pack.version && !s.done && !s.tutorial;
+
+  return { VERSION, LEVELS, EVENT_ITEMS, levelOf, recipeLevel, recipesFor, castOf, styleFor, create, restart, next, answer, tick,
+    question, serve, results, claim, resumable, restartOrder, placeGross };
+});

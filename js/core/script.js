@@ -1,0 +1,648 @@
+/** Ben's Food Court - the script: who says what, when, and whether it has been recorded
+ *  (FOODCOURT-BUILD.md 5.5; docs/api/script.md is the format).
+ *
+ *  A script is { lines: [{ id, who, moment, text, each?, about?, delivery? }] }:
+ *    who     a character id, 'customer' (the pack's fallback for any customer), or the manager
+ *    moment  when it is said: one of MOMENTS ('greet', 'react.3', 'complain.gross.hair'...)
+ *    text    with blanks filled in when said (BLANKS): {ing} (cheese), {ings} (pickles),
+ *            {want} {got} (a stage, a slot value or a count), {slot} (sauce), {value} (red),
+ *            {count} (two), {name}, {goal}, {about}
+ *    each    the blank that changes the words, so each value is its own recording
+ *    about   a mention's restaurant (pack id)
+ *  Three kinds of file: packs/<pack>/script.js (every line about that restaurant's food,
+ *  Mitch's and the regulars' there included), packs/cast/script.js (lines true anywhere:
+ *  greet, smalltalk, goodbye, mention) and packs/court/script.js (the court's). merge() makes a
+ *  restaurant's script: its own lines plus the cast's, both the speaker's own; the pack's
+ *  'customer' lines stand in for anyone with fewer than two of their own.
+ *  A recording is a clip id: "<speaker>/<line id>[.<value>]" for a script marked plainIds (the
+ *  Burger Bar's lines keep today's ids), "<speaker>/<source>:<line id>[.<value>]" for every
+ *  other line (source: the pack id, 'cast' or 'court'). A line said by its speaker as the
+ *  'customer' fallback puts "customer." before its id. A recording plays only while its words
+ *  still match the hash of the words it was made from.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./words.js'), require('./cast.js'));
+  else (root.BB = root.BB || {}).script = factory(root.BB.words, root.BB.cast);
+})(typeof window === 'undefined' ? globalThis : window, function (W, CAST) {
+  'use strict';
+
+  /* ── the moments (spec 5.5) ─────────────────────────────────────────────── */
+  /** Every blank a line may use. {wanted} is what the ticket wanted, said whole: "thin crust", "no rice", "onion
+   *  rings", "two sugars", "one scoop", "medium" (voicecut, 2026-11-10: Mitch's readouts). */
+  const BLANKS = ['ing', 'ings', 'want', 'wanted', 'got', 'name', 'slot', 'value', 'count', 'goal', 'about'];
+  /** Blanks whose words change with the value, so a line using one names it as `each`. */
+  const VARYING = ['ing', 'ings', 'want', 'wanted', 'got', 'slot', 'value'];
+  const ING = ['ing', 'ings'], PICKED = ['slot', 'want', 'got', 'value'];
+  const TUTORIAL_WORDS = ['intro', 'ticket', 'review', 'serve', 'gross', 'warn', 'cook'];
+
+  /** The moment registry. game.js calls only these, and the coverage test checks every one for
+   *  every speaker who can say it, at every restaurant they visit.
+   *    id      the moment; {odd}, {gross} and {station} stand for each of the pack's odd orders,
+   *            gross-outs, and stations ({cookStation}: each station with a cook step)
+   *    who     customer | manager (the pack's) | court roles: courtManager, announcer, chatter, cheer
+   *    only    which customers must have it: all (default), visitor, usual, twin, dislikes,
+   *            favourite, localHere (a restaurant's own customer at home), odd (whoever can get that
+   *            odd order), optional (anyone may; nobody must)
+   *    need    the pack feature it needs: hasAdd, hasCount, hasCook, cookAsks, hasPick, hasGross,
+   *            tutorialGross, hasEvent, twoItems
+   *    blanks  the blanks its lines may use
+   *    min     lines each speaker must have of their own (variety)
+   *    fallback  the pack must write 'customer' lines for it, which stand in for anyone short
+   *    files   where its lines live: pack, cast, court
+   *    when    when the page says it */
+  const MOMENTS = [
+    // ── customers ──
+    { id: 'greet', who: 'customer', min: 3, files: ['pack', 'cast'], when: 'as they walk up' },
+    { id: 'visitor.arrive', who: 'customer', only: 'visitor', files: ['pack'], when: 'a visitor, before their greet' },
+    { id: 'order.usual', who: 'customer', only: 'usual', files: ['pack'], when: 'instead of the order, when it is exactly their usual' },
+    { id: 'order.twin', who: 'customer', only: 'twin', need: 'twoItems', files: ['pack'], when: 'after an order of two of one thing' },
+    { id: 'order.dislike', who: 'customer', only: 'dislikes', blanks: ING, files: ['pack'], when: 'after an order that leaves off something they never take' },
+    { id: 'order.gag', who: 'customer', only: 'localHere', files: ['pack'], when: 'after the order: their running gag, 8 s or less' },
+    { id: 'order.odd.{odd}', who: 'customer', only: 'odd', fallback: true, files: ['pack'], when: 'instead of the order, for that ridiculous order' },
+    { id: 'smalltalk', who: 'customer', min: 3, files: ['pack', 'cast'], when: 'once an order, after the last station, before the review' },
+    { id: 'react.3', who: 'customer', min: 3, fallback: true, files: ['pack'], when: 'three stars' },
+    { id: 'react.2', who: 'customer', min: 3, fallback: true, files: ['pack'], when: 'two stars' },
+    { id: 'react.1', who: 'customer', min: 3, fallback: true, files: ['pack'], when: 'one star' },
+    { id: 'react.favourite', who: 'customer', only: 'favourite', files: ['pack'], when: 'three stars on their favourite' },
+    { id: 'react.gross', who: 'customer', need: 'hasGross', fallback: true, files: ['pack'], when: 'a gross-out was served' },
+    // voicecut (2026-11-10): a customer's complaint names no food, so it is recorded once per person, not once per
+    // value; Mitch then reads the mistake itself (mistake.*). A gross-out's complaint names nothing that varies.
+    { id: 'complain', who: 'customer', min: 8, fallback: true, files: ['cast', 'pack'], when: 'a mistake was served (not a gross-out): their own short complaint, naming no food; Mitch reads what it was' },
+    { id: 'complain.gross.{gross}', who: 'customer', fallback: true, files: ['pack'], when: 'that gross-out was served (no blanks: it names nothing that varies)' },
+    { id: 'goodbye', who: 'customer', min: 3, files: ['pack', 'cast'], when: 'after the reaction and complaints, before the receipt' },
+    { id: 'mention', who: 'customer', only: 'optional', blanks: ['about'], files: ['cast'], when: 'at most once a shift: another open restaurant (about)' },
+    // ── Mitch ──
+    { id: 'shift.start', who: 'manager', files: ['pack'], when: 'a shift starts' },
+    { id: 'shift.end', who: 'manager', files: ['pack'], when: 'a shift ends' },
+    { id: 'uniform', who: 'manager', files: ['pack'], when: 'the first shift at a restaurant in a session' },
+    { id: 'tutorial.intro', who: 'manager', min: 2, files: ['pack'], when: 'the tutorial starts' },
+    { id: 'tutorial.ticket', who: 'manager', min: 2, files: ['pack'], when: 'the tutorial ticket goes up' },
+    { id: 'tutorial.review', who: 'manager', min: 2, files: ['pack'], when: 'the tutorial review' },
+    { id: 'tutorial.serve', who: 'manager', min: 2, files: ['pack'], when: 'the tutorial order is served' },
+    { id: 'tutorial.gross', who: 'manager', need: 'tutorialGross', min: 2, files: ['pack'], when: 'the tutorial gross-out: what Swap It does' },
+    { id: 'tutorial.{station}', who: 'manager', min: 2, files: ['pack'], when: 'the tutorial reaches that station' },
+    { id: 'tutorial.cook.{cookStation}', who: 'manager', min: 2, files: ['pack'], when: 'the tutorial reaches that station\'s cooking' },
+    { id: 'tutorial.warn.extra', who: 'manager', need: 'hasAdd', blanks: ING, min: 2, files: ['pack'], when: 'tutorial: adding something they said no to' },
+    { id: 'tutorial.warn.unasked', who: 'manager', need: 'hasAdd', blanks: ING, min: 2, files: ['pack'], when: 'tutorial: adding something not on the ticket' },
+    { id: 'tutorial.warn.missing', who: 'manager', need: 'hasAdd', blanks: ING, min: 2, files: ['pack'], when: 'tutorial: skipping something on the ticket' },
+    { id: 'tutorial.warn.tooMany', who: 'manager', need: 'hasCount', blanks: ING.concat(PICKED, ['count', 'wanted']), min: 2, files: ['pack'], when: 'tutorial: one too many' },
+    { id: 'tutorial.warn.tooFew', who: 'manager', need: 'hasCount', blanks: ING.concat(PICKED, ['count', 'wanted']), min: 2, files: ['pack'], when: 'tutorial: Done too soon' },
+    { id: 'tutorial.warn.done', who: 'manager', need: 'cookAsks', blanks: ING.concat(['want', 'got']), min: 2, files: ['pack'], when: 'tutorial: the wrong stage' },
+    { id: 'tutorial.warn.pick', who: 'manager', need: 'hasPick', blanks: ING.concat(PICKED, ['wanted']), min: 2, files: ['pack'], when: 'tutorial: the wrong pick ({slot}{want}, or {wanted} whole)' },
+    { id: 'tutorial.warn.gross', who: 'manager', need: 'hasGross', blanks: ING.concat(['slot', 'value']), min: 2, files: ['pack'], when: 'tutorial: about to use the bad one' },
+    { id: 'tutorial.warn.grossSkip', who: 'manager', need: 'hasGross', blanks: ING.concat(PICKED), min: 2, files: ['pack'], when: 'tutorial: skipping instead of swapping' },
+    { id: 'gross.{gross}', who: 'manager', blanks: ING.concat(['slot', 'value']), min: 2, files: ['pack'], when: 'that gross-out comes down the line' },
+    // Mitch reads a served mistake after the customer's complaint (voicecut, 2026-11-10): one line per value, in his
+    // voice only, said from the ticket so no pronoun is needed. The receipt still lists every mistake in text.
+    { id: 'mistake.extra', who: 'manager', need: 'hasAdd', blanks: ING, files: ['pack'], when: 'after the complaint: something they said no to is on it ("The ticket said no onions.")' },
+    { id: 'mistake.unasked', who: 'manager', need: 'hasAdd', blanks: ING, files: ['pack'], when: 'after the complaint: something they never asked for is on it' },
+    { id: 'mistake.missing', who: 'manager', need: 'hasAdd', blanks: ING, files: ['pack'], when: 'after the complaint: something they wanted was left off' },
+    { id: 'mistake.tooMany', who: 'manager', need: 'hasCount', blanks: ['wanted'], files: ['pack'], when: 'after the complaint: too many ({wanted}: "one patty")' },
+    { id: 'mistake.tooFew', who: 'manager', need: 'hasCount', blanks: ['wanted'], files: ['pack'], when: 'after the complaint: too few ({wanted}: "two sugars")' },
+    { id: 'mistake.done', who: 'manager', need: 'hasCook', blanks: ING.concat(['want', 'got']), files: ['pack'], when: 'after the complaint: the wrong stage ({want}: the ticket\'s)' },
+    { id: 'mistake.pick', who: 'manager', need: 'hasPick', blanks: ['wanted'], files: ['pack'], when: 'after the complaint: a wrong pick ({wanted}: "thin crust", "onion rings", "small")' },
+    { id: 'mistake.more', who: 'manager', files: ['pack'], when: 'after reading two mistakes, when there were more (the receipt has them)' },
+    { id: 'nearly', who: 'manager', need: 'hasCook', blanks: ['want', 'name'], files: ['pack'], when: 'Timed: one stage before the ticket\'s' },
+    { id: 'after.3', who: 'manager', files: ['pack'], when: 'a one-liner after three stars' },
+    { id: 'after.1', who: 'manager', files: ['pack'], when: 'a one-liner after one star' },
+    { id: 'after.gross', who: 'manager', need: 'hasGross', files: ['pack'], when: 'a one-liner after a gross-out was served' },
+    { id: 'event.intro', who: 'manager', need: 'hasEvent', blanks: ['name'], files: ['pack'], when: 'before the five-star event\'s first order ({name}: the event)' },
+    { id: 'event.celebrate', who: 'manager', need: 'hasEvent', blanks: ['name'], files: ['pack'], when: 'after a good event' },
+    { id: 'event.again', who: 'manager', need: 'hasEvent', blanks: ['name'], files: ['pack'], when: 'after an event that fell short' },
+    // ── the court ──
+    { id: 'court.return', who: 'courtManager', blanks: ['goal'], files: ['court'], when: 'back on the court, when the goal changed' },
+    { id: 'court.unlock', who: 'courtManager', blanks: ['name'], files: ['court'], when: 'a restaurant opened ({name})' },
+    { id: 'court.goldSign', who: 'courtManager', blanks: ['name'], files: ['court'], when: 'a gold sign went up ({name})' },
+    { id: 'court.celebrate', who: 'courtManager', files: ['court'], when: 'the grand celebration' },
+    { id: 'court.promoted', who: 'courtManager', files: ['court'], when: 'the grand celebration: the tape comes off' },
+    { id: 'court.announce.open', who: 'announcer', blanks: ['name'], files: ['court'], when: 'the Grand Opening' },
+    { id: 'court.announce.gold', who: 'announcer', blanks: ['name'], files: ['court'], when: 'a gold sign' },
+    { id: 'court.chatter', who: 'chatter', files: ['court'], when: 'captions only, never spoken' },
+    { id: 'court.cheer', who: 'cheer', files: ['court'], when: 'the grand celebration, once each' },
+  ];
+  MOMENTS.forEach(m => { m.blanks = m.blanks || []; m.min = m.min || 1; m.only = m.only || (m.who === 'customer' ? 'all' : undefined); });
+
+  /** The registry entry a moment id belongs to (pattern families too). */
+  function entryFor(moment) {
+    const exact = MOMENTS.find(m => m.id === moment);
+    if (exact) return exact;
+    return MOMENTS.find(m => {
+      const k = m.id.indexOf('{');
+      if (k < 0) return false;
+      const head = m.id.slice(0, k);
+      return moment.startsWith(head) && /^\w+$/.test(moment.slice(head.length));
+    }) || null;
+  }
+
+  /** What a pack has that moments need. */
+  function features(pack) {
+    const steps = Object.values(pack.stations || {}).flatMap(st => st.steps || []);
+    const sets = pack.stageSets || {};
+    const setOf = st => (st.stages ? sets[st.stages] : st.ing && pack.ingredients[st.ing] ? sets[pack.ingredients[st.ing].stages] : null);
+    const lv = n => Object.assign({}, ((pack.levels || {})[n]) || {});
+    return {
+      hasAdd: steps.some(st => st.kind === 'add'),
+      hasCount: steps.some(st => (st.kind === 'add' && (st.max || 1) > 1) || (st.kind === 'pick' && !!st.repeat)),
+      hasCook: steps.some(st => st.kind === 'cook'),
+      cookAsks: steps.some(st => st.kind === 'cook' && !((setOf(st) || {}).simple === 'auto')),
+      hasPick: steps.some(st => st.kind === 'pick'),
+      hasGross: (pack.gross || []).length > 0,
+      tutorialGross: !!(pack.tutorial && pack.tutorial.gross),
+      hasEvent: !!(pack.events && pack.events.five),
+      twoItems: [3, 4, 5].some(n => { const it = lv(n).items; return !it || it[1] >= 2; }),
+    };
+  }
+  /** Who of the pack's customers a moment needs. */
+  function customersFor(pack, m, oddId) {
+    const all = pack.regulars || [];
+    switch (m.only) {
+      case 'visitor': return all.filter(c => c.visitor);
+      case 'usual': return all.filter(c => c.usual && c.usual.length);
+      case 'twin': return all.filter(c => c.twin);
+      case 'dislikes': return all.filter(c => c.dislikes && c.dislikes.length);
+      case 'favourite': return all.filter(c => c.favourite);
+      case 'localHere': return all.filter(CAST.isLocalHere);
+      case 'odd': {
+        const t = (pack.oddOrders || []).find(x => x.id === oddId) || {};
+        return all.filter(c => !c.visitor && (!t.who || t.who.includes(c.id)));
+      }
+      case 'optional': return [];
+      default: return all;
+    }
+  }
+
+  /** Every moment a restaurant's script must cover, made concrete for this pack (merged):
+   *  [{ moment, entry, who: 'customer' | 'manager', speakers: [ids that must have it], blanks, min,
+   *  fallback, files }] */
+  function moments(pack) {
+    const F = features(pack), out = [];
+    const each = families(pack);
+    for (const m of MOMENTS) {
+      if (m.who !== 'customer' && m.who !== 'manager') continue;
+      if (m.need && !F[m.need]) continue;
+      const k = m.id.indexOf('{');
+      const ids = k < 0 ? [[m.id, null]] : (each[m.id.slice(k + 1, -1)] || []).map(x => [m.id.slice(0, k) + x, x]);
+      for (const [moment, x] of ids) {
+        const speakers = m.who === 'manager' ? (pack.manager ? [pack.manager.id] : []) : customersFor(pack, m, x).map(c => c.id);
+        out.push({ moment, entry: m, who: m.who, speakers, blanks: blanksFor(pack, moment, m), min: m.min, fallback: !!m.fallback, files: m.files });
+      }
+    }
+    return out;
+  }
+  /** The court's moments, from the cast: [{ moment, entry, speakers, blanks, min, files }] */
+  function courtMoments(cast) {
+    const people = (cast && cast.people) || {};
+    const ids = test => Object.keys(people).filter(id => test(people[id]));
+    const ROLE = CAST.ROLE;
+    const groups = {
+      courtManager: ids(P => P.role === ROLE.manager),
+      announcer: ids(P => P.role === ROLE.voice),
+      // Chatter is said by whoever is on the court's floor (crowd-cast, 2026-11-10: only the game's own customers
+      // stand there now): any customer may have a line; nobody must.
+      chatter: [],
+      cheer: ids(P => P.role === ROLE.regular || P.role === ROLE.visitor),
+    };
+    return MOMENTS.filter(m => groups[m.who]).map(m => ({ moment: m.id, entry: m, who: m.who, speakers: groups[m.who], blanks: m.blanks, min: m.min, files: m.files }));
+  }
+  /** Who may say a court moment (cheers: every customer of the cast, locals too; chatter: any
+   *  customer, as a caption over them on the floor). */
+  function courtSpeakers(cast, m) {
+    const people = (cast && cast.people) || {};
+    if (m.who === 'cheer') return Object.keys(people).filter(id => CAST.CUSTOMER_ROLES.includes(people[id].role));
+    if (m.who === 'chatter') return Object.keys(people).filter(id => CAST.CUSTOMER_ROLES.includes(people[id].role));
+    const found = courtMoments(cast).find(x => x.moment === m.id);
+    return found ? found.speakers : [];
+  }
+  /** The members of a moment family a pack has: { odd, gross, station, cookStation } -> [ids]. */
+  function families(pack) {
+    const stations = Object.keys(pack.stations || {});
+    return {
+      odd: (pack.oddOrders || []).map(t => t.id),
+      gross: (pack.gross || []).map(g => g.id),
+      station: stations,
+      cookStation: stations.filter(sid => (pack.stations[sid].steps || []).some(st => st.kind === 'cook')),
+    };
+  }
+  /** Is this moment one the pack can play (a family's member is one of the pack's)? */
+  function belongs(pack, moment) {
+    const m = entryFor(moment);
+    if (!m) return false;
+    const k = m.id.indexOf('{');
+    if (k < 0) return true;
+    return (families(pack)[m.id.slice(k + 1, -1)] || []).includes(moment.slice(k));
+  }
+  /** The blanks a moment's lines may use here: Mitch's gross-out on a pick names a {slot} and a
+   *  {value}; one on an Add an {ing}. (A customer's complain.gross.* has none: voicecut.) */
+  function blanksFor(pack, moment, m) {
+    m = m || entryFor(moment);
+    if (!m) return [];
+    const g = /^gross\.(\w+)$/.exec(moment);
+    const E = g && pack ? (pack.gross || []).find(x => x.id === g[1]) : null;
+    if (E) return E.step === 'pick' ? ['slot', 'value'] : ING.slice();
+    return m.blanks.slice();
+  }
+
+  /* ── merging and clip ids ───────────────────────────────────────────────── */
+  /** A restaurant's script: its own lines, then the cast script's lines for its people, all the
+   *  speaker's own. Each line is copied with `src` (the pack id or 'cast'); a pack script marked
+   *  plainIds keeps today's clip ids (`plain`). */
+  function merge(pack, packScript, castScript) {
+    const here = new Set((pack.regulars || []).map(c => c.id).concat(pack.manager ? [pack.manager.id] : []));
+    const lines = ((packScript && packScript.lines) || []).map(l => Object.assign({}, l, { src: pack.id }, packScript.plainIds ? { plain: true } : {}))
+      .concat(((castScript && castScript.lines) || []).filter(l => here.has(l.who)).map(l => Object.assign({}, l, { src: 'cast' })));
+    return { lines, src: pack.id };
+  }
+  /** The court's script, its lines marked as the court's. */
+  function court(courtScript) {
+    return { lines: ((courtScript && courtScript.lines) || []).map(l => Object.assign({}, l, { src: 'court' })), src: 'court' };
+  }
+
+  /** FNV-1a, 32 bits, as 8 hex digits: the fingerprint of a line's words. */
+  function hash(text) {
+    let h = 0x811c9dc5;
+    const s = String(text);
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+    return ('0000000' + h.toString(16)).slice(-8);
+  }
+
+  /** The words without sound tags ("[sigh]", "[laughing]"): what captions show and text
+   *  to speech says. Recordings are made from the tagged words, so the voice sighs. */
+  const clean = text => String(text).replace(/\[[^\]]*\]/g, ' ').replace(/\s{2,}/g, ' ').trim();
+
+  /** The value a line's changing blank has in these vars, for its clip id: an id; a slot's
+   *  value as "<slot>.<value>". */
+  function clipValue(line, vars) {
+    if (!line.each || !vars) return null;
+    const k = line.each === 'ings' ? 'ing' : line.each === 'wanted' ? 'want' : line.each;
+    const v = vars[k];
+    if (v === undefined || v === null || v === '') return null;
+    if (vars.slot !== undefined && ['want', 'got', 'value'].includes(k)) return vars.slot + '.' + v;
+    // {wanted} of a count names what was counted: "patty.2", "sugar.0".
+    if (line.each === 'wanted' && typeof v === 'number' && vars.ing) return vars.ing + '.' + v;
+    return String(v);
+  }
+  /** Words the page passes in ({name}: a customer's, an event's, a restaurant's; {goal}) change a line's recording
+   *  too, so a line using one is recorded once per value: its clip id ends in the words' key, their letters and
+   *  digits run together ("Ben's Smoothie Shack" -> bensSmoothieShack). docs/api/script.md 5. */
+  const GIVEN = ['name', 'goal'];
+  const wordsKey = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9\s]/g, '').trim().split(/\s+/).filter(Boolean)
+    .map((w, i) => (i ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w.toLowerCase())).join('');
+  const givenIn = line => GIVEN.filter(k => String(line && line.text).includes('{' + k + '}'));
+  /** The clip id for a line said by a speaker with these blanks. A 'customer' line is filed
+   *  under "customer." so it never collides with the speaker's own line of the same id. */
+  function clipId(line, speaker, vars) {
+    const v = clipValue(line, vars);
+    const given = givenIn(line).map(k => (vars && vars[k] !== undefined && vars[k] !== null ? wordsKey(vars[k]) : '')).filter(Boolean);
+    const base = (line.who === speaker ? '' : line.who + '.') + line.id + (v ? '.' + v : '') + given.map(g => '.' + g).join('');
+    return speaker + '/' + (line.src && !line.plain ? line.src + ':' : '') + base;
+  }
+
+  /* ── blanks ─────────────────────────────────────────────────────────────── */
+  const lower = s => String(s).toLowerCase();
+  /** A stage's words, else an ingredient's, else the id. */
+  const stageOrName = (pack, id) => ((pack.stageNames || {})[id] ? W.stage(pack, id) : W.name(pack, id));
+  /** The words for the blanks. vars: ids and numbers ({ ing, want, got, slot, value, count }),
+   *  or a whole mistake or tutorial warning ({ kind, ... }: words.blanks says them), plus words
+   *  ({ name, goal, about }). */
+  function words(pack, vars) {
+    vars = vars || {};
+    const out = {};
+    const num = v => (typeof v === 'number' ? W.number(v) : null);
+    if (pack && vars.kind) Object.assign(out, W.blanks(pack, vars));
+    else if (pack) {
+      if (vars.ing) { out.ing = lower(W.name(pack, vars.ing)); out.ings = lower(W.plural(pack, vars.ing)); }
+      ['want', 'got', 'value'].forEach(k => {
+        const v = vars[k];
+        if (v === undefined || v === null) return;
+        out[k] = num(v) || lower(vars.slot !== undefined ? W.valueName(pack, vars.slot, v) : stageOrName(pack, v));
+      });
+      if (vars.slot !== undefined) out.slot = lower(W.slotName(pack, vars.slot));
+      // {wanted}: the ticket's value said whole ("thin crust", "no rice", "onion rings", "two sugars", "medium").
+      const w = vars.want;
+      if (w !== undefined && w !== null) {
+        if (typeof w === 'number') { if (vars.ing || vars.slot !== undefined) out.wanted = W.countSay(pack, vars, w); }
+        else out.wanted = vars.slot !== undefined ? W.wantedSay(pack, vars.slot, w) : lower(stageOrName(pack, w));
+      }
+    }
+    if (vars.count !== undefined && out.count === undefined) out.count = num(vars.count) || String(vars.count);
+    ['name', 'goal', 'about'].forEach(k => { if (vars[k] !== undefined && vars[k] !== null) out[k] = String(vars[k]); });
+    return out;
+  }
+  /** Fill the blanks (see words); a blank with nothing to say stays as it is. */
+  function fill(pack, text, vars) {
+    const w = words(pack, vars);
+    vars = vars || {};
+    return String(text).replace(/\{(\w+)\}/g, (m, k) => {
+      if (w[k] !== undefined && w[k] !== '') return w[k];
+      return !BLANKS.includes(k) && vars[k] !== undefined ? String(vars[k]) : m;
+    });
+  }
+
+  /* ── choosing a line ────────────────────────────────────────────────────── */
+  /** The lines a speaker can say at a moment: their own, plus the shared ones for their
+   *  kind when they have fewer than two of their own. */
+  function candidates(script, who, moment, kind) {
+    const all = (script && script.lines) || [];
+    const own = all.filter(l => l.moment === moment && l.who === who);
+    if (own.length >= 2 || !kind || kind === who) return own.length ? own : all.filter(l => l.moment === moment && l.who === kind);
+    return own.concat(all.filter(l => l.moment === moment && l.who === kind));
+  }
+
+  /** Choose a line. used: the clip ids already said this shift (none repeats until a moment
+   *  runs out). rnd: () => [0, 1). kind: 'customer' for customers (the fallback), null for the
+   *  manager. -> { line, text, clip } or null */
+  function pick(pack, script, who, moment, vars, used, rnd, kind) {
+    const list = candidates(script, who, moment, kind);
+    if (!list.length) return null;
+    let fresh = list.filter(l => !used || !used.has(clipId(l, who, vars)));
+    if (!fresh.length) { list.forEach(l => used && used.delete(clipId(l, who, vars))); fresh = list; }
+    const line = fresh[Math.floor((rnd ? rnd() : 0) * fresh.length) % fresh.length];
+    const clip = clipId(line, who, vars);
+    if (used) used.add(clip);
+    return { line, text: fill(pack, line.text, Object.assign({}, vars)), clip };
+  }
+
+  /** A mention of another restaurant (spec 5.5): one of the speaker's mention lines whose `about`
+   *  is open and not this restaurant. ctx = { here: pack id, open: [pack ids], said: { <pack id>:
+   *  how a sentence names it } } (BBCourt's `said`). -> { line, text, clip, about } or null */
+  function pickMention(pack, script, who, ctx, used, rnd) {
+    ctx = ctx || {};
+    const open = ctx.open || [];
+    const list = ((script && script.lines) || []).filter(l => l.moment === 'mention' && l.who === who && l.about && l.about !== ctx.here && open.includes(l.about));
+    if (!list.length) return null;
+    let fresh = list.filter(l => !used || !used.has(clipId(l, who, {})));
+    if (!fresh.length) fresh = list;
+    const line = fresh[Math.floor((rnd ? rnd() : 0) * fresh.length) % fresh.length];
+    const clip = clipId(line, who, {});
+    if (used) used.add(clip);
+    const said = (ctx.said || {})[line.about] || line.about;
+    return { line, text: fill(pack, line.text, { about: said }), clip, about: line.about };
+  }
+
+  /** The recorded file for a clip, if its recording was made from these exact words. */
+  function recording(manifest, clip, text) {
+    const r = manifest && manifest[clip];
+    return r && r.hash === hash(text) ? r.file : null;
+  }
+
+  /* ── the clips to record ────────────────────────────────────────────────── */
+  /** Every value a line's changing blank can take, as vars: a gross-out's own ingredients or
+   *  values; a pick line's slot values; every doneness Simple offers; every ingredient offered
+   *  once on an Add step. */
+  function varsFor(pack, line) {
+    const all = allVarsFor(pack, line);
+    // A tutorial warning can only name what the tutorial's own order runs through (voicecut, 2026-11-10).
+    const T = /^tutorial\.warn\./.test(line.moment) ? tutorialReach(pack) : null;
+    if (!T) return all;
+    const kind = line.moment.slice('tutorial.warn.'.length);
+    // Narrower still where the warning can only be about the ticket itself: what she said no to (extra), what is on it
+    // (missing), the ticket's own pick (pick), the tutorial's one gross-out (gross, grossSkip).
+    const ingsFor = { extra: T.held, missing: T.wanted, gross: T.grossIng, grossSkip: T.grossIng }[kind];
+    const only = (set, v) => !set || (!set.size && kind !== 'extra') || set.has(v);   // nothing held: no 'she said no' to say
+    return all.filter(v => (v.ing === undefined || (T.ings.has(v.ing) && only(ingsFor, v.ing))) &&
+      (v.slot === undefined || (T.slots.has(v.slot) && (kind !== 'pick' || !T.picked[v.slot] || T.picked[v.slot].has(v.want)))) &&
+      (v.of === undefined || T.of.has(v.of)) && (v.slot !== undefined || v.of !== undefined || v.ing !== undefined || typeof v.want !== 'string' ||
+        T.wants.has(v.want)));
+  }
+  /** What the tutorial's order runs through: the Add steps' ingredients, the picked slots and `of`s, and every stage or
+   *  one-of value its steps can want. null with no tutorial. */
+  function tutorialReach(pack) {
+    const T = pack && pack.tutorial;
+    if (!T || !Array.isArray(T.items)) return null;
+    const out = { ings: new Set(), slots: new Set(), of: new Set(), wants: new Set(), held: new Set(), wanted: new Set(), grossIng: new Set(), picked: {} };
+    const sets = pack.stageSets || {};
+    const who = ((pack.regulars || []).find(c => c.id === T.customer) || {});
+    if (T.gross && T.gross.ing) out.grossIng.add(T.gross.ing);
+    for (const t of T.items) {
+      if (!pack.recipes[t.recipe]) continue;
+      const holds = (t.hold || []).concat(t.holds || [], who.dislikes || []);
+      holds.forEach(i => out.held.add(i));
+      ((pack.recipes[t.recipe].item || {}).parts || []).map(p => p.ing).concat(t.add || [], t.adds || [])
+        .forEach(i => { if (typeof i === 'string' && !holds.includes(i)) out.wanted.add(i); });
+      Object.entries(Object.assign({}, t.set || {}, t.picks || {})).forEach(([k, v]) => {
+        if ((pack.slots || {})[k]) (out.picked[k] = out.picked[k] || new Set()).add(v);
+      });
+      const spec = { recipe: t.recipe, parts: [], picks: Object.assign({}, t.set || {}, t.picks || {}) };
+      for (const { step } of W.lineSteps(pack, spec)) {
+        if (step.kind === 'add') out.ings.add(step.ing);
+        if (step.kind === 'pick' && step.slot !== undefined) out.slots.add(step.slot);
+        if (step.kind === 'pick' && step.of) out.of.add(step.of);
+        if (step.kind === 'pick' && step.from) step.from.forEach(v => out.wants.add(v));
+        if (step.kind === 'cook') {
+          const I = step.ing && pack.ingredients[step.ing];
+          const set = sets[step.stages] || (I && sets[I.stages]);
+          ((set && set.choose) || []).forEach(v => out.wants.add(v));
+        }
+      }
+      // An Add's cookable (the diner's patty) cooks on its own set.
+      for (const ing of out.ings) { const I = pack.ingredients[ing]; if (I && I.stages && sets[I.stages]) (sets[I.stages].choose || []).forEach(v => out.wants.add(v)); }
+    }
+    return out;
+  }
+  function allVarsFor(pack, line) {
+    if (!line.each) return [];
+    const g = /gross\.(\w+)$/.exec(line.moment);
+    const E = g && (pack.gross || []).find(x => x.id === g[1]);
+    if (E) return E.step === 'pick' ? E.on.map(v => ({ slot: E.slot, value: v, want: v })) : E.on.map(ing => ({ ing }));
+    const each = line.each === 'ings' ? 'ing' : line.each === 'wanted' ? 'want' : line.each;
+    const steps = Object.values(pack.stations).flatMap(st => st.steps);
+    // A count, said whole ({wanted}): every count an Add with a max or a repeat pick can be short of (1 up to its
+    // max) or over (none up to one under its max).
+    if (/\.(tooMany|tooFew)$/.test(line.moment) && each === 'want') {
+      const out = [], few = /tooFew$/.test(line.moment);
+      const span = max => { const n = []; for (let k = few ? 1 : 0; k <= (few ? max : max - 1); k++) n.push(k); return n; };
+      const seen = new Set();
+      steps.filter(st => st.kind === 'add' && (st.max || 1) > 1).forEach(st => { if (!seen.has('i' + st.ing)) { seen.add('i' + st.ing); span(st.max).forEach(n => out.push({ kind: 'count', ing: st.ing, want: n })); } });
+      steps.filter(st => st.kind === 'pick' && st.repeat && st.slot !== undefined).forEach(st => { if (!seen.has('s' + st.slot)) { seen.add('s' + st.slot); span(st.repeat.max || 1).forEach(n => out.push({ kind: 'count', slot: st.slot, want: n })); } });
+      return out;
+    }
+    if (/\.pick$/.test(line.moment) && ['want', 'got', 'value', 'slot'].includes(each)) {
+      const out = [];
+      steps.filter(st => st.kind === 'pick' && st.slot !== undefined).forEach(st => {
+        const S = (pack.slots || {})[st.slot];
+        if (S && !out.some(o => o.slot === st.slot)) S.values.forEach(v => out.push({ slot: st.slot, [each === 'slot' ? 'value' : each]: v.id }));
+      });
+      steps.filter(st => st.kind === 'pick' && st.from).forEach(st => st.from.forEach(v => out.push({ [each]: v })));
+      // A size or a flavour pick (the Burger Bar's drinks: `of`): every size its cups come in, every flavour a recipe
+      // picks, with the words the judge's mistake gives them (words.blanks).
+      if (each !== 'slot' && each !== 'value') {
+        const once = new Set();
+        const push = (of, v) => { if (!once.has(String(v))) { once.add(String(v)); out.push({ kind: 'pick', of, [each]: v }); } };
+        if (steps.some(st => st.kind === 'pick' && st.of === 'size')) Object.values(pack.sizeSets || {}).forEach(set => (set || []).forEach(z => push('size', z.id)));
+        if (steps.some(st => st.kind === 'pick' && st.of === 'flavour')) {
+          Object.values(pack.recipes || {}).forEach(R => ((R.item && R.item.parts) || []).forEach(p => {
+            const P = p.ing && typeof p.ing === 'object' && p.ing.pick && (pack.picks || {})[p.ing.pick];
+            if (P) (P.values || []).forEach(v => push('flavour', v));
+          }));
+        }
+      }
+      return each === 'slot' ? out.filter((o, i) => out.findIndex(x => x.slot === o.slot) === i).map(o => ({ slot: o.slot })) : out;
+    }
+    if (each === 'want' || each === 'got') return [...new Set(Object.values(pack.stageSets || {}).flatMap(s => s.choose || []))].map(v => ({ [each]: v }));
+    if (each === 'ing') return [...new Set(steps.filter(x => x.kind === 'add' && (x.max || 1) === 1).map(x => x.ing))].map(ing => ({ ing }));
+    return [];
+  }
+  /** The values a line's changing blank can take (ids). */
+  const valuesFor = (pack, line) => varsFor(pack, line).map(v => clipValue(line, v)).filter(v => v !== null);
+
+  /** The words a line's {name} or {goal} can be said with (docs/api/script.md 5): an event line, the pack's event
+   *  names; `nearly`, the name of every customer who can come in (speakers.customers); a court line, the names the
+   *  caller gives (speakers.names: the restaurants' full names; speakers.goals: the goals' words). -> [vars] */
+  function givenFor(pack, line, speakers) {
+    const keys = givenIn(line);
+    if (!keys.length) return [{}];
+    const people = ((pack && pack.regulars) || []).concat(pack && pack.manager ? [pack.manager] : []);
+    const names = /^event\./.test(line.moment) ? Object.values((pack && pack.events) || {}).map(e => e && e.name).filter(Boolean)
+      : line.moment === 'nearly' ? (speakers.customers || []).map(id => (people.find(c => c.id === id) || {}).name).filter(Boolean)
+      : (speakers.names || []).slice();
+    const goals = (speakers.goals || []).slice();
+    let out = [{}];
+    if (keys.includes('name')) out = out.flatMap(o => names.map(n => Object.assign({}, o, { name: n })));
+    if (keys.includes('goal')) out = out.flatMap(o => goals.map(g => Object.assign({}, o, { goal: g })));
+    return out;
+  }
+  /** Every clip a pack's cast needs recorded: authored lines with each blank's values, and a line with {name} or
+   *  {goal} once per value it can take (givenFor). speakers = { customers: [ids], names?: [words], goals?: [words],
+   *  said?: BBCourt's `said` ({ <pack id>: words }: a mention's {about}) }.
+   *  The court's: everyClip(null, SC.court(BBScripts.court), { customers: [everyone who cheers], names: [the
+   *  restaurants' full names], goals: [every goal's words] }). -> [{ clip, speaker, text, moment, delivery? }] */
+  function everyClip(pack, script, speakers) {
+    const out = [];
+    const seen = new Set();
+    let line = null;
+    speakers = speakers || {};
+    const add = (clip, speaker, text) => {
+      if (seen.has(clip)) return;
+      seen.add(clip);
+      out.push(Object.assign({ clip, speaker, text, moment: line.moment }, line.delivery ? { delivery: line.delivery } : {}));
+    };
+    for (const each of (script && script.lines) || []) {
+      line = each;
+      const who = line.who === 'customer' ? (speakers.customers || []) : [line.who];
+      for (const sp of who) {
+        // A shared line is only needed by speakers with fewer than two of their own.
+        const theirs = candidates(script, sp, line.moment, 'customer');
+        if (line.who === 'customer' && theirs.length && theirs.every(l => l.who === sp)) continue;
+        // A mention's {about} is its own restaurant, said the way a sentence names it (speakers.said: BBCourt's `said`).
+        const about = line.about && speakers.said && speakers.said[line.about] ? { about: speakers.said[line.about] } : {};
+        for (const given of givenFor(pack, line, speakers)) {
+          const base = Object.assign({}, about, given);
+          if (line.each) for (const v of varsFor(pack, line)) add(clipId(line, sp, Object.assign({}, base, v)), sp, fill(pack, line.text, Object.assign({}, base, v)));
+          else add(clipId(line, sp, base), sp, fill(pack, line.text, base));
+        }
+      }
+    }
+    return out;
+  }
+
+  /* ── checks ─────────────────────────────────────────────────────────────── */
+  const blanksIn = text => (String(text).match(/\{(\w+)\}/g) || []).map(b => b.slice(1, -1));
+  /** One line's problems against its entry. */
+  function lineProblems(pack, l, where, file, allowedWho) {
+    const errs = [];
+    const bad = msg => errs.push(where + ': ' + msg);
+    if (!l || typeof l !== 'object') { bad('not a line'); return errs; }
+    ['id', 'who', 'moment', 'text'].forEach(k => { if (typeof l[k] !== 'string' || !l[k].trim()) bad('needs ' + k); });
+    if (errs.length) return errs;
+    if (!/^[\w.-]+$/.test(l.id)) bad('id "' + l.id + '" uses characters other than letters, digits, _ . -');
+    const m = entryFor(l.moment);
+    if (!m) { bad('unknown moment ' + l.moment); return errs; }
+    if (pack && !belongs(pack, l.moment)) bad(l.moment + ' names no ' + m.id.slice(m.id.indexOf('{') + 1, -1) + ' of this pack');
+    if (!m.files.includes(file)) bad(l.moment + ' lines live in ' + m.files.map(f => f + ' scripts').join(' or ') + ', not the ' + file + ' script');
+    if (allowedWho && !allowedWho(l.who, m)) bad(l.who + ' does not say ' + l.moment + ' here');
+    const allowed = file === 'court' ? m.blanks : blanksFor(pack, l.moment, m);
+    const used = blanksIn(l.text);
+    used.forEach(b => { if (!BLANKS.includes(b)) bad('unknown blank {' + b + '}'); else if (!allowed.includes(b)) bad('{' + b + '} is not a blank of ' + l.moment + ' (' + (allowed.map(x => '{' + x + '}').join('') || 'it has no blanks') + ')'); });
+    const varying = used.filter(b => VARYING.includes(b));
+    if (varying.length && !l.each) bad('has ' + varying.map(b => '{' + b + '}').join('') + ' but no each');
+    if (l.each !== undefined && !BLANKS.includes(l.each)) bad('each "' + l.each + '" is not a blank');
+    if (l.moment === 'mention' && (typeof l.about !== 'string' || !/^\w+$/.test(l.about))) bad('a mention names its restaurant: about: <pack id>');
+    if (/\{(\w+)\}/.test(l.text) === false && /[{}]/.test(l.text)) bad('a stray brace');
+    return errs;
+  }
+  /** Everything wrong with a restaurant's merged script (merge()): known moments in the right
+   *  files, said by someone who can, allowed blanks, `each` where the words change, and line ids
+   *  unique per speaker across the pack's and the cast's lines. -> [problems] */
+  function check(pack, script) {
+    const errs = [];
+    const customers = new Set((pack.regulars || []).map(c => c.id));
+    const manager = pack.manager ? pack.manager.id : null;
+    const seen = new Map();
+    ((script && script.lines) || []).forEach((l, i) => {
+      const file = l.src === 'cast' ? 'cast' : 'pack';
+      const where = (file === 'cast' ? 'cast' : (pack.id || 'pack')) + ' line ' + (l && l.id ? l.who + '/' + l.id : i);
+      // The pack's 'customer' lines are anyone's fallback; the cast script's are always someone's own.
+      const allowedWho = (who, m) => {
+        if (m.who === 'manager') return who === manager;
+        if (m.who !== 'customer') return false;
+        if (who === 'customer') return file === 'pack';
+        return customers.has(who);
+      };
+      lineProblems(pack, l, where, file, allowedWho).forEach(e => errs.push(e));
+      if (l && l.who && l.id) {
+        const k = l.who + '/' + l.id;
+        if (seen.has(k)) errs.push(where + ': id used twice by ' + l.who + ' (also in the ' + seen.get(k) + ' script)');
+        else seen.set(k, file === 'cast' ? 'cast' : 'pack');
+      }
+    });
+    return errs;
+  }
+  /** Everything wrong with the cast script on its own: only moments that work anywhere, said by
+   *  the cast's customers, each mention about a restaurant (restaurants: pack ids), ids unique per
+   *  speaker. -> [problems] */
+  function checkCast(cast, castScript, restaurants) {
+    const errs = [], seen = new Set(), people = (cast && cast.people) || {};
+    ((castScript && castScript.lines) || []).forEach((l, i) => {
+      const where = 'cast line ' + (l && l.id ? l.who + '/' + l.id : i);
+      const allowedWho = (who, m) => m.who === 'customer' && !!people[who] && CAST.CUSTOMER_ROLES.includes(people[who].role);
+      lineProblems(null, l, where, 'cast', allowedWho).forEach(e => errs.push(e));
+      if (l && l.moment === 'mention' && restaurants && l.about && !restaurants.includes(l.about)) errs.push(where + ': about ' + l.about + ' is not a restaurant');
+      if (l && l.who && l.id) { const k = l.who + '/' + l.id; if (seen.has(k)) errs.push(where + ': id used twice'); seen.add(k); }
+    });
+    return errs;
+  }
+  /** Everything wrong with the court's script, against the cast. -> [problems] */
+  function checkCourt(cast, courtScript) {
+    const errs = [], seen = new Set();
+    ((courtScript && courtScript.lines) || []).forEach((l, i) => {
+      const where = 'court line ' + (l && l.id ? l.who + '/' + l.id : i);
+      lineProblems(null, l, where, 'court', (who, m) => courtSpeakers(cast, m).includes(who)).forEach(e => errs.push(e));
+      if (l && l.who && l.id) { const k = l.who + '/' + l.id; if (seen.has(k)) errs.push(where + ': id used twice'); seen.add(k); }
+    });
+    return errs;
+  }
+
+  /** What a restaurant's merged script still lacks: [{ moment, who, have, min, kind }] where kind
+   *  is 'missing' (nothing to say, own or fallback), 'few' (fewer own lines than the variety
+   *  minimum) or 'fallback' (the pack has no 'customer' line for a moment that needs one). */
+  function coverage(pack, script) {
+    const out = [];
+    const lines = (script && script.lines) || [];
+    for (const m of moments(pack)) {
+      if (m.fallback && !lines.some(l => l.who === 'customer' && l.moment === m.moment && l.src !== 'cast')) {
+        out.push({ moment: m.moment, who: 'customer', have: 0, min: 1, kind: 'fallback' });
+      }
+      for (const sp of m.speakers) {
+        const kind = m.who === 'customer' ? 'customer' : null;
+        const own = lines.filter(l => l.moment === m.moment && l.who === sp).length;
+        if (!candidates(script, sp, m.moment, kind).length) out.push({ moment: m.moment, who: sp, have: 0, min: m.min, kind: 'missing' });
+        else if (own < m.min && m.min > 1) out.push({ moment: m.moment, who: sp, have: own, min: m.min, kind: 'few' });
+      }
+    }
+    return out;
+  }
+  /** What the court's script still lacks (as coverage). */
+  function courtCoverage(cast, courtScript) {
+    const out = [], lines = (courtScript && courtScript.lines) || [];
+    for (const m of courtMoments(cast)) {
+      for (const sp of m.speakers) {
+        const own = lines.filter(l => l.moment === m.moment && l.who === sp).length;
+        if (own < m.min) out.push({ moment: m.moment, who: sp, have: own, min: m.min, kind: own ? 'few' : 'missing' });
+      }
+    }
+    return out;
+  }
+
+  return { MOMENTS, BLANKS, TUTORIAL_WORDS, entryFor, features, families, belongs, moments, courtMoments, blanksFor, merge, court, hash, clean, words, fill,
+    candidates, clipId, varsFor, valuesFor, givenFor, pick, pickMention, recording, everyClip, check, checkCast, checkCourt, coverage, courtCoverage };
+});

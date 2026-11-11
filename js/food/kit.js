@@ -1,0 +1,1091 @@
+/** Ben's Food Court - the 3D food toolkit and the food modules' registry (docs/api/world.md).
+ *
+ *  js/world.js is the frame: the renderer, the cameras and set switching, the ingredient waiting on the line, the
+ *  cooking clock, gross-out fx and all motion. What a restaurant's food looks like lives in its food module,
+ *  js/food/<pack>.js, which registers itself here:
+ *
+ *    BB.food.register('<pack>', k => ({ shapes, sets, layouts, layoutOf, cooks, lines, applies, autos, fx, ramps, counter }))
+ *
+ *  `k`, the kit, is what every module shares: toon materials with ink outlines, seeded random numbers, scatter and
+ *  heap (instanced), points on a food's real surface (surfaceOf, onSurface), the squeeze bottle and its bead of
+ *  sauce, the shaker, the topping tin, pour and fill, the
+ *  blender jar, colour ramps, Low-quality thinning, and motion that resolves at once with Motion Reduced. The kit's own module ('kit',
+ *  at the bottom of this file) holds the shapes, lines and gross-out fx that work on any food.
+ *
+ *  UMD, like js/core/: Node loads it for tests/food.test.cjs with three r155 from js/vendor/. Nothing here touches
+ *  the DOM or a renderer, and every build is deterministic: the same part gives the same geometry every time.
+ */
+(function (root, factory) {
+  const food = factory();
+  if (typeof module === 'object' && module.exports) module.exports = food;
+  else (root.BB = root.BB || {}).food = food;
+})(typeof window === 'undefined' ? globalThis : window, function () {
+  'use strict';
+
+  /* ── the registry ───────────────────────────────────────────────────────── */
+  const factories = new Map();
+  /** A food module: register('<pack>', k => ({ ... })). The factory runs once per kit, when a pack first needs it. */
+  function register(id, factory) {
+    if (!/^[\w-]+$/.test(String(id)) || typeof factory !== 'function') throw new Error("BB.food.register('<pack>', k => ({ ... }))");
+    factories.set(id, factory);
+  }
+  const has = id => factories.has(id);
+  const ids = () => [...factories.keys()];
+  const SECTIONS = ['shapes', 'sets', 'layouts', 'cooks', 'lines', 'applies', 'autos', 'fx', 'ramps'];
+
+  /* ── where a backdrop's surface line falls on the screen ────────────────── */
+  // Every backdrop is a 1536 x 1024 picture drawn with CSS `cover`: on a wider screen its top and bottom are cut
+  // off, so a line at 65% of the picture sits lower than 65% of the screen.
+  const PICTURE = 1536 / 1024;
+  function lineOnScreen(line, aspect, picture) {
+    const p = picture || PICTURE;
+    return aspect > p ? 0.5 + (line - 0.5) * aspect / p : line;
+  }
+  /** How far (a fraction of the screen's height, + is down) the picture must move so `point` lands at `want`. */
+  function lensShift(camera, point, want) {
+    const v = point.clone().project(camera);
+    return want - (1 - v.y) / 2;
+  }
+  const GIANT = 1.6;                        // how much bigger a giant look is drawn, unless it says (giant: 1.4)
+
+  /* ── the kit ────────────────────────────────────────────────────────────── */
+  /** env: { pack(), reduced(), low(), tween(ms, fn), wait(ms), spin(obj, kind, opts), dirty() } - all optional
+   *  (Node tests pass a pack and nothing else: then every tween ends at once). */
+  function kit(THREE, env) {
+    env = env || {};
+    const k = { THREE, GIANT, PICTURE };
+    const warned = new Set();
+    const warn = (key, msg) => {
+      if (warned.has(key)) return;
+      warned.add(key);
+      if (typeof console !== 'undefined') console.warn("Ben's Food Court 3D: " + msg);
+    };
+
+    /* ── materials: three toon bands and ink outlines ── */
+    const GRADIENT = (() => {
+      const t = new THREE.DataTexture(new Uint8Array([70, 160, 255]), 3, 1, THREE.RedFormat);
+      t.minFilter = t.magFilter = THREE.NearestFilter;
+      t.needsUpdate = true;
+      return t;
+    })();
+    const mats = new Map();
+    /** A shared toon material (cached by colour and options): never dispose it, never change it. */
+    function toon(color, opts) {
+      const key = color + (opts ? JSON.stringify(opts) : '');
+      if (!mats.has(key)) mats.set(key, new THREE.MeshToonMaterial(Object.assign({ color, gradientMap: GRADIENT }, opts || {})));
+      return mats.get(key);
+    }
+    const basics = new Map();
+    /** A shared flat (unlit) material, cached like toon(). */
+    function basic(color, opts) {
+      const key = color + (opts ? JSON.stringify(opts) : '');
+      if (!basics.has(key)) basics.set(key, new THREE.MeshBasicMaterial(Object.assign({ color }, opts || {})));
+      return basics.get(key);
+    }
+    // What a food build owns is freed when it is cleared; what is kept is shared and never freed.
+    const owned = new WeakSet(), kept = new WeakSet();
+    const own = m => { owned.add(m); return m; };
+    const keep = g => { kept.add(g); return g; };
+    /** Free what a module takes out of the scene itself (a pour rebuilding its fill each frame): its geometry,
+     *  unless kept, and its own materials. world.js frees everything it clears. */
+    function free(obj) {
+      if (obj.parent) obj.parent.remove(obj);
+      obj.traverse(o => {
+        o.userData.gone = true;
+        if (o.isInstancedMesh) o.dispose();
+        if ((o.isMesh || o.isPoints || o.isLine) && o.geometry && !kept.has(o.geometry)) o.geometry.dispose();
+        [].concat(o.material || []).forEach(m => { if (owned.has(m)) m.dispose(); });
+      });
+    }
+    // The ink: an inverted hull pushed out along the normals. Instanced pieces push along their own normals too.
+    const OUTLINE = new THREE.ShaderMaterial({
+      uniforms: { thickness: { value: 0.011 }, color: { value: new THREE.Color(0x1b120e) } },
+      vertexShader: 'uniform float thickness; void main() { vec3 p = position + normal * thickness;\n' +
+        '#ifdef USE_INSTANCING\n p = (instanceMatrix * vec4(position, 1.0)).xyz + normalize(mat3(instanceMatrix) * normal) * thickness;\n#endif\n' +
+        ' gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }',
+      fragmentShader: 'uniform vec3 color; void main() { gl_FragColor = vec4(color, 1.0); }',
+      side: THREE.BackSide,
+    });
+    // Thin things (a line of sauce, a bottle's nozzle) get a thinner outline, or the ink swamps them.
+    const OUTLINE_THIN = OUTLINE.clone();
+    OUTLINE_THIN.uniforms.thickness.value = 0.0045;
+    const hull = (geo, mat) => { const o = new THREE.Mesh(geo, mat); o.renderOrder = -1; o.userData.hull = true; return o; };
+    /** A mesh with its outline: a Group, the body in userData.body. */
+    function ink(geo, mat, noOutline) {
+      const g = new THREE.Group();
+      const m = new THREE.Mesh(geo, mat);
+      g.add(m);
+      if (!noOutline) g.add(hull(geo, OUTLINE));
+      g.userData.body = m;
+      return g;
+    }
+    function inkThin(geo, mat) {
+      const g = new THREE.Group();
+      const m = new THREE.Mesh(geo, mat);
+      g.add(m, hull(geo, OUTLINE_THIN));
+      g.userData.body = m;
+      return g;
+    }
+    /** Many copies of one piece in one draw: matrices is a list of THREE.Matrix4. opts: { outline: false | 'thin' }. */
+    function inkInstanced(geo, mat, matrices, opts) {
+      const g = new THREE.Group(), n = matrices.length;
+      if (!n) return g;
+      const body = new THREE.InstancedMesh(geo, mat, n);
+      matrices.forEach((m, i) => body.setMatrixAt(i, m));
+      body.instanceMatrix.needsUpdate = true;
+      g.add(body);
+      const line = opts && opts.outline;
+      if (line !== false) {
+        const h = new THREE.InstancedMesh(geo, line === 'thin' ? OUTLINE_THIN : OUTLINE, n);
+        h.instanceMatrix = body.instanceMatrix;
+        h.renderOrder = -1;
+        h.userData.hull = true;
+        g.add(h);
+      }
+      g.userData.body = body;
+      return g;
+    }
+    const SHINE = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.72 });
+
+    /* ── geometry helpers ── */
+    const cyl = (r, h, seg) => new THREE.CylinderGeometry(r, r, h, seg || 32, 1);
+    const lathe = (pts, seg, s) => new THREE.LatheGeometry(pts.map(([x, y]) => new THREE.Vector2(x * (s || 1), y * (s || 1))), seg || 32);
+    function noise(a, j) { return Math.sin(a * 7.0 + j) * 0.5 + Math.sin(a * 13.0 + j * 1.7) * 0.3 + Math.sin(a * 3.0 + j * 0.6) * 0.2; }
+    /** FNV-1a: a stable number for a string. */
+    function hash(s) {
+      let h = 0x811c9dc5;
+      for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 0x01000193) >>> 0; }
+      return h >>> 0;
+    }
+    /** Seeded random numbers in [0, 1) (mulberry32): rand('salt:3')() is the same on every build. */
+    function rand(seed) {
+      let s = (typeof seed === 'number' ? seed : hash(seed)) >>> 0;
+      return () => {
+        let t = (s = (s + 0x6D2B79F5) >>> 0);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    const UP = new THREE.Vector3(0, 1, 0);
+    function matrix(p, rot, s) {
+      const m = new THREE.Matrix4(), q = new THREE.Quaternion().setFromEuler(new THREE.Euler(rot[0] || 0, rot[1] || 0, rot[2] || 0));
+      const sc = Array.isArray(s) ? new THREE.Vector3(s[0], s[1], s[2]) : new THREE.Vector3(s || 1, s || 1, s || 1);
+      return m.compose(new THREE.Vector3(p[0], p[1], p[2]), q, sc);
+    }
+
+    /* ── Low graphics quality: decoration thins, the food and every cue stay ── */
+    const low = () => !!(env.low && env.low());
+    const detail = () => (low() ? 'low' : 'full');
+    /** A count of decoration (seeds, grains, sprinkles) - halved on Low, never below min. Never use it for a cue. */
+    const thin = (n, min) => (low() ? Math.max(min || 1, Math.round(n / 2)) : n);
+    /** Radial segments - fewer on Low. */
+    const seg = (n, min) => (low() ? Math.max(min || 8, Math.round(n * 0.6)) : n);
+
+    /* ── motion: short, never needed, and at once with Motion Reduced ── */
+    const reduced = () => !!(env.reduced && env.reduced());
+    const ease = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+    /** fn(t) for t from 0 to 1 over ms; with Motion Reduced (or no frame loop) fn(1) at once. */
+    function tween(ms, fn) {
+      if (reduced() || !env.tween) { fn(1); return Promise.resolve(); }
+      return env.tween(ms, fn);
+    }
+    const wait = ms => (reduced() || !env.wait ? Promise.resolve() : env.wait(ms));
+    /** Keep something moving every frame (kinds: rise, orbit, bubble, bob, spinY; see world.js). It stays put at
+     *  its starting place with Motion Reduced, so place it where it should sit still. */
+    function spin(o, kind, opts) { if (env.spin) env.spin(o, kind, opts || {}); return o; }
+    const dirty = () => { if (env.dirty) env.dirty(); };
+
+    /* ── the pack ── */
+    const pack = () => (env.pack && env.pack()) || {};
+    const lookOf = id => (pack().ingredients && pack().ingredients[id] && pack().ingredients[id].look) || { shape: 'disc', colour: 0x999999 };
+    /** A slot value's look (pack.slots.<slot>.values[].look), else the ingredient of that id's look. */
+    function slotLook(slot, value) {
+      const S = pack().slots && pack().slots[slot];
+      const v = S && (S.values || []).find(x => x.id === value);
+      return (v && v.look) || ((pack().ingredients || {})[value] ? lookOf(value) : null);
+    }
+    const lookFor = part => part.look || lookOf(part.ing);
+    /** The stage names something cooks through: a cook step's own stage set (q.set) when given, else its
+     *  ingredient's. */
+    function stageList(ing, set) {
+      const P = pack(), I = (P.ingredients || {})[ing], SS = P.stageSets || {};
+      if (set && SS[set]) return SS[set].stages;
+      if (I && I.stages && SS[I.stages]) return SS[I.stages].stages;
+      return null;
+    }
+    /** A part's stage index: o.stage, else where part.done is in its stage set (raw = 0). */
+    function stageIndex(part, o) {
+      if (o && o.stage !== undefined && o.stage !== null) return o.stage;
+      if (!part || !part.done) return 0;
+      const list = stageList(part.ing, part.stages);
+      if (list) return Math.max(0, list.indexOf(part.done));
+      const SS = pack().stageSets || {};
+      for (const id of Object.keys(SS)) { const i = SS[id].stages.indexOf(part.done); if (i >= 0) return i; }
+      return 0;
+    }
+
+    /* ── modules: the pack's own first, what it `uses`, then the kit's ── */
+    const mods = new Map();
+    let chained = null, chainedFor = null;
+    function module(id) {
+      if (mods.has(id)) return mods.get(id);
+      const f = factories.get(id);
+      let m = null;
+      if (f) {
+        m = Object.assign({ id, uses: [] }, f(k) || {});
+        SECTIONS.forEach(s => { m[s] = m[s] || {}; });
+      }
+      mods.set(id, m);
+      return m;
+    }
+    function chain() {
+      const P = pack();
+      if (chained && chainedFor === P) return chained;
+      const out = [], seen = new Set();
+      const add = id => {
+        if (!id || seen.has(id)) return;
+        seen.add(id);
+        const m = module(id);
+        if (!m) return;
+        out.push(m);
+        (m.uses || []).forEach(add);
+      };
+      add((P.world && P.world.module) || P.id);
+      // A restaurant with no food module yet borrows the template restaurant's (the Burger Bar), as before.
+      if (!out.length) add('diner');
+      add('kit');
+      chained = out; chainedFor = P;
+      return out;
+    }
+    /** The first module that has section[name]. */
+    function find(section, name) {
+      if (name === undefined || name === null) return null;
+      for (const m of chain()) if (m[section] && Object.prototype.hasOwnProperty.call(m[section], name)) return m[section][name];
+      return null;
+    }
+    /** Forget the modules and the chain (a new pack, or a new kit's worth of state). */
+    function reset() { mods.clear(); chained = null; chainedFor = null; }
+
+    /* ── building food ── */
+    /** One part, ready to stack: { g, h }. part = { ing, done?, layer?, flavour?, gross?, n?, look? }; o = { stage,
+     *  growing, item (the whole made()), below() (the box of what is under it), base (where it sits), where, giant }. */
+    function food(part, o) {
+      const look = lookFor(part);
+      let fn = find('shapes', look.shape);
+      if (!fn) {
+        warn('shape:' + look.shape, 'no builder for the look "' + look.shape + '" (' + part.ing + '); drawn as a disc');
+        fn = find('shapes', 'disc');
+      }
+      const b = fn(part, o || {});
+      b.g.userData.part = part;
+      if (part.gross) gross(b.g, part.gross, b, o);
+      return b;
+    }
+    /** A vertical stack of parts: each sits at the running height and gets n (its place), which seeds rotations. */
+    function stack(parts, o) {
+      const g = new THREE.Group();
+      let h = 0;
+      parts.forEach((p, i) => {
+        const base = h, sofar = g;
+        const f = food(Object.assign({ n: i }, p), Object.assign({}, o, { base, below: () => boxOf(sofar) }));
+        f.g.position.y = h;
+        g.add(f.g);
+        h += f.h;
+      });
+      g.userData.h = h;
+      return g;
+    }
+    /** The item in line order: { vessel, body, parts }. The vessel is made.ing when a station builds on it (the
+     *  plate, the cup); otherwise made.ing is the body (fries). Slot picks with a look (spec 6.5 `picks`) go in
+     *  among the parts where their step falls in the line. o.hide: layers left off ('top' while the bun waits). */
+    function sequence(made, o) {
+      o = o || {};
+      const P = pack(), R = (P.recipes || {})[made.recipe], sts = (R && R.stations) || [];
+      const st = sid => (P.stations || {})[sid] || { steps: [] };
+      const ons = sts.map(s => st(s).builds && st(s).builds.on).filter(Boolean);
+      const out = { vessel: null, body: null, parts: [] };
+      if (o.vessel !== undefined) out.vessel = o.vessel ? { ing: o.vessel, vessel: true } : null;
+      else if (made.ing && ons.includes(made.ing)) out.vessel = { ing: made.ing, vessel: true };
+      else if (made.ing && (P.ingredients || {})[made.ing]) out.body = { ing: made.ing, done: made.done, body: true };
+      const hide = o.hide || [];
+      let parts = (made.parts || []).filter(p => !hide.includes(p.layer));
+      if (made.picks && Object.keys(made.picks).length) {
+        // Line positions: every step of the recipe's stations, in order.
+        const addAt = {}, slotAt = {}, baseAt = {}, capAt = {};
+        let pos = 0;
+        sts.forEach(sid => {
+          const S = st(sid);
+          if (S.builds && S.builds.base && baseAt[S.builds.base] === undefined) baseAt[S.builds.base] = pos - 0.5;
+          (S.steps || []).forEach(s => {
+            if (s.kind === 'add' && addAt[s.ing] === undefined) addAt[s.ing] = pos;
+            if (s.kind === 'pick' && s.slot && slotAt[s.slot] === undefined) slotAt[s.slot] = pos;
+            pos += 1;
+          });
+          if (S.builds && S.builds.cap) capAt[S.builds.cap] = pos - 0.5;
+        });
+        const at = p => (p.layer === 'bottom' && baseAt[p.ing] !== undefined ? baseAt[p.ing] : p.layer === 'top' && capAt[p.ing] !== undefined ? capAt[p.ing]
+          : addAt[p.ing] !== undefined ? addAt[p.ing] : 1e9);
+        Object.keys(made.picks).sort((a, b) => (slotAt[a] === undefined ? 1e9 : slotAt[a]) - (slotAt[b] === undefined ? 1e9 : slotAt[b])).forEach(slot => {
+          const where = slotAt[slot] === undefined ? 1e9 : slotAt[slot];
+          [].concat(made.picks[slot]).filter(v => v !== null && v !== undefined).forEach(v => {
+            const look = slotLook(slot, v);
+            if (!look || !look.shape) return;
+            const part = { ing: v, slot, pick: true, look };
+            const bad = (made.gross || []).find(x => x.slot === slot && x.value === v);
+            if (bad) part.gross = bad.event;
+            let i = parts.findIndex(p => !p.pick && at(p) > where);
+            if (i < 0) i = parts.length;
+            parts.splice(i, 0, part);
+          });
+        });
+      }
+      out.parts = parts;
+      return out;
+    }
+    /** How much bigger to draw an item (spec 4.4): 1, or GIANT (or the look's own number) when its recipe, its
+     *  body, a part or a picked value has a `giant` look. */
+    function giant(made) {
+      const P = pack(), R = (P.recipes || {})[made.recipe] || {};
+      const g = v => (v === true ? GIANT : typeof v === 'number' && v > 0 ? v : 0);
+      let s = g(R.giant) || g(R.look && R.look.giant);
+      if (!s && made.ing) s = g(lookOf(made.ing).giant);
+      if (!s) (made.parts || []).some(p => (s = g(lookFor(p).giant)) > 0);
+      if (!s && made.picks) Object.keys(made.picks).some(slot => [].concat(made.picks[slot]).some(v => (s = g((slotLook(slot, v) || {}).giant)) > 0));
+      return s || 1;
+    }
+    function layoutName(made) {
+      for (const m of chain()) if (typeof m.layoutOf === 'function') { const n = m.layoutOf(made, k); if (n) return n; }
+      return 'stack';
+    }
+    /** The whole item, assembled by its layout and drawn bigger when giant: { g, h, ... }. */
+    function item(made, o) {
+      const s = giant(made);
+      const opts = Object.assign({}, o, { item: made, giant: s });
+      const fn = find('layouts', layoutName(made)) || find('layouts', 'stack');
+      const b = fn(made, opts);
+      if (s !== 1 && !b.giantDone) { b.g.scale.multiplyScalar(s); b.h *= s; }
+      b.giant = s;
+      b.g.userData.made = made;
+      return b;
+    }
+
+    /* ── bounds: a group's box in its own frame (instanced pieces counted one by one; ink and fx left out) ── */
+    function boxOf(obj) {
+      const box = new THREE.Box3(), tmp = new THREE.Box3(), m = new THREE.Matrix4(), im = new THREE.Matrix4();
+      obj.updateMatrixWorld(true);
+      const inv = new THREE.Matrix4().copy(obj.matrixWorld).invert();
+      obj.traverse(o => {
+        if (!(o.isMesh || o.isPoints) || o.userData.hull || o.userData.fx || !o.geometry) return;
+        for (let p = o.parent; p && p !== obj; p = p.parent) if (p.userData.fx) return;
+        if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+        const base = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld);
+        if (o.isInstancedMesh) {
+          for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, im); tmp.copy(o.geometry.boundingBox).applyMatrix4(m.multiplyMatrices(base, im)); box.union(tmp); }
+        } else { tmp.copy(o.geometry.boundingBox).applyMatrix4(base); box.union(tmp); }
+      });
+      if (box.isEmpty()) box.set(new THREE.Vector3(-0.1, 0, -0.1), new THREE.Vector3(0.1, 0.05, 0.1));
+      return box;
+    }
+
+    /* ── gross-outs (pack.gross[].fx): placed from the food's own box, so they fit any food ── */
+    /** Apply a gross-out's fx to a built part: tint and droop change the food; the rest sit on top of it. */
+    function gross(g, eventId, b, o) {
+      const E = (pack().gross || []).find(x => x.id === eventId);
+      if (!E) return;
+      const fx = E.fx || {};
+      const ctx = { k, part: g.userData.part, event: E, build: b, o: o || {} };
+      const order = ['tint', 'droop'].concat(Object.keys(fx).filter(key => key !== 'tint' && key !== 'droop'));
+      let box = null;
+      for (const key of order) {
+        if (fx[key] === undefined || fx[key] === false) continue;
+        const fn = find('fx', key);
+        if (!fn) { warn('fx:' + key, 'no gross-out fx "' + key + '" (' + eventId + ')'); continue; }
+        if (key !== 'tint' && key !== 'droop' && !box) box = boxOf(g);
+        fn(g, fx[key], box, ctx);
+      }
+    }
+    /** Mark something as an effect (so boxes ignore it and the fx sit on the food, not on each other). */
+    const fxPart = o => { o.userData.fx = true; return o; };
+
+    /* ── colours ── */
+    function mix(a, b, t) {
+      const ca = new THREE.Color(a), cb = new THREE.Color(b);
+      return ca.lerp(cb, Math.max(0, Math.min(1, t))).getHex();
+    }
+    /** A colour by stage: look.ramp (or list) is [colour by stage index] or { stageName: colour }. */
+    function ramp(look, stage, list) {
+      const r = (look && look.ramp) || list;
+      if (Array.isArray(r) && r.length) return r[Math.max(0, Math.min(stage | 0, r.length - 1))];
+      if (r && typeof r === 'object' && look && look.stages) { const name = look.stages[stage]; if (r[name] !== undefined) return r[name]; }
+      return (look && look.colour !== undefined) ? look.colour : 0x999999;
+    }
+    /** How many doneness marks a stage shows: look.marks ([by stage] or a number cap), else one per stage up to 4. */
+    function marks(look, stage) {
+      const m = look && look.marks;
+      if (Array.isArray(m) && m.length) return m[Math.max(0, Math.min(stage | 0, m.length - 1))];
+      return Math.max(0, Math.min(stage | 0, typeof m === 'number' ? m : 4));
+    }
+
+    /* ── shared builders: scatter and heap ── */
+    const PIECES = {};
+    /** A shared piece geometry by name: grain cube chunk ball stick chip seed shred sprinkle leaf. */
+    function piece(name) {
+      if (PIECES[name]) return PIECES[name];
+      const make = {
+        grain: () => new THREE.BoxGeometry(0.014, 0.014, 0.014),
+        cube: () => new THREE.BoxGeometry(0.06, 0.06, 0.06),
+        chunk: () => new THREE.DodecahedronGeometry(0.04, 0),
+        ball: () => new THREE.SphereGeometry(0.03, 10, 8),
+        stick: () => new THREE.BoxGeometry(0.03, 0.2, 0.03),
+        chip: () => new THREE.CylinderGeometry(0.05, 0.05, 0.012, 12),
+        seed: () => new THREE.SphereGeometry(0.012, 6, 4),
+        shred: () => new THREE.BoxGeometry(0.08, 0.008, 0.014),
+        sprinkle: () => new THREE.CylinderGeometry(0.006, 0.006, 0.035, 6),
+        leaf: () => new THREE.CircleGeometry(0.04, 8).rotateX(-Math.PI / 2),
+      }[name];
+      if (!make) return null;
+      return (PIECES[name] = keep(make()));
+    }
+    /** Points on a surface, seeded: [{ p: [x, y, z], nrm: [x, y, z], r: random turn }].
+     *  surface: { kind: 'disc', r, y } | { kind: 'rect', w, d, y } | { kind: 'dome', r, h, y } | { kind: 'ring', r0, r1, y }
+     *         | { kind: 'torus', R, r, y } (the top half) | { kind: 'box', box } (the top of a Box3, in an ellipse). */
+    function sample(surface, n, seed) {
+      const R = rand(seed), out = [], s = surface || { kind: 'disc', r: 0.25, y: 0 }, y0 = s.y || 0;
+      for (let i = 0; i < n; i++) {
+        const u = R(), v = R(), w = R();
+        const a = u * Math.PI * 2;
+        let p, nrm = [0, 1, 0];
+        if (s.kind === 'rect') p = [(v - 0.5) * s.w, y0, (w - 0.5) * s.d];
+        else if (s.kind === 'ring') { const rr = s.r0 + (s.r1 - s.r0) * Math.sqrt(v); p = [Math.cos(a) * rr, y0, Math.sin(a) * rr]; }
+        else if (s.kind === 'dome') {
+          const rr = s.r * Math.sqrt(v), y = y0 + s.h * (1 - (rr / s.r) ** 2);
+          p = [Math.cos(a) * rr, y, Math.sin(a) * rr];
+          const d = new THREE.Vector3(p[0] / (s.r * s.r), (y - y0 + s.h) / (s.h * s.h || 1), p[2] / (s.r * s.r)).normalize();
+          nrm = [d.x, d.y, d.z];
+        } else if (s.kind === 'torus') {
+          const phi = (v - 0.5) * Math.PI * 0.9;      // across the top half of the tube
+          const rr = s.R + Math.sin(phi) * s.r;
+          p = [Math.cos(a) * rr, y0 + Math.cos(phi) * s.r, Math.sin(a) * rr];
+          nrm = [Math.cos(a) * Math.sin(phi), Math.cos(phi), Math.sin(a) * Math.sin(phi)];
+        } else if (s.kind === 'box') {
+          const b = s.box, cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, rx = (b.max.x - b.min.x) / 2 * (s.inset || 0.8), rz = (b.max.z - b.min.z) / 2 * (s.inset || 0.8);
+          const rr = Math.sqrt(v);
+          p = [cx + Math.cos(a) * rr * rx, b.max.y - w * (s.depth || 0), cz + Math.sin(a) * rr * rz];
+        } else { const rr = (s.r || 0.25) * Math.sqrt(v); p = [Math.cos(a) * rr, y0, Math.sin(a) * rr]; }
+        out.push({ p, nrm, r: R() * Math.PI * 2, t: R() });
+      }
+      return out;
+    }
+    /** Pieces at points, one draw (InstancedMesh with its ink): geo a geometry or a piece name; mat a material or
+     *  colour. opts: { outline: false | 'thin', size (scale), lie (lay pieces along the surface), tilt }. */
+    function scatter(geo, mat, points, opts) {
+      const o = opts || {};
+      const G = typeof geo === 'string' ? piece(geo) : geo;
+      const M = typeof mat === 'number' ? toon(mat) : mat;
+      const list = points.map(pt => {
+        const m = new THREE.Matrix4(), q = new THREE.Quaternion();
+        if (o.lie !== false) q.setFromUnitVectors(UP, new THREE.Vector3(pt.nrm[0], pt.nrm[1], pt.nrm[2]));
+        q.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler((pt.t - 0.5) * (o.tilt || 0), pt.r, (pt.t - 0.5) * (o.tilt || 0) * 0.7)));
+        const s = (o.size || 1) * (pt.s || 1);
+        return m.compose(new THREE.Vector3(pt.p[0], pt.p[1], pt.p[2]), q, new THREE.Vector3(s, s, s));
+      });
+      return inkInstanced(G, M, list, { outline: o.outline === undefined ? 'thin' : o.outline });
+    }
+    /** Points on a lumpy thing's real upper surface, where sample({ kind: 'box' }) would put them on the top of its
+     *  bounding box (in the air over a knot, a scoop or a donut's hole): the upward-facing vertices (normal y >
+     *  minUp, default 0.35) of every body mesh in g, in g's own frame -> { p: [x, y, z, ...], n: [...], count }.
+     *  Build it once from the food, pass it down, then onSurface() picks points from it. */
+    function surfaceOf(g, minUp) {
+      const up = minUp === undefined ? 0.35 : minUp;
+      g.updateMatrixWorld(true);
+      const inv = new THREE.Matrix4().copy(g.matrixWorld).invert(), M = new THREE.Matrix4(), N = new THREE.Matrix3();
+      const v = new THREE.Vector3(), nv = new THREE.Vector3(), p = [], n = [];
+      g.traverse(o => {
+        if (!o.isMesh || o.userData.hull || o.userData.fx || o.isInstancedMesh || !o.geometry.attributes.normal) return;
+        M.multiplyMatrices(inv, o.matrixWorld);
+        N.getNormalMatrix(M);
+        const pos = o.geometry.attributes.position, nor = o.geometry.attributes.normal;
+        for (let i = 0; i < pos.count; i++) {
+          nv.fromBufferAttribute(nor, i).applyMatrix3(N).normalize();
+          if (nv.y < up) continue;
+          v.fromBufferAttribute(pos, i).applyMatrix4(M);
+          p.push(v.x, v.y, v.z); n.push(nv.x, nv.y, nv.z);
+        }
+      });
+      return { p, n, count: p.length / 3 };
+    }
+    /** n seeded points from a surfaceOf() surface, lifted `lift` off it along its normal, in scatter()'s format. */
+    function onSurface(S, n, seed, lift) {
+      const R = rand(seed), out = [], l = lift || 0;
+      if (!S || !S.count) return out;
+      for (let i = 0; i < n; i++) {
+        const j = Math.floor(R() * S.count) * 3, nx = S.n[j], ny = S.n[j + 1], nz = S.n[j + 2];
+        out.push({ p: [S.p[j] + nx * l, S.p[j + 1] + ny * l, S.p[j + 2] + nz * l], nrm: [nx, ny, nz], r: R() * Math.PI * 2, t: R() });
+      }
+      return out;
+    }
+    /** A mound of pieces (fries in a cone, rice, beans, ice in a cup): { g, h }. opts: { n, r, h, seed, size, tilt, outline }. */
+    function heap(geo, mat, opts) {
+      const o = Object.assign({ n: 24, r: 0.2, h: 0.12, seed: 'heap', size: 1, tilt: 1.2 }, opts);
+      const R = rand(o.seed), pts = [];
+      for (let i = 0; i < o.n; i++) {
+        const a = R() * Math.PI * 2, rr = o.r * Math.sqrt(R());
+        const y = o.h * (1 - (rr / o.r) ** 2) * (0.55 + 0.45 * R());
+        pts.push({ p: [Math.cos(a) * rr, y, Math.sin(a) * rr], nrm: [0, 1, 0], r: R() * Math.PI * 2, t: R(), s: 0.85 + R() * 0.3 });
+      }
+      const g = scatter(geo, mat, pts, { outline: o.outline, size: o.size, tilt: o.tilt });
+      return { g, h: o.h };
+    }
+
+    /* ── shared builders: the squeeze bottle and its bead of sauce ── */
+    // The squeeze-bottle zigzag: a few long strokes back and forth across the food, corners rounded (Chaikin) wide
+    // enough that the bead never folds into itself at a turn. Sized to a 0.37 bun; look.beadScale scales it.
+    const SAUCE = { r: 0.017, flat: 0.62, seg: 160, rad: 8 };
+    const SHINE_AT = [[0.03, 0.1], [0.18, 0.26], [0.35, 0.46], [0.55, 0.62], [0.7, 0.79], [0.87, 0.95]];
+    function chaikin(p, times) {
+      for (let k2 = 0; k2 < times; k2++) {
+        const q = [p[0]];
+        for (let i = 0; i < p.length - 1; i++) {
+          const [a, b] = [p[i], p[i + 1]];
+          q.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25], [a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]);
+        }
+        q.push(p[p.length - 1]);
+        p = q;
+      }
+      return p;
+    }
+    const PATHS = {
+      zigzag: () => chaikin([[-0.27, -0.06], [-0.17, 0.17], [-0.06, -0.19], [0.05, 0.19], [0.16, -0.17], [0.26, 0.08]], 4),
+      // A spiral from the middle out (pizza sauce, a drizzle on a sundae).
+      spiral: () => Array.from({ length: 48 }, (_, i) => { const t = i / 47, a = t * Math.PI * 5, r = 0.03 + t * 0.25; return [Math.cos(a) * r, Math.sin(a) * r]; }),
+      // Two passes across (a drizzle on a donut or a roll).
+      drizzle: () => chaikin([[-0.28, -0.08], [-0.1, 0.1], [0.08, -0.1], [0.27, 0.07]], 3),
+    };
+    const beads = {};
+    let STREAM_GEO = null;
+    function beadPath(name) {
+      const key = PATHS[name] ? name : 'zigzag';
+      if (beads[key]) return beads[key];
+      const curve = new THREE.CatmullRomCurve3(PATHS[key]().map(([x, z]) => new THREE.Vector3(x, 0, z)), false, 'centripetal');
+      const geo = keep(new THREE.TubeGeometry(curve, SAUCE.seg, SAUCE.r, SAUCE.rad, false));
+      const cap = keep(new THREE.SphereGeometry(SAUCE.r, 12, 8));
+      const shine = SHINE_AT.map(([a, b]) => keep(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(Array.from({ length: 9 },
+        (_, i) => curve.getPointAt(a + (b - a) * i / 8).add(new THREE.Vector3(0, SAUCE.r * 0.74, 0)))), 12, 0.0045, 5, false)));
+      return (beads[key] = { name: key, curve, geo, cap, shine });
+    }
+    const stream = () => STREAM_GEO || (STREAM_GEO = keep(new THREE.CylinderGeometry(0.0115, 0.0115, 1, 8, 1)));
+    /** The pack's sauces in order: each lies at its own angle, so two on one burger cross. */
+    const sauceIndex = id => Object.keys(pack().ingredients || {}).filter(x => pack().ingredients[x].sauce).indexOf(id);
+    /** A glossy bead of sauce lying on the food: a flattened tube with round ends, thin ink and glints along the top.
+     *  look: { colour, path: 'zigzag' | 'spiral' | 'drizzle', beadScale }. o.growing: its own copy, squirted on bit by bit. */
+    function bead(part, o) {
+      const L = lookFor(part), g = new THREE.Group(), bd = new THREE.Group(), mat = toon(L.colour);
+      const B = beadPath(L.path);
+      const geo = o && o.growing ? B.geo.clone() : B.geo;
+      const capA = inkThin(B.cap, mat), capB = inkThin(B.cap, mat);
+      capA.position.copy(B.curve.getPointAt(0)); capB.position.copy(B.curve.getPointAt(1));
+      const shine = B.shine.map(sg => new THREE.Mesh(sg, SHINE));
+      bd.add(inkThin(geo, mat), capA, capB, ...shine);
+      bd.scale.y = SAUCE.flat;
+      if (L.beadScale) { bd.scale.x = L.beadScale; bd.scale.z = L.beadScale; }
+      bd.position.y = SAUCE.r * SAUCE.flat;
+      bd.rotation.y = (part.n || 0) * 0.9 + Math.max(0, sauceIndex(part.ing)) * 0.7;
+      g.add(bd);
+      g.userData.sauce = { geo, bead: bd, capA, capB, shine, path: B };
+      return { g, h: 0.016 };
+    }
+    /** Show a bead of sauce squirted as far as u (0 to 1) along its path. */
+    function growBead(S, u) {
+      const n = Math.round(Math.max(0, Math.min(1, u)) * SAUCE.seg);
+      S.geo.setDrawRange(0, n * SAUCE.rad * 6);
+      S.capA.visible = n > 0;
+      S.capB.visible = u >= 1;
+      S.shine.forEach((m, i) => { m.visible = u >= SHINE_AT[i][1]; });
+    }
+    /** A diner squeeze bottle: body, shoulder, screw cap and nozzle, with a glint down the front.
+     *  look: { colour, cap, bottleScale }. userData.bottle = { tip, colour }. */
+    function bottle(part) {
+      const L = lookFor(part), g = new THREE.Group(), S = L.bottleScale || 1.25;
+      const body = [[0, 0], [0.072, 0], [0.08, 0.012], [0.08, 0.235], [0.074, 0.262], [0.052, 0.284], [0.036, 0.29], [0, 0.29]];
+      const cap = [[0, 0.284], [0.046, 0.284], [0.049, 0.292], [0.049, 0.322], [0.042, 0.328], [0.028, 0.33], [0.009, 0.41], [0, 0.413]];
+      g.add(ink(lathe(body, 32, S), toon(L.colour)), inkThin(lathe(cap, 32, S), toon(L.cap !== undefined ? L.cap : L.colour)));
+      const glint = new THREE.Mesh(new THREE.CylinderGeometry(0.0806 * S, 0.0806 * S, 0.17 * S, 10, 1, true, -0.66, 0.22), SHINE);
+      glint.position.y = 0.13 * S;
+      g.add(glint);
+      g.userData.bottle = { tip: 0.413 * S, colour: L.colour };
+      g.userData.part = part;
+      return { g, h: 0.413 * S };
+    }
+    /** A sauce's Add: the bottle comes off the line, turns over above the food and squeezes a bead across it (the
+     *  same bead the food keeps afterwards, drawn a bit further each frame), then turns back and goes on down the
+     *  line. About a second and a half. F: the set's food group; inc: the bottle; stack: what it lands on. */
+    function squirt(F, inc, stackG, onSquirt) {
+      const B = inc.userData.bottle;
+      const bd = food(Object.assign({}, inc.userData.part, { n: stackG.children.length }), { growing: true });
+      bd.g.position.y = stackG.userData.h;
+      stackG.add(bd.g);
+      const S = bd.g.userData.sauce;
+      growBead(S, 0);
+      F.updateMatrixWorld(true);
+      const lean = Math.PI - 0.38;                                      // upside down, leaning: held from the right
+      const tip = new THREE.Vector3(0, B.tip, 0).applyEuler(new THREE.Euler(0, 0, lean));
+      const jet = tip.clone().normalize(), H = 0.24;                    // the sauce leaves along the nozzle, H to the food
+      const landing = u => F.worldToLocal(S.bead.localToWorld(S.path.curve.getPointAt(Math.max(0, Math.min(1, u)))));
+      const hold = u => landing(u).sub(jet.clone().multiplyScalar(H)).sub(tip);   // where the bottle's base is
+      const jetM = new THREE.Mesh(stream(), toon(B.colour));
+      jetM.visible = false;
+      F.add(jetM);
+      const from = inc.position.clone(), start = hold(0);
+      return tween(340, t => {                                          // off the line, up and over
+        const e = ease(t);
+        inc.position.lerpVectors(from, start, e);
+        inc.position.y += Math.sin(t * Math.PI) * 0.25;
+        inc.rotation.z = lean * e;
+      }).then(() => {
+        if (onSquirt) onSquirt();
+        jetM.visible = true;
+        return tween(950, t => {                                        // the squeeze: along the path at a steady pace
+          growBead(S, t);
+          inc.position.copy(hold(t));
+          const sq = 0.5 + 0.5 * Math.sin(t * Math.PI * 7);
+          inc.scale.set(1 - 0.07 * sq, 1, 1 + 0.05 * sq);
+          const len = H * Math.min(1, t * 10), end = landing(t);       // the first squirt shoots down to the food
+          jetM.position.copy(end).sub(jet.clone().multiplyScalar(len / 2));
+          jetM.quaternion.setFromUnitVectors(UP, jet);
+          jetM.scale.set(1, Math.max(0.001, len), 1);
+        });
+      }).then(() => {
+        growBead(S, 1);
+        F.remove(jetM);
+        inc.scale.set(1, 1, 1);
+        const p0 = inc.position.clone();
+        return tween(320, t => {                                        // turns back over and goes on down the line
+          const e = ease(t);
+          inc.rotation.z = lean * (1 - e);
+          inc.position.set(p0.x + e * 2.6, p0.y + Math.sin(t * Math.PI) * 0.18, p0.z);
+        });
+      });
+    }
+
+    /* ── shared builders: the shaker ── */
+    /** A diner glass shaker (salt, parmesan, sprinkles): a ribbed glass body showing what is in it, a steel cap with
+     *  holes. look: { colour (what is inside), shakerScale }. userData.shaker = { tip }. */
+    function shaker(part) {
+      const L = lookFor(part), g = new THREE.Group(), S = L.shakerScale || 1.35;
+      const body = [[0, 0], [0.058, 0], [0.064, 0.012], [0.064, 0.15], [0.056, 0.168], [0.05, 0.172], [0, 0.172]];
+      const cap = [[0, 0.166], [0.052, 0.166], [0.054, 0.19], [0.046, 0.21], [0.026, 0.222], [0, 0.224]];
+      g.add(ink(lathe(body, 24, S), toon(0xdfeef5)));
+      const inside = new THREE.Mesh(cyl(0.0655 * S, 0.1 * S, 20), toon(L.colour !== undefined ? L.colour : 0xffffff));
+      inside.position.y = 0.062 * S;
+      g.add(inside);
+      g.add(ink(lathe(cap, 24, S), toon(0xc9d0d6)));
+      for (let i = 0; i < 5; i++) {
+        const hole = new THREE.Mesh(new THREE.CircleGeometry(0.006 * S, 6), toon(0x2b2b2b));
+        hole.rotation.x = -Math.PI / 2;
+        const a = i * Math.PI * 2 / 5, r = i ? 0.018 * S : 0;
+        hole.position.set(Math.cos(a) * r, 0.2245 * S, Math.sin(a) * r);
+        g.add(hole);
+      }
+      const glint = new THREE.Mesh(new THREE.CylinderGeometry(0.0655 * S, 0.0655 * S, 0.11 * S, 10, 1, true, -0.7, 0.24), SHINE);
+      glint.position.y = 0.075 * S;
+      g.add(glint);
+      g.userData.shaker = { tip: 0.224 * S, colour: L.colour };
+      g.userData.part = part;
+      return { g, h: 0.224 * S };
+    }
+    /** A shaker's Add: up over the food, upside down, three shakes with a few grains falling, back down the line.
+     *  c: { F, inc, stack, onApply }. The caller then redraws the food with the part on it. */
+    function shake(c) {
+      const F = c.F, inc = c.inc, top = c.top ? c.top() : new THREE.Vector3();
+      const over = top.clone().add(new THREE.Vector3(0.05, 0.42, 0));
+      const from = inc.position.clone();
+      const grains = new THREE.Group();
+      const R = rand('shake'), colour = (inc.userData.shaker && inc.userData.shaker.colour) || 0xffffff;
+      const list = Array.from({ length: thin(14, 6) }, () => ({ x: (R() - 0.5) * 0.2, z: (R() - 0.5) * 0.14, d: R() }));
+      list.forEach(q => { const m = new THREE.Mesh(piece('grain'), toon(colour)); m.visible = false; grains.add(m); });
+      F.add(grains);
+      return tween(320, t => {
+        const e = ease(t);
+        inc.position.lerpVectors(from, over, e);
+        inc.position.y += Math.sin(t * Math.PI) * 0.15;
+        inc.rotation.z = (Math.PI - 0.25) * e;
+      }).then(() => {
+        if (c.onApply) c.onApply();
+        return tween(820, t => {
+          inc.position.x = over.x + Math.sin(t * Math.PI * 6) * 0.03;
+          grains.children.forEach((m, i) => {
+            const q = list[i], u = (t * 2.2 + q.d) % 1;
+            m.visible = t < 0.9;
+            m.position.set(over.x + q.x * u, over.y - 0.05 - u * (over.y - top.y - 0.03), over.z + q.z * u);
+          });
+        });
+      }).then(() => {
+        F.remove(grains);
+        const p0 = inc.position.clone();
+        return tween(300, t => {
+          const e = ease(t);
+          inc.rotation.z = (Math.PI - 0.25) * (1 - e);
+          inc.position.set(p0.x + e * 2.4, p0.y + Math.sin(t * Math.PI) * 0.15, p0.z);
+        });
+      });
+    }
+
+    /* ── shared builders: the topping tin ── */
+    /** A steel topping tin (a sixth pan) with a heap of pieces in it: how a scattered topping waits on the line
+     *  (pizza toppings, burrito fillings, sundae toppings). opts: { piece (a geometry or piece name), mat (a
+     *  material or colour), n, size, seed, tilt }; without them, the look's piece/colour/count. The heap is named
+     *  'heap' (tip() pours it out); gross-out fx are applied to the heap when the part has one.
+     *  userData.tin = { mouth }. -> { g, h }. */
+    function tin(part, opts) {
+      const L = lookFor(part), o = Object.assign({ piece: L.piece || 'chunk', mat: L.colour !== undefined ? L.colour : 0xd9b37a, n: L.count || 26, size: L.size || 1, tilt: 1.2 }, opts || {});
+      const g = new THREE.Group(), W = 0.36, D = 0.27, H = 0.13, t = 0.012, steel = toon(0x9aa3ab), dark = toon(0x5f686f);
+      const floor = new THREE.Mesh(new THREE.BoxGeometry(W - 0.02, t, D - 0.02), dark);
+      floor.position.y = t / 2;
+      g.add(floor);
+      [[0, D / 2, W, 0], [0, -D / 2, W, Math.PI], [W / 2, 0, D, -Math.PI / 2], [-W / 2, 0, D, Math.PI / 2]].forEach(([x, z, len, turn]) => {
+        const w = new THREE.Group();
+        const side = ink(new THREE.BoxGeometry(len, H, t), steel);
+        side.position.y = H / 2;
+        const lip = ink(new THREE.BoxGeometry(len + 0.03, t, 0.034), toon(0xc9d0d6));
+        lip.position.set(0, H, -0.008);
+        w.add(side, lip);
+        w.position.set(x, 0, z);
+        w.rotation.y = turn;
+        w.rotateX(0.1);                      // the walls flare out a little
+        g.add(w);
+      });
+      const hp = heap(o.piece, o.mat, { n: thin(o.n, Math.max(8, Math.round(o.n / 2))), r: 0.1, h: 0.09, seed: 'tin:' + (part.ing || 'x') + ':' + (part.n || 0), size: o.size, tilt: o.tilt });
+      hp.g.name = 'heap';
+      hp.g.position.y = t + 0.045;
+      hp.g.scale.set(1.35, 1, 0.95);
+      hp.g.userData.part = part;
+      if (part.gross) gross(hp.g, part.gross, hp, {});
+      g.add(hp.g);
+      g.userData.tin = { mouth: new THREE.Vector3(-W / 2, H, 0) };
+      g.userData.part = part;
+      return { g, h: H + 0.06 };
+    }
+    /** A tin's Add: up over the food, tipped toward it, its heap slides out and drops flat onto the food, then the
+     *  tin rights itself and goes on down the line. c: { F, inc, top(), onApply }. The caller then redraws the food
+     *  with the part on it (world.js does). About a second. */
+    function tip(c) {
+      const F = c.F, inc = c.inc, top = c.top ? c.top() : new THREE.Vector3();
+      const hp = inc.getObjectByName('heap');
+      const over = top.clone().add(new THREE.Vector3(0.2, 0.46, 0.02));
+      const from = inc.position.clone(), lean = 1.25;
+      return tween(340, t => {
+        const e = ease(t);
+        inc.position.lerpVectors(from, over, e);
+        inc.position.y += Math.sin(t * Math.PI) * 0.14;
+        inc.rotation.z = lean * e;
+      }).then(() => {
+        if (c.onApply) c.onApply();
+        if (!hp) return wait(250);
+        F.updateMatrixWorld(true);
+        F.attach(hp);                                                     // keeps its place in the world
+        const p0 = hp.position.clone(), q0 = hp.quaternion.clone(), land = top.clone().add(new THREE.Vector3(0, 0.012, 0));
+        const flat = new THREE.Quaternion();
+        return tween(430, t => {
+          const e = ease(t);
+          hp.position.lerpVectors(p0, land, e);
+          hp.position.y = p0.y + (land.y - p0.y) * t * t + Math.sin(t * Math.PI) * 0.04;
+          hp.quaternion.slerpQuaternions(q0, flat, e);
+          hp.scale.set(1.3 + e * 0.9, 1 - e * 0.55, 0.95 + e * 0.9);
+        }).then(() => free(hp));
+      }).then(() => {
+        const p0 = inc.position.clone();
+        return tween(300, t => {
+          const e = ease(t);
+          inc.rotation.z = lean * (1 - e);
+          inc.position.set(p0.x + e * 2.4, p0.y + Math.sin(t * Math.PI) * 0.12, p0.z);
+        });
+      });
+    }
+
+    /* ── shared builders: fill and pour ── */
+    const radiusAt = (profile, y) => {
+      if (y <= profile[0][1]) return profile[0][0];
+      for (let i = 1; i < profile.length; i++) {
+        const [r0, y0] = profile[i - 1], [r1, y1] = profile[i];
+        if (y <= y1) return r0 + (r1 - r0) * ((y - y0) / Math.max(1e-6, y1 - y0));
+      }
+      return profile[profile.length - 1][0];
+    };
+    /** A liquid filling a vessel to `level` (0 to 1 of its inner height). profile: the inner wall as [[r, y], ...]
+     *  from the bottom up. opts: { surface: colour of the top, seg }. -> { g, h: the surface height, r }. */
+    function fill(profile, level, colour, opts) {
+      const o = opts || {}, g = new THREE.Group();
+      const y0 = profile[0][1], y1 = profile[profile.length - 1][1];
+      const yL = y0 + (y1 - y0) * Math.max(0, Math.min(1, level));
+      const rL = radiusAt(profile, yL);
+      if (yL - y0 < 1e-4) return { g, h: y0, r: rL };
+      const pts = [[0, y0], [profile[0][0], y0]].concat(profile.filter(p => p[1] > y0 && p[1] < yL)).concat([[rL, yL], [0, yL]]);
+      const body = new THREE.Mesh(lathe(pts, seg(o.seg || 32)), toon(colour));
+      g.add(body);
+      const top = new THREE.Mesh(new THREE.CircleGeometry(rL * 0.97, seg(o.seg || 32)), toon(o.surface !== undefined ? o.surface : mix(colour, 0xffffff, 0.18)));
+      top.rotation.x = -Math.PI / 2;
+      top.position.y = yL + 0.0015;
+      g.add(top);
+      g.userData.fill = { level, y: yL, r: rL };
+      return { g, h: yL, r: rL };
+    }
+    /** Pour into a vessel: a stream from `from` (in F's frame) down to the rising surface, onLevel(t) raising the
+     *  fill, then the stream thins away. opts: { F, from: Vector3, to(t) -> Vector3, colour, ms, r, onLevel, onApply }. */
+    function pour(opts) {
+      const o = Object.assign({ ms: 900, r: 1 }, opts);
+      if (reduced()) { if (o.onApply) o.onApply(); if (o.onLevel) o.onLevel(1); return Promise.resolve(); }
+      const jetM = new THREE.Mesh(stream(), toon(o.colour));
+      o.F.add(jetM);
+      const place = (t, w) => {
+        const end = o.to(t), len = Math.max(0.001, o.from.y - end.y);
+        jetM.position.set(o.from.x + (end.x - o.from.x) / 2, end.y + len / 2, o.from.z + (end.z - o.from.z) / 2);
+        jetM.scale.set(o.r * w, len, o.r * w);
+      };
+      if (o.onApply) o.onApply();
+      return tween(o.ms, t => { if (o.onLevel) o.onLevel(t); place(t, 1.6); })
+        .then(() => tween(160, t => place(1, 1.6 * (1 - t))))
+        .then(() => { o.F.remove(jetM); });
+    }
+
+    /* ── shared builders: the blender jar ── */
+    /** A countertop blender: a clear jar on a motor base, with a lid. opts: { base: colour, lid: colour, h, r }.
+     *  -> { g, h, inner: { profile, y0, y1 } } - fill(inner.profile, level, colour) puts a smoothie inside. */
+    function blenderJar(opts) {
+      const o = Object.assign({ base: 0xd8433a, lid: 0x2b2b2b, h: 0.62, r: 0.2 }, opts);
+      const g = new THREE.Group();
+      const baseH = 0.16, y0 = baseH + 0.02, y1 = y0 + o.h;
+      const motor = ink(new THREE.BoxGeometry(o.r * 2.3, baseH, o.r * 2.1), toon(o.base));
+      motor.position.y = baseH / 2;
+      g.add(motor);
+      const knob = ink(cyl(0.035, 0.03, 16), toon(0xf2f2f2));
+      knob.rotation.x = Math.PI / 2;
+      knob.position.set(0, baseH * 0.5, o.r * 1.05 + 0.015);
+      g.add(knob);
+      const outer = [[0, y0 - 0.02], [o.r * 0.82, y0 - 0.02], [o.r * 0.85, y0], [o.r, y1], [o.r * 1.02, y1], [0, y1]];
+      const jar = new THREE.Mesh(lathe(outer, seg(32)), toon(0xd7eef7, { transparent: true, opacity: 0.38, depthWrite: false }));
+      jar.renderOrder = 2;
+      g.add(jar);
+      const lid = ink(cyl(o.r * 1.04, 0.05, seg(32)), toon(o.lid));
+      lid.position.y = y1 + 0.025;
+      g.add(lid);
+      const inner = { profile: [[o.r * 0.8, y0 + 0.005], [o.r * 0.96, y1 - 0.01]], y0: y0 + 0.005, y1: y1 - 0.01 };
+      g.userData.jar = inner;
+      return { g, h: y1 + 0.05, inner };
+    }
+
+    /* ── shared builders: a puff of smoke or steam ── */
+    let PUFF = null;
+    /** A cluster of soft balls, its own material (so each fades on its own): userData.mat, userData.alpha. */
+    function puff(colour, alpha) {
+      const geo = PUFF || (PUFF = keep(new THREE.SphereGeometry(0.045, 10, 8)));
+      const g = fxPart(new THREE.Group()), mat = own(new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: alpha, depthWrite: false }));
+      [[0, 0, 0, 1], [0.035, 0.025, 0.01, 0.8], [-0.03, 0.03, -0.01, 0.75]].forEach(([x, y, z, s]) => {
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(x, y, z); m.scale.setScalar(s);
+        g.add(m);
+      });
+      g.userData.mat = mat;
+      g.userData.alpha = alpha;
+      return g;
+    }
+
+    Object.assign(k, {
+      warn, toon, basic, own, keep, free, isOwned: m => owned.has(m), isKept: g => kept.has(g), ink, inkThin, inkInstanced,
+      OUTLINE, OUTLINE_THIN, SHINE, cyl, lathe, noise, hash, rand, matrix, UP,
+      low, detail, thin, seg, reduced, ease, tween, wait, spin, dirty,
+      pack, lookOf, lookFor, slotLook, stageList, stageIndex,
+      module, chain, find, reset, food, stack, sequence, giant, layoutName, item, boxOf, gross, fxPart,
+      mix, ramp, marks, piece, sample, surfaceOf, onSurface, scatter, heap,
+      SAUCE, beadPath, bead, growBead, bottle, squirt, shaker, shake, tin, tip, radiusAt, fill, pour, blenderJar, puff,
+    });
+    return k;
+  }
+
+  /* ── the kit's own module: what works on any food ───────────────────────── */
+  register('kit', k => {
+    const THREE = k.THREE;
+    // Stink lines: a wavy green line, drawn as a thin tube so it shows in every renderer.
+    let STINK = null;
+    const stinkGeo = () => STINK || (STINK = k.keep(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(
+      Array.from({ length: 12 }, (_, i) => new THREE.Vector3(Math.sin(i * 0.95) * 0.024, i * 0.02, 0))), 40, 0.0065, 5, false)));
+    const span = box => ({ cx: (box.min.x + box.max.x) / 2, cz: (box.min.z + box.max.z) / 2,
+      hw: Math.max(0.04, (box.max.x - box.min.x) / 2), hd: Math.max(0.04, (box.max.z - box.min.z) / 2), top: box.max.y });
+    const seedOf = c => ((c.part && c.part.ing) || 'food') + ':' + ((c.part && c.part.n) || 0);
+    return {
+      shapes: {
+        /** Any round, flat thing: look { colour, r, h }. Also what an unknown look is drawn as. */
+        disc(part) {
+          const L = k.lookFor(part), r = L.r || 0.3, h = L.h || 0.04;
+          const m = k.ink(k.cyl(r, h, k.seg(32)), k.toon(L.colour !== undefined ? L.colour : 0x999999));
+          m.position.y = h / 2;
+          const g = new THREE.Group(); g.add(m);
+          return { g, h };
+        },
+        /** A lumpy ball (a scoop, a meatball, a dollop): look { colour, r }. */
+        blob(part) {
+          const L = k.lookFor(part), r = L.r || 0.12, geo = new THREE.SphereGeometry(r, k.seg(24), k.seg(16));
+          const pos = geo.attributes.position, R = k.rand('blob:' + part.ing);
+          const bumps = [R() * 6, R() * 6, R() * 6];
+          for (let i = 0; i < pos.count; i++) {
+            const v = new THREE.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i)), a = Math.atan2(v.z, v.x);
+            const s = 1 + 0.06 * Math.sin(a * 5 + bumps[0]) * Math.cos(v.y * 18 + bumps[1]) + 0.03 * Math.sin(a * 9 + bumps[2]);
+            pos.setXYZ(i, v.x * s, v.y * (v.y < 0 ? 0.55 : 1) * s, v.z * s);
+          }
+          geo.computeVertexNormals();
+          const m = k.ink(geo, k.toon(L.colour !== undefined ? L.colour : 0xf5e6c8));
+          m.position.y = r * 0.55;
+          const g = new THREE.Group(); g.add(m);
+          return { g, h: r * 1.5 };
+        },
+        /** Pieces sprinkled over what is under it: look { piece, colour, count, size, colours: [mixed colours] }. */
+        scatter(part, o) {
+          const L = k.lookFor(part), g = new THREE.Group();
+          const below = o && o.below ? o.below() : null;
+          const box = below && !below.isEmpty() ? below.clone().translate(new THREE.Vector3(0, -(o.base || 0), 0)) : null;
+          const n = k.thin(L.count || 40, 12), seed = 'scatter:' + part.ing + ':' + (part.n || 0);
+          const pts = box ? k.sample({ kind: 'box', box, depth: L.depth || 0.01 }, n, seed) : k.sample({ kind: 'disc', r: L.r || 0.25, y: 0.004 }, n, seed);
+          const cols = L.colours && L.colours.length ? L.colours : [L.colour !== undefined ? L.colour : 0xffffff];
+          cols.forEach((c, i) => {
+            const mine = pts.filter((_, j) => j % cols.length === i);
+            g.add(k.scatter(L.piece || 'grain', k.toon(c), mine, { outline: L.outline === undefined ? false : L.outline, size: L.size || 1, tilt: 1.4 }));
+          });
+          return { g, h: 0 };
+        },
+        /** A mound of pieces: look { piece, colour, count, r, h, size }. */
+        heap(part) {
+          const L = k.lookFor(part);
+          return k.heap(L.piece || 'chunk', k.toon(L.colour !== undefined ? L.colour : 0xd9b37a),
+            { n: k.thin(L.count || 30, 14), r: L.r || 0.2, h: L.h || 0.12, size: L.size || 1, seed: 'heap:' + part.ing + ':' + (part.n || 0) });
+        },
+        /** A liquid (on its own: a short pour in a puddle shape): look { colour }. */
+        fill(part) {
+          const L = k.lookFor(part);
+          return k.fill([[0.13, 0], [0.13, 0.05]], 1, L.colour !== undefined ? L.colour : 0x8a5a2b);
+        },
+        /** A squeeze-bottle sauce: look { colour, cap, path, beadScale } (the diner's `sauce` is this). */
+        bead: (part, o) => k.bead(part, o),
+        /** The blender jar, as a vessel: look { colour (the base), lid }. */
+        jar(part) {
+          const L = k.lookFor(part);
+          return k.blenderJar({ base: L.colour, lid: L.lid });
+        },
+      },
+      layouts: {
+        /** The default: the vessel, then the body, then every part stacked in line order. A set may shrink the
+         *  vessel (o.vesselScale [x, y, z]) or the food on it (o.contentScale). */
+        stack(made, o) {
+          const seq = k.sequence(made, o), g = new THREE.Group();
+          let h = 0, vessel = null;
+          if (seq.vessel) {
+            const v = k.food(seq.vessel, o);
+            if (o.vesselScale) v.g.scale.set(o.vesselScale[0], o.vesselScale[1], o.vesselScale[2]);
+            g.add(v.g); h = v.h; vessel = v.g;
+          }
+          const s = k.stack((seq.body ? [seq.body] : []).concat(seq.parts), o);
+          s.position.y = h;
+          if (o.contentScale) s.scale.setScalar(o.contentScale);
+          s.name = 'stack';
+          g.add(s);
+          return { g, h: h + s.userData.h * (o.contentScale || 1), stack: s, vessel };
+        },
+      },
+      lines: {
+        squirt: {
+          incoming: part => Object.assign(k.bottle(part), { rest: 0.045 }),
+          add: c => k.squirt(c.F, c.inc, c.stack, c.onApply),
+        },
+        shake: {
+          incoming: part => Object.assign(k.shaker(part), { rest: 0.04 }),
+          add: c => k.shake(c),
+        },
+        /** A scattered topping waits in a steel tin and is tipped onto the food (the look's piece and colour; a
+         *  module's own `lines.tin` can fill the tin its own way). */
+        tin: {
+          incoming: part => Object.assign(k.tin(part), { rest: 0.045 }),
+          add: c => k.tip(c),
+        },
+      },
+      applies: { bead: 'squirt', scatter: 'shake', heap: 'tin' },
+      autos: {
+        /** The plain flourish: the food bounces once. */
+        pop(c) {
+          const g = c.item && c.item.g;
+          if (!g || k.reduced()) return Promise.resolve();
+          const s0 = g.scale.clone();
+          return k.tween(300, t => { const b = 1 + Math.sin(t * Math.PI) * 0.08; g.scale.set(s0.x * b, s0.y * (2 - b), s0.z * b); });
+        },
+      },
+      fx: {
+        /** The food turns toward a colour (green cheese, brown lettuce, burnt bacon). */
+        tint(g, colour) {
+          g.traverse(o => {
+            if (o.isMesh && o.material && o.material.isMeshToonMaterial) {
+              o.material = k.own(o.material.clone());
+              o.material.color.lerp(new THREE.Color(colour), 0.65);
+            }
+          });
+        },
+        /** It sags: squashed to 60% of its height (the stack keeps its place). */
+        droop(g) {
+          const w = new THREE.Group();
+          while (g.children.length) w.add(g.children[0]);
+          w.scale.y = 0.6;
+          g.add(w);
+        },
+        /** Three wavy green lines rising off the top (they stay put with Motion Reduced). */
+        stink(g, v, box, c) {
+          const s = span(box), colour = typeof v === 'number' ? v : 0x7fc23a;
+          for (let i = 0; i < 3; i++) {
+            const m = k.fxPart(new THREE.Mesh(stinkGeo(), k.own(new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.95, depthWrite: false }))));
+            m.position.set(s.cx + (i - 1) * Math.min(0.15, s.hw * 0.6), s.top + 0.03, s.cz);
+            g.add(m);
+            k.spin(m, 'rise', { phase: i * 0.7, alpha: 0.95, height: 0.22 });
+          }
+        },
+        /** Smoke puffing off the top (burnt), grey unless it says. */
+        smoke(g, v, box) {
+          const s = span(box), colour = typeof v === 'number' ? v : 0x8d8d8d;
+          for (let i = 0; i < 3; i++) {
+            const p = k.puff(colour, 0.85);
+            p.position.set(s.cx + (i - 1) * Math.min(0.15, s.hw * 0.6), s.top + 0.06, s.cz);
+            g.add(p);
+            k.spin(p, 'rise', { phase: i * 0.7, alpha: 0.85, height: 0.3 });
+          }
+        },
+        /** A hair lying across the top. */
+        hair(g, v, box, c) {
+          const s = span(box), R = k.rand('hair:' + seedOf(c)), pts = [];
+          const x0 = s.cx - s.hw * 0.55, x1 = s.cx + s.hw * 0.6;
+          for (let i = 0; i <= 12; i++) pts.push(new THREE.Vector3(x0 + (x1 - x0) * i / 12, s.top + 0.006 + Math.sin(i * 1.3) * 0.004, s.cz + Math.sin(i * 0.9 + R()) * Math.min(0.06, s.hd * 0.4)));
+          g.add(k.fxPart(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.0045, 5, false), k.toon(typeof v === 'number' ? v : 0x1a1410))));
+        },
+        /** A fly: it circles over the food, or sits on top of it with Motion Reduced. */
+        fly(g, v, box, c) {
+          const s = span(box), fly = k.fxPart(new THREE.Group());
+          fly.add(k.ink(new THREE.SphereGeometry(0.035, 10, 8), k.toon(0x161616)));
+          const wing = k.own(new THREE.MeshBasicMaterial({ color: 0xdff4ff, transparent: true, opacity: 0.7, side: THREE.DoubleSide }));
+          [-1, 1].forEach(sd => {
+            const w = new THREE.Mesh(new THREE.CircleGeometry(0.04, 10), wing);
+            w.position.set(sd * 0.03, 0.03, 0); w.rotation.set(-0.6, 0, sd * 0.5);
+            fly.add(w);
+          });
+          // Where it sits (Reduced): on the top, a little off centre.
+          fly.position.set(s.cx + s.hw * 0.3, s.top + 0.03, s.cz + s.hd * 0.2);
+          g.add(fly);
+          const r = Math.max(0.16, Math.min(0.4, Math.max(s.hw, s.hd) * 0.75));
+          k.spin(fly, 'orbit', { centre: [s.cx, s.top + 0.15, s.cz], r, phase: k.rand('fly:' + seedOf(c))() * 6 });
+        },
+        /** Spots on the top (mould, bruises, freezer burn): v is the colour, or { colour, n }. */
+        spots(g, v, box, c) {
+          const o = typeof v === 'object' ? v : { colour: typeof v === 'number' ? v : 0x7fae3a };
+          const pts = k.sample({ kind: 'box', box, inset: 0.75 }, o.n || 9, 'spots:' + seedOf(c)).map(p => Object.assign(p, { s: 0.6 + p.t * 0.9 }));
+          const m = k.scatter(new THREE.CircleGeometry(0.03, 10).rotateX(-Math.PI / 2), k.toon(o.colour), pts.map(p => ({ p: [p.p[0], p.p[1] + 0.004, p.p[2]], nrm: [0, 1, 0], r: p.r, t: 0.5, s: p.s })), { outline: false });
+          g.add(k.fxPart(m));
+        },
+      },
+    };
+  });
+
+  return { register, has, ids, kit, lineOnScreen, lensShift, PICTURE, GIANT, version: 1 };
+});

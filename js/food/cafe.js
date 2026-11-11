@@ -1,0 +1,1586 @@
+/** Ben's Food Court - Ben's Cafe's food in 3D (docs/api/packs/cafe.md section 10 is the list of looks it draws;
+ *  docs/api/food.md the Cafe section: measured lines, the counter camera, the FIT lines).
+ *
+ *  The same toon style as the Burger Bar and the Pizza Parlor: chunky cel-shaded food with ink outlines, in close-up.
+ *  A drink is a takeaway paper cup (cream, a brown sleeve) at its size, filled with the drink: the coffee's colour
+ *  and its height in the cup follow the pour's strength (three strength lines on the cup's inside wall: Mild leaves
+ *  two showing, Smooth one, Bold none), milk tops it up and pales it, a cappuccino wears a foam cap, then the cream
+ *  swirl, the crema ring of an extra shot, syrup drizzles, sugar cubes going in, the whipped cream peak, the latte art
+ *  heart, the lid. A donut is a ring (or a jelly-filled ball with jam peeking out) on wax paper, fried by stage (a
+ *  pale fry line round its middle at Golden, a darker one at Dark Golden, cracks and smoke at Burnt), its glaze a
+ *  glossy shell over the top half with drips, the toppings on the glaze's own surface.
+ *
+ *  Sets, by backdrop name: counter (spec 5.2: line 0.80, a cream wood top like the Cafe's storefront), coffee (the
+ *  painted dark wood under the espresso bar is the surface; a steel drip tray under the cup; cook 'pour') and donuts
+ *  (the painted pale counter is the surface; a countertop fryer on the left; cook 'fry'). Lines measured from
+ *  art-source/backdrops: coffee 61.1%, donuts 59.6% (the first row of each picture's bare work surface, under the ink
+ *  line of the back counter's front edge; the table in FOODCOURT-BUILD.md 5.2 asked for 65 and 62).
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./kit.js'));
+  else factory(root.BB.food);
+})(typeof window === 'undefined' ? globalThis : window, function (food) {
+  'use strict';
+  food.register('cafe', k => {
+    const THREE = k.THREE;
+    const V = (x, y, z) => new THREE.Vector3(x, y, z);
+    const PI = Math.PI;
+    const TOP = 0.5;                                   // the kitchen work surface's height (as the diner's)
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const P0 = () => Promise.resolve();
+
+    /* ── colours ── */
+    const C = {
+      cup: 0xfff8ec, cupIn: 0xefe2cc, sleeve: 0x8a4a22, sleeveHi: 0xffeccb, marks: 0xb8875a,
+      lid: 0xfbf9f3, lidHole: 0x3b2a20, milk: 0xf8efe0, foam: 0xf4e7d2, crema: 0xb5743a, art: 0xfffaf0,
+      artLine: 0x8a5530, cream: 0xf7ead4, steel: 0xc3cbd2, steelDark: 0x6f7880, wax: 0xfbf3df, waxLine: 0xe2d2b4,
+      oil: 0xb87418, oilDeep: 0x9a5f12, vat: 0xa9b2b9, jam: 0xc8283c, smoke: 0x4f4a48, steam: 0xf4f4f4,
+    };
+    // The pour, empty to burnt (the pack's `coffee` ramp says the same; this is the fallback), and how full each
+    // stage leaves the cup (a fraction of its inside height): the strength shows as a colour AND a height.
+    const POUR = [0xf3ece2, 0xb7814f, 0x7c4a26, 0x4a2914, 0x1d120b];
+    const LEVEL = [0, 0.5, 0.66, 0.82, 0.84];
+    const FULL = 0.9;                                  // milk tops a drink up to here
+    const COCOA_LEVEL = 0.78;                          // the hot chocolate before its milk
+    // Fried, raw to burnt (the pack's `donut` ramp), and the chocolate dough's own browning.
+    const FRY = [0xf1dfb8, 0xd99f4f, 0xa8642b, 0x3a2214];
+    const CHOC = [0x7a4a2c, 0x5c3520, 0x46271a, 0x1c110b];
+    const CUP = { rb: 0.14, rt: 0.188, h: 0.5, wall: 0.008 };   // a medium cup; Small 0.82, Large 1.2 (the size look's scale)
+    const DONUT = { R: 0.2, r: 0.098, fy: 0.78, ball: 0.25, ballH: 0.17 };
+    // The coffee bar's cup: under the painted machine's left spout at 16:9, and low enough that the page's Timed gauge
+    // (bb.css #gauge: 53vh down, 42% across) never covers the drink inside it (its far rim is at about 62% at 16:9).
+    const CUP_AT = { x: 0.12, z: 0.12 };
+
+    /* ── shared geometry (kept: never freed with a build) ── */
+    const geos = {};
+    const kept = (key, make) => geos[key] || (geos[key] = k.keep(make()));
+
+    /* ── reading the pack ── */
+    function rampAt(look, s, list) {
+      const r = look && look.ramp;
+      if (Array.isArray(r) && r.length) return r[clamp(s | 0, 0, r.length - 1)];
+      if (r && typeof r === 'object') {
+        const SS = k.pack().stageSets || {}, keys = Object.keys(r);
+        for (const id of Object.keys(SS)) {
+          const names = SS[id].stages;
+          if (keys.every(x => names.includes(x))) { const v = r[names[clamp(s | 0, 0, names.length - 1)]]; if (v !== undefined) return v; }
+        }
+      }
+      return list[clamp(s | 0, 0, list.length - 1)];
+    }
+    const pourStages = () => k.stageList('coffee', 'pour') || ['empty', 'mild', 'smooth', 'bold', 'burnt'];
+    const fryStages = () => k.stageList('donut', 'fry') || ['raw', 'golden', 'darkGolden', 'burnt'];
+    const pourColour = s => rampAt(k.lookOf('coffee'), s, POUR);
+    const fryColour = s => rampAt(k.lookOf('donut'), s, FRY);
+    const picks = made => (made && made.picks) || {};
+    /** The pour's stage on this drink: o.stage (the cook view), else its strength pick; null before the pour. */
+    function pourStage(made, o) {
+      if (o && o.stage !== undefined && o.stage !== null) return o.stage | 0;
+      const v = picks(made).strength;
+      if (!v) return null;
+      return Math.max(0, pourStages().indexOf(v));
+    }
+    /** The fryer's stage on this donut: o.stage (the fryer), else its fry pick; raw before the fryer. */
+    function fryStage(made, o) {
+      if (o && o.stage !== undefined && o.stage !== null) return o.stage | 0;
+      const v = picks(made).fry;
+      if (v) return Math.max(0, fryStages().indexOf(v));
+      if (made && made.done) return Math.max(0, fryStages().indexOf(made.done));
+      return 0;
+    }
+    const sizeScale = made => { const v = picks(made).size, L = v ? k.slotLook('size', v) : null; return L && typeof L.scale === 'number' ? L.scale : 1; };
+    const count = (made, ing) => ((made && made.counts && made.counts[ing]) || ((made && made.parts) || []).filter(p => p.ing === ing).length);
+    const has = (made, ing) => ((made && made.parts) || []).some(p => p.ing === ing);
+    const partOf = (made, ing) => ((made && made.parts) || []).find(p => p.ing === ing) || null;
+    const grossOf = (made, slot) => { const x = ((made && made.gross) || []).find(g => g.slot === slot); return x ? x.event : null; };
+    const ran = (made, id) => ((made && made.auto) || []).includes(id);
+    /** made without some flourishes (an auto step plays them over the item drawn without). */
+    const without = (made, ids, extra) => Object.assign({}, made, { auto: ((made && made.auto) || []).filter(a => !ids.includes(a)) }, extra || {});
+    const MILK_DRINKS = ['latte', 'cappuccino', 'hotChocolate'];
+    // What the milk looks like poured (the pick's look.colour is its label's): whole creamy, oat beige, skim blue-white.
+    const MILK = { whole: 0xfbf5e8, oat: 0xe8d3a8, skim: 0xeef3f7 };
+    const COCOA = 0x6b3b22;
+    let hold = null;                                   // see coffeeCup: what an Add leaves for the redraw after it
+    const nowMs = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
+    /** A paper sugar packet lying flat (white, a brown band); torn: its end torn off and empty. */
+    function sugarPacket(torn) {
+      const g = new THREE.Group(), L = torn ? 0.11 : 0.13;
+      const paper = k.inkThin(kept('packet:' + (torn ? 't' : 'w'), () => new THREE.BoxGeometry(L, 0.008, 0.075)), k.toon(0xffffff));
+      paper.position.x = -(0.13 - L) / 2;
+      const band = new THREE.Mesh(kept('packetBand:' + (torn ? 't' : 'w'), () => new THREE.BoxGeometry(L, 0.009, 0.022)), k.toon(C.sleeve));
+      band.position.set(-(0.13 - L) / 2, 0.001, 0);
+      g.add(paper, band);
+      if (torn) {
+        // the ragged torn end: three little teeth
+        for (let i = 0; i < 3; i++) {
+          const t = new THREE.Mesh(kept('packetTooth', () => new THREE.BoxGeometry(0.012, 0.008, 0.02)), k.toon(0xffffff));
+          t.position.set(0.13 / 2 - (0.13 - L) + 0.004, 0, -0.025 + i * 0.025);
+          t.rotation.y = 0.6;
+          g.add(t);
+        }
+      }
+      g.name = torn ? 'packet' : 'packetFull';
+      return g;
+    }
+    /** Where the i-th empty packet lies beside a cup of top radius rt (in the cup's frame, on what the cup stands on). */
+    const packetSpot = (rt, i) => ({ p: V(rt + 0.12 + i * 0.03, 0.004 + i * 0.009, 0.1 - i * 0.07), turn: 0.5 - i * 0.7 });
+
+    /* ── a heart (latte art) ── */
+    function heartPoints(n, scale) {
+      const pts = [];
+      for (let i = 0; i < n; i++) {
+        const t = (i / n) * PI * 2;
+        const x = 16 * Math.pow(Math.sin(t), 3), y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        pts.push(new THREE.Vector2(x / 17 * scale, (y + 4) / 17 * scale));
+      }
+      return pts;
+    }
+    const heartGeo = () => kept('heart', () => new THREE.ShapeGeometry(new THREE.Shape(heartPoints(48, 1)), 1).rotateX(-PI / 2));
+
+    /* ── the cup ── */
+    /** A takeaway paper cup at scale sc: cream with a brown sleeve and a cream heart on it, three strength lines on
+     *  the back of its inside wall. -> { g, h, inner (the inside wall [[r, y], ...]), rt }. */
+    function paperCup(sc) {
+      const rb = CUP.rb * sc, rt = CUP.rt * sc, h = CUP.h * sc, W = CUP.wall * sc, seg = k.seg(40);
+      const g = new THREE.Group();
+      g.name = 'cup';
+      const outside = [[0, 0], [rb, 0], [rt, h], [rt + 0.008 * sc, h + 0.005 * sc], [rt - 0.004 * sc, h + 0.013 * sc]];
+      g.add(k.ink(k.lathe(outside, seg), k.toon(C.cup)));
+      const floor = 0.016 * sc;
+      const ins = [[rt - 0.004 * sc, h + 0.013 * sc], [rt - W, h], [rb - W, floor], [0, floor]];
+      g.add(new THREE.Mesh(k.lathe(ins, seg), k.toon(C.cupIn)));
+      const rAt = y => rb + (rt - rb) * (y / h);
+      const y0 = h * 0.26, y1 = h * 0.7;
+      g.add(new THREE.Mesh(k.lathe([[rAt(y0) + 0.0035 * sc, y0], [rAt(y1) + 0.0035 * sc, y1]], seg), k.toon(C.sleeve)));
+      [y0 + 0.018 * sc, y1 - 0.018 * sc].forEach(y => g.add(new THREE.Mesh(k.lathe([[rAt(y - 0.004 * sc) + 0.0045 * sc, y - 0.004 * sc], [rAt(y + 0.004 * sc) + 0.0045 * sc, y + 0.004 * sc]], seg), k.toon(C.sleeveHi))));
+      // A cream coffee bean on the sleeve's front, tilted with the cup's side (a bean, not a heart: the only heart on a
+      // drink is the latte art, playtest 2026-11-11).
+      const ym = (y0 + y1) / 2, tilt = -Math.atan((rt - rb) / h);
+      const bean = new THREE.Shape();
+      bean.absellipse(0, 0, 0.034 * sc, 0.05 * sc, 0, PI * 2, false, 0);
+      const badge = new THREE.Mesh(new THREE.ShapeGeometry(bean, 16), k.toon(C.sleeveHi, { side: THREE.DoubleSide }));
+      badge.position.set(0, ym, rAt(ym) + 0.006 * sc);
+      badge.rotation.set(tilt, 0, 0.35);
+      badge.name = 'badge';
+      const crease = new THREE.Mesh(new THREE.PlaneGeometry(0.008 * sc, 0.074 * sc), k.toon(C.sleeve, { side: THREE.DoubleSide }));
+      crease.position.set(0, ym, rAt(ym) + 0.008 * sc);
+      crease.rotation.set(tilt, 0, 0.35 + 0.18);
+      g.add(badge, crease);
+      // Strength lines on the back of the inside wall (Mild, Smooth, Bold): the coffee covers the ones it reaches.
+      const inner = [[rb - W - 0.002, floor + 0.002], [rt - W - 0.002, h]];
+      for (let i = 1; i <= 3; i++) {
+        const y = inner[0][1] + (inner[1][1] - inner[0][1]) * LEVEL[i] + 0.006 * sc, r = k.radiusAt(inner, y) - 0.0005;
+        const pts = Array.from({ length: 9 }, (_, j) => { const a = PI / 2 - 0.75 + 1.5 * j / 8; return V(Math.cos(a) * r, y, -Math.sin(a) * r); });
+        g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.0045 * sc, 4, false), k.toon(C.marks)));
+      }
+      return { g, h: h + 0.013 * sc, inner, rt, rb };
+    }
+    /** The lid: a white sip lid on the rim (rim at y = 0), or a clear dome over whipped cream as high as `dome`. */
+    function lid(sc, rt, dome) {
+      const g = new THREE.Group();
+      g.name = 'lid';
+      if (dome) {
+        const shell = new THREE.Mesh(new THREE.SphereGeometry(rt * 1.03, k.seg(28), 12, 0, PI * 2, 0, PI / 2), k.toon(0xffffff, { transparent: true, opacity: 0.3, depthWrite: false }));
+        shell.scale.y = dome / (rt * 1.03);
+        shell.renderOrder = 3;
+        g.add(shell);
+        g.add(k.inkThin(k.lathe([[rt * 1.05, -0.006 * sc], [rt * 1.07, 0.004 * sc], [rt * 1.0, 0.012 * sc], [rt * 0.96, 0.004 * sc]], k.seg(32)), k.toon(C.lid)));
+        const hole = new THREE.Mesh(new THREE.TorusGeometry(0.022 * sc, 0.007 * sc, 6, 14).rotateX(PI / 2), k.toon(C.lid));
+        hole.position.y = dome;
+        g.add(hole);
+        return g;
+      }
+      const prof = [[1.0, -0.01], [1.07, -0.004], [1.06, 0.014], [0.97, 0.02], [0.82, 0.034], [0.55, 0.042], [0, 0.04]].map(([r, y]) => [r * rt, y * sc]);
+      g.add(k.ink(k.lathe(prof, k.seg(36)), k.toon(C.lid)));
+      // the sip slot and the raised ring round it
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(0.05 * sc, 0.004 * sc, 0.016 * sc), k.toon(C.lidHole));
+      slot.position.set(0, 0.04 * sc + 0.002 * sc, rt * 0.62);
+      g.add(slot);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(rt * 0.5, 0.005 * sc, 5, 28).rotateX(PI / 2), k.toon(0xe8e4da));
+      ring.position.y = 0.042 * sc;
+      g.add(ring);
+      return g;
+    }
+    /** Whipped cream: a piped, ridged peak (white; a hint of cream in the shading so it reads on pale foam). */
+    function whip(R, H) {
+      const geo = kept('whip:' + (k.low() ? 'lo' : 'hi'), () => {
+        const n = k.low() ? 20 : 36;
+        const prof = [[0, 0], [1, 0], [1.02, 0.12], [0.93, 0.3], [0.72, 0.5], [0.5, 0.68], [0.3, 0.84], [0.12, 0.96], [0, 1]];
+        const gg = k.lathe(prof, n), pos = gg.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+          const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i), a = Math.atan2(z, x), f = 1 + 0.13 * Math.sin(8 * a + y * 9);
+          pos.setX(i, x * f); pos.setZ(i, z * f);
+        }
+        gg.computeVertexNormals();
+        return gg;
+      });
+      const m = k.ink(geo, k.toon(0xfffdf7));
+      m.scale.set(R, H, R);
+      m.name = 'whip';
+      return m;
+    }
+    /** A flat swirl lying on a surface of radius r (cream, a milk swirl): the kit's spiral bead, flattened. */
+    function swirl(r, colour) {
+      const B = k.beadPath('spiral'), m = new THREE.Mesh(B.geo, k.toon(colour));
+      const s = (r * 0.82) / 0.28;
+      m.scale.set(s, 0.35, s);
+      return m;
+    }
+    /** A syrup drizzle across a surface of radius r. */
+    function drizzle(r, colour, turn) {
+      const B = k.beadPath('drizzle'), m = new THREE.Mesh(B.geo, k.toon(colour));
+      const s = (r * 0.82) / 0.28;
+      m.scale.set(s, 0.5, s);
+      m.rotation.y = turn;
+      return m;
+    }
+    /** What the drink in the cup is now: { kind: null | 'coffee' | 'cocoa', stage, level, colour, milk, foam }. */
+    function drinkOf(made, o) {
+      const P = picks(made), d = P.drink;
+      const look = d ? k.slotLook('drink', d) : null;
+      if (!d) return { kind: null, level: 0, colour: POUR[0] };
+      const milk = !!P.milk && MILK_DRINKS.includes(d);
+      if (d === 'hotChocolate') {
+        const base = (look && look.colour !== undefined) ? look.colour : (k.lookOf('cocoa').colour || 0x6b3b22);
+        return { kind: 'cocoa', level: milk ? FULL : COCOA_LEVEL, colour: milk ? k.mix(base, C.milk, 0.14) : base, milk, foam: false };
+      }
+      const stage = pourStage(made, o);
+      if (stage === null) return { kind: 'coffee', stage: 0, level: 0, colour: POUR[0], milk: false, foam: false };
+      let colour = pourColour(stage);
+      if (milk) colour = k.mix(look && look.colour !== undefined ? look.colour : 0xc9a27a, colour, stage >= 4 ? 0.6 : 0.35);
+      return { kind: 'coffee', stage, level: milk ? FULL : LEVEL[clamp(stage, 0, 4)], colour, milk, foam: milk && !!(look && look.foam) };
+    }
+
+    /* ── the drink: the cup, the drink in it, everything on top ── */
+    /** o.fill: { level, colour } overrides the drink (a pour on its way); o.bare: nothing on top yet. Without a size
+     *  picked there is no cup yet (the size pick drops it in). -> { g, h, surface(level?), setFill(level, colour),
+     *  rim, rt, sc }. */
+    function coffeeCup(made, o) {
+      o = o || {};
+      // Straight after an Add's animation the frame redraws the cup from the order as it stands after the whole answer,
+      // which already lists the flourish still to play (the lid): drawn now, it would be on before it goes on. The Add
+      // leaves `hold` (what had run before it) for that one redraw (2026-11-11).
+      if (hold && o.where === 'line') {
+        const fresh = nowMs() - hold.at < 400, keep = hold.auto;
+        hold = null;
+        if (fresh) made = Object.assign({}, made, { auto: ((made && made.auto) || []).filter(a => keep.includes(a)) });
+      }
+      const g = new THREE.Group(), P = picks(made);
+      const R = (k.pack().recipes || {})[made.recipe];
+      const asksSize = !R || R.stations.some(sid => (((k.pack().stations || {})[sid] || {}).steps || []).some(s => s.kind === 'pick' && s.slot === 'size'));
+      if (asksSize && !P.size && o.where !== 'counter') return { g, h: 0, surface: () => V(0, 0, 0), setFill() {}, rim: 0, rt: CUP.rt, sc: 1 };
+      const sc = sizeScale(made), cup = paperCup(sc);
+      g.add(cup.g);
+      const prof = cup.inner, y0 = prof[0][1], y1 = prof[1][1];
+      const yAt = lvl => y0 + (y1 - y0) * lvl;
+      const D = drinkOf(made, o), fillG = new THREE.Group(), topG = new THREE.Group();
+      fillG.name = 'drink';
+      topG.name = 'onTop';
+      g.add(fillG, topG);
+      const milkGross = grossOf(made, 'milk');
+      function setFill(level, colour) {
+        while (fillG.children.length) k.free(fillG.children[0]);
+        if (level > 0.002) {
+          const f = k.fill(prof, level, colour, { seg: 36, surface: k.mix(colour, 0xffffff, 0.05) });
+          fillG.add(f.g);
+          if (milkGross && D.milk) k.gross(f.g, milkGross);
+        }
+      }
+      const lvl = o.fill ? o.fill.level : D.level, col = o.fill ? o.fill.colour : D.colour;
+      setFill(lvl, col);
+      let top = cup.h;
+      const sy = yAt(lvl), rS = k.radiusAt(prof, sy) * 0.97;
+      // The whipped cream: inside the cup's opening at the drink (its ridges reach 1.17 of its radius: 0.8 keeps them
+      // off the wall), 0.13 above the rim. The Add grows this same peak (whipSpec).
+      const whipR = rS * 0.8, whipH = Math.max(0.1 * sc, cup.h - sy + 0.13 * sc);
+      let whipY = sy + 0.002 + (D.foam ? 0.034 * sc : 0);
+      const lidOn = ran(made, 'lid') && !o.noLid;
+      if (!o.bare && D.kind && lvl > 0.002) {
+        let y = sy + 0.002;
+        // A burnt pour: a dark ring left on the wall above the coffee, and a wisp of smoke (Timed's last stage).
+        if (D.kind === 'coffee' && D.stage >= 4 && !lidOn) {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(k.radiusAt(prof, sy + 0.02 * sc) - 0.002, 0.009 * sc, 5, 32).rotateX(PI / 2), k.toon(0x2a180e));
+          ring.position.y = sy + 0.02 * sc;
+          topG.add(ring);
+          for (let i = 0; i < 2; i++) {
+            const p = k.puff(C.smoke, 0.85);
+            p.scale.setScalar(1.5 * sc);
+            p.position.set((i - 0.5) * 0.08 * sc, cup.h + 0.06 + i * 0.07, 0);
+            topG.add(p);
+            k.spin(p, 'rise', { phase: i * 0.8, alpha: 0.85, height: 0.3 });
+          }
+        }
+        if (D.foam) {
+          // The cappuccino's foam cap: a pale dome with a ring of crema round it.
+          const foam = k.inkThin(k.lathe([[rS * 0.99, 0], [rS * 0.9, 0.016 * sc], [rS * 0.6, 0.031 * sc], [0, 0.036 * sc]], k.seg(32)), k.toon(C.foam));
+          foam.position.y = sy;
+          topG.add(foam);
+          const edge = new THREE.Mesh(new THREE.TorusGeometry(rS * 0.97, 0.008 * sc, 5, 32).rotateX(PI / 2), k.toon(C.crema));
+          edge.position.y = sy + 0.002;
+          edge.scale.y = 0.5;
+          topG.add(edge);
+          y = sy + 0.036 * sc;
+        }
+        if (has(made, 'cream')) {
+          // The cream swirled in: the coffee paler, a cream spiral on top.
+          setFill(lvl, k.mix(col, C.cream, 0.2));
+          const s = swirl(rS * 0.8, C.cream);
+          s.position.y = y + 0.002;
+          topG.add(s);
+        }
+        if (has(made, 'shot')) {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(rS * (D.foam ? 0.55 : 0.78), 0.016 * sc, 6, 28).rotateX(PI / 2), k.toon(D.kind === 'coffee' && !D.milk ? 0xc98a4a : C.crema));
+          ring.position.y = y + 0.004;
+          ring.scale.y = 0.45;
+          topG.add(ring);
+        }
+        if (ran(made, 'art') && !o.noArt) {
+          // The latte art: a white heart (outlined in coffee brown, so it reads on a pale foam cap too).
+          const back = new THREE.Mesh(heartGeo(), k.toon(C.artLine));
+          back.name = 'artBack';
+          back.scale.setScalar(rS * 0.74);
+          back.position.set(0, y + 0.004, rS * 0.05);
+          const heart = new THREE.Mesh(heartGeo(), k.toon(C.art));
+          heart.scale.setScalar(rS * 0.62);
+          heart.position.set(0, y + 0.006, rS * 0.03);
+          heart.name = 'art';
+          topG.add(back, heart);
+        }
+        ['vanilla', 'caramel'].forEach((ing, i) => {
+          if (!has(made, ing)) return;
+          const L = k.lookOf(ing), colour = ing === 'vanilla' ? k.mix(L.colour, 0xe0b02a, 0.35) : L.colour;
+          const d = drizzle(rS, colour, i ? -0.7 : 0.7);
+          d.position.y = y + 0.008 + i * 0.004;
+          topG.add(d);
+        });
+        // (The sugar dissolves: what shows it is the torn packet left beside the cup, below.)
+        if (has(made, 'whip') && !o.noWhip) {
+          const w = whip(whipR, whipH);
+          w.position.y = y;
+          topG.add(w);
+          top = Math.max(top, y + whipH);
+        }
+        whipY = y;
+      }
+      if (lidOn) {
+        const domeH = has(made, 'whip') ? Math.max(0.06, top - cup.h + 0.02 * sc) : 0;
+        const L = lid(sc, cup.rt, domeH);
+        L.position.y = cup.h - 0.006 * sc;
+        g.add(L);
+        top = Math.max(top, cup.h + (domeH || 0.045 * sc));
+      }
+      // The torn, empty sugar packets beside the cup, one per sugar: put there by the Add, and the same on the line, at
+      // the review and on the counter (the lid comes in with its own step, lidOn).
+      const nSugar = count(made, 'sugar');
+      for (let i = 0; i < nSugar; i++) {
+        const pk = sugarPacket(true);
+        const at = packetSpot(cup.rt, i);
+        pk.position.copy(at.p);
+        pk.rotation.y = at.turn;
+        g.add(pk);
+      }
+      // On the counter a cup is drawn smaller than the donut beside it (CUP_COUNTER): at the counter's full scale a large
+      // cup stood taller than the served customer's head and hid them from the chin down (phase 3 review).
+      const s = (o.contentScale || 1) * (o.where === 'counter' ? CUP_COUNTER : 1);
+      if (s !== 1) g.scale.setScalar(s);
+      g.userData.h = top * s;
+      return { g, h: top * s, rim: cup.h, rt: cup.rt, sc, drink: D, surface: level => V(0, yAt(level === undefined ? lvl : level), 0), setFill, level: lvl,
+        whipSpec: { y: whipY, r: whipR, H: whipH }, radiusAt: y => k.radiusAt(prof, y) };
+    }
+
+    /* ── the donut ── */
+    /** A point on the ring donut's surface: u round the ring, t round the tube (0 the outside, PI/2 the top, PI the
+     *  hole's side), lifted `lift` off it. -> { p, nrm }. */
+    function ringAt(u, t, lift, R, r) {
+      R = R || DONUT.R; r = (r || DONUT.r) + (lift || 0);
+      const fy = DONUT.fy, base = DONUT.r * fy;
+      const cx = Math.cos(u), cz = Math.sin(u);
+      const p = [(R + r * Math.cos(t)) * cx, base + r * fy * Math.sin(t), (R + r * Math.cos(t)) * cz];
+      const n = new THREE.Vector3(Math.cos(t) * cx, Math.sin(t) / fy, Math.cos(t) * cz).normalize();
+      return { p, nrm: [n.x, n.y, n.z] };
+    }
+    /** A point on the jelly ball's surface: u round, a down from the top. */
+    function ballAt(u, a, lift) {
+      const Rb = DONUT.ball + (lift || 0), Hb = DONUT.ballH + (lift || 0);
+      const p = [Rb * Math.sin(a) * Math.cos(u), Hb + Hb * Math.cos(a), Rb * Math.sin(a) * Math.sin(u)];
+      const n = new THREE.Vector3(Math.sin(a) * Math.cos(u) / Rb, Math.cos(a) / Hb, Math.sin(a) * Math.sin(u) / Rb).normalize();
+      return { p, nrm: [n.x, n.y, n.z] };
+    }
+    /** The glaze's drips round the edge: how far down (radians) the glaze runs at u. */
+    function dripsAt(seed) {
+      const Rn = k.rand('drips:' + seed), list = [];
+      for (let i = 0; i < 7; i++) list.push({ u: (i + Rn() * 0.6) / 7 * PI * 2, w: 0.14 + Rn() * 0.12, d: 0.3 + Rn() * 0.5 });
+      return u => {
+        let m = 0;
+        for (const q of list) {
+          let du = Math.abs(u - q.u); du = Math.min(du, PI * 2 - du);
+          if (du < q.w) m = Math.max(m, q.d * Math.sqrt(1 - (du / q.w) * (du / q.w)));
+        }
+        return m;
+      };
+    }
+    /** A grid surface: f(i / U, j / V) -> [x, y, z] (indexed, smooth normals). */
+    function gridGeo(U, Vn, f, flip) {
+      const pos = [], idx = [];
+      for (let i = 0; i <= U; i++) for (let j = 0; j <= Vn; j++) pos.push(...f(i / U, j / Vn));
+      for (let i = 0; i < U; i++) for (let j = 0; j < Vn; j++) {
+        const a = i * (Vn + 1) + j, b = (i + 1) * (Vn + 1) + j;
+        if (flip) idx.push(a, a + 1, b, b, a + 1, b + 1);
+        else idx.push(a, b, a + 1, b, b + 1, a + 1);
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.setIndex(idx);
+      geo.computeVertexNormals();
+      return geo;
+    }
+    /** The donut's body: a ring (classic, chocolate) or a jelly ball, coloured by the fryer's stage, the fry line round
+     *  its middle (pale at Golden, darker at Dark Golden), cracks at Burnt. -> { g, ball, h }. */
+    function donutBody(dough, stage, seed, opts) {
+      opts = opts || {};
+      const L = dough ? (k.slotLook('dough', dough) || {}) : {}, ball = L.shape === 'doughBall';
+      const choc = dough === 'chocolate' || (L.colour !== undefined && new THREE.Color(L.colour).getHSL({}).l < 0.4);
+      const s = clamp(stage | 0, 0, 3);
+      let colour = choc ? (s === 0 ? (L.colour !== undefined ? L.colour : CHOC[0]) : CHOC[s]) : (s === 0 ? (L.colour !== undefined ? L.colour : FRY[0]) : fryColour(s));
+      if (opts.colour !== undefined) colour = opts.colour;
+      const g = new THREE.Group();
+      g.name = 'body';
+      let h;
+      if (ball) {
+        const geo = kept('ball:' + k.seg(28), () => new THREE.SphereGeometry(1, k.seg(28), 16));
+        const m = k.ink(geo, k.toon(colour));
+        m.scale.set(DONUT.ball, DONUT.ballH, DONUT.ball);
+        m.position.y = DONUT.ballH;
+        g.add(m);
+        // The jam peeking out of one side (the front right), glossy.
+        const jam = k.inkThin(kept('jam', () => new THREE.SphereGeometry(0.05, 14, 10)), k.toon((L.jam !== undefined ? L.jam : C.jam)));
+        const at = ballAt(0.75, PI / 2 + 0.05, -0.012);
+        jam.position.set(at.p[0], at.p[1], at.p[2]);
+        jam.scale.set(1, 0.8, 1);
+        g.add(jam);
+        const glint = new THREE.Mesh(kept('glint', () => new THREE.CircleGeometry(0.012, 8)), k.SHINE);
+        glint.position.set(at.p[0] - 0.012, at.p[1] + 0.018, at.p[2] + 0.03);
+        g.add(glint);
+        h = DONUT.ballH * 2;
+      } else {
+        const geo = kept('ring:' + k.seg(40), () => new THREE.TorusGeometry(DONUT.R, DONUT.r, k.seg(16, 10), k.seg(40)).rotateX(PI / 2));
+        const m = k.ink(geo, k.toon(colour));
+        m.scale.y = DONUT.fy;
+        m.position.y = DONUT.r * DONUT.fy;
+        g.add(m);
+        h = DONUT.r * DONUT.fy * 2;
+      }
+      // The fry line round the middle: pale at Golden, darker at Dark Golden (never thinned: it is the doneness mark).
+      if (s === 1 || s === 2) {
+        const lineCol = choc ? (s === 1 ? 0x9a6642 : 0x6e4228) : (s === 1 ? 0xf7e4b8 : 0xcf9452);
+        const band = ball
+          ? new THREE.Mesh(new THREE.TorusGeometry(DONUT.ball * 1.0, 0.016, 5, k.seg(40)).rotateX(PI / 2), k.toon(lineCol))
+          : new THREE.Mesh(new THREE.TorusGeometry(DONUT.R + DONUT.r * 0.99, 0.017, 5, k.seg(44)).rotateX(PI / 2), k.toon(lineCol));
+        band.position.y = ball ? DONUT.ballH : DONUT.r * DONUT.fy;
+        band.scale.y = 0.6;
+        band.name = 'fryLine';
+        g.add(band);
+      }
+      // Dark Golden: a few darker freckles too, so the two fried stages differ by a mark as well as a colour.
+      if (s === 2 || s === 3) {
+        const Rn = k.rand('fleck:' + seed), pts = [];
+        const n = s === 2 ? 10 : 6;
+        for (let i = 0; i < n; i++) {
+          const q = ball ? ballAt(Rn() * PI * 2, 0.3 + Rn() * 1.0, 0.002) : ringAt(Rn() * PI * 2, 0.2 + Rn() * 2.4, 0.002);
+          pts.push({ p: q.p, nrm: q.nrm, r: Rn() * 6, t: 0.5, s: 0.9 + Rn() * 0.5 });
+        }
+        g.add(k.scatter(kept('fleck', () => new THREE.CircleGeometry(0.014, 7).rotateX(-PI / 2)), k.toon(s === 2 ? 0x7a4420 : 0x0f0805), pts, { outline: false }));
+      }
+      // Burnt: black cracks over the top.
+      if (s === 3) {
+        const Rn = k.rand('crack:' + seed);
+        for (let i = 0; i < 5; i++) {
+          const u0 = Rn() * PI * 2, pts = [];
+          for (let j = 0; j < 5; j++) {
+            const q = ball ? ballAt(u0 + j * 0.09 + (Rn() - 0.5) * 0.06, 0.2 + j * 0.13, 0.003) : ringAt(u0 + j * 0.07 + (Rn() - 0.5) * 0.05, 0.6 + j * 0.25, 0.003);
+            pts.push(V(q.p[0], q.p[1], q.p[2]));
+          }
+          g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.006, 4, false), k.toon(0x0b0604)));
+        }
+      }
+      if (s === 0 && opts.raw !== false) g.scale.setScalar(0.94);   // raw dough is a little smaller: it puffs in the fryer
+      return { g, ball, h: h * (s === 0 && opts.raw !== false ? 0.94 : 1), choc, colour };
+    }
+    /** The glaze: a glossy shell over the top half, drips running down the outside. -> { g, at(u, t, lift) }. */
+    function glazeShell(colour, ball, seed, under) {
+      const g = new THREE.Group();
+      g.name = 'glaze';
+      const drip = dripsAt(seed);
+      const white = new THREE.Color(colour).getHSL({}).l > 0.85;
+      // A white sugar glaze is see-through on a real donut: drawn opaque (every renderer agrees), the fried colour
+      // under it mixed in, so a sugar-glazed donut reads pale gold and glossy, not iced white or bare.
+      const mat = white ? k.toon(k.mix(under !== undefined ? under : FRY[1], 0xfff4dc, 0.4)) : k.toon(colour);
+      const lift = 0.011, Un = k.low() ? 40 : 64;
+      let geo;
+      if (ball) {
+        geo = gridGeo(Un, 10, (fu, fv) => { const u = fu * PI * 2, a = fv * (1.0 + drip(u) * 0.55); return ballAt(u, a, lift).p; });
+      } else {
+        geo = gridGeo(Un, 12, (fu, fv) => { const u = fu * PI * 2, lo = -(0.12 + drip(u)), hi = PI + 0.25; return ringAt(u, lo + (hi - lo) * fv, lift).p; }, true);
+      }
+      const shell = k.inkThin(geo, mat);
+      g.add(shell);
+      // Two glints on the top: it is glossy.
+      [[2.2, 0.12], [2.5, 0.07]].forEach(([u, s], i) => {
+        const q = ball ? ballAt(u, 0.45, lift + 0.003) : ringAt(u, PI / 2, lift + 0.003);
+        const gl = new THREE.Mesh(kept('gloss', () => new THREE.CircleGeometry(1, 10).rotateX(-PI / 2)), k.SHINE);
+        gl.position.set(q.p[0], q.p[1], q.p[2]);
+        gl.scale.set(s * 0.5, 1, s * 0.18);
+        gl.rotation.y = -u + PI / 2;
+        g.add(gl);
+        if (i) gl.scale.multiplyScalar(0.8);
+      });
+      return { g, white };
+    }
+    /** n seeded points on the donut's top (on its glaze when it has one), in scatter()'s format. */
+    function topPoints(n, seed, ball, lift) {
+      const Rn = k.rand(seed), out = [];
+      for (let i = 0; i < n; i++) {
+        const u = Rn() * PI * 2;
+        const q = ball ? ballAt(u, Math.sqrt(Rn()) * 0.85, lift) : ringAt(u, 0.5 + Rn() * (PI - 1.0), lift);
+        out.push({ p: q.p, nrm: q.nrm, r: Rn() * PI * 2, t: Rn() });
+      }
+      return out;
+    }
+    /** A topping over the donut's top: sprinkles (rainbow rods), coconut (white flakes), nuts (tan chunks). */
+    const TOPS = {
+      sprinkles: { n: 54, min: 30, piece: () => k.piece('sprinkle'), size: 1.15, tilt: 0.4, lieFlat: true },
+      coconutFlakes: { n: 40, min: 24, piece: () => kept('flake', () => new THREE.BoxGeometry(0.03, 0.006, 0.016)), size: 1.1, tilt: 1.2 },
+      choppedNuts: { n: 24, min: 16, piece: () => k.piece('chunk'), size: 0.5, tilt: 1.6 },
+    };
+    function topping(shape, part, ball, lift) {
+      const T = TOPS[shape], L = k.lookFor(part), g = new THREE.Group();
+      g.name = part.ing || shape;
+      const pts = topPoints(k.thin(T.n, T.min), shape + ':' + (part.n || 0) + (ball ? ':b' : ''), ball, lift);
+      const cols = L.colours && L.colours.length ? L.colours : [L.colour !== undefined ? L.colour : 0xffffff];
+      cols.forEach((c, i) => {
+        const mine = pts.filter((_, j) => j % cols.length === i);
+        if (!mine.length) return;
+        // Sprinkles lie along the surface (a rod turned on its side), the rest tumble.
+        const list = T.lieFlat ? mine.map(p => Object.assign({}, p, { t: 0.5 })) : mine;
+        const piece = T.lieFlat ? kept('rod', () => k.piece('sprinkle').clone().rotateZ(PI / 2)) : T.piece();
+        g.add(k.scatter(piece, k.toon(c), list, { outline: shape === 'choppedNuts' ? 'thin' : false, size: T.size, tilt: T.tilt }));
+      });
+      return g;
+    }
+    /** Wax paper under a donut (the line and the counter). */
+    function waxPaper(w) {
+      const g = new THREE.Group();
+      const sheet = k.inkThin(new THREE.BoxGeometry(w, 0.006, w), k.toon(C.wax));
+      sheet.position.y = 0.003;
+      g.add(sheet);
+      g.rotation.y = 0.18;
+      g.name = 'paper';
+      return { g, h: 0.006 };
+    }
+    /** The donut in line order: the body (its dough, fried by stage), its glaze, the toppings on the glaze; on wax
+     *  paper on the line and the counter. o.stage: the fryer's stage (the fryer); o.noGlaze: drawn before the dunk.
+     *  -> { g, h, body, ball }. */
+    function donutLayout(made, o) {
+      o = o || {};
+      const P = picks(made), g = new THREE.Group(), seed = (made.recipe || 'donut') + ':' + (P.dough || '');
+      let y = 0;
+      if (o.where === 'line' || o.where === 'counter') { const w = waxPaper(0.66); g.add(w.g); y = w.h; }
+      const dough = P.dough || null;
+      const stage = fryStage(made, o);
+      const body = donutBody(dough, stage, seed, {});
+      body.g.position.y = y;
+      g.add(body.g);
+      const dGross = grossOf(made, 'dough');
+      if (dGross) k.gross(body.g, dGross);
+      let top = y + body.h, lift = 0.004;
+      const glazeV = o.noGlaze ? null : P.glaze;
+      if (glazeV) {
+        const GL = k.slotLook('glaze', glazeV) || {};
+        if (GL.shape === 'glaze') {
+          const sh = glazeShell(GL.colour !== undefined ? GL.colour : 0xfbf6ec, body.ball, seed, body.colour);
+          sh.g.position.y = y;
+          g.add(sh.g);
+          lift = 0.016;
+          top = Math.max(top, y + body.h + 0.012);
+        } else {
+          // "Glaze: none": a few sugar grains, so the bare donut looks bare, not missing.
+          const pts = topPoints(k.thin(22, 12), 'bare:' + seed, body.ball, 0.006);
+          const grains = k.scatter('grain', k.toon(0xfffdf6), pts, { outline: false, tilt: 1.4, size: 1.1 });
+          grains.position.y = y;
+          grains.name = 'sugar';
+          g.add(grains);
+        }
+      }
+      ((made && made.parts) || []).forEach((p, i) => {
+        const L = k.lookFor(p);
+        if (!TOPS[L.shape]) return;
+        const t = topping(L.shape, Object.assign({ n: i }, p), body.ball, lift + 0.004 + i * 0.002);
+        t.position.y = y;
+        if (p.gross) k.gross(t, p.gross);
+        g.add(t);
+      });
+      const s = o.contentScale || 1;
+      if (s !== 1) g.scale.setScalar(s);
+      g.userData.h = top * s;
+      return { g, h: top * s, ball: body.ball };
+    }
+
+    /* ── what waits on the line ── */
+    // Playtest 2026-11-11: one open pitcher for every milk (and the hot chocolate's cocoa, and the latte art), never a
+    // capped jug; the syrup bottle stands beside the cup and only its stream goes in; nothing a vessel holds passes
+    // through the cup; what goes in stays in, drawn the same from the Add to the counter.
+    /** The one pitcher: an open steel frothing pitcher with a pointed spout, a band in the label colour of what it holds
+     *  (a white dot on it), and what it holds showing inside, in its own colour. opts: { liquid, band, gross }. */
+    const PITCHER = { S: 1.3, inner: [[0.093, 0.016], [0.097, 0.12], [0.086, 0.25]], mouth: V(-0.152, 0.256, 0), lean: 1.75 };
+    function pitcher(opts) {
+      opts = opts || {};
+      const g = new THREE.Group(), steel = k.toon(C.steel);
+      g.add(k.ink(k.lathe([[0, 0], [0.1, 0], [0.104, 0.01], [0.106, 0.12], [0.094, 0.25], [0.097, 0.262]], k.seg(28)), steel));
+      g.add(new THREE.Mesh(k.lathe([[0.097, 0.262], [0.088, 0.25], [0.097, 0.12], [0.093, 0.016], [0, 0.016]], k.seg(28)), k.toon(0x8e979f, { side: THREE.DoubleSide })));
+      const liq = k.fill(PITCHER.inner, 0.72, opts.liquid !== undefined ? opts.liquid : MILK.whole, { seg: 24 });
+      liq.g.name = 'liquid';
+      liq.g.userData.part = opts.part || null;
+      g.add(liq.g);
+      if (opts.gross) k.gross(liq.g, opts.gross, liq);
+      const spout = k.inkThin(kept('spout', () => new THREE.ConeGeometry(0.036, 0.08, 4).rotateY(PI / 4).rotateZ(PI / 2)), steel);
+      spout.position.set(-0.112, 0.252, 0);
+      spout.scale.set(1, 0.45, 1);
+      g.add(spout);
+      const band = new THREE.Mesh(kept('pitcherBand', () => new THREE.CylinderGeometry(0.1075, 0.1075, 0.055, 28, 1, true)), k.toon(opts.band !== undefined ? opts.band : 0xd8302c));
+      band.position.y = 0.075;
+      band.name = 'band';
+      const dot = new THREE.Mesh(kept('labelDot', () => new THREE.CircleGeometry(0.026, 12)), k.toon(0xffffff));
+      dot.scale.setScalar(0.7);
+      dot.position.set(0, 0.075, 0.109);
+      const handle = k.ink(new THREE.TorusGeometry(0.055, 0.013, 6, 12, PI), steel);
+      handle.rotation.z = -PI / 2;
+      handle.position.set(0.106, 0.14, 0);
+      g.add(band, dot, handle);
+      g.scale.setScalar(PITCHER.S);
+      g.userData.mouth = PITCHER.mouth.clone();
+      g.userData.colour = opts.liquid !== undefined ? opts.liquid : MILK.whole;
+      g.name = 'pitcher';
+      return { g, h: 0.262 * PITCHER.S };
+    }
+    /** The pitcher of one milk (a pick value): its stream the milk's colour, its band the milk's label colour; a bad
+     *  one (spoiled) shows it in the milk itself. */
+    function milkPitcher(part) {
+      const L = k.lookFor(part) || {}, v = part && part.ing;
+      const b = pitcher({ liquid: MILK[v] !== undefined ? MILK[v] : C.milk, band: L.colour, gross: part && part.gross, part });
+      const E = part && part.gross ? (k.pack().gross || []).find(x => x.id === part.gross) : null;
+      if (E && E.fx && typeof E.fx.tint === 'number') b.g.userData.colour = E.fx.tint;
+      return b;
+    }
+    const cocoaPitcher = () => pitcher({ liquid: COCOA, band: C.sleeve });
+    /** A small steel creamer with cream showing at the top. */
+    function creamer(part) {
+      const g = new THREE.Group();
+      g.add(k.ink(k.lathe([[0, 0], [0.07, 0], [0.075, 0.01], [0.08, 0.12], [0.088, 0.15], [0.07, 0.15], [0.064, 0.02], [0, 0.02]], k.seg(22)), k.toon(C.steel)));
+      const f = new THREE.Mesh(new THREE.CircleGeometry(0.066, k.seg(20)).rotateX(-PI / 2), k.toon(C.cream));
+      f.position.y = 0.13;
+      g.add(f);
+      const spout = k.inkThin(new THREE.ConeGeometry(0.025, 0.05, 8).rotateZ(PI / 2), k.toon(C.steel));
+      spout.position.set(-0.09, 0.14, 0);
+      g.add(spout);
+      const handle = k.ink(new THREE.TorusGeometry(0.04, 0.01, 6, 12, PI), k.toon(C.steel));
+      handle.rotation.z = -PI / 2;
+      handle.position.set(0.08, 0.08, 0);
+      g.add(handle);
+      g.scale.setScalar(1.4);
+      g.userData.mouth = V(-0.11, 0.15, 0);
+      g.userData.colour = C.cream;
+      return { g, h: 0.22 };
+    }
+    /** A little shot glass of espresso, its crema on top. */
+    function shotGlass() {
+      const g = new THREE.Group();
+      const glass = new THREE.Mesh(k.lathe([[0, 0], [0.05, 0], [0.062, 0.13], [0.056, 0.13], [0.045, 0.012], [0, 0.012]], k.seg(20)), k.toon(0xdff1f7, { transparent: true, opacity: 0.45, depthWrite: false }));
+      glass.renderOrder = 2;
+      const coffee = k.fill([[0.044, 0.012], [0.057, 0.12]], 0.75, 0x2b170b, { surface: 0xb5743a, seg: 18 });
+      g.add(coffee.g, glass);
+      g.scale.setScalar(1.6);
+      g.userData.mouth = V(-0.06, 0.13, 0);
+      g.userData.colour = 0x2b170b;
+      return { g, h: 0.21 };
+    }
+    /** A syrup pump bottle like the backdrop's, as tall as a real one beside a takeaway cup: glass with the syrup in it,
+     *  a label with a dot of its colour, the pump on top, its nozzle reaching out to the left (over the cup's opening
+     *  when the bottle stands beside the cup). */
+    const PUMP = { S: 2.0, reach: 0.15, top: 0.3 };
+    function pumpBottle(part) {
+      const L = k.lookFor(part), g = new THREE.Group(), col = L.colour !== undefined ? L.colour : 0xc77a2a;
+      g.add(k.ink(k.lathe([[0, 0], [0.07, 0], [0.072, 0.01], [0.072, 0.2], [0.05, 0.25], [0.03, 0.27], [0.03, 0.3], [0, 0.3]], k.seg(22)), k.toon(k.mix(col, 0xffffff, 0.25))));
+      const label = new THREE.Mesh(new THREE.CylinderGeometry(0.0735, 0.0735, 0.09, k.seg(22), 1, true, -0.9, 1.8), k.toon(0xfff6dc));
+      label.position.y = 0.11;
+      g.add(label);
+      const dot = new THREE.Mesh(kept('labelDot', () => new THREE.CircleGeometry(0.026, 12)), k.toon(col));
+      dot.position.set(0, 0.11, 0.075);
+      g.add(dot);
+      const head = new THREE.Group();
+      head.name = 'pumpHead';
+      const ink = k.toon(0x2b2b2b);
+      const stem = k.inkThin(k.cyl(0.01, 0.07, 8), ink);
+      stem.position.y = 0.035;
+      const cap = k.ink(new THREE.BoxGeometry(0.05, 0.028, 0.045), ink);
+      cap.position.y = 0.08;
+      const nozzle = k.inkThin(k.cyl(0.008, PUMP.reach, 8), ink);
+      nozzle.rotation.z = PI / 2;
+      nozzle.position.set(-PUMP.reach / 2, 0.08, 0);
+      const tip = k.inkThin(k.cyl(0.008, 0.025, 8), ink);
+      tip.position.set(-PUMP.reach, 0.07, 0);
+      head.add(stem, cap, nozzle, tip);
+      head.position.y = PUMP.top;
+      g.add(head);
+      g.scale.setScalar(PUMP.S);
+      g.userData.mouth = V(-PUMP.reach, PUMP.top + 0.057, 0);   // the tip's end, with the head up
+      g.userData.colour = col;
+      return { g, h: (PUMP.top + 0.095) * PUMP.S };
+    }
+    /** A paper sugar packet, waiting on the line (drawn up a little: it is small). */
+    function packetWaiting() {
+      const g = new THREE.Group(), pk = sugarPacket(false);
+      pk.name = 'packetFull';
+      g.add(pk);
+      g.scale.setScalar(1.3);
+      return { g, h: 0.012 };
+    }
+    /** The red whipped-cream can from the backdrop: red body, steel top, the nozzle. */
+    function whipCan() {
+      const g = new THREE.Group();
+      g.add(k.ink(k.cyl(0.07, 0.24, k.seg(22)), k.toon(0xd8302c)));
+      g.children[0].position.y = 0.12;
+      const shoulder = k.ink(k.lathe([[0.07, 0.24], [0.062, 0.27], [0.03, 0.29], [0, 0.29]], k.seg(22)), k.toon(C.steel));
+      const nozzle = k.inkThin(k.lathe([[0.022, 0.28], [0.018, 0.34], [0.008, 0.36], [0, 0.36]], 10), k.toon(0xf2f2f2));
+      const swirlMark = new THREE.Mesh(kept('labelDot', () => new THREE.CircleGeometry(0.026, 12)), k.toon(0xffffff));
+      swirlMark.position.set(0, 0.13, 0.071);
+      g.add(shoulder, nozzle, swirlMark);
+      g.scale.setScalar(1.3);
+      g.userData.mouth = V(0, 0.36, 0);
+      return { g, h: 0.47 };
+    }
+    /** An open glass jar of a topping (the backdrop's jars): the pieces heaped inside. Open, so nothing has to come off
+     *  before it pours. */
+    function jar(part) {
+      const L = k.lookFor(part), T = TOPS[L.shape] || TOPS.sprinkles, g = new THREE.Group();
+      const cols = L.colours && L.colours.length ? L.colours : [L.colour !== undefined ? L.colour : 0xffffff];
+      const heapG = new THREE.Group();
+      heapG.name = 'heap';
+      cols.forEach((c, i) => {
+        const hp = k.heap(T.piece(), k.toon(c), { n: k.thin(L.shape === 'sprinkles' ? 22 : 30, 12), r: 0.085, h: 0.13, seed: 'jar:' + (part.ing || L.shape) + ':' + i, size: T.size * (L.shape === 'choppedNuts' ? 1.3 : 1.6), tilt: 2 });
+        heapG.add(hp.g);
+      });
+      heapG.position.y = 0.02;
+      if (part.gross) k.gross(heapG, part.gross);
+      g.add(heapG);
+      const glass = new THREE.Mesh(k.lathe([[0, 0], [0.1, 0], [0.105, 0.01], [0.105, 0.17], [0.09, 0.19], [0.088, 0.2], [0.082, 0.2], [0.084, 0.19], [0.099, 0.17], [0.099, 0.012], [0, 0.012]], k.seg(22)), k.toon(0xdff1f7, { transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide }));
+      glass.renderOrder = 2;
+      g.add(glass);
+      const rim = k.inkThin(new THREE.TorusGeometry(0.086, 0.006, 5, k.seg(22)).rotateX(PI / 2), k.toon(0xdff1f7));
+      rim.position.y = 0.2;
+      g.add(rim);
+      g.scale.setScalar(1.35);
+      g.userData.mouth = V(-0.086, 0.2, 0);
+      g.userData.colours = cols;
+      g.userData.piece = L.shape;
+      return { g, h: 0.33 };
+    }
+
+    /* ── shapes: one builder per look.shape (what waits on the line, or the thing on its own) ── */
+    const shapes = {
+      paperCup: (part, o) => { const c = paperCup(o && o.item ? sizeScale(o.item) : 1); return { g: c.g, h: c.h, inner: c.inner }; },
+      cupSize: part => { const L = k.lookFor(part), c = paperCup(typeof L.scale === 'number' ? L.scale : 1); return { g: c.g, h: c.h, inner: c.inner }; },
+      /** A drink on its own: a cup of it (the drink pick fills the cup in the layout). */
+      drinkBase(part) {
+        const L = k.lookFor(part), c = paperCup(1), g = c.g;
+        const f = k.fill(c.inner, 0.8, L.colour !== undefined ? L.colour : 0x5a3219, { seg: 32 });
+        g.add(f.g);
+        if (L.foam) { const foam = k.inkThin(k.lathe([[0.16, 0], [0.1, 0.026], [0, 0.03]], 24), k.toon(C.foam)); foam.position.y = f.h; g.add(foam); }
+        return { g, h: c.h };
+      },
+      coffeeFill: (part, o) => k.fill([[0.12, 0], [0.13, 0.06]], 1, pourColour(k.stageIndex(part, o)), { seg: 24 }),
+      cocoaFill: part => { const L = k.lookFor(part); return k.fill([[0.12, 0], [0.13, 0.06]], 1, L.colour !== undefined ? L.colour : COCOA, { seg: 24 }); },
+      milkJug: part => milkPitcher(Object.assign({}, part, { gross: undefined })),
+      creamSwirl: part => creamer(part),
+      espressoShot: part => shotGlass(part),
+      syrupPump: part => pumpBottle(part),
+      sugarCube: () => packetWaiting(),
+      whippedCream: part => whipCan(part),
+      /** Raw dough: a ring (classic, chocolate) or the jelly ball, on its own. */
+      doughRing: part => { const b = donutBody(part.ing, 0, 'dough:' + part.ing + ':' + (part.n || 0)); return { g: b.g, h: b.h }; },
+      doughBall: part => { const b = donutBody(part.ing, 0, 'dough:' + part.ing + ':' + (part.n || 0)); return { g: b.g, h: b.h }; },
+      /** The donut on its own, fried by stage. */
+      donutBody: (part, o) => { const b = donutBody('classic', k.stageIndex(part, o), 'body:' + (part.n || 0)); return { g: b.g, h: b.h }; },
+      /** A glaze on its own: the shell over a golden ring. */
+      glaze(part) {
+        const L = k.lookFor(part), b = donutBody('classic', 1, 'glaze:' + part.ing), sh = glazeShell(L.colour !== undefined ? L.colour : 0xfbf6ec, false, 'glaze:' + part.ing);
+        b.g.add(sh.g);
+        return { g: b.g, h: b.h + 0.012 };
+      },
+      bareDonut() {
+        const b = donutBody('classic', 1, 'bare');
+        b.g.add(k.scatter('grain', k.toon(0xfffdf6), topPoints(12, 'bare', false, 0.006), { outline: false }));
+        return { g: b.g, h: b.h };
+      },
+      sprinkles: part => jar(part),
+      coconutFlakes: part => jar(part),
+      choppedNuts: part => jar(part),
+    };
+
+    /* ── layouts ── */
+    const layouts = { coffeeCup, donut: donutLayout };
+
+    /* ── motion helpers ── */
+    /** Right a vessel (tipped by `lean`) and send it on down the line. */
+    function leave(obj, lean) {
+      const p0 = obj.position.clone(), r0 = obj.rotation.z;
+      return k.tween(320, t => {
+        const e = k.ease(t);
+        obj.rotation.z = r0 * (1 - e);
+        obj.position.set(p0.x + e * 2.4, p0.y + Math.sin(t * PI) * 0.14, p0.z);
+      });
+    }
+    /** Bring a vessel (obj, in F) to pour: it rises first, then comes over, tipping by `lean`, until its mouth
+     *  (userData.mouth) is at `mouthAt` (over a cup's opening, above its rim); then `during` plays; then it rights itself
+     *  and goes on down the line (o.stay: it stays tipped, for the flourish that follows). */
+    function tipTo(c, obj, mouthAt, o) {
+      const lean = o.lean || 0;
+      const mouth = (obj.userData.mouth || V(0, 0.2, 0)).clone().multiply(obj.scale).applyEuler(new THREE.Euler(0, 0, lean));
+      const over = mouthAt.clone().sub(mouth), from = obj.position.clone(), r0 = obj.rotation.z;
+      const lift = Math.max(over.y, from.y) + 0.12;
+      return k.tween(o.inMs || 460, t => {
+        const e = k.ease(t), up = Math.min(1, t * 2.5);
+        obj.position.x = from.x + (over.x - from.x) * e;
+        obj.position.z = from.z + (over.z - from.z) * e;
+        // up first, over, then down onto the pour (never sweeping low across the cup)
+        obj.position.y = t < 0.4 ? from.y + (lift - from.y) * k.ease(up) : lift + (over.y - lift) * k.ease((t - 0.4) / 0.6);
+        obj.rotation.z = r0 + (lean - r0) * k.ease(Math.max(0, (t - 0.25) / 0.75));
+      }).then(() => (o.during ? o.during() : k.wait(200)))
+        .then(() => (o.stay ? null : leave(obj, lean)));
+    }
+    /** The old way in (the donut's topping jars): over the target, tipped; `during` plays; on down the line. */
+    function tipOver(c, obj, target, o) {
+      const lean = o.lean || 0, dy = o.dy === undefined ? 0.3 : o.dy;
+      const mouth = (obj.userData.mouth || V(0, 0.2, 0)).clone().multiply(obj.scale).applyEuler(new THREE.Euler(0, 0, lean));
+      return tipTo(c, obj, target.clone().add(V(0, dy, 0)), { lean, during: () => (o.during ? o.during(target.clone().add(V(0, dy, 0))) : k.wait(200)), inMs: o.inMs });
+    }
+    /** A stream (the kit's stream width), from `from` straight down to `to`. */
+    function streamMesh(F, colour, w) {
+      const m = new THREE.Mesh(kept('jet', () => new THREE.CylinderGeometry(0.014, 0.014, 1, 8)), k.toon(colour));
+      m.name = 'stream';
+      m.userData.w = w || 1;
+      F.add(m);
+      return m;
+    }
+    function aim(m, from, to, w) {
+      const len = Math.max(0.001, from.y - to.y);
+      m.position.set((from.x + to.x) / 2, to.y + len / 2, (from.z + to.z) / 2);
+      const s = (w === undefined ? 1 : w) * m.userData.w;
+      m.scale.set(Math.max(0.001, s), len, Math.max(0.001, s));
+    }
+    /** Over a cup's opening: a point in F, `up` above the rim, a third of the way in from the axis toward the right
+     *  (where every vessel comes from); and the drink's surface straight under it, at a level. */
+    function overCup(c, b, up) {
+      const ks = b.g.scale.x || 1, mouth = c.toF(b.g, V(b.rt * 0.32, b.rim + up / ks, 0));
+      return { mouth, surf: level => { const s = c.toF(b.g, b.surface(level)); return V(mouth.x, s.y, mouth.z); } };
+    }
+    /** Where the pitcher stands while it pours into this cup (the milk's pour and the latte art's are one pose). */
+    function pitcherPose(c, b, P) {
+      const at = overCup(c, b, 0.09), lean = PITCHER.lean;
+      const off = P.userData.mouth.clone().multiply(P.scale).applyEuler(new THREE.Euler(0, 0, lean));
+      return { lean, mouth: at.mouth, pos: at.mouth.clone().sub(off), surf: at.surf };
+    }
+    /** made with one more of a part on it (the item as it stands once an Add has gone in). */
+    function withPart(made, part) {
+      const m = Object.assign({}, made);
+      m.parts = ((made && made.parts) || []).concat([Object.assign({ ing: part.ing }, part.gross ? { gross: part.gross } : {})]);
+      if (made && made.counts && made.counts[part.ing] !== undefined) m.counts = Object.assign({}, made.counts, { [part.ing]: count(made, part.ing) + 1 });
+      else if (part.ing === 'sugar') m.counts = Object.assign({}, made && made.counts, { sugar: count(made, 'sugar') + 1 });
+      return m;
+    }
+    /** Put the item drawn as `made` in place of the one on the line, where it stands (no frame redraw: what is
+     *  pouring stays). -> the new build. */
+    function swapItem(c, made, o) {
+      const old = c.F.getObjectByName('item');
+      const b = k.item(made, Object.assign({ where: 'line', set: c.set }, o || {}));
+      if (old) { b.g.position.copy(old.position); b.g.scale.copy(old.scale); b.g.rotation.copy(old.rotation); k.free(old); }
+      else b.g.position.copy(c.anchors.stack || V(0, 0, 0));
+      b.g.name = 'item';
+      c.F.add(b.g);
+      return b;
+    }
+    /** An Add is done: the frame redraws the cup next; it shows only the flourishes that had run before this Add. */
+    const holdFor = c => { hold = { auto: ((c.made && c.made.auto) || []).slice(), at: nowMs() }; };
+    /** The pitcher pours into the cup (item build b) from level l0 to l1, colours c0 to c1. stay: it stays tipped and
+     *  pouring (the latte art carries on from exactly here). */
+    function pitcherPour(c, P, b, o) {
+      const pose = pitcherPose(c, b, P);
+      return tipTo(c, P, pose.mouth, { lean: pose.lean, stay: true, during: () => {
+        const jet = streamMesh(c.F, P.userData.colour);
+        if (o.onApply) o.onApply();
+        return k.tween(o.ms || 900, t => {
+          const lvl = o.l0 + (o.l1 - o.l0) * t;
+          b.setFill(lvl, k.mix(o.c0, o.c1, t));
+          aim(jet, pose.mouth, pose.surf(lvl), Math.min(1, t * 6));
+        }).then(() => {
+          if (o.stay) return null;
+          return k.tween(160, t => aim(jet, pose.mouth, pose.surf(o.l1), 1 - t)).then(() => { k.free(jet); return leave(P, pose.lean); });
+        });
+      } });
+    }
+    /** The espresso machine's stream from `from` down into the cup's drink (item b), its level rising from l0 to l1,
+     *  its colour going from c0 to c1 (the pour cook). */
+    /** A point of obj in F's frame (a cook's context has no c.toF; a line's does). */
+    function toF(c, obj, v) {
+      if (c.toF) return c.toF(obj, v);
+      c.F.updateMatrixWorld(true);
+      return c.F.worldToLocal(obj.localToWorld(v.clone()));
+    }
+    function pourInto(c, b, from, o) {
+      if (!b || !b.setFill) return P0();
+      const l0 = o.l0, l1 = o.l1;
+      return k.pour({ F: c.F, from, colour: o.stream, ms: o.ms || 900, r: o.r || 1,
+        to: t => toF(c, b.g, b.surface(l0 + (l1 - l0) * t)),
+        onApply: o.onApply, onLevel: t => b.setFill(l0 + (l1 - l0) * t, k.mix(o.c0, o.c1, t)) });
+    }
+    /** Pieces falling from a mouth onto a point (sprinkles from a jar, sugar from a packet). */
+    function fall(c, from, to, colours, ms, spread) {
+      const g = new THREE.Group(), Rn = k.rand('fall'), list = [], sp = spread || 1;
+      for (let i = 0; i < k.thin(16, 8); i++) {
+        const m = new THREE.Mesh(k.piece('grain'), k.toon(colours[i % colours.length]));
+        m.scale.setScalar(1.6);
+        m.visible = false;
+        g.add(m);
+        list.push({ m, x: (Rn() - 0.5) * 0.22 * sp, z: (Rn() - 0.5) * 0.16 * sp, d: Rn() });
+      }
+      c.F.add(g);
+      return k.tween(ms || 700, t => {
+        list.forEach(q => {
+          const u = (t * 2.2 + q.d) % 1;
+          q.m.visible = t < 0.92;
+          q.m.position.set(from.x + q.x * u, from.y - u * (from.y - to.y), from.z + q.z * u);
+        });
+      }).then(() => k.free(g));
+    }
+
+    /* ── the line: how each thing goes in ── */
+    /** Tip it and pour into the cup's opening (cream, an extra shot); what it poured shows on the drink as the stream
+     *  ends, and stays. */
+    const tipPour = (lean, ms) => ({
+      add(c) {
+        const inc = c.inc, b = c.item;
+        if (!inc) return P0();
+        if (!b || !b.surface || !b.rim) { if (c.onApply) c.onApply(); return P0(); }
+        const at = overCup(c, b, 0.1), colour = inc.userData.colour || C.milk;
+        return tipTo(c, inc, at.mouth, { lean, during: () => {
+          const jet = streamMesh(c.F, colour, 0.7);
+          if (c.onApply) c.onApply();
+          return k.tween(ms || 650, t => aim(jet, at.mouth, at.surf(), Math.min(1, t * 6)))
+            .then(() => { swapItem(c, withPart(c.made, c.part)); return k.tween(160, t => aim(jet, at.mouth, at.surf(), 1 - t)); })
+            .then(() => k.free(jet));
+        } }).then(() => holdFor(c));
+      },
+    });
+    const lines = {
+      /** A bad milk chosen off the line (it was waiting there, spoiled): the pitcher pours it, as a picked milk pours. */
+      jug: {
+        incoming: part => Object.assign(milkPitcher(part), { rest: 0 }),
+        add(c) {
+          const inc = c.inc, b = c.item, part = c.part || {};
+          if (!inc || !b || !b.setFill) { if (c.onApply) c.onApply(); return P0(); }
+          const before = c.made, after = Object.assign({}, before, { picks: Object.assign({}, picks(before), { milk: part.ing }),
+            gross: ((before && before.gross) || []).concat(part.gross ? [{ slot: 'milk', event: part.gross, value: part.ing }] : []) });
+          const D0 = drinkOf(before), D1 = drinkOf(after), art = ['latte', 'cappuccino'].includes(picks(before).drink);
+          // (tipped over, the pitcher's stink lines would stream sideways through the air: the spoiled milk shows its
+          // stink again in the cup)
+          inc.traverse(o => { if (o.userData && o.userData.fx && o.isMesh && o.material && o.material.isMeshBasicMaterial) o.visible = false; });
+          return pitcherPour(c, inc, b, { l0: D0.level, l1: D1.level, c0: D0.colour, c1: D1.colour, onApply: c.onApply, stay: art })
+            .then(() => holdFor(c));
+        },
+      },
+      creamer: Object.assign({ incoming: part => Object.assign(creamer(part), { rest: 0 }) }, tipPour(1.7, 600)),
+      shotGlass: Object.assign({ incoming: part => Object.assign(shotGlass(part), { rest: 0 }) }, tipPour(2.0, 450)),
+      /** A syrup: the bottle is set down beside the cup, its nozzle over the opening; one pump, and only the syrup goes
+       *  in; it goes back on down the line. */
+      pump: {
+        incoming: part => Object.assign(pumpBottle(part), { rest: 0 }),
+        add(c) {
+          const inc = c.inc, b = c.item;
+          if (!inc) return P0();
+          if (!b || !b.surface || !b.rim) { if (c.onApply) c.onApply(); return P0(); }
+          const head = inc.getObjectByName('pumpHead'), S = inc.scale.x, colour = inc.userData.colour || 0xc77a2a;
+          const base = c.toF(b.g, V(0, 0, 0)), ks = b.g.scale.x || 1;
+          // the nozzle's tip a third of the way in from the axis: the bottle stands that far plus its reach to the right
+          const home = V(base.x + b.rt * ks * 0.32 + PUMP.reach * S, base.y, base.z), from = inc.position.clone();
+          const tipAt = () => V(inc.position.x - PUMP.reach * S, inc.position.y + (head.position.y + 0.057) * S, inc.position.z);
+          const surf = () => V(tipAt().x, c.toF(b.g, b.surface()).y, tipAt().z);
+          const y0 = head ? head.position.y : PUMP.top;
+          return k.tween(420, t => {
+            const e = k.ease(t);
+            inc.position.lerpVectors(from, home, e);
+            inc.position.y += Math.sin(t * PI) * 0.1;
+          }).then(() => k.tween(200, t => { if (head) head.position.y = y0 - 0.03 * k.ease(t); }))
+            .then(() => {
+              if (c.onApply) c.onApply();
+              const jet = streamMesh(c.F, colour, 0.6);
+              return k.tween(450, t => aim(jet, tipAt(), surf(), Math.min(1, t * 6)))
+                .then(() => { swapItem(c, withPart(c.made, c.part)); return k.tween(140, t => aim(jet, tipAt(), surf(), 1 - t)); })
+                .then(() => k.free(jet));
+            })
+            .then(() => k.tween(200, t => { if (head) head.position.y = y0 - 0.03 * (1 - k.ease(t)); }))
+            .then(() => {
+              const p0 = inc.position.clone();
+              return k.tween(360, t => { const e = k.ease(t); inc.position.set(p0.x + e * 2.4, p0.y + Math.sin(t * PI) * 0.12, p0.z); });
+            })
+            .then(() => holdFor(c));
+        },
+      },
+      /** A sugar: the packet comes over the cup, is torn open, the sugar pours into the opening, and the empty packet is
+       *  laid down beside the cup, where it stays (to the counter). */
+      packet: {
+        incoming: () => Object.assign(packetWaiting(), { rest: 0 }),
+        add(c) {
+          const inc = c.inc, b = c.item;
+          if (!inc) return P0();
+          if (!b || !b.surface || !b.rim) { if (c.onApply) c.onApply(); return P0(); }
+          const n = count(c.made, 'sugar'), spot = packetSpot(b.rt, n);
+          const at = overCup(c, b, 0.12), endF = c.toF(b.g, spot.p.clone());
+          // held with its torn end (its -x end) over the opening, tilted down toward it
+          const lean = 0.8, half = 0.065;
+          const over = at.mouth.clone().add(V(Math.cos(lean) * half * 1.0, Math.sin(lean) * half, 0));
+          const from = inc.position.clone(), s0 = inc.scale.x;
+          return k.tween(440, t => {
+            const e = k.ease(t);
+            inc.position.lerpVectors(from, over, e);
+            inc.position.y = Math.max(inc.position.y, from.y + (over.y + 0.1 - from.y) * Math.min(1, t * 2.5)) - (t > 0.6 ? (t - 0.6) / 0.4 * 0.1 : 0);
+            inc.rotation.z = lean * e;
+            inc.scale.setScalar(s0 + (1 - s0) * e);
+          }).then(() => {
+            // torn open: the full packet becomes the torn one
+            const full = inc.getObjectByName('packetFull');
+            if (full) { k.free(full); const torn = sugarPacket(true); inc.add(torn); }
+            if (c.onApply) c.onApply();
+            const mouth = V(inc.position.x - Math.cos(lean) * half, inc.position.y - Math.sin(lean) * half, inc.position.z);
+            return fall(c, mouth, at.surf(), [0xffffff, 0xf4efe6], 520, 0.45);
+          }).then(() => {
+            const p0 = inc.position.clone(), r0 = inc.rotation.z;
+            // out over the rim first, then down beside the cup (never through its wall)
+            return k.tween(480, t => {
+              const e = k.ease(t), out = k.ease(Math.min(1, t / 0.6)), down = k.ease(Math.max(0, (t - 0.6) / 0.4));
+              inc.position.set(p0.x + (endF.x - p0.x) * out, p0.y + 0.05 * out + (endF.y - p0.y - 0.05) * down, p0.z + (endF.z - p0.z) * out);
+              inc.rotation.z = r0 * (1 - e);
+              inc.rotation.y = spot.turn * e;
+            });
+          }).then(() => { swapItem(c, withPart(c.made, c.part)); k.free(inc); holdFor(c); });
+        },
+      },
+      /** Whipped cream: the can turns over above the cup, its nozzle over the opening, and the peak grows up from the
+       *  drink, swirling, the can rising with it; the peak it leaves is the one the cup keeps. */
+      whipCan: {
+        incoming: part => Object.assign(whipCan(part), { rest: 0 }),
+        add(c) {
+          const inc = c.inc, b = c.item;
+          if (!inc) return P0();
+          if (!b || !b.whipSpec) { if (c.onApply) c.onApply(); return P0(); }
+          const W = b.whipSpec, ks = b.g.scale.x || 1, base = c.toF(b.g, V(0, W.y, 0)), rimY = c.toF(b.g, V(0, b.rim, 0)).y;
+          const lean = PI - 0.25, nozzle = inc.userData.mouth.clone().multiply(inc.scale).applyEuler(new THREE.Euler(0, 0, lean));
+          const nozzleY = top => Math.max(rimY + 0.06, top + 0.03);
+          return tipTo(c, inc, V(base.x, nozzleY(base.y), base.z), { lean, during: () => {
+            if (c.onApply) c.onApply();
+            const w = whip(W.r * ks, W.H * ks);
+            w.position.copy(base);
+            w.scale.y = 0.001;
+            c.F.add(w);
+            const jet = streamMesh(c.F, 0xfffdf7, 1.6);
+            return k.tween(800, t => {
+              const top = base.y + W.H * ks * t, nz = V(base.x, nozzleY(top), base.z);
+              w.scale.y = Math.max(0.001, W.H * ks * t);
+              w.rotation.y = t * PI * 2;
+              inc.position.copy(nz).sub(nozzle);
+              aim(jet, nz, V(base.x, top, base.z), nz.y - top > 0.02 ? 1 : 0);
+            }).then(() => { k.free(jet); swapItem(c, withPart(c.made, c.part)); k.free(w); });
+          } }).then(() => holdFor(c));
+        },
+      },
+      /** A topping jar: over the donut, turned over, shaken; the pieces fall onto the glaze and stay there. */
+      jar: {
+        incoming: part => Object.assign(jar(part), { rest: 0 }),
+        add(c) {
+          const inc = c.inc;
+          if (!inc) return P0();
+          const target = c.top();
+          return tipOver(c, inc, target, { lean: 2.3, dy: 0.34, during: from => {
+            if (c.onApply) c.onApply();
+            const x0 = inc.position.x;
+            return Promise.all([
+              k.tween(800, t => { inc.position.x = x0 + Math.sin(t * PI * 6) * 0.03; }),
+              fall(c, from, target, inc.userData.colours || [0xffffff], 800),
+            ]).then(() => { if (c.made) swapItem(c, withPart(c.made, c.part)); });
+          } });
+        },
+      },
+    };
+    const applies = { milkJug: 'jug', creamSwirl: 'creamer', espressoShot: 'shotGlass', syrupPump: 'pump', sugarCube: 'packet', whippedCream: 'whipCan', sprinkles: 'jar', coconutFlakes: 'jar', choppedNuts: 'jar' };
+
+    /* ── flourishes ── */
+    const autos = {
+      /** After the milk on a latte or a cappuccino: the milk's own pitcher, still pouring where the milk left it, draws a
+       *  heart in the top (one heart, once: this is the only heart on a drink), then goes on down the line. */
+      latteArt(c, e, made) {
+        hold = null;
+        const b = c.showItem(made);
+        if (!b || !b.surface || k.reduced()) { if (c.onApply) c.onApply(); return P0(); }
+        const heart = b.g.getObjectByName('art'), back = b.g.getObjectByName('artBack');
+        const s1 = heart ? heart.scale.x : 1, s2 = back ? back.scale.x : 1;
+        if (heart) heart.scale.setScalar(0.01);
+        if (back) back.scale.setScalar(0.01);
+        const milk = picks(made).milk, bad = grossOf(made, 'milk');
+        const P = milkPitcher({ ing: milk, slot: 'milk', pick: true, look: milk ? k.slotLook('milk', milk) : null, gross: bad || undefined }).g;
+        P.traverse(o => { if (o.userData && o.userData.fx && o.isMesh && o.material && o.material.isMeshBasicMaterial) o.visible = false; });
+        c.F.add(P);
+        const pose = pitcherPose(c, b, P);
+        P.position.copy(pose.pos);
+        P.rotation.z = pose.lean;
+        const jet = streamMesh(c.F, P.userData.colour);
+        const surf = pose.surf(b.level);
+        aim(jet, pose.mouth, surf, 1);
+        if (c.onApply) c.onApply();
+        return k.tween(800, t => {
+          const e2 = k.ease(t), wig = Math.sin(t * PI * 6) * 0.012 * (1 - t);
+          if (heart) heart.scale.setScalar(Math.max(0.01, s1 * e2));
+          if (back) back.scale.setScalar(Math.max(0.01, s2 * e2));
+          P.position.z = pose.pos.z + wig;
+          aim(jet, pose.mouth.clone().add(V(0, 0, wig)), surf.clone().add(V(0, 0, wig)), 1);
+        }).then(() => k.tween(160, t => aim(jet, pose.mouth, surf, 1 - t)))
+          .then(() => { k.free(jet); return leave(P, pose.lean); })
+          .then(() => k.free(P));
+      },
+      /** The last step of a drip coffee or a hot chocolate: the lid (a clear dome over whipped cream) comes in from the
+       *  line, high over the cup, drops on and snaps; the cup bounces. */
+      lidOn(c, e, made) {
+        hold = null;
+        const full = c.showItem(made), L = full && full.g && full.g.getObjectByName('lid');
+        if (!L || k.reduced()) { if (c.onApply) c.onApply(); return P0(); }
+        const end = L.position.clone(), over = end.clone().add(V(0, 0.42, 0)), start = end.clone().add(V(1.4, 0.5, -0.05)), s0 = full.g.scale.clone();
+        L.position.copy(start);
+        L.rotation.z = -0.4;
+        return k.tween(380, t => { const e2 = k.ease(t); L.position.lerpVectors(start, over, e2); L.position.y += Math.sin(t * PI) * 0.08; L.rotation.z = -0.4 * (1 - e2); })
+          .then(() => k.tween(240, t => { L.position.y = over.y + (end.y - over.y) * t * t; }))
+          .then(() => {
+            if (c.onApply) c.onApply();
+            return k.tween(260, t => { const b2 = 1 + Math.sin(t * PI) * 0.07; full.g.scale.set(s0.x * b2, s0.y * (2 - b2), s0.z * b2); });
+          });
+      },
+      /** After the glaze pick (not None): a bowl of that glaze comes in, the donut flips face-down into it and comes up
+       *  glazed, one drip. */
+      glazeDunk(c, e, made) {
+        const P = picks(made), GL = P.glaze ? k.slotLook('glaze', P.glaze) : null;
+        if (!GL || GL.shape !== 'glaze' || k.reduced()) { c.showItem(made); if (c.onApply) c.onApply(); return P0(); }
+        const bare = c.showItem(made, { noGlaze: true }), item = bare && bare.g;
+        if (!item) return P0();
+        // The wax paper stays on the counter: only the donut goes into the glaze.
+        const paper = item.getObjectByName('paper');
+        if (paper) { c.F.updateMatrixWorld(true); c.F.attach(paper); }
+        const bowlG = glazeBowl(GL.colour);
+        const at = (c.anchors.bowl || V(0.75, TOP, 0.05)).clone();
+        // A bowl big enough for this donut (the giant's too), and the donut dipped face down just into the glaze: its top
+        // 0.05 under the surface, never through the bowl (a jelly ball is twice a ring's height).
+        const ib = k.boxOf(item), rItem = (ib.max.x - ib.min.x) / 2 * item.scale.x;
+        const bs = Math.max(1, rItem / 0.27), hh = (bare.h || 0.16);
+        bowlG.scale.setScalar(bs);
+        bowlG.position.copy(at).add(V(1.4, 0, 0));
+        c.F.add(bowlG);
+        const home = item.position.clone(), dip = at.clone().add(V(0, (0.16 - 0.05) * bs + hh, 0)), over = dip.clone().add(V(0, 0.3, 0));
+        let cur = item;
+        const place = (g, p, rx) => { g.position.copy(p); g.rotation.x = rx; };
+        return k.tween(300, t => { bowlG.position.x = at.x + 1.4 * (1 - k.ease(t)); })
+          .then(() => k.tween(420, t => { const e2 = k.ease(t); place(cur, new THREE.Vector3().lerpVectors(home, over, e2), PI * e2); }))
+          .then(() => k.tween(220, t => { place(cur, new THREE.Vector3().lerpVectors(over, dip, k.ease(t)), PI); }))
+          .then(() => {
+            if (c.onApply) c.onApply();
+            // It comes up glazed: the glazed build takes the bare one's place (the line redraws it at the end).
+            const glazed = k.item(made, { where: 'line', set: 'donuts' });
+            const p2 = glazed.g.getObjectByName('paper');
+            if (p2) p2.visible = false;
+            glazed.g.scale.copy(cur.scale);
+            k.free(cur);
+            cur = glazed.g;
+            c.F.add(cur);
+            place(cur, dip, PI);
+            return k.wait(140);
+          })
+          .then(() => k.tween(420, t => { const e2 = k.ease(t); place(cur, new THREE.Vector3().lerpVectors(dip, over, e2), PI * (1 - e2 * 0.5)); }))
+          .then(() => k.tween(380, t => { const e2 = k.ease(t); place(cur, new THREE.Vector3().lerpVectors(over, home, e2), PI * 0.5 * (1 - e2)); }))
+          .then(() => k.tween(260, t => { bowlG.position.x = at.x + 1.4 * k.ease(t); }))
+          .then(() => { k.free(bowlG); c.showItem(made); });
+      },
+    };
+    /** A cream bowl with a coloured stripe, full of glaze (the backdrop's three bowls). */
+    function glazeBowl(colour) {
+      const g = new THREE.Group();
+      g.add(k.ink(k.lathe([[0, 0], [0.16, 0], [0.24, 0.06], [0.31, 0.17], [0.32, 0.19], [0.3, 0.19], [0.22, 0.07], [0, 0.03]], k.seg(32)), k.toon(0xfbf3e2)));
+      const stripe = new THREE.Mesh(k.lathe([[0.295, 0.135], [0.31, 0.16]], k.seg(32)), k.toon(0x2aa5a8));
+      g.add(stripe);
+      const f = new THREE.Mesh(new THREE.CircleGeometry(0.28, k.seg(28)).rotateX(-PI / 2), k.toon(colour));
+      f.position.y = 0.16;
+      g.add(f);
+      return g;
+    }
+
+    /* ── the coffee bar's pour and the donut fryer ── */
+    /** The countertop fryer (drawn while the fryer's step is on show): a steel tank of golden oil, a dark lip round
+     *  it, a knob and an orange light on the front. -> { g, oilY }. */
+    function fryerVat(at) {
+      const g = new THREE.Group(), W = 0.98, D = 0.74, H = 0.3, t = 0.05;
+      g.name = 'vat';
+      const steel = k.toon(C.vat), lip = k.toon(0xd3dade);
+      [[0, D / 2 - t / 2, W, t], [0, -D / 2 + t / 2, W, t]].forEach(([x, z, w, d]) => { const m = k.ink(new THREE.BoxGeometry(w, H, d), steel); m.position.set(at.x + x, at.y + H / 2, at.z + z); g.add(m); });
+      [[W / 2 - t / 2, 0], [-W / 2 + t / 2, 0]].forEach(([x, z]) => { const m = k.ink(new THREE.BoxGeometry(t, H, D - 2 * t), steel); m.position.set(at.x + x, at.y + H / 2, at.z + z); g.add(m); });
+      [[0, D / 2 - t / 2, W + 0.02, t + 0.02], [0, -D / 2 + t / 2, W + 0.02, t + 0.02]].forEach(([x, z, w, d]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.02, d), lip); m.position.set(at.x + x, at.y + H + 0.01, at.z + z); g.add(m); });
+      [[W / 2 - t / 2, 0], [-W / 2 + t / 2, 0]].forEach(([x, z]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(t + 0.02, 0.02, D), lip); m.position.set(at.x + x, at.y + H + 0.01, at.z + z); g.add(m); });
+      const oilY = at.y + H - 0.045;
+      const oil = new THREE.Mesh(new THREE.BoxGeometry(W - 2 * t, 0.012, D - 2 * t), k.toon(C.oil));
+      oil.position.set(at.x, oilY, at.z);
+      oil.name = 'oil';
+      g.add(oil);
+      const knob = k.ink(k.cyl(0.035, 0.03, 14), k.toon(0x2b2b2b));
+      knob.rotation.x = PI / 2;
+      knob.position.set(at.x + W * 0.3, at.y + H * 0.5, at.z + D / 2 + 0.015);
+      const light = new THREE.Mesh(new THREE.CircleGeometry(0.02, 10), k.toon(0xff8a2a));
+      light.position.set(at.x + W * 0.39, at.y + H * 0.5, at.z + D / 2 + 0.003);
+      g.add(knob, light);
+      return { g, oilY };
+    }
+    /** The fryer's wire basket, round-ish for a donut, its handle out to the right. */
+    function basket() {
+      const g = new THREE.Group(), W = 0.62, D = 0.5, H = 0.12, w = 0.011, steel = k.toon(0x5d656c);
+      const bar = (x, y, z, sx, sy, sz) => { const b = k.inkThin(new THREE.BoxGeometry(sx, sy, sz), steel); b.position.set(x, y, z); g.add(b); };
+      for (let i = 0; i <= 6; i++) bar(0, 0, -D / 2 + D * i / 6, W, w, w);
+      for (let i = 0; i <= 7; i++) bar(-W / 2 + W * i / 7, 0, 0, w, w, D);
+      [H].forEach(y => { bar(0, y, -D / 2, W, w, w); bar(0, y, D / 2, W, w, w); bar(-W / 2, y, 0, w, w, D); bar(W / 2, y, 0, w, w, D); });
+      [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(([sx, sz]) => bar(sx * W / 2, H / 2, sz * D / 2, w, H, w));
+      const handle = k.ink(k.cyl(0.016, 0.38, 10), steel);
+      handle.position.set(W / 2 + 0.18, H + 0.04, 0); handle.rotation.z = 1.38;
+      const grip = k.ink(k.cyl(0.028, 0.16, 12), k.toon(0x1f1f1f));
+      grip.position.set(W / 2 + 0.42, H + 0.08, 0); grip.rotation.z = 1.38;
+      g.add(handle, grip);
+      g.name = 'basket';
+      return g;
+    }
+    function oilBubbles(c, at, n) {
+      const Rn = k.rand('oil'), g = new THREE.Group();
+      for (let i = 0; i < k.thin(n || 14, 8); i++) {
+        const a = Rn() * PI * 2, r = 0.25 + Rn() * 0.12;
+        const b = new THREE.Mesh(kept('bubble', () => new THREE.SphereGeometry(0.016, 8, 6)), k.toon(0xf7dc8a));
+        b.position.set(at.x + Math.cos(a) * r, at.y + 0.004, at.z + Math.sin(a) * r * 0.75);
+        b.scale.y = 0.6;
+        g.add(b);
+        k.spin(b, 'bubble', { phase: Rn() * 3, height: 0.025, speed: 1.4 + Rn() });
+      }
+      c.F.add(g);
+    }
+    const blankMade = ing => ({ recipe: null, ing, parts: [], picks: {}, counts: {}, auto: [], gross: [] });
+    const cooks = {
+      /** The coffee bar: the cup on the drip tray under the spout, poured to the stage (s.made, s.stage). While Timed
+       *  pours (s.cooking) the stream runs from the spout; Burnt smokes (the layout). */
+      pour: {
+        show(c, s) {
+          const made = s.made || c.state.made || blankMade('cup');
+          const b = k.item(made, { stage: s.stage || 0, where: 'pour', set: 'coffee', bare: !!(s.cooking || s.pouring) });
+          b.g.position.copy(c.anchors.stack);
+          b.g.name = 'item';
+          b.g.userData.build = b;
+          c.F.add(b.g);
+          if (s.cooking && b.surface) {
+            // The stream from the spout, down into the cup.
+            const jet = new THREE.Mesh(kept('jet', () => new THREE.CylinderGeometry(0.014, 0.014, 1, 8)), k.toon(b.drink && b.drink.kind === 'cocoa' ? 0x6b3b22 : pourColour(Math.max(1, s.stage || 0))));
+            const from = c.anchors.spout, to = b.g.position.clone().add(b.surface());
+            const len = Math.max(0.01, from.y - to.y);
+            jet.position.set(from.x, to.y + len / 2, from.z);
+            jet.scale.set(1, len, 1);
+            jet.name = 'jet';
+            c.F.add(jet);
+          }
+        },
+        add(c, s) { c.redraw({ ing: s.ing, n: s.n, stage: 0, cooking: false }); return P0(); },
+        /** Simple (and the tests): the coffee pours from the spout to the stage. Timed: the pour stops at the stage
+         *  shown, a puff of steam. */
+        run(c, s) {
+          const stage = s.stage | 0;
+          if (k.reduced()) { c.redraw({ stage, cooking: false }); return P0(); }
+          if (c.state.timed) {
+            c.redraw({ stage, cooking: false });
+            const item = c.F.getObjectByName('item'), b = item && item.userData.build;
+            const p = k.puff(C.steam, 0.8);
+            p.scale.setScalar(1.6);
+            p.position.copy(c.anchors.spout).add(V(0.05, -0.1, 0));
+            c.F.add(p);
+            k.spin(p, 'rise', { alpha: 0.8, height: 0.3, until: 600 });
+            return k.wait(300).then(() => { if (b) c.redraw({ stage, cooking: false }); });
+          }
+          c.redraw({ stage, cooking: false, pouring: true });
+          const item = c.F.getObjectByName('item'), b = item && item.userData.build;
+          if (!b || !b.setFill) return P0();
+          const D = b.drink || {}, ms = s.ms || 1800;
+          return pourInto(c, b, c.anchors.spout.clone(), { l0: 0, l1: b.level, c0: pourColour(1), c1: D.colour || pourColour(stage), stream: pourColour(Math.max(1, stage)), ms: ms * 0.8 })
+            .then(() => c.redraw({ stage, cooking: false, pouring: false }));
+        },
+        stage(c, s) { c.redraw({ stage: s.stage, cooking: true }); },
+      },
+      /** The fryer: the donut in the wire basket, up over the oil while it waits, down in it while it fries. */
+      fry: {
+        show(c, s) {
+          const A = c.anchors, inOil = !!(s.cooking || s.inside), at = A.vat || A.stack;
+          const made = s.made || c.state.made || blankMade('donut');
+          const b = k.item(made, { stage: s.stage || 0, where: 'fryer', set: 'donuts' });
+          if (b.giant > A.giantMax) { const f = A.giantMax / b.giant; b.g.scale.multiplyScalar(f); b.h *= f; }
+          // The fryer is as big as the donut in it: the event's giant donut gets a big tank and basket (it hung over
+          // the edges of the everyday ones).
+          const fs = Math.max(1, b.giant > 1 ? Math.min(b.giant, A.giantMax || b.giant) : 1);
+          const vat = fryerVat(at);
+          vat.g.scale.setScalar(fs);
+          vat.g.position.copy(at).multiplyScalar(1 - fs);
+          vat.oilY = at.y + (vat.oilY - at.y) * fs;
+          c.F.add(vat.g);
+          // The basket: in the oil (the donut half under it) while it fries, up over the tank while it waits.
+          const B = basket(), up = inOil ? 0 : 0.17;
+          B.scale.setScalar(fs);
+          B.position.set(at.x, vat.oilY - 0.045 * fs + up, at.z);
+          c.F.add(B);
+          b.g.position.set(at.x - 0.02, B.position.y + 0.012 * fs, at.z);
+          b.g.name = 'item';
+          c.F.add(b.g);
+          if (inOil && s.cooking) oilBubbles(c, V(at.x, vat.oilY + 0.008, at.z));
+          if ((s.stage | 0) >= 3) {
+            for (let i = 0; i < 3; i++) {
+              const p = k.puff(C.smoke, 0.9);
+              p.scale.setScalar(1.8);
+              p.position.set(at.x + (i - 1) * 0.15, b.g.position.y + b.h + 0.08 + (i % 2) * 0.06, at.z);
+              c.F.add(p);
+              k.spin(p, 'rise', { phase: i * 0.6, alpha: 0.9, height: 0.4 });
+            }
+          }
+        },
+        add(c, s) {
+          c.redraw({ ing: s.ing, n: 1, stage: 0, cooking: false });
+          const f = c.F.getObjectByName('item');
+          if (!f || k.reduced()) return P0();
+          const y = f.position.y;
+          return k.tween(280, t => { f.position.y = y + (1 - k.ease(t)) * 0.5; });
+        },
+        /** Simple: the basket goes down into the oil, it bubbles, the donut flips by itself half way, browns, and comes
+         *  up with a shake. Timed: up out of the oil at the stage shown, with a shake. */
+        run(c, s) {
+          const stage = s.stage | 0, ms = s.ms || 1800;
+          if (k.reduced()) { c.redraw({ stage, cooking: false, inside: false }); return P0(); }
+          const lift = () => {
+            c.redraw({ stage, cooking: false, inside: false });
+            const up = c.F.children.filter(o => o.name === 'basket' || o.name === 'item');
+            const y0 = up.map(o => o.position.y), x0 = up.map(o => o.position.x);
+            return k.tween(ms * 0.3, t => up.forEach((o, i) => {
+              o.position.y = y0[i] - 0.17 * (1 - k.ease(t));
+              o.position.x = x0[i] + Math.sin(t * PI * 6) * 0.015 * (1 - t);
+            }));
+          };
+          if (c.state.timed) return lift();
+          c.redraw({ stage: 0, cooking: false, inside: false });
+          const go = c.F.children.filter(o => o.name === 'basket' || o.name === 'item'), y0 = go.map(o => o.position.y);
+          return k.tween(ms * 0.15, t => go.forEach((o, i) => { o.position.y = y0[i] - 0.17 * k.ease(t); }))
+            .then(() => { c.redraw({ stage: Math.max(1, Math.round(stage / 2)), cooking: true, inside: true }); return k.wait(ms * 0.2); })
+            .then(() => {
+              // It flips by itself.
+              const item = c.F.getObjectByName('item');
+              if (!item) return P0();
+              const yy = item.position.y, hh = (item.userData.h || DONUT.r * DONUT.fy * 2) / (item.scale.y || 1) * item.scale.y;
+              // turned about its own middle (about its base it went under the oil, out of sight)
+              return k.tween(ms * 0.15, t => { item.position.y = yy + Math.sin(t * PI) * 0.18 + hh * (1 - Math.cos(t * PI)) / 2; item.rotation.x = t * PI; });
+            })
+            .then(() => { c.redraw({ stage, cooking: true, inside: true }); return k.wait(ms * 0.15); })
+            .then(lift);
+        },
+        stage(c, s) { c.redraw({ stage: s.stage, cooking: true, inside: true }); },
+      },
+    };
+
+    /* ── the sets, by backdrop name ── */
+    // The counter (spec 5.2, decision 4): solved to its picture like a station, its top's back edge at 80% of the
+    // picture, so the painted queue stays clear. Everything the set draws lies flat on the counter top.
+    const COUNTER = { line: 0.80, top: 0.92, back: -0.25, x: -0.5, row: 0.42, front: 1.35, scale: 1.3 };
+    const CUP_COUNTER = 0.7;     // a drink on the counter: this share of COUNTER.scale (the donut keeps all of it)
+    const sets = {
+      counter: {
+        x: 12, line: COUNTER.line, surface: { y: COUNTER.top, back: COUNTER.back },
+        // Between the diner's (0.26 above the top: a cup reads from the side) and the pizza's (1.25: flat food read
+        // from above): 1.0 above, so a donut's glaze and toppings show and a tall cup stays upright.
+        cam: { pos: [0, COUNTER.top + 1.0, COUNTER.back + 4.6], at: [0, COUNTER.top + 1.0 - 1.4, COUNTER.back - 1], fov: 38 },
+        build(g) {
+          // The Cafe's counter as the court picture and the counter picture draw it: a cream-and-honey wood top with
+          // a warm tan edge along the customer's side and a darker grain line.
+          const T = COUNTER.top, B = COUNTER.back, D = 3.6, L = 16;
+          const top = new THREE.Mesh(new THREE.BoxGeometry(L, 0.12, D), k.toon(0xffe2ae)); top.position.set(0, T - 0.06, B + D / 2); g.add(top);
+          const body = new THREE.Mesh(new THREE.BoxGeometry(L, T - 0.12, D - 0.1), k.toon(0xc8611c)); body.position.set(0, (T - 0.12) / 2, B + D / 2 + 0.05); g.add(body);
+          const flat = (z0, z1, mat) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(L, z1 - z0).rotateX(-PI / 2), mat); m.position.set(0, T + 0.0015, B + (z0 + z1) / 2); g.add(m); return m; };
+          flat(0, 0.05, k.toon(0xf0a868));                              // the customer's edge, warm tan
+          flat(0.05, 0.065, k.toon(0x8a4a22));                         // a dark grain line
+          [0.55, 1.25, 2.2].forEach(z => flat(z, z + 0.008, k.toon(0xf3cf92)));   // faint plank seams
+          return {
+            spots: [V(COUNTER.x, T, COUNTER.row)], row: COUNTER.row, contentScale: COUNTER.scale,
+            back: B + 0.02, front: COUNTER.front, minX: -2.4, maxX: 0.6, minScreenX: SPAN.left,
+          };
+        },
+      },
+      coffee: {
+        // The painted dark wood under the espresso bar is the surface (measured: it starts at 61.1% of the picture,
+        // under the ink line of the bar's cream front edge). A steel drip tray under the cup; the coffee runs from a
+        // spout over the cup (where the painted machine's left group head is, at 16:9).
+        // The camera looks down more steeply than the diner's board camera (about 40 degrees): the drink is read from
+        // inside the cup. The cup stands under the painted machine's left spout (43.4% across, 44.8% down the
+        // picture, at 16:9); the stream starts there.
+        x: 0, line: 0.611, surface: { y: TOP, back: -0.5 }, cook: 'pour',
+        cam: { pos: [0.33, 2.95, 2.45], at: [0.33, 0.85, 0.05], fov: 30 },
+        build(g) {
+          const X = CUP_AT.x, Z = CUP_AT.z;
+          // The drip tray runs on to the right of the cup: a syrup bottle is set down there beside the cup to pump.
+          const TW = 0.94, TX = X + 0.17;
+          const tray = k.ink(new THREE.BoxGeometry(TW, 0.03, 0.46), k.toon(C.steel));
+          tray.position.set(TX, TOP + 0.015, Z);
+          g.add(tray);
+          for (let i = 0; i < 6; i++) { const s = new THREE.Mesh(new THREE.BoxGeometry(TW - 0.1, 0.004, 0.02), k.toon(C.steelDark)); s.position.set(TX, TOP + 0.032, Z - 0.17 + i * 0.068); g.add(s); }
+          return { stack: V(X, TOP + 0.03, Z), incoming: V(0.95, TOP, -0.08), surface: TOP, spout: V(X, 1.36, Z) };
+        },
+        /** A size: the cup drops onto the tray. A drink: a coffee's cup waits for its pour (the strength, next); a hot
+         *  chocolate's cocoa comes from the pitcher. A milk: the one pitcher pours it (on a latte or a cappuccino it
+         *  stays pouring: the latte art follows from the same pour). */
+        pick(c, e, made) {
+          if (!made) return P0();
+          if (e.slot === 'drink') {
+            const D = drinkOf(made);
+            const b = c.showItem(made, { fill: { level: 0, colour: D.colour }, bare: true });
+            if (!b || !b.setFill || D.kind !== 'cocoa' || D.level <= 0 || k.reduced()) { c.showItem(made); if (c.onApply) c.onApply(); return b ? c.pop(c.F.getObjectByName('item')) : P0(); }
+            const Pc = cocoaPitcher().g;
+            Pc.position.copy(c.anchors.incoming).add(V(1.4, 0.4, 0));
+            c.F.add(Pc);
+            const home = c.anchors.incoming.clone();
+            return k.tween(300, t => { Pc.position.lerpVectors(home.clone().add(V(1.4, 0.4, 0)), home, k.ease(t)); })
+              .then(() => pitcherPour(c, Pc, b, { l0: 0, l1: D.level, c0: D.colour, c1: D.colour, ms: 1000, onApply: c.onApply }))
+              .then(() => { k.free(Pc); c.showItem(made); });
+          }
+          if (e.slot === 'milk') {
+            const art = ran(made, 'art'), plain = without(made, ['art']);
+            const D0 = drinkOf(without(made, ['art'], { picks: Object.assign({}, picks(made), { milk: undefined }) })), D1 = drinkOf(plain);
+            const b = c.showItem(plain, { fill: { level: D0.level, colour: D0.colour }, bare: true });
+            if (!b || !b.setFill || k.reduced()) { c.showItem(plain); if (c.onApply) c.onApply(); return P0(); }
+            const Pm = milkPitcher({ ing: e.value, slot: 'milk', pick: true, look: k.slotLook('milk', e.value) }).g;
+            const home = c.anchors.incoming.clone();
+            Pm.position.copy(home).add(V(1.4, 0.4, 0));
+            c.F.add(Pm);
+            return k.tween(300, t => { Pm.position.lerpVectors(home.clone().add(V(1.4, 0.4, 0)), home, k.ease(t)); })
+              .then(() => pitcherPour(c, Pm, b, { l0: D0.level, l1: D1.level, c0: D0.colour, c1: D1.colour, ms: 900, onApply: c.onApply, stay: art }))
+              .then(() => {
+                if (art) { swapItem(c, plain); return; }    // the pitcher stays pouring: latteArt carries on
+                k.free(Pm);
+                c.showItem(plain);
+              });
+          }
+          const b = c.showItem(made);
+          if (c.onApply) c.onApply();
+          return b && b.g ? c.drop(b.g, 0.5, 260) : P0();
+        },
+      },
+      donuts: {
+        // The painted pale counter under the donut station is the surface (measured: 59.6% of the picture, under the
+        // ink line of the steel back counter's front edge). The countertop fryer on the left; the donut in the middle
+        // on wax paper; the glaze bowl comes in on its right for the dunk.
+        // The same steeper camera as the coffee bar's: the glaze and its toppings are read from above. The fryer is
+        // drawn only while the fryer's step is on show (cooks.fry), where the donut sits on the line.
+        x: 24, line: 0.596, surface: { y: TOP, back: -0.5 }, cook: 'fry',
+        cam: { pos: [0.33, 2.95, 2.45], at: [0.33, 0.85, 0.05], fov: 30 },
+        build() {
+          return { stack: V(0.05, TOP, -0.1), incoming: V(0.95, TOP, -0.05), surface: TOP, vat: V(0.05, TOP, 0.1), bowl: V(0.66, TOP, -0.22), giantMax: 1.25 };
+        },
+        /** A dough: the raw ring (or ball) is dropped on the paper. A glaze: the donut waits bare for its dunk (None:
+         *  it stays bare, a pop). */
+        pick(c, e, made) {
+          if (!made) return P0();
+          if (e.slot === 'glaze') {
+            const GL = k.slotLook('glaze', e.value) || {};
+            const b = c.showItem(made, GL.shape === 'glaze' ? { noGlaze: true } : {});
+            if (c.onApply) c.onApply();
+            return b && b.g ? c.pop(b.g) : P0();
+          }
+          const b = c.showItem(made);
+          if (c.onApply) c.onApply();
+          return b && b.g ? c.drop(b.g, 0.6, 300) : P0();
+        },
+      },
+    };
+
+    /* ── the counter: one item at its spot; more side by side, left of the painted queue, at every window shape ── */
+    // The page keeps the Back in 5 sign in the bottom-left corner (to 12.5% of the window) and the order left of the
+    // counter picture's own painted queue (BBArt.cafe.counter: 59.9% across): world.js hands arrange() anchors.maxScreenX
+    // and anchors.lineY. In Node (no anchors from world.js) the shape is 16:9 and the queue starts at 59.9%.
+    const SPAN = { left: 0.14, queue: 0.599, gap: 0.1 };
+    function windowAspect() {
+      const w = typeof innerWidth === 'number' ? innerWidth : 0, h = typeof innerHeight === 'number' ? innerHeight : 0;
+      return w > 0 && h > 0 ? w / h : 16 / 9;
+    }
+    function counterCamera(aspect, lineY) {
+      const d = sets.counter, c = new THREE.PerspectiveCamera(d.cam.fov, aspect, 0.1, 60);
+      c.position.set(d.cam.pos[0], d.cam.pos[1], d.cam.pos[2]);
+      c.lookAt(d.cam.at[0], d.cam.at[1], d.cam.at[2]);
+      c.updateMatrixWorld(); c.updateProjectionMatrix();
+      const want = typeof lineY === 'number' ? lineY : food.lineOnScreen(d.line, aspect, d.picture);
+      const dy = food.lensShift(c, V(d.cam.at[0], d.surface.y, d.surface.back), want);
+      c.view = { enabled: true, fullWidth: 1, fullHeight: 1, offsetX: 0, offsetY: -dy, width: 1, height: 1 };
+      c.updateProjectionMatrix();
+      return c;
+    }
+    function xAcross(cam, fx, z) {
+      const a = V(0, COUNTER.top, z).project(cam), b = V(1, COUNTER.top, z).project(cam);
+      return (fx * 2 - 1 - a.x) / (b.x - a.x);
+    }
+    const counter = {
+      /** One item at its spot when it fits there; more (or a giant): side by side in ticket order between the Pause
+       *  sign and the painted queue on this window (at the items' near edge), shrunk together only if they do not
+       *  fit; world.js then keeps each on the counter top it can see. */
+      arrange(n, items, anchors) {
+        const aspect = windowAspect(), cam = counterCamera(aspect, anchors.lineY);
+        const right = typeof anchors.maxScreenX === 'number' ? anchors.maxScreenX
+          : (aspect < food.PICTURE ? 0.5 + (SPAN.queue - 0.5) * food.PICTURE / aspect : SPAN.queue) - 0.006;
+        const sizes = items.map(m => {
+          const b = k.item(m, { where: 'counter', set: 'counter', contentScale: anchors.contentScale });
+          const box = k.boxOf(b.g), sc = b.g.scale.x;
+          k.free(b.g);
+          return { w: (box.max.x - box.min.x) * sc, mid: (box.min.x + box.max.x) / 2 * sc, near: box.max.z * sc };
+        });
+        const z = anchors.row + Math.max(...sizes.map(s => s.near));
+        const x0 = xAcross(cam, typeof anchors.minScreenX === 'number' ? anchors.minScreenX : SPAN.left, z), x1 = xAcross(cam, right, z);
+        const spot = anchors.spots[0];
+        if (n === 1 && spot.x + sizes[0].mid - sizes[0].w / 2 >= x0 && spot.x + sizes[0].mid + sizes[0].w / 2 <= x1) return [{ p: spot.clone(), s: 1 }];
+        const total = sizes.reduce((t, x) => t + x.w, 0) + SPAN.gap * (n - 1), s = Math.min(1, (x1 - x0) / total);
+        // Packed against the queue side (the customer stands left of the order).
+        let x = x1 - total * s;
+        return sizes.map(({ w, mid }) => {
+          const p = V(x + (w / 2 - mid) * s, COUNTER.top, anchors.row);
+          x += (w + SPAN.gap) * s;
+          return { p, s };
+        });
+      },
+    };
+
+    return {
+      shapes, sets, cooks, lines, applies, autos, layouts, counter,
+      /** Recipe looks name the layout: coffeeCup (every drink), donut (every donut). */
+      layoutOf(made) {
+        const R = made.recipe && (k.pack().recipes || {})[made.recipe];
+        const s = R && R.look && R.look.shape;
+        if (s === 'coffeeCup' || s === 'donut') return s;
+        if (made.ing === 'cup' || made.ing === 'coffee' || made.ing === 'cocoa') return 'coffeeCup';
+        if (made.ing === 'donut') return 'donut';
+        return null;
+      },
+      // Doneness colours by stage for the dial plates (world.colourOf) when a look has no ramp of its own.
+      ramps: { coffeeFill: POUR, donutBody: FRY },
+    };
+  });
+  return food;
+});

@@ -1,0 +1,89 @@
+/** Ben's Food Court - the cast, merged into a restaurant (FOODCOURT-BUILD.md 2.2 and 8;
+ *  docs/api/pack-format.md "People").
+ *
+ *  Who someone IS lives in BBCast (packs/cast/cast.js): name, art, voice, traits. What they
+ *  ORDER at a restaurant lives in that pack's `regulars`. merge(cast, pack) puts the two
+ *  together, and everything else (js/packs.js, tests/bot.cjs, the schema, every test) uses
+ *  only merged packs:
+ *    regulars  each pack entry, with its persona fields taken ONLY from the cast (a pack can't
+ *              rename, redraw or re-voice anyone); every other field is the pack's
+ *    manager   the cast's manager persona, in the pack's uniform folder (pack.manager.art)
+ *    poses     the pack's moment -> pose map, or the Burger Bar's (POSES)
+ *  A cast visitor (role 'visitor') comes as a level-4 visitor unless the pack says otherwise.
+ *  Someone the cast doesn't know keeps only the pack's fields, so has no name or pictures:
+ *  the schema reports them and the shift never lets them in.
+ *
+ *  Pure: no DOM, no storage. merge() copies; merging a merged pack gives the same pack.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else (root.BB = root.BB || {}).cast = factory();
+})(typeof window === 'undefined' ? globalThis : window, function () {
+  'use strict';
+
+  /** Fields that say who someone is. They come from the cast and nowhere else. */
+  const PERSONA = ['name', 'art', 'role', 'scale', 'who', 'voice', 'tts', 'twin', 'short', 'exact', 'newest', 'tipScale', 'threeStarScale'];
+  /** The cast's roles, by name (ROLE.local is the word local). Written as keys: no file in js/core
+   *  may quote a word a pack uses as an id, and Regular is a crust and a scoop size. */
+  const ROLE = {};
+  Object.keys({ manager: 1, regular: 1, local: 1, visitor: 1, voice: 1 }).forEach(k => { ROLE[k] = k; });   // extra (the court's shoppers) went with crowd-cast
+  /** Roles of people who come to the counter and order. */
+  const CUSTOMER_ROLES = [ROLE.regular, ROLE.local, ROLE.visitor];
+  /** The level a cast visitor comes at when the pack names none (spec 4.4). */
+  const VISITOR_LEVEL = 4;
+  /** Which pose each moment shows (the Burger Bar's map, DESIGN.md "Expressions"). Every pose
+   *  named here is in BBCast.poses. A pack may give its own `poses` map instead. */
+  const POSES = {
+    customer: { arrive: 'neutral', order: 'talking', wait: 'waiting', stars3: 'happy', favourite: 'delighted',
+      stars2: 'annoyed', stars1: 'angry', gross: 'disgusted', shock: 'shocked', joke: 'laughing' },
+    manager: { idle: 'neutral', talk: 'talking', teach: 'pointing', good: 'thumbsUp', grossSpot: 'shocked',
+      grossNasty: 'disgusted', bad: 'facepalm', joke: 'laughing', nearly: 'worried', shrug: 'shrug' },
+  };
+
+  const own = (o, k) => !!o && Object.prototype.hasOwnProperty.call(o, k);
+  const copy = v => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
+
+  /** The persona fields the cast has for an id ({} when the cast doesn't know them). */
+  function persona(cast, id) {
+    const people = cast && cast.people;
+    const P = own(people, id) ? people[id] : null;
+    const out = {};
+    if (P) PERSONA.forEach(k => { if (P[k] !== undefined) out[k] = copy(P[k]); });
+    return out;
+  }
+  /** A pack entry without its persona fields (the pack's say on those is ignored). */
+  function packFields(entry) {
+    const out = {};
+    Object.keys(entry || {}).forEach(k => { if (!PERSONA.includes(k)) out[k] = copy(entry[k]); });
+    return out;
+  }
+
+  /** The pack with its people filled in from the cast. cast = BBCast ({ people }). */
+  function merge(cast, pack) {
+    const out = Object.assign({}, pack);
+    out.regulars = (pack.regulars || []).map(r => {
+      const mine = packFields(r), P = persona(cast, r.id);
+      const m = Object.assign({ id: r.id }, P, mine);
+      if (P.role === ROLE.visitor && mine.visitor === undefined) m.visitor = { level: VISITOR_LEVEL };
+      return m;
+    });
+    if (pack.manager) {
+      const P = persona(cast, pack.manager.id), mine = packFields(pack.manager);
+      out.manager = Object.assign({ id: pack.manager.id }, P, mine, { art: pack.manager.art || P.art });
+    }
+    out.poses = copy(pack.poses || POSES);
+    return out;
+  }
+
+  /** Everyone who can order here (the merged regulars, visitors and locals included). */
+  const customers = pack => (pack.regulars || []).slice();
+  /** The manager or a customer of a merged pack, by id. */
+  function person(pack, id) {
+    if (pack.manager && pack.manager.id === id) return pack.manager;
+    return (pack.regulars || []).find(c => c.id === id) || null;
+  }
+  /** Is this a restaurant's own customer at home (a local who is not here as a visitor)? */
+  const isLocalHere = c => c.role === ROLE.local && !c.visitor;
+
+  return { PERSONA, ROLE, CUSTOMER_ROLES, VISITOR_LEVEL, POSES, persona, merge, customers, person, isLocalHere };
+});

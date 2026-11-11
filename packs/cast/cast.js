@@ -1,0 +1,162 @@
+/** Ben's Food Court - the cast: who everyone is, at every restaurant (FOODCOURT-BUILD.md 2.2 and 8; docs/api/cast.md).
+ *
+ *  BBCast.people.<id> = { name, art, role, scale?, who, voice, tts: { voices, pitch, rate },
+ *                         twin?, short?, exact?, newest?, tipScale?, threeStarScale? }
+ *  What someone ORDERS lives in each pack's `regulars` (likes, usual, dislikes...); who they ARE lives here, the same
+ *  everywhere. js/core/cast.js merges the two (persona fields come only from here).
+ *
+ *    art    the picture folder, always the id: packs/cast/art/cast/<id>/<pose>.webp; null for a voice with no picture
+ *           (the announcer).
+ *           Mitch's uniforms are folders too (mitch-burger, mitch-pizza...), named by pack.manager.art.
+ *    role   manager | regular (at every restaurant, or a recurring regular at some) | local (one restaurant's own) |
+ *           visitor (level-4 special visitor) | voice (heard, never seen). (The court's six shoppers, role extra, left
+ *           with crowd-cast, 2026-11-10: the court's crowd and its chatter are the game's own customers now.)
+ *    scale  how big the character is drawn (default 1): children are smaller, feet on the same floor line.
+ *    who, voice   the brief: what they look like and how they sound (the voice is the final voice pass's brief).
+ *    tts    text to speech until the voice pass. `voices`: name fragments in preference order; the first that matches a
+ *           device voice wins (js/audio.js pickVoice: any case, at a word start). Edge's natural voices come first,
+ *           then the hub's Windows voices (every list reaches David, Mark or Zira, so no one is left to the hash).
+ *           pitch and rate: on Windows (the hub's Electron) Chromium turns them into whole SAPI steps,
+ *           trunc(pitch*10-10) and trunc(10*log10(rate * the player's rate)), so each value sits well inside its step
+ *           (0.88 = -1, 1.12 = +1, 1.32 = +3; rates 0.9-1.12 are all step 0, 1.3 and up +1, 0.77 and down -1). A pitch
+ *           step is only about half a semitone, so two speakers who can meet at a restaurant (or at the court) and land
+ *           on the same voice are 3 pitch steps apart, or 2 pitch steps and a rate step, or 2 rate steps: on the hub's
+ *           six voices and on a PC with only David, Zira and Mark. Nobody sits on the game's own voice (pitch and rate
+ *           step 0). tests/cast.test.cjs checks all of it.
+ *    traits (persona, from the Burger Bar): twin (two of one thing, where the level allows two items), exact (orders
+ *           strictly as written), short (one item), newest (asks for the newest recipe), tipScale, threeStarScale.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else root.BBCast = data;
+})(typeof window === 'undefined' ? globalThis : window, (function () {
+  'use strict';
+
+  const people = {
+    /* ── the assistant manager ─────────────────────────────────────────────────────────────────────────────── */
+    // art 'mitch' is Mitch in his shirt and tie (with the eleventh pose, `promoted`, for the grand celebration);
+    // each restaurant dresses him in its uniform folder through pack.manager.art (the diner's is 'mitch-burger').
+    mitch: { name: 'Mitch', art: 'mitch', role: 'manager',
+      who: "The assistant manager everywhere: short-sleeved shirt and tie, a headset he doesn't need, and ASST. taped over MANAGER on his badge",
+      voice: 'Eager, upbeat and a little too confident',
+      tts: { voices: ['Guy', 'Mark', 'David'], pitch: 1.15, rate: 1.12 } },
+
+    /* ── regulars at every restaurant ──────────────────────────────────────────────────────────────────────── */
+    marge: { name: 'Marge', art: 'marge', role: 'regular',
+      who: 'Retired school-bus driver, cardigan, reading glasses on a chain', voice: 'Warm, unhurried',
+      tts: { voices: ['Michelle', 'Zira', 'Susan', 'Hazel'], pitch: 1.12, rate: 0.9 } },
+    gus: { name: 'Gus', art: 'gus', role: 'regular',
+      who: 'Long-haul trucker, huge beard, trucker cap', voice: 'Deep and friendly, with a Western drawl, not slow',
+      tts: { voices: ['Christopher', 'David', 'Mark'], pitch: 0.48, rate: 1.05 },
+      twin: true, tipScale: 1.25 },
+    bev: { name: 'Coach Bev', art: 'bev', role: 'regular',
+      who: 'Whistle, tracksuit, clipboard', voice: 'Low, butch and booming',
+      tts: { voices: ['Aria', 'Susan', 'Zira', 'Hazel'], pitch: 0.48, rate: 1.08 } },
+    vernon: { name: 'Vernon', art: 'vernon', role: 'regular',
+      who: 'Runs a burger-review blog with eleven followers; arms permanently folded',
+      voice: 'Foppish, fussy and refined, with theatrical sighs',
+      tts: { voices: ['Ryan', 'George', 'Mark', 'David'], pitch: 1.52, rate: 0.92 },
+      exact: true, threeStarScale: 1.5 },
+    sal: { name: 'Sal', art: 'sal', role: 'regular',
+      who: 'Runs the hot-dog cart out front and never eats his own hot dogs: flat cap, walrus moustache, mustard-stained apron, coin changer',
+      voice: 'Gruff, loud New Yorker, a bit crude',
+      tts: { voices: ['Andrew', 'David', 'Mark'], pitch: 0.78, rate: 1.3 } },
+
+    /* ── recurring cast: regulars at some restaurants (spec 5.4) ───────────────────────────────────────────── */
+    dale: { name: 'Dale', art: 'dale', role: 'regular',
+      who: 'Wiry mechanic in grease-spotted overalls; the onion-ring guy', voice: 'Gravelly drawl, never in a hurry',
+      tts: { voices: ['Davis', 'Brian', 'Mark', 'David'], pitch: 0.88, rate: 0.75 } },
+    priya: { name: 'Priya', art: 'priya', role: 'regular',
+      who: "Night-shift nurse in scrubs, coffee-deprived; the Cafe's most loyal regular", voice: 'Dry, quick',
+      tts: { voices: ['Sonia', 'Susan', 'Zira', 'Hazel'], pitch: 0.88, rate: 1.34 } },
+    oakes: { name: 'Professor Oakes', art: 'oakes', role: 'regular',
+      who: 'Food-science professor: tweed jacket, bow tie, pocket protector; a new reason to hate onions at every menu',
+      voice: 'Nasal, nerdy, slightly too fast',
+      tts: { voices: ['Steffan', 'George', 'Mark', 'David'], pitch: 1.32, rate: 1.35 } },
+    tasha: { name: 'Tasha', art: 'tasha', role: 'regular',
+      who: 'Teenage skateboarder, deeply unimpressed', voice: 'Flat, deadpan',
+      tts: { voices: ['Emma', 'Hazel', 'Zira', 'Susan'], pitch: 0.88, rate: 0.77 } },
+
+    /* ── special visitors (every restaurant, from level 4) ─────────────────────────────────────────────────── */
+    reginald: { name: 'Reginald', art: 'reginald', role: 'visitor',
+      who: 'Self-declared food critic, scarf in all weather; reviews every order like a five-course meal',
+      voice: 'Theatrical, sweeping',
+      tts: { voices: ['Thomas', 'George', 'Mark', 'David'], pitch: 0.68, rate: 0.9 },
+      newest: true },
+    kai: { name: 'Kai', art: 'kai', role: 'visitor', scale: 0.74,
+      who: "Ten years old, notebook under one arm, Reginald's biggest fan", voice: 'Bright, very serious',
+      tts: { voices: ['Jenny', 'Zira', 'Hazel'], pitch: 1.42, rate: 1.05 },
+      short: true },
+
+    /* ── each restaurant's own customers (spec 2.2) ────────────────────────────────────────────────────────── */
+    // pizza
+    tony: { name: 'Tony', art: 'tony', role: 'local',
+      who: 'Retired opera tenor and pizza purist, offended by pineapple; napkin already tucked into his collar',
+      voice: 'Big, loud and operatic: every complaint is a performance',
+      tts: { voices: ['Roger', 'David', 'Mark'], pitch: 1.42, rate: 0.95 } },
+    pam: { name: 'Pam', art: 'pam', role: 'local',
+      who: 'Frazzled mom running a birthday party: paper crown, confetti, balloons tied to one wrist',
+      voice: 'Cheerful, exhausted, talks in lists',
+      tts: { voices: ['Ava', 'Zira', 'Susan'], pitch: 1.62, rate: 1.36 } },
+    // smoothie
+    breeze: { name: 'Breeze', art: 'breeze', role: 'local',
+      who: 'Laid-back surfer, board under one arm, sunglasses pushed up',
+      voice: 'Dreamy and relaxed; the joke is in his words, not their length',
+      tts: { voices: ['Brian', 'David', 'Mark'], pitch: 1.12, rate: 0.92 } },
+    brock: { name: 'Brock', art: 'brock', role: 'local',
+      who: 'Gym bro with a giant protein shaker who wants all the protein', voice: 'Loud, eager and friendly',
+      tts: { voices: ['Eric Online', 'Mark', 'David'], pitch: 0.88, rate: 1.32 } },
+    // cafe
+    jitters: { name: 'Jitters', art: 'jitters', role: 'local',
+      who: 'Office worker who has clearly had far too much coffee already; a cup in each hand', voice: 'Very fast and wired',
+      tts: { voices: ['Eric Online', 'David', 'Mark'], pitch: 1.62, rate: 1.45 } },
+    // sushi
+    hiro: { name: 'Chef Hiro', art: 'hiro', role: 'local',
+      who: 'Stern, dignified master sushi chef who comes in to judge', voice: 'Calm, low and exacting; quietly funny',
+      tts: { voices: ['Steffan', 'David', 'Mark'], pitch: 0.68, rate: 0.75 } },
+    dennis: { name: 'Dennis', art: 'dennis', role: 'local',
+      who: 'Nervous first-timer who has never eaten sushi; holds a fork like a shield', voice: 'Anxious, polite, easily alarmed',
+      tts: { voices: ['Brian', 'David', 'Mark'], pitch: 1.22, rate: 1.38 } },
+    // burrito
+    inferno: { name: 'Inferno', art: 'inferno', role: 'local',
+      who: 'Hot-sauce fanatic who wants everything hotter; smoke comes out of his ears', voice: 'Intense, proud and gravelly',
+      tts: { voices: ['Roger', 'Mark', 'David'], pitch: 0.48, rate: 1.3 } },
+    rita: { name: 'Rita', art: 'rita', role: 'local',
+      who: 'Construction worker in a hard hat who says she wants one of everything', voice: 'Hearty, always hungry',
+      tts: { voices: ['Natasha', 'Zira', 'Susan'], pitch: 0.78, rate: 1.08 } },
+    // icecream
+    lulu: { name: 'Little Lulu', art: 'lulu', role: 'local', scale: 0.66,
+      who: 'Seven years old; agonises over every flavor, then picks vanilla', voice: 'Big dramatic sighs, then very sure of herself',
+      tts: { voices: ['Libby', 'Hazel', 'Zira'], pitch: 1.72, rate: 1.0 } },
+    walt: { name: 'Grandpa Walt', art: 'walt', role: 'local',
+      who: 'Wants everything the way they made it in 1955: letterman jacket, straw boater, brand-new sneakers',
+      voice: 'Cheerful and nostalgic, a little slow',
+      tts: { voices: ['Roger', 'George', 'David', 'Mark'], pitch: 1.22, rate: 0.76 } },
+
+    /* ── the court ─────────────────────────────────────────────────────────────────────────────────────────── */
+    pa: { name: 'Announcer', art: null, role: 'voice',
+      who: 'The mall announcer: a voice over the speakers, never seen', voice: 'Smooth, bright public-address voice',
+      tts: { voices: ['Libby', 'Hazel', 'David', 'Zira'], pitch: 1.12, rate: 0.95 } },
+  };
+
+  // Every pose, by kind (spec 2.2). A customer comes in only when their folder has every customer pose (spec 4.5).
+  const poses = {
+    customer: ['neutral', 'talking', 'waiting', 'happy', 'delighted', 'annoyed', 'angry', 'disgusted', 'shocked', 'laughing'],
+    manager: ['neutral', 'talking', 'pointing', 'thumbsUp', 'shocked', 'disgusted', 'facepalm', 'laughing', 'worried', 'shrug'],
+    promoted: 'promoted',            // plain 'mitch' only: the grand celebration
+  };
+
+  /** The customers whose pictures are ready (spec 4.5): ids (cast order) whose folder in BBArt.cast has every
+   *  customer pose. artCast is BBArt.cast ({ people: { <folder>: [poses] } }). */
+  function drawn(artCast) {
+    const have = (artCast && artCast.people) || {};
+    return Object.keys(people).filter(id => {
+      const P = people[id];
+      if (!['regular', 'local', 'visitor'].includes(P.role) || !P.art) return false;
+      const got = have[P.art] || [];
+      return poses.customer.every(p => got.includes(p));
+    });
+  }
+
+  return { version: 1, people, poses, drawn };
+})());

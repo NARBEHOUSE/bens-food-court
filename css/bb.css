@@ -1,0 +1,486 @@
+/* Ben's Food Court - the stage, the real objects the choices live on, and the menu boards.
+   Highlights are colour AND thickness (ACCESSIBILITY.md §9); every target is at least 64 px.
+   Theme tokens (FOODCOURT-BUILD.md 5.6): every token below holds the Burger Bar's value; a restaurant's pack.theme
+   is written by stage.usePack under body[data-pack=<id>]:not([data-theme="contrast"]), so High Contrast wins over
+   every theme. A theme never sets --lit, --lit-ink, the scan frame or the hold ring. */
+:root {
+  --lit: #ffd400;
+  --lit-ink: #1b120e;
+  --ink: #1b120e;
+  --paper: #fffaf0;
+  --enamel-add: #2fa84f;
+  --enamel-skip: #8b8f96;
+  --enamel-swap: #ff8a1c;
+  --chalk: #f7f3e8;
+  --label: clamp(18px, 2.2vw, 34px);
+  --small: clamp(14px, 1.4vw, 22px);
+  /* the theme tokens, the diner's values. The control panel is a darker steel than the Burger Bar's first one
+     (#c9d1d8 to #8d969e gave the highlight only 1.1:1 and 2.1:1; spec 5.6 asks 3:1): #626c75 is 3.7:1, #3f464c
+     6.7:1. packs/diner/pack.js's theme takes the same three (a Request to its owner). */
+  --page-bg: #3a2418;
+  --panel-top: #626c75;
+  --panel-bottom: #3f464c;
+  --panel-lip: #23282c;
+  --plate-top: #f2f4f6;
+  --plate-bottom: #b9c2c9;
+  --mark: #6b3a22;
+  --label-bg: rgba(27,18,14,.86);
+  --ticket-accent: #8a2a20;
+  --ticket-now: #fff2a8;
+  --perforation: #c9c1b0;
+  --hud-bg: rgba(27,18,14,.75);
+  --gauge-bg: rgba(27,18,14,.86);
+  --star: #f0a500;
+  --board-glow: #2f4a3f;
+  --wood-inset: #5e3b20;
+  --card-value: #ffe27a;
+  --logo-top: #ffd36b;
+  --logo-main: #ff6b4a;
+  --wheel-ink: #1b120e;
+  --wheel-steel: #d6dce1;
+  --wheel-dark: #9aa4ad;
+  --board: #23382f;
+  --wood: #8a5a32;
+}
+body[data-text="large"] { --label: clamp(22px, 2.8vw, 42px); --small: clamp(17px, 1.8vw, 27px); }
+body[data-text="xlarge"] { --label: clamp(26px, 3.4vw, 52px); --small: clamp(20px, 2.2vw, 32px); }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--page-bg); color: var(--ink);
+  font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif; -webkit-user-select: none; user-select: none; }
+#stage { position: fixed; inset: 0; overflow: hidden; }
+
+/* ── layers ─────────────────────────────────────────────────────────────── */
+/* A missing backdrop shows the theme colour (spec 3). */
+#backdrop { position: absolute; inset: 0; background: var(--page-bg) center / cover no-repeat; transition: opacity .25s; }
+/* The counter's picture is anchored lower on a window wider than 16:9, so its counter line stays where a 16:9 window
+   has it (stage.js sets --counter-bg-y from BB.world.anchor('counter'); world.js solves the 3D counter the same way). */
+body[data-place="counter"] #backdrop { background-position: 50% var(--counter-bg-y, 50%); }
+/* The restaurant's short name on the counter picture's blank sign board (stage.js placeSign: placed and sized from the
+   board's measured face for this window; left out when the window shows too little of it). The pack's ticket accent
+   on the cream board, like the court's name plates. */
+#signName { position: absolute; z-index: 1; display: none; align-items: center; justify-content: center; pointer-events: none; white-space: nowrap;
+  font-family: "Arial Black", "Trebuchet MS", sans-serif; font-weight: 900; line-height: 1; letter-spacing: .02em; color: var(--ticket-accent);
+  text-shadow: 0 .05em 0 rgba(255,255,255,.75), 0 -.03em 0 rgba(27,18,14,.35); }
+body[data-place="counter"] #signName.on { display: flex; }
+body[data-theme="contrast"] #signName { color: #000; text-shadow: none; }
+#canvasWrap { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+#canvasWrap canvas { display: block; width: 100% !important; height: 100% !important; }
+body[data-place="court"] #canvasWrap { display: none; }
+/* At the counter (spec 5.2, revised 2026-11-09) everything is placed from the counter's line, where the 3D counter
+   top's back edge meets the picture: stage.js layout() works it out for the window and sets, in px, --line,
+   --fig-h and --fig-top (a figure's canvas: hips at the line, eyes near the painted horizon), --cust-x and --mitch-x
+   (the canvas centres), --say-x, --say-b and --mitch-say-r (the bubbles), --prop-b (the foot of a prop standing on
+   the counter top) and --bell-x. The fallbacks are for a page that has not laid out yet.
+   The served customer stands just behind the counter (the 3D canvas above hides them from the hips down). --cs
+   (stage.js, the cast's `scale`) draws a child smaller from the bottom centre: the same feet line, so only head and
+   shoulders show. */
+#customer { position: absolute; z-index: 2; display: none; pointer-events: none; transform-origin: 50% 100%; filter: drop-shadow(0 .6vh .4vh rgba(0,0,0,.25));
+  height: calc(var(--fig-h, 100vh) * var(--cs, 1)); top: calc(var(--fig-top, 25vh) + var(--fig-h, 100vh) * (1 - var(--cs, 1)));
+  left: calc(var(--cust-x, 24vw) - var(--fig-h, 100vh) * var(--cs, 1) / 3); }
+body[data-place="counter"] #customer.on { display: block; }
+#mitch { position: absolute; z-index: 4; height: 78vh; right: -3vw; top: 12vh; pointer-events: none; transform-origin: 50% 100%;
+  transform: translateX(40vw); transition: transform .35s cubic-bezier(.2,.9,.3,1.2); filter: drop-shadow(0 .6vh .4vh rgba(0,0,0,.25)); }
+#mitch.on { transform: translateX(0); }
+/* At the counter Mitch stands behind it, placed like the customer (stage.js placeMitch, body[data-mitch-at]): on the
+   right, clear of the painted queue, sliding in from the right; at the customer's spot while nobody is served, sliding
+   in from the left; "off": just past the right edge, only his bubble and voice. */
+body[data-place="counter"] #mitch { z-index: 2; height: var(--fig-h, 100vh); top: var(--fig-top, 25vh); right: auto;
+  left: calc(var(--mitch-x, 88vw) - var(--fig-h, 100vh) / 3); transform: translateX(45vw); }
+body[data-place="counter"] #mitch.on { transform: translateX(0); }
+body[data-place="counter"][data-mitch-at="customer"] #mitch { transform: translateX(-60vw); }
+body[data-place="counter"][data-mitch-at="customer"] #mitch.on { transform: translateX(0); }
+body[data-place="counter"][data-mitch-at="off"] #mitch { visibility: hidden; }
+body[data-motion="full"][data-place="counter"] #mitch { transition: transform .35s cubic-bezier(.2,.9,.3,1.2), left .35s ease-in-out; }
+/* In the kitchen the controls are on the right, so Mitch steps in from the left, standing low enough that
+   the ticket wheel in the corner above never covers his face. */
+body[data-place="kitchen"] #mitch { right: auto; left: -4vw; top: 33vh; transform: translateX(-45vw); }
+body[data-place="kitchen"] #mitch.on { transform: translateX(0); }
+body[data-place="court"] #customer { display: none; }
+/* On the court Mitch (in his shirt and tie) steps in at the bottom corner away from the storefront a moment is about
+   (js/court.js sets body[data-mitch-side]); his bubble stands beside his head. */
+body[data-place="court"] #mitch { z-index: 9; height: min(64vh, 56vw); top: auto; bottom: -2vh; left: auto; right: -1vw; transform: translateX(60vw); }
+body[data-place="court"] #mitch.on { transform: translateX(0); }
+body[data-place="court"][data-mitch-side="left"] #mitch { right: auto; left: -1vw; transform: translateX(-60vw); }
+body[data-place="court"][data-mitch-side="left"] #mitch.on { transform: translateX(0); }
+.pop { animation: pop .32s cubic-bezier(.2,.9,.3,1.3); }
+@keyframes pop { 0% { transform: scale(1, .82) translateY(2%); } 55% { transform: scale(.97, 1.06); } 100% { transform: none; } }
+
+/* ── the real objects ───────────────────────────────────────────────────── */
+.prop { position: absolute; z-index: 6; display: none; }
+.prop img { display: block; width: 100%; height: auto; pointer-events: none; }
+.prop .lb { position: absolute; left: 50%; transform: translateX(-50%); bottom: -0.2em; white-space: nowrap;
+  font: 900 var(--label)/1 "Arial Black", "Trebuchet MS", sans-serif; color: #fff; padding: .25em .55em; border-radius: .5em;
+  background: var(--label-bg); border: 3px solid #fff; }
+/* A prop with no picture: the label stands on its own as a drawn sign. */
+.prop.noart { min-height: 64px; }
+.prop.noart .lb { position: static; transform: none; display: inline-block; }
+/* The ticket wheel: kitchen only, in the top-left corner and partly off the screen, seen from the front
+   (stage.js places the ring, its clips and the order, and turns it left to right). */
+#wheel { display: none; left: 0; top: 0; width: 0; height: 0; overflow: visible; }
+body[data-place="kitchen"] #wheel { display: block; }
+#wheel svg { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+#wheel svg.back { z-index: 0; }
+#wheel svg.front { z-index: 50; }
+#wheel .slot { position: absolute; left: 0; top: 0; transform-origin: 50% 0; }
+#wheel .clip { position: relative; z-index: 2; display: block; width: 22%; height: calc(var(--tw, 240px) * .12); margin: calc(var(--tw, 240px) * -.035) auto 0;
+  background: linear-gradient(90deg, #8f99a2, #eef1f4 35%, #c3cad1 70%, #8f99a2); border: 3px solid var(--ink); border-radius: 6px 6px 4px 4px; }
+#wheel .clip::after { content: ''; position: absolute; left: 14%; right: 14%; bottom: 24%; height: 3px; border-radius: 2px; background: var(--ink); }
+#ticket { position: relative; margin-top: calc(var(--tw, 240px) * -.04); transform: rotate(-1deg); transform-origin: 50% 0; backface-visibility: hidden; cursor: pointer;
+  background: var(--paper); border: 3px solid var(--ink); border-top: 8px dashed var(--perforation); border-radius: .2em .2em .6em .6em;
+  padding: .5em .7em .55em; box-shadow: 0 .5vh .8vh rgba(0,0,0,.3); font: 700 var(--small)/1.25 "Trebuchet MS", "Segoe UI", sans-serif; }
+#ticket .who { font: 900 var(--small)/1.1 "Arial Black", sans-serif; margin-bottom: .25em; color: var(--ticket-accent); }
+/* One item: its name, then everything after it in line order (words.js spelled().bits). Only an order of
+   several items is numbered, and its other items wait as names. */
+#ticket ol { margin: 0; padding: 0; list-style: none; }
+#ticket.many ol { padding-left: 1.3em; list-style: decimal; }
+#ticket li { margin: .15em 0; padding: .05em .2em; }
+#ticket li b { display: block; font: 900 var(--small)/1.15 "Arial Black", "Trebuchet MS", sans-serif; }
+#ticket li .bits { display: block; margin-top: .1em; }
+#ticket li.now { background: var(--ticket-now); outline: 2px solid var(--ink); }
+/* Bottom left: the backdrops keep their gags in the top corners, and the work surface and the counter
+   front are plain down here. The scan goes answers (right), Ticket (the wheel, top left), Pause (here). */
+#back5 { display: block; bottom: max(5vh, calc(var(--small) * 1.9)); left: 1.5vw; width: min(12vw, 18vh); }   /* its label kept on screen at every Text Size */
+#back5 .lb { bottom: -1.5em; font-size: var(--small); }
+/* On the court the sign is the scan's Pause stop, there while the storefront scan is (not behind the main menu, nor
+   during a moment). */
+body[data-place="court"] #back5 { display: none; }
+body[data-place="court"][data-court-mode="scan"] #back5, body[data-place="court"][data-court-mode="paused"] #back5,
+body[data-place="court"][data-court-mode="zoom"] #back5 { display: block; }
+/* The counter's props stand on the counter top, clear of the counter picture's painted queue (stage.js placeProps): the
+   Back in 5 sign far left (its label kept on screen), the bell in front of the customer once the order has gone, its
+   right edge short of the queue, the register on the right at the counter top's front edge (2vh up), as big as it can
+   be (--reg-w) right of the queue or below its feet, never under 64 px. --prop-b, just in front of the line, is the
+   highest a prop may stand. */
+body[data-place="counter"] #back5 { bottom: max(var(--prop-b, 3vh), calc(var(--small) * 1.9)); width: min(11vw, 17vh); }
+#register { right: 2vw; bottom: min(var(--prop-b, 3vh), 2vh); width: var(--reg-w, min(16vw, 28vh)); }
+#bell { left: calc(var(--bell-x, 43vw) - min(9vw, 15vh) / 2); bottom: var(--prop-b, 3vh); width: min(9vw, 15vh); }
+body[data-place="counter"] #register.on, body[data-place="counter"] #bell.on { display: block; }
+#hud { position: absolute; z-index: 7; top: 1.5vh; right: 1.5vw; font: 900 var(--small)/1.2 "Arial Black", sans-serif; color: #fff;
+  background: var(--hud-bg); padding: .35em .8em; border-radius: 1em; }
+#hud:empty { display: none; }
+
+/* ── the line's controls ────────────────────────────────────────────────── */
+/* The line's control panel, mounted on the right of the line (the food sits left of centre). */
+#controls { position: absolute; z-index: 7; right: 2.5vw; top: 55%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 1.6vh;
+  align-items: center; justify-content: center; padding: 1.6vh 1.2vw; border-radius: 1.4vh;
+  background: linear-gradient(var(--panel-top), var(--panel-bottom)); border: 4px solid var(--ink); box-shadow: 0 1vh 0 var(--panel-lip), 0 1.6vh 2vh rgba(0,0,0,.35); }
+#controls:empty { display: none; }
+/* At the counter: the right-hand column, under the corner count and above the register, its slips a size smaller
+   (never under the 64 px target). Where one column would reach the counter picture's painted queue, stage.js
+   (fitColumn) makes it two columns (.cols2), or one row above the queue's heads (.row, the slips --slip-w wide when
+   their words must wrap); the scan order stays top to bottom, left to right. */
+body[data-place="counter"] #controls { top: var(--col-top, 9vh); transform: none; gap: 1.1vh; }
+body[data-place="counter"] .ctl.slip { min-height: max(64px, min(8.5vh, 7vw)); }
+body[data-place="counter"] #controls.cols2 { display: grid; grid-template-columns: repeat(2, auto); column-gap: 1.2vw; row-gap: 1.1vh; align-items: stretch; }
+body[data-place="counter"] #controls.row { flex-direction: row; align-items: stretch; column-gap: 1.2vw; }
+body[data-place="counter"] #controls.row .ctl.slip { width: var(--slip-w, auto); min-width: 64px; white-space: normal; }
+body[data-place="court"] #controls { display: none; }
+#controls.bare { background: none; border: none; box-shadow: none; }
+.ctl { position: relative; min-width: 64px; min-height: 64px; cursor: pointer; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: .3em; font: 900 var(--label)/1 "Arial Black", "Trebuchet MS", sans-serif; color: #fff; text-align: center; }
+/* enamel push-buttons */
+.ctl.btn { width: min(12vw, 19vh); height: min(12vw, 19vh); border-radius: 50%; border: 5px solid var(--ink);
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.65) 0 12%, transparent 13%), var(--c, #888);
+  box-shadow: inset 0 -1.2vh 0 rgba(0,0,0,.28), 0 .9vh 0 var(--ink); text-shadow: 0 3px 0 rgba(0,0,0,.45); }
+.ctl.btn .ic { font-size: 1.5em; line-height: 1; }
+.ctl.add { --c: var(--enamel-add); }
+.ctl.skip { --c: var(--enamel-skip); }
+.ctl.swap { --c: var(--enamel-swap); }
+.ctl.btn.tool { --c: #b03024; }                     /* a Timed stop with no prop picture: a drawn red button */
+/* doneness plates on the cook step's dial: a word AND marks, never colour alone */
+.ctl.plate { width: min(18vw, 27vh); height: min(12.5vh, 9vw); border-radius: 1.2vh; border: 5px solid var(--ink);
+  background: linear-gradient(var(--plate-top), var(--plate-bottom)); color: var(--ink); box-shadow: 0 .8vh 0 var(--ink); font-size: calc(var(--label) * .82); }
+.ctl.plate .marks { display: flex; gap: .35em; height: .9em; align-items: center; }
+.ctl.plate .marks i { width: .25em; height: 100%; background: var(--mark); border-radius: .1em; transform: skewX(-20deg); }
+.ctl.plate .sw { width: 70%; height: .55em; border-radius: .3em; border: 3px solid var(--ink); }
+/* the Timed control prop: the station's tool (spatula, peel, fryer basket...) */
+.ctl.tool { width: min(16vw, 27vh); height: min(16vw, 27vh); }
+.ctl.tool img { width: 100%; height: auto; }
+.ctl.btn.tool { width: min(13vw, 21vh); height: min(13vw, 21vh); }
+.ctl.btn.tool img { display: none; }
+.ctl.tool .lb, .ctl.slip .lb { color: #fff; background: var(--label-bg); padding: .2em .5em; border-radius: .4em; border: 3px solid #fff; }
+.ctl.btn.tool .lb { background: none; border: none; padding: 0; font-size: calc(var(--label) * .8); }
+/* order slips: Redo the Grill / Redo the Toppings; pick tiles */
+.ctl.slip, .ctl.tile { min-width: min(16vw, 26vh); min-height: min(13vh, 10vw); padding: .4em .7em; border-radius: .5em; border: 4px solid var(--ink);
+  background: var(--paper); color: var(--ink); box-shadow: 0 .7vh 0 var(--ink); font-size: calc(var(--label) * .8); }
+.ctl.slip .lb { background: none; color: var(--ink); border: none; padding: 0; }
+/* the counter's Ticket: the order's own slip, down from the kitchen with the plate */
+.ctl.slip.ticketSlip { min-height: min(9vh, 7vw); border-top: 8px dashed var(--perforation); font-family: "Courier New", monospace; }
+.ctl.tile.more::after { content: '›'; position: absolute; right: .3em; top: .1em; }
+.ctl.tile.bad { background: #e8ddc0; }
+#controls .back { display: none; }
+
+/* ── the highlight ──────────────────────────────────────────────────────── */
+/* The yellow ring sits between two dark rings (the box-shadow below the outline), so it keeps 3:1 against ink
+   whatever colour the theme puts under it (spec 5.6). */
+.lit { outline: 8px solid var(--lit) !important; outline-offset: 6px; filter: drop-shadow(0 0 1.4vh var(--lit)) brightness(1.08); z-index: 9 !important;
+  box-shadow: 0 0 0 6px rgba(0,0,0,.7), 0 0 0 17px rgba(0,0,0,.7); }
+.ctl.btn.lit { box-shadow: inset 0 -1.2vh 0 rgba(0,0,0,.28), 0 .9vh 0 var(--ink), 0 0 0 6px rgba(0,0,0,.7), 0 0 0 17px rgba(0,0,0,.7); }
+.ctl.plate.lit { box-shadow: 0 .8vh 0 var(--ink), 0 0 0 6px rgba(0,0,0,.7), 0 0 0 17px rgba(0,0,0,.7); }
+.ctl.slip.lit, .ctl.tile.lit { box-shadow: 0 .7vh 0 var(--ink), 0 0 0 6px rgba(0,0,0,.7), 0 0 0 17px rgba(0,0,0,.7); }
+.ctl.lit { transform: translateY(-.8vh) scale(1.06); }
+.prop.lit { border-radius: 1.2vh; }
+.lit.braked { outline-style: dotted !important; }
+body[data-motion="full"] .ctl { transition: transform .12s, filter .12s; }
+#scanFrame { position: fixed; z-index: 30; pointer-events: none; display: none; }
+#scanFrame.on { display: block; }
+#scanFrame i { position: absolute; width: 26px; height: 26px; border: 7px solid var(--lit); filter: drop-shadow(0 0 3px #000); }
+#scanFrame i:nth-child(1) { left: -12px; top: -12px; border-right: 0; border-bottom: 0; }
+#scanFrame i:nth-child(2) { right: -12px; top: -12px; border-left: 0; border-bottom: 0; }
+#scanFrame i:nth-child(3) { left: -12px; bottom: -12px; border-right: 0; border-top: 0; }
+#scanFrame i:nth-child(4) { right: -12px; bottom: -12px; border-left: 0; border-top: 0; }
+#choiceStatus { position: fixed; z-index: 31; left: 42%; bottom: 3vh; transform: translateX(-50%); }
+
+/* ── the Timed gauge ────────────────────────────────────────────────────── */
+#gauge { position: absolute; z-index: 7; left: 42%; top: 53vh; transform: translateX(-50%); display: none; gap: .4em;
+  padding: .5em .7em; background: var(--gauge-bg); border: 3px solid #fff; border-radius: .8em; }
+#gauge.on { display: flex; }
+/* The Emporium's freezer case: the cone stands in its holder left of centre, so its gauge sits to the right of it. */
+body[data-pack="icecream"][data-scene="scoop"] #gauge { left: 66%; }
+#gauge span { font: 900 var(--small)/1 "Arial Black", sans-serif; color: #fff; padding: .35em .5em; border-radius: .4em; border: 3px solid transparent; opacity: .55; }
+#gauge span.now { opacity: 1; border-color: var(--lit); background: #4a2d1c; }
+#gauge span.want { text-decoration: underline; text-decoration-thickness: 3px; }
+
+/* ── speech bubble, receipt ─────────────────────────────────────────────── */
+#bubble { position: absolute; z-index: 8; display: none; max-width: 34vw; background: #fff; border: 4px solid var(--ink); border-radius: 1.6em;
+  padding: .6em .9em; font: 700 var(--label)/1.2 "Trebuchet MS", sans-serif; box-shadow: 0 .6vh 0 var(--ink); }
+#bubble.on { display: block; }
+#bubble b { display: block; font: 900 var(--small)/1 "Arial Black", sans-serif; color: var(--ticket-accent); margin-bottom: .25em; }
+/* At the counter a bubble stands beside the speaker's head and grows upwards from above the painted queue's heads
+   (--say-b), its tail low on the speaker's side; .tall (stage.js: too tall for the room above) hangs from the top. */
+#bubble.customer { left: var(--say-x, 34vw); bottom: var(--say-b, 58vh); }
+/* Where the room above the painted queue's heads is short, stage.js (fitBubble) lets a bubble grow wider instead. */
+body[data-place="counter"] #bubble:not(.child) { max-width: var(--say-w, 34vw); }
+#bubble.customer::after { content: ''; position: absolute; left: -1.6em; bottom: .6em; border: .9em solid transparent; border-right-color: var(--ink); }
+#bubble.mitch { right: var(--mitch-say-r, 22vw); bottom: var(--say-b, 58vh); }
+#bubble.mitch::after { content: ''; position: absolute; right: -1.6em; bottom: .6em; border: .9em solid transparent; border-left-color: var(--ink); }
+/* Mitch at the customer's spot (nobody is being served): his bubble right of his head, like a customer's. Off the right
+   edge: his bubble against it, its tail pointing off the screen to him. */
+body[data-place="counter"][data-mitch-at="customer"] #bubble.mitch { right: auto; left: var(--say-x, 34vw); }
+body[data-place="counter"][data-mitch-at="customer"] #bubble.mitch::after { right: auto; left: -1.6em; border-left-color: transparent; border-right-color: var(--ink); }
+/* A child's head is lower: their bubble stands just above it, left of the painted queue, its tail pointing down. */
+#bubble.customer.child { left: var(--kid-say-x, 10vw); bottom: var(--kid-say-b, 45vh); max-width: var(--kid-say-w, 34vw); }
+#bubble.customer.child::after { left: 3.5em; bottom: -1.6em; border-right-color: transparent; border-top-color: var(--ink); }
+#bubble.tall { bottom: auto; top: 1vh; }
+body[data-place="kitchen"] #bubble.mitch { right: auto; bottom: auto; left: 22vw; top: 31vh; }
+body[data-place="kitchen"] #bubble.mitch::after { right: auto; left: -1.6em; bottom: auto; top: 40%; border-left-color: transparent; border-right-color: var(--ink); }
+/* On the court: Mitch's bubble beside his head in the bottom corner; the mall announcer's (voice only, no picture) along
+   the bottom, centred, like a caption (never over the sign the announcement is about). */
+body[data-place="court"] #bubble.mitch { left: auto; right: calc(min(64vh, 56vw) * .5); top: auto; bottom: 40vh; max-width: min(46vw, 760px); }
+body[data-place="court"][data-mitch-side="left"] #bubble.mitch { right: auto; left: calc(min(64vh, 56vw) * .5); }
+body[data-place="court"][data-mitch-side="left"] #bubble.mitch::after { right: auto; left: -1.6em; border-left-color: transparent; border-right-color: var(--ink); }
+#bubble.pa { left: 50%; right: auto; top: auto; bottom: 3vh; transform: translateX(-50%); max-width: min(72vw, 980px); text-align: center; }
+#bubble.pa::after { display: none; }
+/* The receipt comes down right of centre, under the corner count and clear of the bubbles and the column; stage.js
+   (fitReceipt) raises it or moves it left (--rcpt-x, --rcpt-y) so it never reaches the counter picture's painted queue. */
+#receipt { position: absolute; z-index: 8; left: var(--rcpt-x, 50vw); top: var(--rcpt-y, 9vh); width: var(--rcpt-w, min(29vw, 50vh)); display: none; background: var(--paper);
+  border: 3px solid var(--ink); padding: 1em 1.2em 1.4em; font: 700 var(--small)/1.35 "Courier New", monospace;
+  box-shadow: 0 1vh 1.4vh rgba(0,0,0,.35); transform: rotate(1.5deg);
+  -webkit-mask: linear-gradient(#000 0 0) top/100% calc(100% - 12px) no-repeat, radial-gradient(circle 8px at 50% 100%, transparent 98%, #000) bottom/18px 12px repeat-x;
+          mask: linear-gradient(#000 0 0) top/100% calc(100% - 12px) no-repeat, radial-gradient(circle 8px at 50% 100%, transparent 98%, #000) bottom/18px 12px repeat-x; }
+#receipt.on { display: block; }
+#receipt h2 { margin: 0 0 .3em; font: 900 var(--label)/1.1 "Arial Black", sans-serif; text-align: center; }
+#receipt .stars { text-align: center; font-size: calc(var(--label) * 1.8); letter-spacing: .1em; color: var(--star); -webkit-text-stroke: 2px var(--ink); }
+#receipt .stars .off { color: #ddd; }
+#receipt .stars .num { font-size: .5em; letter-spacing: 0; margin-left: .3em; vertical-align: .3em; color: var(--ink); -webkit-text-stroke: 0; }
+#receipt ul { margin: .4em 0; padding-left: 1.1em; }
+#receipt p { margin: .4em 0; }
+#receipt .tip { border-top: 3px dashed var(--ink); margin-top: .5em; padding-top: .4em; font-weight: 900; }
+body[data-motion="full"] #receipt.on { animation: slipIn .35s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes slipIn { from { transform: translateY(-30vh) rotate(-6deg); } }
+
+/* ── the court (js/court.js; spec 6.1, 6.2) ─────────────────────────────── */
+/* #court is the picture's own box (object-fit: contain, laid out by court.js) over the backdrop, which on the court is
+   the same picture filling the window, blurred and dark: what shows beside (or above and below) a picture of another
+   shape. Everything inside #courtCam is placed in percent of the picture; #courtCam also carries the camera (the zoom
+   into and out of a storefront) and the focus. */
+body[data-place="court"] #backdrop { filter: blur(22px) brightness(.5) saturate(.85); transform: scale(1.08); }
+body[data-place="court"][data-theme="contrast"] #backdrop { filter: blur(22px) brightness(.42) saturate(.5); }
+#court { position: absolute; z-index: 1; display: none; --blur: 9px; }
+body[data-place="court"] #court { display: block; }
+#courtCam { position: absolute; inset: 0; transform-origin: 0 0; box-shadow: 0 0 3vh rgba(0,0,0,.55);
+  transition: filter .6s ease-out, transform .46s ease-in-out; }
+/* The main menu: the live court out of focus, like a camera that has not found it yet, and dimmed so the card reads (a
+   blur on this layer, never on the card; its radius, --blur, is a share of the picture's height). Play pulls it into
+   focus in 0.6 s; under Reduced it is a cut (the rule at the end of this file drops every transition). */
+#court.soft #courtCam { filter: blur(var(--blur)) brightness(.74) saturate(.9); }
+#court.cut #courtCam, #courtCam.cut { transition: none !important; }
+body[data-place="court"][data-court="soft"] #overlay { background: rgba(20,12,8,.2); }
+/* The layers, back to front. */
+#courtCam > .pic, #courtCam > .paints, #courtCam > .greys, #courtCam > .crowd, #courtCam > .stores, #courtCam > .parts, #courtCam > .fx {
+  position: absolute; inset: 0; pointer-events: none; }
+#courtCam > .pic { z-index: 0; background: center / 100% 100% no-repeat; }
+#courtCam > .pic.none { background: radial-gradient(ellipse at 50% 60%, #f1dcc0, #d9b88e); }   /* no picture: a plain floor */
+#courtCam > .paints { z-index: 1; }
+#courtCam > .greys { z-index: 2; }
+#courtCam > .crowd.back { z-index: 3; }
+#courtCam > .board { z-index: 4; }
+#courtCam > .crowd.front { z-index: 5; }
+#courtCam > .stores { z-index: 6; }
+#courtCam > .parts { z-index: 7; }
+#courtCam > .fx { z-index: 8; overflow: hidden; }
+#courtCam > .say { z-index: 9; }
+/* A storefront's copy of the picture, cut to its outline (clip-path from court.js): drawn plainly with no picture;
+   desaturated and dimmed when the restaurant is closed; lifted with a glow when it is highlighted. */
+#courtCam .paint, #courtCam .grey, #courtCam .shape { position: absolute; inset: 0; background: url("../packs/court/art/court.webp") 0 0 / 100% 100% no-repeat; }
+#courtCam .grey { filter: grayscale(1) brightness(.6) contrast(.92); }
+#courtCam .grey.fade { animation: fadeAway .9s ease-out forwards; }
+/* The crowd: a figure's box is its picture (a cast canvas has room round the figure); seated, only head to hips shows. */
+#courtCam .p { position: absolute; pointer-events: none; }
+#courtCam .p img { display: block; width: 100%; height: 100%; }
+#courtCam .p.seated { overflow: hidden; }
+#courtCam .p.flip img { transform: scaleX(-1); }
+/* A soft contact shadow under whoever stands (a cast canvas has its feet 4.5% up from its bottom). */
+#courtCam .p:not(.seated)::after { content: ''; position: absolute; z-index: -1; left: 22%; right: 22%; bottom: -1.2%; height: 2.6%; border-radius: 50%; background: rgba(0,0,0,.24); }
+#courtCam .p.castp:not(.seated)::after { left: 30%; right: 30%; bottom: 3.2%; }
+#courtCam .p.pop { animation: pop .32s cubic-bezier(.2,.9,.3,1.3); transform-origin: 50% 95%; }
+/* The storefronts' level holds, in this order: every .store (the scan's box: the frame round a storefront; pointer
+   hits are court.js's, on the outline), every .lift (the storefront's copy, lifted with a halo while it is lit: under
+   every sign, so a highlight never covers another storefront's sign) and every .group (what is drawn on a storefront:
+   the shutter, the banner, the gold sign, the name plate and the star sign). court.js's liftRules() pairs them by
+   data-pack: a lit .store (or one in a lit part, .litMember) shows its .lift and lifts its .group above the others. */
+#courtCam .store, #courtCam .part { position: absolute; pointer-events: none; }
+#courtCam .lift { position: absolute; inset: 0; display: none; z-index: 1; pointer-events: none; }
+#courtCam .group { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+#courtCam .store.lit, #courtCam .part.lit { outline: none !important; box-shadow: none !important; filter: none !important; }
+#courtCam .store.lit.braked, #courtCam .part.lit.braked { outline: .7vh dotted var(--lit) !important; outline-offset: .3vh; }
+/* The highlight: the scan frame round the storefront's box (ui.js) plus the storefront lifted out of the picture with a
+   thick halo round its outline (a part of the U lifts every storefront in it). Reduced: the halo, no lift. */
+#courtCam .lift { filter: drop-shadow(.4vh 0 0 var(--lit)) drop-shadow(-.4vh 0 0 var(--lit)) drop-shadow(0 .4vh 0 var(--lit)) drop-shadow(0 -.4vh 0 var(--lit))
+  drop-shadow(0 0 .25vh #000) drop-shadow(0 0 1.6vh var(--lit)); }
+body[data-motion="full"] #courtCam .group, body[data-motion="full"] #courtCam .lift { transition: transform .2s ease-out; }
+/* The name plate on the sign board (Text Size; grows past the board when the words need it) and the star sign under it:
+   stars as glyphs (filled and hollow) plus the number. */
+#courtCam .plate { position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+  padding: .1em .4em; border-radius: .3em; background: #fff4da; border: .14em solid var(--ink); color: var(--ink); text-align: center;
+  font: 900 var(--small)/1.02 "Arial Black", "Trebuchet MS", sans-serif; box-shadow: 0 .12em 0 rgba(0,0,0,.35); }
+#courtCam .group.greyed .plate { background: #e6e1d6; color: #2a2522; }
+#courtCam .stars { position: absolute; transform: translateX(-50%); padding: .08em .45em .12em; border-radius: .45em; white-space: nowrap; text-align: center;
+  font: 900 var(--small)/1.1 "Arial Black", sans-serif; color: #fff; background: rgba(27,18,14,.9); border: .1em solid #fff; }
+#courtCam .stars .glyphs b { color: var(--star); }
+#courtCam .stars .glyphs i { color: rgba(255,255,255,.6); font-style: normal; }
+#courtCam .stars em { display: block; font: 700 var(--small)/1.1 "Trebuchet MS", sans-serif; font-style: normal; color: var(--card-value); }
+/* A closed restaurant's shutter over its counter, with a "Coming Soon" note; it rolls up at the Grand Opening. */
+#courtCam .shutter { position: absolute; transform-origin: 50% 0; }
+#courtCam .shutter img { display: block; width: 100%; height: 100%; filter: grayscale(.3) brightness(.85); }
+#courtCam .shutter .note { position: absolute; left: 50%; top: 50%; max-width: 96%; transform: translate(-50%, -50%) rotate(-2deg); padding: .15em .35em;
+  text-align: center; font: 900 var(--small)/1.05 "Arial Black", sans-serif; color: var(--ink); background: #e0b277; border: .1em solid rgba(27,18,14,.6);
+  box-shadow: 0 .1em .25em rgba(0,0,0,.35); }
+#courtCam .shutter.rolling { animation: rollUp 1.4s cubic-bezier(.4,0,.6,1) forwards; }
+@keyframes rollUp { 0% { transform: scaleY(1); } 12% { transform: scaleY(1.02); } 100% { transform: scaleY(.04); } }
+/* The Grand Opening banner across the counter, until the first visit; the gold sign over the sign board. */
+/* The banner hangs across the counter, its ribbon (80% down the picture: it sags) on the counter's edge; its words,
+   "Grand Opening", are on the star sign (court.js), which stays readable over the balloons at every Text Size. */
+#courtCam .banner { position: absolute; width: var(--bw); transform: translate(-50%, -80%); }
+#courtCam .banner img { display: block; width: 100%; height: auto; }
+body[data-motion="full"] #courtCam .banner.in { animation: bannerIn .5s cubic-bezier(.2,.9,.3,1.3); }
+@keyframes bannerIn { from { transform: translate(-50%, -80%) scale(.2); opacity: 0; } }
+/* The gold sign: the name plate turns gold, and the gold sign's star crest (the top of goldSign.webp) stands on the
+   sign board; it drops on with a bounce (court.js: then the sparkles). */
+#courtCam .gold { position: absolute; width: 5.4em; aspect-ratio: 640 / 236; font-size: var(--small); transform: translate(-50%, -82%);
+  background: top center / 100% auto no-repeat; filter: drop-shadow(0 .1em .15em rgba(0,0,0,.45)); }
+#courtCam .group.goldOn .plate { background: linear-gradient(#fff3a6, #ffd23a 55%, #f0a800); border-color: #6b4300; color: var(--ink);
+  box-shadow: 0 0 0 .1em #ffe680, 0 .14em .3em rgba(0,0,0,.45); }
+#courtCam .gold.drop { animation: signDrop .55s cubic-bezier(.3,0,.6,1) both; }
+@keyframes signDrop { 0% { transform: translate(-50%, -420%); opacity: 0; } 62% { transform: translate(-50%, -76%); opacity: 1; }
+  80% { transform: translate(-50%, -96%); } 100% { transform: translate(-50%, -82%); } }
+/* The progress board on the plinth: its foot at court.js's BOARD.base, as wide as its words need (Text Size). */
+#courtCam > .board { position: absolute; transform: translateX(-50%); width: clamp(28%, calc(var(--small) * 20), 50%); box-sizing: border-box;
+  padding: .6em .6em .55em; border: .6em solid var(--wood); border-radius: .5em; text-align: center; color: var(--chalk);
+  background: radial-gradient(circle at 30% 20%, var(--board-glow), var(--board)); box-shadow: inset 0 0 0 .14em var(--wood-inset), 0 .5em .8em rgba(0,0,0,.4);
+  font: 700 var(--small)/1.22 "Trebuchet MS", "Segoe UI", sans-serif; }
+#courtCam > .board p { margin: 0; }
+#courtCam > .board p.goal { color: var(--card-value); font-weight: 900; }
+#courtCam > .board p.tally span { display: inline-block; margin: 0 .4em; white-space: nowrap; }
+#courtCam > .board::before, #courtCam > .board::after { content: ''; position: absolute; bottom: -1.55em; width: .55em; height: .95em; background: var(--wood);
+  border: .12em solid var(--ink); border-top: 0; }
+#courtCam > .board::before { left: 14%; }
+#courtCam > .board::after { right: 14%; }
+/* A bubble over someone on the floor: a cheer at the celebration (Text Size), or a shopper's chatter (a caption only). */
+#courtCam > .say { position: absolute; display: none; max-width: 34%; transform: translateX(-50%); background: #fff; border: .16em solid var(--ink);
+  border-radius: 1em; padding: .45em .7em; font: 700 var(--label)/1.2 "Trebuchet MS", sans-serif; color: var(--ink); box-shadow: 0 .25em 0 var(--ink); text-align: left; }
+#courtCam > .say.on { display: block; }
+#courtCam > .say b { display: block; font: 900 var(--small)/1 "Arial Black", sans-serif; color: var(--ticket-accent); margin-bottom: .2em; }
+#courtCam > .say b:empty { display: none; }
+#courtCam > .say::after { content: ''; position: absolute; left: var(--tail, 50%); bottom: -1.55em; margin-left: -.8em; border: .8em solid transparent; border-top-color: var(--ink); }
+#courtCam > .say.chatter { font: italic 700 var(--small)/1.2 "Trebuchet MS", sans-serif; max-width: 30%; }
+/* Effects: sparkles round a sign, confetti at a Grand Opening, fireworks at the celebration (each burst is small: never
+   a full-screen flash). Under Reduced the sparkles and bursts stand still and fade; there is no confetti. */
+#courtCam .fx > .spark { position: absolute; width: 2.2%; aspect-ratio: 1; margin: -1.1% 0 0 -1.1%; background: #fff6b0;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); animation: twinkle 1.4s ease-out both; }
+@keyframes twinkle { 0% { transform: scale(0) rotate(0); opacity: 0; } 30% { transform: scale(1.25) rotate(30deg); opacity: 1; } 100% { transform: scale(.2) rotate(90deg); opacity: 0; } }
+#courtCam .fx > .conf { position: absolute; width: .7%; height: 1.4%; border-radius: 1px; animation: confetti 2.2s cubic-bezier(.2,.6,.5,1) both; }
+@keyframes confetti { 0% { transform: translateY(0) rotate(0); opacity: 1; } 100% { transform: translateY(1800%) rotate(540deg); opacity: 0; } }
+#courtCam .fx > .burst { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); animation: burst 1.3s ease-out both; }
+#courtCam .fx > .burst i { position: absolute; left: 50%; top: 50%; width: 7%; height: 50%; margin-left: -3.5%; transform-origin: 50% 0; border-radius: 40%;
+  background: linear-gradient(transparent 20%, var(--c) 60%, transparent); }
+@keyframes burst { 0% { transform: translate(-50%, -50%) scale(.1); opacity: 1; } 55% { opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+@keyframes fadeAway { from { opacity: 1; } to { opacity: 0; } }
+body[data-motion="reduced"] #courtCam .fx > .still { animation: fadeAway 1.4s ease-out both !important; }
+
+/* ── menu boards (cards) ────────────────────────────────────────────────── */
+#overlay { position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; background: rgba(20,12,8,.55); }
+#overlay.on { display: flex; }
+.card { position: relative; width: min(92vw, 1100px); max-height: 94vh; overflow: hidden; padding: 2.4vh 2.4vw 2vh; border-radius: 1.4vh;
+  background: radial-gradient(circle at 30% 20%, var(--board-glow), var(--board)); color: var(--chalk); border: 1.4vh solid var(--wood);
+  box-shadow: inset 0 0 0 4px var(--wood-inset), 0 2vh 4vh rgba(0,0,0,.5); text-align: center; }
+.card h1 { margin: 0 0 .25em; font: 900 clamp(28px, 4vw, 60px)/1.05 "Arial Black", sans-serif; letter-spacing: .02em; }
+.card .sub { margin: 0 0 .8em; font: 700 var(--label)/1.25 "Trebuchet MS", sans-serif; opacity: .95; }
+.card .menu { display: grid; grid-template-columns: 1fr; gap: 1.2vh; max-width: 760px; margin: 0 auto; }
+.card .menu.cols2 { grid-template-columns: 1fr 1fr; max-width: 1040px; }
+.card .item { display: flex; align-items: center; gap: .6em; min-height: 64px; padding: .45em .8em; border-radius: .6em; cursor: pointer;
+  border: 4px solid rgba(247,243,232,.55); font: 900 var(--label)/1.1 "Arial Black", sans-serif; text-align: left; background: rgba(0,0,0,.18); }
+.card .item .ic { font-size: 1.1em; width: 1.4em; text-align: center; }
+.card .item .val { margin-left: auto; font-weight: 700; font-size: .82em; color: var(--card-value); }
+.card .item.off { opacity: .45; }
+.card .item.lit { outline-offset: 2px; background: rgba(255,212,0,.22); color: #fff; }
+/* A group of items under its name on a card (ui.js renders an item with `items` this way), entered as a row (wrap and
+   a spoken Back stop). No card groups today: the court's parts are on its picture (js/court.js). */
+.card .group { display: grid; gap: .8vh; padding: .6vh .8vh .8vh; border-radius: .8em; border: 4px dashed rgba(247,243,232,.35); }
+.card .group .head { font: 900 var(--small)/1.1 "Arial Black", sans-serif; text-align: left; opacity: .9; padding: 0 .4em; }
+.card .group.lit { outline-offset: 2px; background: rgba(255,212,0,.16); }
+.card .hint { margin: 1.4vh 0 0; font: 700 var(--small)/1.3 "Trebuchet MS", sans-serif; opacity: .85; }
+.card kbd { background: var(--chalk); color: var(--board); border-radius: .3em; padding: .05em .4em; font-weight: 900; }
+.logo { margin: 0 auto 1vh; line-height: .9; }
+.logo .top { display: block; font: 900 clamp(22px, 3vw, 46px)/1 "Arial Black", sans-serif; color: var(--logo-top); letter-spacing: .2em; }
+.logo .main { display: block; font: 900 clamp(48px, 8vw, 120px)/1 "Arial Black", sans-serif; color: var(--logo-main);
+  -webkit-text-stroke: 3px var(--ink); text-shadow: 0 .6vh 0 var(--ink); }
+.card .stars { font-size: clamp(30px, 4vw, 56px); color: var(--star); }
+.card .news { margin: 0 0 .6em; font: 700 var(--label)/1.25 "Trebuchet MS", sans-serif; color: var(--card-value); }
+/* How to Play (spec 6.1): the text is the card's body. It starts at --label and comes down (ui.js fitHowto) only as far
+   as it must to fit the window, never below --small, the Text Size of running text; only then would it scroll. */
+/* The main menu is narrower, so more of the court shows round it, out of focus. */
+.card.titleCard { width: min(80vw, 820px); }
+.card.howtoCard { display: flex; flex-direction: column; max-height: 94vh; }
+.card.howtoCard .howto { flex: 1 1 auto; min-height: 0; overflow-y: auto; max-width: 980px; margin: 0 auto 1.4vh; text-align: left;
+  font: 700 var(--label)/1.32 "Trebuchet MS", "Segoe UI", sans-serif; }
+.card.howtoCard h1, .card.howtoCard .menu, .card.howtoCard .hint, .card.howtoCard #cardStatus { flex: none; }
+
+/* ── misc ───────────────────────────────────────────────────────────────── */
+#fade { position: fixed; inset: 0; z-index: 15; background: var(--page-bg); opacity: 0; pointer-events: none; transition: opacity .16s; }
+#fade.on { opacity: 1; }
+#holdRing { position: fixed; z-index: 40; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none; text-align: center; color: #fff;
+  font: 900 var(--small)/1.2 "Arial Black", sans-serif; }
+#holdRing.on { display: block; }
+#holdRing i { display: block; width: 18vh; height: 18vh; margin: 0 auto .6em; border-radius: 50%;
+  background: conic-gradient(var(--lit) calc(var(--p, 0) * 360deg), rgba(255,255,255,.2) 0); -webkit-mask: radial-gradient(circle, transparent 55%, #000 56%); mask: radial-gradient(circle, transparent 55%, #000 56%); }
+#loading { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: var(--page-bg); color: var(--logo-top);
+  font: 900 clamp(24px, 3vw, 44px)/1 "Arial Black", sans-serif; }
+#loading.gone { display: none; }
+
+/* High Contrast: black and white labels, heavier outlines (colour is never the only signal anyway). The theme
+   tokens are not applied in this mode (stage.js), so every restaurant keeps the one checked palette. */
+body[data-theme="contrast"] .ctl.btn { border-width: 7px; }
+body[data-theme="contrast"] .ctl.plate, body[data-theme="contrast"] .ctl.slip, body[data-theme="contrast"] .ctl.tile { background: #fff; border-width: 6px; }
+body[data-theme="contrast"] .prop .lb, body[data-theme="contrast"] #bubble { border-width: 5px; }
+body[data-theme="contrast"] #backdrop { filter: saturate(.6) brightness(.75); }
+body[data-theme="contrast"] { --lit: #00e5ff; }
+
+/* Motion Reduced: nothing slides, pops or spins. */
+body[data-motion="reduced"] *, body[data-motion="reduced"] *::before, body[data-motion="reduced"] *::after { animation: none !important; transition: none !important; }
+
+/* Narrow windows: the counter lays itself out from its line (stage.js); the kitchen's Mitch stands lower. */
+@media (max-aspect-ratio: 4/3) {
+  body[data-place="kitchen"] #mitch { height: 60vh; top: 40vh; }
+}

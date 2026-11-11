@@ -1,0 +1,398 @@
+/** Ben's Cafe - every line about this restaurant's food (FOODCOURT-BUILD.md 5.5; docs/api/script.md is the format;
+ *  docs/api/packs/cafe.md section 12 says who must have what; docs/api/packs/cafe-script.md is this file in words).
+ *
+ *  What is here: Mitch's lines in his barista apron and beanie (the shift, the tutorial at every station, every
+ *  warning, every gross-out, the Timed heads-up, the one-liners, the Morning Rush), the 'customer' fallbacks for every
+ *  F moment, the local's full set (Jitters), the cameo's (Grandpa Walt, the Ice Cream Emporium's, here as a level-4
+ *  visitor), and every regular's and visitor's lines about the coffee and the donuts (reactions, favourites, usuals,
+ *  dislikes, odd orders, complaints). greet, smalltalk and goodbye for everyone who is not a local or the cameo come
+ *  from packs/cast/script.js and are merged in; the few here for them are cafe-flavoured extras.
+ *
+ *  A line is { id, who, moment, text, each?, delivery }. Ids are <moment>.<n>, unique per speaker (the cast script
+ *  uses .c<n>). Clip ids: <speaker>/cafe:<id>[.<value>]. `each` names the one blank whose value changes the words:
+ *  {ing}/{ings} on Add moments, {want} on stage and pick moments, {value} on the two gross-outs that sit on picks
+ *  (the stale dough, the spoiled milk). A pick complaint says "for the {slot}, I said {want}" (never "{want} {slot}":
+ *  the None glaze would read "none glaze"). No line starts with a blank. The sugar is the only counted Add, so the
+ *  count lines name it outright, and each dislike is named, not blanked (Jitters: whipped cream; Kai: coffee).
+ *  [sigh]-style tags are kept for the recording and dropped for text to speech and captions.
+ *
+ *  Tone (spec 0.5, DESIGN.md "Writing tone"): adult and dry; the joke is on the customer, the food or Mitch, never the
+ *  player; nothing about speed or skill; nobody hurries anyone; PG; the humour is personality. Jitters is fast because
+ *  he is wired, never because anyone else should be. A gag is one line of 8 seconds or less over a normal order;
+ *  "seven extra shots", "a dozen donuts", "half decaf" and "extra hot" are said, never made.
+ */
+(function (root, data) {
+  if (typeof module === 'object' && module.exports) module.exports = data;
+  else (root.BBScripts = root.BBScripts || {}).cafe = data;
+})(typeof window === 'undefined' ? globalThis : window, { format: 3, lines: [
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     MITCH, in the barista apron and the beanie, with a cup that says MICH
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* ── the shift ─────────────────────────────────────────────────────────────────────────────────────────────── */
+  { id: 'shift.start.1', who: 'mitch', moment: 'shift.start', text: "Doors are open. The espresso machine's warmed up, and so am I. Only one of us hisses.", delivery: 'upbeat, a little proud of the joke' },
+  { id: 'shift.start.2', who: 'mitch', moment: 'shift.start', text: "Cafe's open. If Jitters comes in, don't match his energy. Nobody can. Scientists have tried.", delivery: 'cheerful, the Jitters part confided' },
+  { id: 'shift.start.3', who: 'mitch', moment: 'shift.start', text: "Morning shift. Corporate says smile. Corporate is my mom. She also says drink water. I'm drinking coffee. Don't tell her.", delivery: 'eager, a nervous aside at the end' },
+  { id: 'shift.start.4', who: 'mitch', moment: 'shift.start', text: "Doors open! Cups, coffee, donuts, glaze. I've got a system. The system is written on my hand. In chocolate.", delivery: 'brisk, then looking at his hand' },
+  { id: 'shift.start.5', who: 'mitch', moment: 'shift.start', text: 'Here we go. The machine hisses, the fryer bubbles, and I stand between them looking professional.', delivery: 'upbeat, striking a pose' },
+  { id: 'shift.end.1', who: 'mitch', moment: 'shift.end', text: "That's the shift. The machine's still hissing at me. I think it's tired too. I think we bonded.", delivery: 'relieved, fond of the machine' },
+  { id: 'shift.end.2', who: 'mitch', moment: 'shift.end', text: "Doors are locked. I'm taking one donut home. For quality control. That's my job. Part of it.", delivery: 'cheerful, unconvincing' },
+  { id: 'shift.end.3', who: 'mitch', moment: 'shift.end', text: 'Great shift. Nobody got spoiled milk. That is my whole review. Five stars. From me. To me.', delivery: 'satisfied, a little smug' },
+  { id: 'shift.end.4', who: 'mitch', moment: 'shift.end', text: "Shift's over. My beanie smells like a coffee bean. I'm not mad about it. I'm a little proud.", delivery: 'tired, sniffing the beanie' },
+
+  /* ── the uniform: the first shift here in a session ────────────────────────────────────────────────────────── */
+  { id: 'uniform.1', who: 'mitch', moment: 'uniform', text: "Yes, the cup says MICH. I wrote it myself. The cup moved. That's my story.", delivery: 'pre-empting the question, deadpan' },
+  { id: 'uniform.2', who: 'mitch', moment: 'uniform', text: "Beanie, apron, and the tie stays. No barista in history has worn a tie. I'm the first. I'm a pioneer.", delivery: 'earnest, a little grand' },
+  { id: 'uniform.3', who: 'mitch', moment: 'uniform', text: "The apron has a pocket for a pen and a pocket for a spare donut. I'm using both. One of them correctly.", delivery: 'proud, then honest' },
+
+  /* ── gross-outs, said as the bad one comes down the line ({value} on the two picks, {ing} on the sprinkles) ──── */
+  { id: 'gross.stale.1', who: 'mitch', moment: 'gross.stale', each: 'value', text: "That {value} dough is stale. It's harder than the counter. Swap it.", delivery: 'alarmed, knocking on it' },
+  { id: 'gross.stale.2', who: 'mitch', moment: 'gross.stale', each: 'value', text: 'Whoa. That {value} dough is older than my beanie. And my beanie was a hand-me-down. Swap it.', delivery: 'grossed out, then rueful' },
+  { id: 'gross.stale.3', who: 'mitch', moment: 'gross.stale', each: 'value', text: "Tap that {value} dough. Hear that? Dough shouldn't make a sound. Swap it.", delivery: 'suspicious, tapping' },
+  { id: 'gross.spoiled.1', who: 'mitch', moment: 'gross.spoiled', each: 'value', text: "That {value} milk is spoiled. Milk should pour. That one's thinking about it. Swap it.", delivery: 'horrified, certain' },
+  { id: 'gross.spoiled.2', who: 'mitch', moment: 'gross.spoiled', each: 'value', text: "Whoa. Don't smell that {value} milk. I did it for you. You're welcome. Swap it.", delivery: 'a recoil, then noble' },
+  { id: 'gross.spoiled.3', who: 'mitch', moment: 'gross.spoiled', each: 'value', text: "That {value} milk has lumps. Milk doesn't come with lumps. Swap it.", delivery: 'squeamish, backing away' },
+  { id: 'gross.fly.1', who: 'mitch', moment: 'gross.fly', each: 'ings', text: "There's a fly in the {ings}. He thinks he's a sprinkle. He's not. Swap them.", delivery: 'sharp, then flat' },
+  { id: 'gross.fly.2', who: 'mitch', moment: 'gross.fly', each: 'ings', text: "Fly in the {ings}! He's dancing. It's not a dance floor. Swap them.", delivery: 'alarmed, then a grumble' },
+  { id: 'gross.fly.3', who: 'mitch', moment: 'gross.fly', each: 'ings', text: "Those {ings} come with a fly. We don't sell flies. Swap them.", delivery: 'resigned, muttering the end' },
+
+  /* ── Timed: one stage before the ticket's ──────────────────────────────────────────────────────────────────── */
+  { id: 'nearly.1', who: 'mitch', moment: 'nearly', each: 'want', text: "Nearly {want}. That's the one on the ticket.", delivery: 'quick, a little nervous' },
+  { id: 'nearly.2', who: 'mitch', moment: 'nearly', each: 'want', text: 'Heads up: {want} is next.', delivery: 'quick, a little nervous' },
+
+  /* ── Mitch: the mistake, read after the customer's complaint (voicecut, 2026-11-10): one line per value, his voice only ── */
+  { id: 'mistake.extra.1', who: 'mitch', moment: 'mistake.extra', each: 'ings', text: 'The ticket said no {ings}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.unasked.1', who: 'mitch', moment: 'mistake.unasked', each: 'ings', text: 'Nobody ordered {ings}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.missing.1', who: 'mitch', moment: 'mistake.missing', each: 'ing', text: 'The ticket said {ing}. That got left off.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.tooMany.1', who: 'mitch', moment: 'mistake.tooMany', each: 'wanted', text: 'The ticket said {wanted}. We went over.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.tooFew.1', who: 'mitch', moment: 'mistake.tooFew', each: 'wanted', text: 'The ticket said {wanted}. We came up short.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.done.1', who: 'mitch', moment: 'mistake.done', each: 'want', text: 'The ticket said {want}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.pick.1', who: 'mitch', moment: 'mistake.pick', each: 'wanted', text: 'The ticket said {wanted}.', delivery: 'flat, reading it off the ticket' },
+  { id: 'mistake.more.1', who: 'mitch', moment: 'mistake.more', text: "There's more. The receipt has it. The receipt has had a coffee.", delivery: 'resigned, dry' },
+
+  /* ── one-liners after a customer's reaction (Hints and Jokes only) ─────────────────────────────────────────── */
+  { id: 'after.3.1', who: 'mitch', moment: 'after.3', text: "Another happy customer. I'd high-five you, but I'm holding a donut. I'm always holding a donut.", delivery: 'warm, looking at the donut' },
+  { id: 'after.3.2', who: 'mitch', moment: 'after.3', text: "Beautiful. I'm putting that on the chalkboard. In pictures. We only do pictures.", delivery: 'pleased, already sketching' },
+  { id: 'after.3.3', who: 'mitch', moment: 'after.3', text: 'Look at that. The machine and I make a good team. It does everything. I nod.', delivery: 'pleased with himself' },
+  { id: 'after.1.1', who: 'mitch', moment: 'after.1', text: "Let's call that one a rough draft.", delivery: 'diplomatic, strained' },
+  { id: 'after.1.2', who: 'mitch', moment: 'after.1', text: "I'm going to stand by the grinder and pretend it's too loud to talk.", delivery: 'quiet, already moving' },
+  { id: 'after.1.3', who: 'mitch', moment: 'after.1', text: "The machine didn't do that. I checked. I asked it. It hissed.", delivery: 'brisk, not looking at it' },
+  { id: 'after.gross.1', who: 'mitch', moment: 'after.gross', text: 'I did make a face at it. A big face. Nobody can miss my face.', delivery: 'defensive, small' },
+  { id: 'after.gross.2', who: 'mitch', moment: 'after.gross', text: 'Somewhere, a health inspector just felt a chill.', delivery: 'grim, resigned' },
+
+  /* ── the tutorial: Jitters's large, bold latte with an extra shot and a sprinkle donut; the milk comes down spoiled ── */
+  { id: 'tutorial.intro.1', who: 'mitch', moment: 'tutorial.intro', text: "First day at the Cafe? Great. I'm Mitch. Assistant manager, and today, also the barista. One order together, step by step.", delivery: 'friendly, welcoming' },
+  { id: 'tutorial.intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Welcome to the Cafe. I'm Mitch. Yes, the cup says MICH. We'll get to that. First, one order, together.", delivery: 'friendly, heading off the cup question' },
+  { id: 'tutorial.ticket.1', who: 'mitch', moment: 'tutorial.ticket', text: 'That\'s the ticket, up on the wheel. Jitters says his order fast. The ticket says it slow. Pick Ticket any time and you hear it again.', delivery: 'clear, pointing up' },
+  { id: 'tutorial.ticket.2', who: 'mitch', moment: 'tutorial.ticket', text: "There's the ticket on the wheel. A latte and a donut, everything in order. Pick Ticket and it reads itself again.", delivery: 'clear, helpful' },
+  { id: 'tutorial.coffeeBar.1', who: 'mitch', moment: 'tutorial.coffeeBar', text: 'The coffee bar. Pick the cup size, then the drink, then how strong. Then the milk, then the extras come down the line one at a time. On the ticket, Add. Not on the ticket, Skip.', delivery: 'teaching, steady' },
+  { id: 'tutorial.coffeeBar.2', who: 'mitch', moment: 'tutorial.coffeeBar', text: "This is where drinks happen. Size, then drink, then strength, then milk. The extras come to you, one by one. Add what the ticket says. Skip what it doesn't.", delivery: 'teaching, steady' },
+  { id: 'tutorial.cook.coffeeBar.1', who: 'mitch', moment: 'tutorial.cook.coffeeBar', text: 'Now, how strong? Jitters said bold. Pick Bold and the machine pours it. In Timed cooking you would Stop the Pour yourself.', delivery: 'teaching, clear' },
+  { id: 'tutorial.cook.coffeeBar.2', who: 'mitch', moment: 'tutorial.cook.coffeeBar', text: 'Mild, smooth or bold. The ticket says bold. Pick Bold. In Timed cooking it runs on to burnt, so Stop the Pour is yours.', delivery: 'teaching, counting the stages on his fingers' },
+  { id: 'tutorial.dough.1', who: 'mitch', moment: 'tutorial.dough', text: 'The dough board. Pick the dough the ticket says: classic, chocolate or jelly-filled.', delivery: 'teaching, brisk' },
+  { id: 'tutorial.dough.2', who: 'mitch', moment: 'tutorial.dough', text: "Donuts start here. He wants classic. Pick Classic, and it's off to the fryer.", delivery: 'teaching, steady' },
+  { id: 'tutorial.fryer.1', who: 'mitch', moment: 'tutorial.fryer', text: "The fryer. The donut goes in on the basket, flips by itself and comes out. I've never once been splashed. I've been near it.", delivery: 'proud of the fryer, keeping his distance' },
+  { id: 'tutorial.fryer.2', who: 'mitch', moment: 'tutorial.fryer', text: 'This is the fryer. Hot oil, no touching. The basket does the work. I supervise. From over here.', delivery: 'teaching, a step back' },
+  { id: 'tutorial.cook.fryer.1', who: 'mitch', moment: 'tutorial.cook.fryer', text: 'Now, how golden? Jitters said golden. Pick Golden. In Timed cooking you would watch it and Lift the Basket yourself.', delivery: 'teaching, clear' },
+  { id: 'tutorial.cook.fryer.2', who: 'mitch', moment: 'tutorial.cook.fryer', text: 'Golden or dark golden. The ticket says golden. Pick Golden, and the basket does the rest.', delivery: 'teaching, pleased with the basket' },
+  { id: 'tutorial.glaze.1', who: 'mitch', moment: 'tutorial.glaze', text: 'The glaze bar. Pick the glaze, the donut takes a dip, then the toppings come down the line. Sprinkles, coconut, nuts. Add or Skip each one.', delivery: 'teaching, steady' },
+  { id: 'tutorial.glaze.2', who: 'mitch', moment: 'tutorial.glaze', text: 'Glaze first, then toppings. The ticket says strawberry, then sprinkles. Pink with sprinkles. Like the one on the roof.', delivery: 'teaching, a glance upward' },
+  { id: 'tutorial.gross.1', who: 'mitch', moment: 'tutorial.gross', text: 'When something comes down the line looking wrong, like that milk, pick Swap It and a fresh one comes down.', delivery: 'teaching, a grimace at the pitcher' },
+  { id: 'tutorial.gross.2', who: 'mitch', moment: 'tutorial.gross', text: "See that milk? Swap It brings a fresh pitcher. Picking a different milk is a mistake. He wants whole milk. Just not that whole milk.", delivery: 'teaching, firm on Swap It' },
+  { id: 'tutorial.review.1', who: 'mitch', moment: 'tutorial.review', text: "Here's the order. If something's wrong, redo it now. If it's right, ring it up.", delivery: 'teaching, clear' },
+  { id: 'tutorial.review.2', who: 'mitch', moment: 'tutorial.review', text: "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Jitters has been vibrating the whole time. That's normal for him.", delivery: 'teaching, a glance at Jitters' },
+  { id: 'tutorial.serve.1', who: 'mitch', moment: 'tutorial.serve', text: "And that's the job. Get something wrong and the customer will tell you. Jitters tells you at twice the speed. Ready for a real shift?", delivery: 'wrapping up, encouraging' },
+  { id: 'tutorial.serve.2', who: 'mitch', moment: 'tutorial.serve', text: "That's one order, start to finish. Every drink and every donut goes the same way. The customers don't. Ready for a real shift?", delivery: 'wrapping up, dry' },
+
+  /* ── tutorial warnings, before a mistake lands (he = Jitters) ──────────────────────────────────────────────── */
+  { id: 'tutorial.warn.extra.1', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ings', text: 'Hold on. No {ings} on this one. Check the ticket.', delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.extra.2', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ings', text: "Wait. He didn't want {ings}. That's the wrong one.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.unasked.1', who: 'mitch', moment: 'tutorial.warn.unasked', each: 'ing', text: "Hold on, the ticket has no {ings}. Skip anything that isn't on it.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.unasked.2', who: 'mitch', moment: 'tutorial.warn.unasked', each: 'ings', text: 'Wait, no {ings} on the ticket. Skip it.', delivery: 'quick, light' },
+  { id: 'tutorial.warn.missing.1', who: 'mitch', moment: 'tutorial.warn.missing', each: 'ing', text: 'Wait, he wants {ing} on that. Add it.', delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.missing.2', who: 'mitch', moment: 'tutorial.warn.missing', each: 'ing', text: "Hold on. The ticket says {ing}. Add it, or he'll notice. He notices everything. Twice.", delivery: 'quick, a wary glance at Jitters' },
+  { id: 'tutorial.warn.tooMany.1', who: 'mitch', moment: 'tutorial.warn.tooMany', text: "Hold on. That's more sugar than the ticket says. Check the ticket.", delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.tooMany.2', who: 'mitch', moment: 'tutorial.warn.tooMany', text: "Whoa, easy on the sugar. That's one more than the ticket says.", delivery: 'quick, light' },
+  { id: 'tutorial.warn.tooFew.1', who: 'mitch', moment: 'tutorial.warn.tooFew', text: 'Hold on. The ticket wants more sugar than that. Add another.', delivery: 'a quick stop, helpful' },
+  { id: 'tutorial.warn.tooFew.2', who: 'mitch', moment: 'tutorial.warn.tooFew', text: 'Not done yet. Count the sugars on the ticket. One more.', delivery: 'gentle correction' },
+  { id: 'tutorial.warn.done.1', who: 'mitch', moment: 'tutorial.warn.done', each: 'want', text: 'Close, but he said {want}.', delivery: 'gentle correction' },
+  { id: 'tutorial.warn.done.2', who: 'mitch', moment: 'tutorial.warn.done', each: 'want', text: 'Hold on. The ticket says {want}. Pick {want}.', delivery: 'gentle correction' },
+  { id: 'tutorial.warn.pick.1', who: 'mitch', moment: 'tutorial.warn.pick', each: 'wanted', text: 'Hold on. He said {wanted}.', delivery: 'gentle correction' },
+  { id: 'tutorial.warn.pick.2', who: 'mitch', moment: 'tutorial.warn.pick', each: 'wanted', text: 'Not that one. The ticket says {wanted}.', delivery: 'gentle correction, reading it off' },
+  { id: 'tutorial.warn.gross.1', who: 'mitch', moment: 'tutorial.warn.gross', text: "Whoa, whoa. We're not serving that. Swap it for a fresh one.", delivery: 'alarmed, firm' },
+  { id: 'tutorial.warn.gross.2', who: 'mitch', moment: 'tutorial.warn.gross', text: 'Nope. Not that one. Pick Swap It and a good one comes down.', delivery: 'firm, helpful' },
+  { id: 'tutorial.warn.grossSkip.1', who: 'mitch', moment: 'tutorial.warn.grossSkip', text: "Don't pick around it. He still wants that one, just a fresh one. Swap It.", delivery: 'gentle correction' },
+  { id: 'tutorial.warn.grossSkip.2', who: 'mitch', moment: 'tutorial.warn.grossSkip', text: 'Not that. The ticket wants the same thing, without the problem. Swap It gets you a good one.', delivery: 'gentle correction' },
+
+  /* ── the five-star event: The Morning Rush ({name} is the event's name) ────────────────────────────────────── */
+  { id: 'event.intro.1', who: 'mitch', moment: 'event.intro', text: "It's {name}! The whole office building next door, all before nine. Every one of them needs a coffee. Some need two. Jitters needs nine.", delivery: 'excited, a little overwhelmed' },
+  { id: 'event.intro.2', who: 'mitch', moment: 'event.intro', text: "Here we go: {name}. The office next door is coming in. The last order's the giant donut off the roof. I've never made a giant donut. I've dreamed it. Twice.", delivery: 'brave, then a small confession' },
+  { id: 'event.celebrate.1', who: 'mitch', moment: 'event.celebrate', text: '{name}: done! The whole office is awake. Some of them for the first time this year. The gold sign is going up.', delivery: 'joyful, triumphant' },
+  { id: 'event.celebrate.2', who: 'mitch', moment: 'event.celebrate', text: "That's {name}, and that's five stars. The beanie stays on. The beanie earned this.", delivery: 'triumphant, solemn about the beanie' },
+  { id: 'event.again.1', who: 'mitch', moment: 'event.again', text: "{name} didn't quite come together. The office still made it to work. Mostly. We can run it again.", delivery: 'consoling, hopeful' },
+  { id: 'event.again.2', who: 'mitch', moment: 'event.again', text: "Okay. {name} went a little flat. Like a soda. Or a meeting. We'll run it again, and the giant donut's still waiting.", delivery: 'rueful, then upbeat' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     EVERY CUSTOMER: the pack's fallback for anyone with fewer than two lines of their own (neutral voice)
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'react.3.1', who: 'customer', moment: 'react.3', text: "That's it. That's exactly what I had in my head this morning.", delivery: 'pleased, sincere' },
+  { id: 'react.3.2', who: 'customer', moment: 'react.3', text: 'Perfect. Every bit of it where it should be.', delivery: 'satisfied' },
+  { id: 'react.3.3', who: 'customer', moment: 'react.3', text: "Look at that. Somebody listened. I'm not used to it.", delivery: 'impressed, dry' },
+  { id: 'react.2.1', who: 'customer', moment: 'react.2', text: "Close. Not quite what I pictured, but it's breakfast, and I'm awake.", delivery: 'mild, accepting' },
+  { id: 'react.2.2', who: 'customer', moment: 'react.2', text: 'Pretty good. Not great. Pretty.', delivery: 'flat, unconvinced by the third fine' },
+  { id: 'react.2.3', who: 'customer', moment: 'react.2', text: 'Nearly. One thing on here had other plans.', delivery: 'dry' },
+  { id: 'react.1.1', who: 'customer', moment: 'react.1', text: "This is not what I ordered. This is somebody else's morning.", delivery: 'unimpressed' },
+  { id: 'react.1.2', who: 'customer', moment: 'react.1', text: "Well. It's in front of me. That's all I can say for it.", delivery: 'deadpan' },
+  { id: 'react.1.3', who: 'customer', moment: 'react.1', text: "Hm. No. I'll have it, but I'm going to sigh the whole time. [sigh]", delivery: 'haunted, dry' },
+  { id: 'react.gross.1', who: 'customer', moment: 'react.gross', text: "Oh. Oh, no. Something on here has legs, and it's using them.", delivery: 'disgusted, a slow horror' },
+  { id: 'react.gross.2', who: 'customer', moment: 'react.gross', text: "No. No, no. That's not breakfast. That's a science project.", delivery: 'gagging, firm' },
+  // A complaint that names no food (voicecut): everyone has their own in packs/cast/script.js; these stand in for anyone short.
+  { id: 'complain.1', who: 'customer', moment: 'complain', text: "That's not what I ordered.", delivery: 'mildly put out' },
+  { id: 'complain.2', who: 'customer', moment: 'complain', text: "Hm. This isn't quite what I asked for.", delivery: 'polite, disappointed' },
+  { id: 'complain.gross.stale.1', who: 'customer', moment: 'complain.gross.stale', text: 'This donut is stale. I could skip it across the fountain.', delivery: 'disgusted, weighing it' },
+  { id: 'complain.gross.stale.2', who: 'customer', moment: 'complain.gross.stale', text: "Stale. I knocked on this donut, and it said come in.", delivery: 'dry, disgusted' },
+  { id: 'complain.gross.spoiled.1', who: 'customer', moment: 'complain.gross.spoiled', text: "This milk is spoiled. Milk isn't supposed to be chewy.", delivery: 'revolted' },
+  { id: 'complain.gross.spoiled.2', who: 'customer', moment: 'complain.gross.spoiled', text: 'The milk is off. I can smell it from here, and here is very far away.', delivery: 'dry, revolted, leaning back' },
+  { id: 'complain.gross.fly.1', who: 'customer', moment: 'complain.gross.fly', text: "There's a fly in my sprinkles. He looks very at home. He's not.", delivery: 'disgusted, watching it' },
+  { id: 'complain.gross.fly.2', who: 'customer', moment: 'complain.gross.fly', text: "A fly. In the sprinkles. I didn't order a fly. I'd remember ordering a fly.", delivery: 'flat, disgusted' },
+  // Ridiculous orders (level 4 and 5): said instead of the order sentence; the ticket is plain and complete.
+  { id: 'order.odd.halfDecaf.1', who: 'customer', moment: 'order.odd.halfDecaf', text: 'Half decaf, half extra caffeine. They cancel out. I want to feel nothing, on purpose.', delivery: 'calm, as if this is normal' },
+  { id: 'order.odd.halfDecaf.2', who: 'customer', moment: 'order.odd.halfDecaf', text: "Half decaf, half extra shot. I'm cutting back and catching up at the same time.", delivery: 'matter-of-fact' },
+  { id: 'order.odd.coffeeDonut.1', who: 'customer', moment: 'order.odd.coffeeDonut', text: "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.", delivery: 'hopeful, then practical' },
+  { id: 'order.odd.coffeeDonut.2', who: 'customer', moment: 'order.odd.coffeeDonut', text: "Can I get a donut with coffee in the middle? No? Jelly, then. I'll use my imagination.", delivery: 'cheerful, unbothered' },
+  { id: 'order.odd.sevenShots.1', who: 'customer', moment: 'order.odd.sevenShots', text: "A latte with seven extra shots. I have a big day. And a big week. It's a big year.", delivery: 'wide-eyed, determined' },
+  { id: 'order.odd.sevenShots.2', who: 'customer', moment: 'order.odd.sevenShots', text: "Seven extra shots in a latte, please. I'm not tired. I'm planning ahead.", delivery: 'calm, too calm' },
+  { id: 'order.odd.everythingCup.1', who: 'customer', moment: 'order.odd.everythingCup', text: "A large cappuccino. Everything on the bar goes in. If it's in a bottle, it's in my cup.", delivery: 'building, relishing it' },
+  { id: 'order.odd.everythingCup.2', who: 'customer', moment: 'order.odd.everythingCup', text: "Everything. Shot, vanilla, caramel, whipped cream. In a large. I've earned this, and I'm about to un-earn it.", delivery: 'grave, determined' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     JITTERS, the Cafe's own: an office worker from the building next door who has clearly had far too much coffee
+     already, a cup in each hand, hair standing up, vibrating. Very fast and wired, delighted about everything, proud of
+     his "systems". The joke is his caffeine, never anyone else's speed. He hates whipped cream (it slows things down).
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'greet.1', who: 'jitters', moment: 'greet', text: "Hi! Hello! Jitters! That's not my real name. It's my real name now.", delivery: 'very fast, wired, beaming' },
+  { id: 'greet.2', who: 'jitters', moment: 'greet', text: 'Morning! Is it morning? It feels like morning. It has for three days.', delivery: 'very fast, cheerful, slightly haunted' },
+  { id: 'greet.3', who: 'jitters', moment: 'greet', text: "Hey! Huge fan of this place. I'm here so often the machine says hi back.", delivery: 'very fast, delighted' },
+  { id: 'greet.4', who: 'jitters', moment: 'greet', text: "Hi! I ran here from next door. Didn't need to. Can't stop.", delivery: 'very fast, breathless, proud' },
+  { id: 'greet.5', who: 'jitters', moment: 'greet', text: "Hello hello! Two cups in, both hands full, ready for a third. Let's go!", delivery: 'very fast, raising both cups' },
+  { id: 'smalltalk.1', who: 'jitters', moment: 'smalltalk', text: 'I finished my to-do list. Then I wrote a new one. Then I finished that one. Before sunrise.', delivery: 'very fast, proud, a list' },
+  { id: 'smalltalk.2', who: 'jitters', moment: 'smalltalk', text: 'My smartwatch asked if I was okay. Then it asked if it could have the afternoon off.', delivery: 'very fast, delighted by it' },
+  { id: 'smalltalk.3', who: 'jitters', moment: 'smalltalk', text: "I alphabetized my office. The files. The desks. The people. They're grateful. They haven't said so.", delivery: 'very fast, earnest' },
+  { id: 'smalltalk.4', who: 'jitters', moment: 'smalltalk', text: "My boss calls me a go-getter. I've gone and gotten everything. There's nothing left to get.", delivery: 'very fast, a flicker of worry' },
+  { id: 'smalltalk.5', who: 'jitters', moment: 'smalltalk', text: "I tried decaf once. I sat in a chair for six minutes. Longest six minutes of my life. I counted them. Twice.", delivery: 'very fast, then hushed, haunted' },
+  { id: 'smalltalk.6', who: 'jitters', moment: 'smalltalk', text: 'I can hear electricity. Not all of it. Just the fun parts.', delivery: 'very fast, confiding' },
+  { id: 'goodbye.1', who: 'jitters', moment: 'goodbye', text: 'Thanks! Bye! See you in an hour! Forty minutes! Soon!', delivery: 'very fast, already leaving' },
+  { id: 'goodbye.2', who: 'jitters', moment: 'goodbye', text: "Okay! Back to work! I'm going to run there. I'm going to run everywhere today.", delivery: 'very fast, bouncing' },
+  { id: 'goodbye.3', who: 'jitters', moment: 'goodbye', text: "Bye! If anyone needs me, I'll be everywhere at once.", delivery: 'very fast, cheerful' },
+  { id: 'goodbye.4', who: 'jitters', moment: 'goodbye', text: "Thank you! This'll keep me going till lunch. Lunch is at ten.", delivery: 'very fast, grateful' },
+  // The running gag, after the order: 8 seconds or less, over a normal ticket. Gag 1 also fits the Morning Rush's
+  // finale (the giant donut is for his whole office).
+  { id: 'order.gag.1', who: 'jitters', moment: 'order.gag', text: "This is for the office, by the way. Forty-two people. One order. We have a system.", delivery: 'very fast, proud of the system' },
+  { id: 'order.gag.2', who: 'jitters', moment: 'order.gag', text: "Fifth one today. It's seven a.m. I've been up since Tuesday. What's today? Don't tell me.", delivery: 'very fast, cheerful, losing track' },
+  { id: 'order.gag.3', who: 'jitters', moment: 'order.gag', text: "Don't worry about my hands. These two cups are for holding. The new one's for drinking.", delivery: 'very fast, reassuring' },
+  { id: 'order.gag.4', who: 'jitters', moment: 'order.gag', text: "I'm not addicted. I'm committed. Big difference. Huge. Enormous. Next question.", delivery: 'very fast, defensive, then brisk' },
+  { id: 'order.gag.5', who: 'jitters', moment: 'order.gag', text: 'My doctor told me to cut back. So I cut back. On sleep. Mostly on sleep.', delivery: 'very fast, pleased with the loophole' },
+  // His one dislike, named (said when the whipped cream was left off his order).
+  { id: 'order.dislike.1', who: 'jitters', moment: 'order.dislike', text: 'No whipped cream. It is a speed bump. The caffeine needs a clear road.', delivery: 'very fast, serious about it' },
+  { id: 'order.dislike.2', who: 'jitters', moment: 'order.dislike', text: "Hold the whipped cream. Whipped cream is just a cloud. I don't have time for clouds.", delivery: 'very fast, dismissive' },
+  { id: 'order.dislike.3', who: 'jitters', moment: 'order.dislike', text: 'And no whipped cream. It slows everything down. I tried slow once. Never again.', delivery: 'very fast, a shudder' },
+  { id: 'order.odd.halfDecaf.1', who: 'jitters', moment: 'order.odd.halfDecaf', text: "Half decaf? No. Half extra caffeine, half extra caffeine. That's two halves. That's math.", delivery: 'very fast, triumphant' },
+  { id: 'order.odd.coffeeDonut.1', who: 'jitters', moment: 'order.odd.coffeeDonut', text: "A donut with coffee inside! Like a jelly donut, but useful! You can't? Jelly, then. Jelly's fine. Jelly's great.", delivery: 'very fast, excited, then making peace' },
+  { id: 'order.odd.sevenShots.1', who: 'jitters', moment: 'order.odd.sevenShots', text: "A latte with seven extra shots! Seven! It's a lucky number! Eight's luckier, but I'm cutting back.", delivery: 'very fast, thrilled' },
+  { id: 'order.odd.sevenShots.2', who: 'jitters', moment: 'order.odd.sevenShots', text: "Large latte, bold, seven extra shots. I know. I know! But it's Monday somewhere.", delivery: 'very fast, waving off objections' },
+  { id: 'order.odd.everythingCup.1', who: 'jitters', moment: 'order.odd.everythingCup', text: 'Everything on the bar! Every bottle! Not the whipped cream. Everything else! In a large!', delivery: 'very fast, arms wide' },
+  { id: 'react.3.1', who: 'jitters', moment: 'react.3', text: "Yes! Yes yes yes! That's the one! I can see sounds!", delivery: 'very fast, ecstatic' },
+  { id: 'react.3.2', who: 'jitters', moment: 'react.3', text: "Perfect! Perfect perfect! I'm going to finish three spreadsheets and a novel!", delivery: 'very fast, triumphant' },
+  { id: 'react.3.3', who: 'jitters', moment: 'react.3', text: "That's exactly it! I want to hug the machine! Can I hug the machine? I'm hugging the machine.", delivery: 'very fast, overcome' },
+  { id: 'react.3.4', who: 'jitters', moment: 'react.3', text: "That's the stuff! Somewhere, a meeting just got shorter!", delivery: 'very fast, punching the air' },
+  { id: 'react.2.1', who: 'jitters', moment: 'react.2', text: 'Close! Close close close! One thing is off. I noticed. I notice everything. At once.', delivery: 'very fast, twitchy' },
+  { id: 'react.2.2', who: 'jitters', moment: 'react.2', text: "Pretty good! Ninety percent! I'll make up the other ten. I'll vibrate harder.", delivery: 'very fast, upbeat' },
+  { id: 'react.2.3', who: 'jitters', moment: 'react.2', text: "Hmm. Nearly. I'll have it anyway. I'll have anything. That's not a compliment, it's a fact.", delivery: 'very fast, cheerful' },
+  { id: 'react.1.1', who: 'jitters', moment: 'react.1', text: "No! No no no! That's not it! My eye is twitching! The other eye! Both now!", delivery: 'very fast, rising panic' },
+  { id: 'react.1.2', who: 'jitters', moment: 'react.1', text: "That's wrong! I can't even. And I can always even. I can even at four in the morning.", delivery: 'very fast, betrayed' },
+  { id: 'react.1.3', who: 'jitters', moment: 'react.1', text: "Oh no. That's not my order. My whole morning was built on that order. It's falling down.", delivery: 'very fast, then deflating' },
+  { id: 'react.gross.1', who: 'jitters', moment: 'react.gross', text: "What is that? Is that moving? Is that me moving? No! It's moving!", delivery: 'very fast, horrified' },
+  { id: 'react.gross.2', who: 'jitters', moment: 'react.gross', text: "Ew ew ew! That's not caffeine! I know caffeine! That's not it!", delivery: 'very fast, recoiling' },
+  { id: 'complain.gross.stale.1', who: 'jitters', moment: 'complain.gross.stale', text: 'This donut is stale! It is older than my last nap! That was in March!', delivery: 'very fast, horrified' },
+  { id: 'complain.gross.spoiled.1', who: 'jitters', moment: 'complain.gross.spoiled', text: "The milk is spoiled! I'll drink anything! Anything! Not that!", delivery: 'very fast, gagging' },
+  { id: 'complain.gross.fly.1', who: 'jitters', moment: 'complain.gross.fly', text: "There's a fly in the sprinkles! He's buzzing! He's faster than me! Nobody's faster than me!", delivery: 'very fast, competitive' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     GRANDPA WALT, the cameo: the Ice Cream Emporium's own, here as a level-4 visitor for a small black coffee and a
+     plain donut, like 1955. Cheerful, nostalgic, a little slow; letterman jacket, straw boater, brand-new sneakers.
+     The running joke against Jitters: everything was simpler in 1955, including the coffee.
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'visitor.arrive.1', who: 'walt', moment: 'visitor.arrive', text: "Walt's the name. I'm told this is a coffee shop. In 1955, every shop was a coffee shop.", delivery: 'cheerful, tipping his boater' },
+  { id: 'visitor.arrive.2', who: 'walt', moment: 'visitor.arrive', text: 'Well, look at this place. A giant donut on the roof. In my day, that was a hat.', delivery: 'delighted, gazing up' },
+  { id: 'visitor.arrive.3', who: 'walt', moment: 'visitor.arrive', text: 'I came for a cup of coffee and a donut. Like 1955, if 1955 had had a food court.', delivery: 'warm, a little slow' },
+  { id: 'greet.1', who: 'walt', moment: 'greet', text: 'Morning, sport. A cup of joe. That was its name. We called everything Joe.', delivery: 'cheerful, nostalgic' },
+  { id: 'greet.2', who: 'walt', moment: 'greet', text: 'Morning! New sneakers, old jacket, same order since Eisenhower.', delivery: 'proud, showing the sneakers' },
+  { id: 'greet.3', who: 'walt', moment: 'greet', text: 'Hello! In 1955, coffee came in one size, and the size was called coffee.', delivery: 'cheerful, a little slow' },
+  { id: 'greet.4', who: 'walt', moment: 'greet', text: "Hi there. I'm here for the coffee and the company. Mostly the coffee.", delivery: 'warm, a wink' },
+  { id: 'smalltalk.1', who: 'walt', moment: 'smalltalk', text: "In '55 I took a girl to the soda fountain. I'm still married to her. The soda fountain closed.", delivery: 'fond, nostalgic' },
+  { id: 'smalltalk.2', who: 'walt', moment: 'smalltalk', text: "These sneakers are brand new. Bought them for the dance. The dance was in 1957. I'm ready whenever it is.", delivery: 'cheerful, patient' },
+  { id: 'smalltalk.3', who: 'walt', moment: 'smalltalk', text: "We didn't have oat milk in 1955. We had oats. They were for the horse.", delivery: 'matter-of-fact, a little slow' },
+  { id: 'smalltalk.4', who: 'walt', moment: 'smalltalk', text: 'Back then a nickel got you a coffee, a donut and a conversation. Now a nickel gets you a nickel.', delivery: 'warm, wistful' },
+  { id: 'smalltalk.5', who: 'walt', moment: 'smalltalk', text: 'My grandson showed me a phone with a camera in it. In 1955, the camera was in the drugstore, and you waited a week.', delivery: 'amused, shaking his head' },
+  { id: 'goodbye.1', who: 'walt', moment: 'goodbye', text: "Thank you kindly! I'll be by the fountain, telling strangers about 1955.", delivery: 'cheerful, tipping his boater' },
+  { id: 'goodbye.2', who: 'walt', moment: 'goodbye', text: 'So long! You make it like they used to. Almost. They used to be smaller.', delivery: 'warm, a little slow' },
+  { id: 'goodbye.3', who: 'walt', moment: 'goodbye', text: "Bye now! Don't work too hard. Nobody did in 1955. We were busy wearing hats.", delivery: 'cheerful, a chuckle' },
+  { id: 'react.3.1', who: 'walt', moment: 'react.3', text: "Now that's breakfast! Just like 1955. Better. Don't tell 1955.", delivery: 'delighted, conspiratorial' },
+  { id: 'react.3.2', who: 'walt', moment: 'react.3', text: "Swell! Real swell! I haven't said swell since the fifties. It's back.", delivery: 'thrilled, a little slow' },
+  { id: 'react.3.3', who: 'walt', moment: 'react.3', text: "Perfect, sport. In '55 they'd have put you on the radio for this.", delivery: 'warm, proud' },
+  { id: 'react.2.1', who: 'walt', moment: 'react.2', text: 'Well, it is close. Like a jukebox song with one wrong word in it.', delivery: 'easygoing, humming' },
+  { id: 'react.2.2', who: 'walt', moment: 'react.2', text: "Not bad, not bad. In '55 we'd have called it fine and talked about the weather.", delivery: 'cheerful, forgiving' },
+  { id: 'react.2.3', who: 'walt', moment: 'react.2', text: "Nearly. Back in my day we'd have shrugged and paid our nickel. I'll shrug.", delivery: 'warm, shrugging' },
+  { id: 'react.1.1', who: 'walt', moment: 'react.1', text: "Oh, dear. That isn't what I ordered. Not even in 1955, and we were very relaxed.", delivery: 'gently dismayed' },
+  { id: 'react.1.2', who: 'walt', moment: 'react.1', text: "Well, I'll be. This one's a stranger. In '55 we'd have asked it its name.", delivery: 'puzzled, polite' },
+  { id: 'react.1.3', who: 'walt', moment: 'react.1', text: "That's not my order, sport. I've had seventy years to think about my order.", delivery: 'patient, disappointed' },
+  { id: 'react.gross.1', who: 'walt', moment: 'react.gross', text: "Good gravy! There's something on here that didn't exist in 1955!", delivery: 'startled, leaning back' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     THE REGULARS: what they say about the coffee and the donuts (greet, smalltalk and goodbye come from the cast)
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Priya: the night-shift nurse, the Cafe's most loyal regular; dry and quick; the usual is a large, bold Red Eye ── */
+  { id: 'greet.1', who: 'priya', moment: 'greet', text: 'Hi. Twelve-hour shift, then here. This is the thirteenth hour. The good one.', delivery: 'dry, quick, relieved' },
+  { id: 'greet.2', who: 'priya', moment: 'greet', text: "Morning. Or night. I'm off the clock, which means this is dinner. Don't.", delivery: 'dry, closing the subject' },
+  { id: 'smalltalk.1', who: 'priya', moment: 'smalltalk', text: "I've been coming here so long the machine knows me. It hisses at everyone else. At me it sighs.", delivery: 'dry, fond' },
+  { id: 'smalltalk.2', who: 'priya', moment: 'smalltalk', text: 'There was a guy in a tie in here earlier. Two cups, both hands. His pulse was visible from the door.', delivery: 'dry, clinical' },
+  { id: 'order.usual.1', who: 'priya', moment: 'order.usual', text: "The usual. Large. Bold. Don't make eye contact. I'll cry.", delivery: 'dry, quick, running on fumes' },
+  { id: 'order.usual.2', who: 'priya', moment: 'order.usual', text: "The usual. Yes, it's my dinner. It's seven in the morning. We've talked about this.", delivery: 'dry, daring anyone to comment' },
+  { id: 'react.favourite.1', who: 'priya', moment: 'react.favourite', text: "That's the one. I can feel my eyelids again. Both of them.", delivery: 'dry, quietly grateful' },
+  { id: 'react.favourite.2', who: 'priya', moment: 'react.favourite', text: 'A Red Eye, done right. My pulse just said thank you. I checked. Professionally.', delivery: 'dry, two fingers on her wrist' },
+  { id: 'order.odd.halfDecaf.1', who: 'priya', moment: 'order.odd.halfDecaf', text: "Half decaf, half extra caffeine. Doctor's orders. I'm not the doctor. I'm standing next to her all night.", delivery: 'dry, quick' },
+  { id: 'order.odd.coffeeDonut.1', who: 'priya', moment: 'order.odd.coffeeDonut', text: "A donut with the coffee already inside it. Saves a step. I'm out of steps.", delivery: 'dry, exhausted' },
+  { id: 'order.odd.everythingCup.1', who: 'priya', moment: 'order.odd.everythingCup', text: "Large cappuccino, everything on the bar. I'm off for three days, and I intend to feel all of them.", delivery: 'dry, grimly festive' },
+  { id: 'react.3.1', who: 'priya', moment: 'react.3', text: "Perfect. Vital signs are good. Mine and the order's.", delivery: 'dry, satisfied' },
+  { id: 'react.3.2', who: 'priya', moment: 'react.3', text: "That's exactly right. I'd chart it, but I'm off the clock.", delivery: 'dry, pleased' },
+  { id: 'react.3.3', who: 'priya', moment: 'react.3', text: "Yes. That's it. I'm going to sit down for the first time in fourteen hours.", delivery: 'dry, then a long exhale' },
+  { id: 'react.2.1', who: 'priya', moment: 'react.2', text: "Close. Stable, but I'd keep an eye on it.", delivery: 'dry, clinical' },
+  { id: 'react.2.2', who: 'priya', moment: 'react.2', text: "It's fine. I've had worse. In the break room. Every night.", delivery: 'dry, resigned' },
+  { id: 'react.2.3', who: 'priya', moment: 'react.2', text: "Nearly. I'll have it. I'll have anything warm at this point.", delivery: 'dry, tired' },
+  { id: 'react.1.1', who: 'priya', moment: 'react.1', text: "That's not my order. I'm too tired to be angry. I'm going to be disappointed, slowly.", delivery: 'dry, a long sigh' },
+  { id: 'react.1.2', who: 'priya', moment: 'react.1', text: "No. That's wrong. I've read charts with fewer mistakes, and I read a lot of charts.", delivery: 'dry, flat' },
+  { id: 'react.1.3', who: 'priya', moment: 'react.1', text: "That's not it. I came here for one thing. That wasn't the thing.", delivery: 'dry, quietly crushed' },
+  { id: 'react.gross.1', who: 'priya', moment: 'react.gross', text: "Okay. That's a contaminant. I'm not even on shift, and now there's a form.", delivery: 'dry, clinical disgust' },
+  { id: 'complain.gross.spoiled.1', who: 'priya', moment: 'complain.gross.spoiled', text: 'The milk is spoiled. I know spoiled. I work nights in a hospital.', delivery: 'dry, unimpressed' },
+
+  /* ── Marge: warm, unhurried; "the usual, hon" is coffee, cream and two sugars ───────────────────────────────── */
+  { id: 'greet.1', who: 'marge', moment: 'greet', text: 'Morning, hon. Smells like the bus depot in here. The good part of it.', delivery: 'warm, nostalgic' },
+  { id: 'order.usual.1', who: 'marge', moment: 'order.usual', text: 'The usual, hon.', delivery: 'warm, expecting it to be known' },
+  { id: 'order.usual.2', who: 'marge', moment: 'order.usual', text: "The usual, hon. Cream and two sugars, since 1979. Don't change on me now.", delivery: 'warm, content' },
+  { id: 'order.odd.halfDecaf.1', who: 'marge', moment: 'order.odd.halfDecaf', text: "Half decaf, hon, half the other kind. I'm seeing Harold from bingo. I want to be awake, but not too awake.", delivery: 'warm, sly' },
+  { id: 'order.odd.coffeeDonut.1', who: 'marge', moment: 'order.odd.coffeeDonut', text: "Hon, could you put the coffee inside the donut? No? A jelly one, then. I'll dunk it. Same thing.", delivery: 'warm, unbothered' },
+  { id: 'react.3.1', who: 'marge', moment: 'react.3', text: "Lovely, hon. Just how I like it. I'd tip you a bus token if they still made them.", delivery: 'warm, touched' },
+  { id: 'react.3.2', who: 'marge', moment: 'react.3', text: "Now that's a morning. Harold from bingo is going to hear about this. Whether he wants to or not.", delivery: 'warm, pleased' },
+  { id: 'react.3.3', who: 'marge', moment: 'react.3', text: 'Perfect, sweetie. Thirty years on a bus, I know a good stop when I see one.', delivery: 'warm, a little wistful' },
+  { id: 'react.2.1', who: 'marge', moment: 'react.2', text: "It's fine, hon. Close enough to get me to bingo.", delivery: 'warm, dry' },
+  { id: 'react.2.2', who: 'marge', moment: 'react.2', text: 'Close, hon. Like my reading glasses. Nearly where I left them.', delivery: 'warm, forgiving' },
+  { id: 'react.2.3', who: 'marge', moment: 'react.2', text: 'Nearly, hon. Nearly is how I parked the bus for thirty years. Nobody complained.', delivery: 'warm, matter-of-fact' },
+  { id: 'react.1.1', who: 'marge', moment: 'react.1', text: "Oh, hon. No. This isn't mine. I'd know mine with my eyes closed. I almost did.", delivery: 'gently dismayed' },
+  { id: 'react.1.2', who: 'marge', moment: 'react.1', text: "Sweetie, this is the wrong stop. I'd get back on the bus, but I'm hungry.", delivery: 'warm, disappointed' },
+  { id: 'react.1.3', who: 'marge', moment: 'react.1', text: "Oh, hon. I'll have it anyway. I'll just look out the window while I do.", delivery: 'warm, pointed' },
+  { id: 'react.gross.1', who: 'marge', moment: 'react.gross', text: 'Oh, good heavens, hon. Something on here waved at me.', delivery: 'a hand to the chest' },
+
+  /* ── Gus: the trucker; two of everything, "one for the road"; the dozen donuts are said; Delores is the truck ─── */
+  { id: 'greet.1', who: 'gus', moment: 'greet', text: "Howdy, buddy. Coffee and donuts. Delores and me been dreamin' about this since Ohio.", delivery: 'an easy drawl' },
+  { id: 'order.twin.1', who: 'gus', moment: 'order.twin', text: "Two of 'em. One for now, one for the road. And a dozen donuts, but those are for Delores.", delivery: 'a warm drawl' },
+  { id: 'order.twin.2', who: 'gus', moment: 'order.twin', text: "Two, buddy. Same as always. I'd take a dozen, but Delores is watchin' her figure.", delivery: 'a fond drawl' },
+  { id: 'order.odd.halfDecaf.1', who: 'gus', moment: 'order.odd.halfDecaf', text: 'Half decaf, half the strong stuff, buddy. I want to stay awake, but Delores likes a calm driver.', delivery: 'an easy drawl' },
+  { id: 'order.odd.everythingCup.1', who: 'gus', moment: 'order.odd.everythingCup', text: "Everything on the bar, buddy, in a large. Long haul tonight. Delores does the hard part, but still.", delivery: 'a cheerful drawl' },
+  { id: 'react.3.1', who: 'gus', moment: 'react.3', text: "Now that's worth pullin' over for, buddy.", delivery: 'a satisfied drawl' },
+  { id: 'react.3.2', who: 'gus', moment: 'react.3', text: 'Mm. Beautiful. Breakfast like that, I could drive to the coast and back. I might.', delivery: 'reverent, then eager' },
+  { id: 'react.3.3', who: 'gus', moment: 'react.3', text: "That's the stuff. Delores is gonna smell this on me for a week. She'll be jealous.", delivery: 'a proud drawl' },
+  { id: 'react.2.1', who: 'gus', moment: 'react.2', text: "It'll do, buddy. Had worse in Wyoming. It was hot water and a rumor.", delivery: 'an easygoing drawl' },
+  { id: 'react.2.2', who: 'gus', moment: 'react.2', text: 'Not bad. Little off. Like a radio station between two towns.', delivery: 'an amused drawl' },
+  { id: 'react.2.3', who: 'gus', moment: 'react.2', text: "Close. Like the next town on a sign that says thirty miles. Then it's forty.", delivery: 'a cheerful drawl' },
+  { id: 'react.1.1', who: 'gus', moment: 'react.1', text: "Well. I've had breakfast off a gas-station roller at three in the mornin'. This is losin' to that.", delivery: 'a deadpan drawl' },
+  { id: 'react.1.2', who: 'gus', moment: 'react.1', text: "I'll get through it. I'm a trucker. I've had worse company for six hundred miles.", delivery: 'a resigned drawl' },
+  { id: 'react.1.3', who: 'gus', moment: 'react.1', text: "Buddy, this ain't mine. Somewhere a fella's lookin' at my order and scratchin' his head.", delivery: 'slow, sorrowful' },
+  { id: 'react.gross.1', who: 'gus', moment: 'react.gross', text: "Whoa, buddy. Something on here's hitchhikin'. I don't pick up hitchhikers.", delivery: 'a low groan' },
+
+  /* ── Coach Bev: firm, never loud; black coffee is her favourite ("no cream, no sugar, no excuses") ──────────── */
+  { id: 'greet.1', who: 'bev', moment: 'greet', text: "Coach Bev! Early practice! I'm here for FUEL!", delivery: 'firm, like a coach, clapping once' },
+  { id: 'react.favourite.1', who: 'bev', moment: 'react.favourite', text: "Black coffee! Nothing in it! That's DISCIPLINE in a cup!", delivery: 'firm, like a coach, proud' },
+  { id: 'react.favourite.2', who: 'bev', moment: 'react.favourite', text: "That's my black coffee! Strong! Simple! Ready for the SEASON!", delivery: 'firm, like a coach, fist up' },
+  { id: 'order.odd.halfDecaf.1', who: 'bev', moment: 'order.odd.halfDecaf', text: "Half decaf, half extra caffeine! It's a BALANCED diet! I made the team a chart!", delivery: 'firm, like a coach, very pleased' },
+  { id: 'order.odd.everythingCup.1', who: 'bev', moment: 'order.odd.everythingCup', text: "EVERYTHING on the bar! Large! It's a cheat day! Do NOT tell the team!", delivery: 'firm, then a conspiratorial hush' },
+  { id: 'react.3.1', who: 'bev', moment: 'react.3', text: 'THAT is an order! Textbook! Everybody hit their marks!', delivery: 'firm, like a coach, triumphant' },
+  { id: 'react.3.2', who: 'bev', moment: 'react.3', text: "Nothing but net! Straight in! That's how we PRACTICE it!", delivery: 'firm, like a coach, ecstatic' },
+  { id: 'react.3.3', who: 'bev', moment: 'react.3', text: 'YES! Gold medal breakfast! Somebody get this on the podium!', delivery: 'firm, like a coach, scribbling' },
+  { id: 'react.2.1', who: 'bev', moment: 'react.2', text: "Decent! Decent! But I've seen better footwork from a folding chair!", delivery: 'firm, like a coach, assessing' },
+  { id: 'react.2.2', who: 'bev', moment: 'react.2', text: "Good hustle! One missed assignment! We'll run it again tomorrow!", delivery: 'firm, like a coach, fair' },
+  { id: 'react.2.3', who: 'bev', moment: 'react.2', text: 'Close! Close only counts in horseshoes, and this is BREAKFAST!', delivery: 'firm, like a coach' },
+  { id: 'react.1.1', who: 'bev', moment: 'react.1', text: 'Red card! Off the field! This order is EJECTED!', delivery: 'firm, outraged' },
+  { id: 'react.1.2', who: 'bev', moment: 'react.1', text: 'This order is running LAPS until it gets it right!', delivery: 'firm, like a coach, a verdict' },
+  { id: 'react.1.3', who: 'bev', moment: 'react.1', text: 'Wrong play! Wrong ORDER! Did anybody read the playbook?', delivery: 'firm, like a coach, disgusted' },
+  { id: 'react.gross.1', who: 'bev', moment: 'react.gross', text: 'FLAG on the play! Something on here did NOT make the team!', delivery: 'firm, alarmed, whistle energy' },
+
+  /* ── Vernon: foppish, fussy, exact; an oat latte, "extra hot" (said, never made). "I will know." ────────────── */
+  { id: 'greet.1', who: 'vernon', moment: 'greet', text: '[sigh] Good morning. Whatever I order, extra hot. I will know.', delivery: 'a theatrical sigh, precise' },
+  { id: 'order.odd.halfDecaf.1', who: 'vernon', moment: 'order.odd.halfDecaf', text: 'Half decaf, half extra caffeine. My readers want balance. All eleven of them. I polled them.', delivery: 'refined, faintly hurt' },
+  { id: 'order.odd.coffeeDonut.1', who: 'vernon', moment: 'order.odd.coffeeDonut', text: "A donut with the coffee inside. A bold concept. I'm prepared to be disappointed. I usually am.", delivery: 'haughty, resigned' },
+  { id: 'order.odd.everythingCup.1', who: 'vernon', moment: 'order.odd.everythingCup', text: "Everything on the bar. A large. For a piece called 'Excess.' It's my most anticipated post.", delivery: 'reckless, in a refined way' },
+  { id: 'react.3.1', who: 'vernon', moment: 'react.3', text: '[long pause] ...Acceptable.', delivery: 'a long pause, then grudging' },
+  { id: 'react.3.2', who: 'vernon', moment: 'react.3', text: "Hm. I have nothing to add. This has never happened. I'll add something later.", delivery: 'haughty, faintly shaken' },
+  { id: 'react.3.3', who: 'vernon', moment: 'react.3', text: 'Four and a half beans out of five. The crowned bean on the wall gets the fifth. It earned it.', delivery: 'refined, superior' },
+  { id: 'react.2.1', who: 'vernon', moment: 'react.2', text: '[sigh] Competent. Lukewarm, metaphorically. My readers will be told.', delivery: 'a theatrical sigh, unimpressed' },
+  { id: 'react.2.2', who: 'vernon', moment: 'react.2', text: "Hm. Close. Like a sentence with one comma in the wrong place. I'll notice it forever.", delivery: 'cool, pointed' },
+  { id: 'react.2.3', who: 'vernon', moment: 'react.2', text: "Fine. 'Fine' is a review. I've written it before. I'll write it again.", delivery: 'haughty, bored' },
+  { id: 'react.1.1', who: 'vernon', moment: 'react.1', text: "I've had warmer welcomes from a revolving door.", delivery: 'deeply unimpressed' },
+  { id: 'react.1.2', who: 'vernon', moment: 'react.1', text: 'Extra hot, I said. I will know, I said. [sigh] I know.', delivery: 'wounded dignity' },
+  { id: 'react.1.3', who: 'vernon', moment: 'react.1', text: 'This will be a thread. A long one. With footnotes, and a footnote on the footnotes.', delivery: 'icy, almost pleased' },
+  { id: 'react.gross.1', who: 'vernon', moment: 'react.gross', text: 'Remarkable. Eleven followers, and every one of them will want a photo of this.', delivery: 'grim, quietly thrilled' },
+
+  /* ── Sal: gruff, crude, never loud; plain coffee, black; a glazed donut is his favourite here ───────────────── */
+  { id: 'greet.1', who: 'sal', moment: 'greet', text: "Ay. Coffee. Black. Don't make it a whole thing.", delivery: 'gruff, waving it off' },
+  { id: 'react.favourite.1', who: 'sal', moment: 'react.favourite', text: "A glazed donut. Plain. Honest. Only thing in this mall that ain't tryin' too hard.", delivery: 'gruff, sincere' },
+  { id: 'react.favourite.2', who: 'sal', moment: 'react.favourite', text: "Glazed, done right. I could cry. I won't. The pigeons are watchin'.", delivery: 'gruff, moved' },
+  { id: 'order.odd.halfDecaf.1', who: 'sal', moment: 'order.odd.halfDecaf', text: 'Half decaf, half the strong stuff. My doctor said cut back. My wife said don\'t. This is the deal.', delivery: 'gruff, sly' },
+  { id: 'order.odd.coffeeDonut.1', who: 'sal', moment: 'order.odd.coffeeDonut', text: "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Jelly, then.", delivery: 'gruff, practical' },
+  { id: 'react.3.1', who: 'sal', moment: 'react.3', text: "Now THAT'S breakfast. No nonsense. Like me, before ten.", delivery: 'gruff, delighted' },
+  { id: 'react.3.2', who: 'sal', moment: 'react.3', text: "That's good. That's real good. I'm gonna stand here and enjoy it where the pigeons can see.", delivery: 'gruff, smug' },
+  { id: 'react.3.3', who: 'sal', moment: 'react.3', text: "That's right. That's exactly right. My cousin couldn't do that, and he's been tryin' for years.", delivery: 'gruff, honest' },
+  { id: 'react.2.1', who: 'sal', moment: 'react.2', text: "Eh. It's okay. My cart coffee's worse, and I don't even sell coffee.", delivery: 'a gruff shrug' },
+  { id: 'react.2.2', who: 'sal', moment: 'react.2', text: 'Close. Like my brother-in-law. Almost useful.', delivery: 'gruff, scornful' },
+  { id: 'react.2.3', who: 'sal', moment: 'react.2', text: "It's alright. Not what I said, but I've had breakfast standin' in the rain. This is fine.", delivery: 'gruff, resigned' },
+  { id: 'react.1.1', who: 'sal', moment: 'react.1', text: "What is this? I wouldn't give this to the pigeons, and I owe the pigeons.", delivery: 'gruff, disgusted' },
+  { id: 'react.1.2', who: 'sal', moment: 'react.1', text: "Ugh. I seen better breakfasts behind the bus station. I didn't eat 'em. I seen 'em.", delivery: 'gruff, appalled' },
+  { id: 'react.1.3', who: 'sal', moment: 'react.1', text: "Ay. I been up since four sellin' hot dogs to nobody, and this is still the low point.", delivery: 'gruff, aggrieved' },
+  { id: 'react.gross.1', who: 'sal', moment: 'react.gross', text: "Ugh. Nasty. Even my cousin wouldn't eat that, and he eats what falls behind the cart.", delivery: 'gruff, revolted' },
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     THE VISITORS (level 4): Reginald the critic (newest on the menu: the Wake-Up Call) and Kai, ten, who is not
+     allowed coffee (hot chocolate and donuts only)
+     ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+  { id: 'visitor.arrive.1', who: 'reginald', moment: 'visitor.arrive', text: "Reginald, critic. I've come to review the Cafe. I've already reviewed the door. It opened. Three stars.", delivery: 'theatrical, sweeping in' },
+  { id: 'visitor.arrive.2', who: 'reginald', moment: 'visitor.arrive', text: "Ah, the Cafe. I wrote to that crowned coffee bean. It never wrote back. I'm here about that.", delivery: 'grand, wounded' },
+  { id: 'visitor.arrive.3', who: 'reginald', moment: 'visitor.arrive', text: 'Good morning. A critic enters a cafe the way the sun enters a window. Slowly, and with opinions.', delivery: 'stately' },
+  { id: 'greet.1', who: 'reginald', moment: 'greet', text: "Good morning. The newest thing you make, please. I'm told it's brave.", delivery: 'theatrical, resigned to greatness' },
+  { id: 'react.3.1', who: 'reginald', moment: 'react.3', text: 'Magnificent. The first taste deserves a paragraph. The rest, a sequel.', delivery: 'rapturous, sweeping' },
+  { id: 'react.3.2', who: 'reginald', moment: 'react.3', text: "Sublime. I'd write it a sonnet, but the sonnet would be jealous.", delivery: 'grand, delighted with himself' },
+  { id: 'react.3.3', who: 'reginald', moment: 'react.3', text: 'Perfection. Kai, take this down. No, not that. Take down the feeling.', delivery: 'theatrical, dictating' },
+  { id: 'react.2.1', who: 'reginald', moment: 'react.2', text: 'Hm. Promising, then not. Like a sunrise that changes its mind.', delivery: 'theatrical, relishing it' },
+  { id: 'react.2.2', who: 'reginald', moment: 'react.2', text: 'Adequate. A word I keep in a drawer for occasions like this.', delivery: 'grave, pleased with himself' },
+  { id: 'react.2.3', who: 'reginald', moment: 'react.2', text: 'Three stars. It has a beginning and an end. The middle wandered off.', delivery: 'theatrical, dry' },
+  { id: 'react.1.1', who: 'reginald', moment: 'react.1', text: "Oh, dear. This isn't a breakfast. It's a cautionary tale.", delivery: 'a slow, delighted horror' },
+  { id: 'react.1.2', who: 'reginald', moment: 'react.1', text: "Not what I ordered. My review will be one word. I've already chosen it.", delivery: 'theatrical, wounded' },
+  { id: 'react.1.3', who: 'reginald', moment: 'react.1', text: 'A tragedy in one act. Brief. Bitter. And not in the way coffee is meant to be bitter.', delivery: 'grand, confiding' },
+  { id: 'react.gross.1', who: 'reginald', moment: 'react.gross', text: 'Good heavens. Something here is applying for a job. Tell it the position is filled.', delivery: 'aghast, intrigued' },
+
+  { id: 'visitor.arrive.1', who: 'kai', moment: 'visitor.arrive', text: "Hi. Kai. I'm reviewing the Cafe. I'm not allowed coffee, so I'm reviewing everything else.", delivery: 'bright, very serious' },
+  { id: 'visitor.arrive.2', who: 'kai', moment: 'visitor.arrive', text: "Hello. My mom's at the shoe store. She said one thing. I'm here to choose it carefully.", delivery: 'bright, formal' },
+  { id: 'visitor.arrive.3', who: 'kai', moment: 'visitor.arrive', text: "Hi. Reginald's outside. He's reviewing the giant donut on the roof. He's on page three.", delivery: 'bright, very serious' },
+  // Never said (coffee is never on his order to leave off), but his dislike needs a line.
+  { id: 'order.dislike.1', who: 'kai', moment: 'order.dislike', text: "No coffee. I'm ten. My mom says coffee makes me 'a lot.'", delivery: 'bright, quoting carefully' },
+  { id: 'react.3.1', who: 'kai', moment: 'react.3', text: "Sweet. Correct. Nine out of ten. Ten is for my mom's pancakes.", delivery: 'bright, decisive' },
+  { id: 'react.3.2', who: 'kai', moment: 'react.3', text: "Perfect. I'm giving it a gold star. It's a sticker. I only have four.", delivery: 'bright, solemn' },
+  { id: 'react.3.3', who: 'kai', moment: 'react.3', text: "Yes. Review: yes. That's the whole review.", delivery: 'bright, counting the words' },
+  { id: 'react.2.1', who: 'kai', moment: 'react.2', text: "Mostly right. I'm giving it a checkmark with a little line through it.", delivery: 'bright, serious' },
+  { id: 'react.2.2', who: 'kai', moment: 'react.2', text: "Close. Reginald would say 'nearly.' I'll say 'close.' It's shorter.", delivery: 'bright, thoughtful' },
+  { id: 'react.2.3', who: 'kai', moment: 'react.2', text: "It's okay. I'm putting it in the middle of my list. The middle is fine.", delivery: 'bright, matter-of-fact' },
+  { id: 'react.1.1', who: 'kai', moment: 'react.1', text: "No. I'm closing my notebook. I only do that for emergencies.", delivery: 'bright, grave' },
+  { id: 'react.1.2', who: 'kai', moment: 'react.1', text: "This isn't what I ordered. I'm writing it down in red. I don't even like red.", delivery: 'bright, firm' },
+  { id: 'react.1.3', who: 'kai', moment: 'react.1', text: 'Reginald says a bad review should be short. Short review: no.', delivery: 'bright, final' },
+  { id: 'react.gross.1', who: 'kai', moment: 'react.gross', text: "Ew. That goes in the notebook under 'never.' It was a short list. Now it's longer.", delivery: 'bright, shaken' },
+] });
