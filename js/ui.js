@@ -89,6 +89,9 @@
     members.forEach(p => { const m = document.querySelector('.store[data-pack="' + p + '"]'); if (m) m.classList.add('litMember'); });
     litEl = el || null;
     if (el) { el.classList.add('lit'); el.classList.toggle('braked', braked); }
+    // A card's list scrolls where the window is too short for it (a phone held sideways: bb.css): keep the lit item
+    // in view. Nothing moves where the whole list fits.
+    if (el && el.scrollIntoView && el.closest && el.closest('.card .menu')) el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     frame();
   }
   function frame() {
@@ -630,6 +633,12 @@
     window.addEventListener('blur', onBlur);
     window.addEventListener('narbe-input-cancelled', onBlur);
     window.addEventListener('resize', () => { frame(); fitHowto(); });
+    // A phone or tablet turned upright: bb.css covers the game with "Turn your phone sideways" (#turn, the same media
+    // query), and a shift or the court's scan pauses, as a 5 s Enter hold would, so nothing happens unseen.
+    const upright = window.matchMedia && window.matchMedia('(orientation: portrait) and (pointer: coarse)');
+    if (upright && upright.addEventListener) upright.addEventListener('change', e => { if (!e.matches) return; const go = pauseRoute(); if (go) go(); });
+    // The bracket frame follows a lit card item when its list scrolls.
+    document.addEventListener('scroll', frame, true);
     document.addEventListener('click', e => {
       const el = e.target.closest('.ctl, .prop, .store');
       if (el && el.dataset.id) pointAndPick(el.dataset.id);

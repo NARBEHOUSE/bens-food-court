@@ -47,7 +47,8 @@ body[data-text="xlarge"] { --label: clamp(26px, 3.4vw, 52px); --small: clamp(20p
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--page-bg); color: var(--ink);
-  font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif; -webkit-user-select: none; user-select: none; }
+  font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif; -webkit-user-select: none; user-select: none;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 #stage { position: fixed; inset: 0; overflow: hidden; }
 
 /* ── layers ─────────────────────────────────────────────────────────────── */
@@ -483,4 +484,56 @@ body[data-motion="reduced"] *, body[data-motion="reduced"] *::before, body[data-
 /* Narrow windows: the counter lays itself out from its line (stage.js); the kitchen's Mitch stands lower. */
 @media (max-aspect-ratio: 4/3) {
   body[data-place="kitchen"] #mitch { height: 60vh; top: 40vh; }
+}
+
+/* ── phones ─────────────────────────────────────────────────────────────── */
+/* Held upright: the game is a wide stage, so a phone or tablet held upright is asked to turn sideways (js/ui.js pauses
+   a shift when it turns; the same media query). A mouse-driven window of any shape never sees this. */
+#turn { display: none; }
+@media (orientation: portrait) and (pointer: coarse) {
+  #turn { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; background: var(--page-bg); }
+  #turn .card { width: min(86vw, 520px); padding: 4vh 6vw; }
+  #turn .card h1 { font-size: clamp(26px, 7vw, 44px); }
+  #turn .phone { position: relative; width: 64px; height: 108px; margin: 0 auto 3vh; border: 6px solid var(--chalk); border-radius: 14px;
+    animation: turnPhone 2.6s ease-in-out infinite; }
+  #turn .phone::after { content: ''; position: absolute; left: 50%; bottom: 6px; width: 16px; height: 4px; margin-left: -8px; border-radius: 2px; background: var(--chalk); }
+}
+@keyframes turnPhone { 0%, 25% { transform: rotate(0); } 55%, 85% { transform: rotate(-90deg); } 100% { transform: rotate(0); } }
+
+/* Held sideways (a short window, 500 px tall or less): the text is sized from the window's height, not its width
+   (stage.js sizes() and court.js textPx() hold the same numbers), the cards' lists scroll (ui.js keeps the lit item in
+   view), a kitchen step of four or more answers stands in two columns, and the kitchen's Mitch stands lower, his face
+   below the ticket wheel. A desktop window is never this short, so nothing here changes the game on a computer. */
+@media (max-height: 500px) {
+  :root { --label: clamp(14px, 4vh, 34px); --small: clamp(12px, 3.2vh, 22px); }
+  body[data-text="large"] { --label: clamp(16px, 4.8vh, 42px); --small: clamp(13px, 3.8vh, 27px); }
+  body[data-text="xlarge"] { --label: clamp(18px, 5.6vh, 52px); --small: clamp(14px, 4.4vh, 32px); }
+
+  .card { display: flex; flex-direction: column; max-height: 96vh; padding: 1.6vh 2vw 1.2vh; border-width: 1vh; }
+  .card > * { flex: none; }
+  .card .menu { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 18px;
+    grid-template-columns: 1fr 1fr; gap: 1.4vh 1.4vw; max-width: none; width: 100%; }
+  .card .menu.cols2 { grid-template-columns: repeat(3, 1fr); }
+  .card.howtoCard .menu { grid-template-columns: 1fr; max-width: 420px; }
+  .card.howtoCard .howto { flex: 1 1 auto; }
+  .card .item { min-height: 48px; padding: .3em .6em; }
+  .card h1 { font-size: clamp(22px, 8vh, 40px); }
+  .card .sub, .card .news { margin-bottom: .4em; }
+  .card .hint { margin-top: .6vh; }
+  .card .stars { font-size: clamp(24px, 9vh, 44px); }
+  .logo { margin-bottom: 0; }
+  .logo .top { font-size: clamp(16px, 5vh, 30px); }
+  .logo .main { font-size: clamp(34px, 13vh, 72px); -webkit-text-stroke-width: 2px; }
+
+  body[data-place="kitchen"] #controls { gap: 1.2vh; padding: 1.4vh 1.2vw; }
+  body[data-place="kitchen"] #controls:has(> .ctl:nth-child(4)) { display: grid; grid-template-columns: repeat(2, auto); column-gap: 1.2vw; align-items: stretch; }
+  .ctl.plate { width: min(18vw, 34vh); height: auto; min-height: 48px; padding: .35em .3em; }
+  .ctl.slip, .ctl.tile { min-height: 48px; }
+
+  body[data-place="kitchen"] #mitch { height: 72vh; top: 40vh; }
+
+  /* The receipt: the name and the stars share a line (stage.js receiptHeight reckons the same). */
+  #receipt { padding: .6em .9em 1em; }
+  #receipt h2 { display: inline-block; margin: 0 .4em 0 0; vertical-align: middle; }
+  #receipt .stars { display: inline-block; vertical-align: middle; font-size: calc(var(--label) * 1.4); }
 }

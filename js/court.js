@@ -125,9 +125,13 @@
   /** The px of bb.css's --small and --label for this window and Text Size (the same clamp() numbers). */
   const SIZES = { small: { normal: [14, 1.4, 22], large: [17, 1.8, 27], xlarge: [20, 2.2, 32] },
     label: { normal: [18, 2.2, 34], large: [22, 2.8, 42], xlarge: [26, 3.4, 52] } };
+  // A short window (a phone held sideways: bb.css @media (max-height: 500px)) sizes its text from its height.
+  const SHORT = { small: { normal: [12, 3.2, 22], large: [13, 3.8, 27], xlarge: [14, 4.4, 32] },
+    label: { normal: [14, 4, 34], large: [16, 4.8, 42], xlarge: [18, 5.6, 52] } };
   function textPx(kind) {
-    const t = SIZES[kind][document.body.dataset.text] || SIZES[kind].normal;
-    return clamp(t[1] * (window.innerWidth || 1280) / 100, t[0], t[2]);
+    const H = window.innerHeight || 720, short = H <= 500, S = short ? SHORT : SIZES;
+    const t = S[kind][document.body.dataset.text] || S[kind].normal;
+    return clamp(t[1] * (short ? H : (window.innerWidth || 1280)) / 100, t[0], t[2]);
   }
 
   /* ══ hits ══════════════════════════════════════════════════════════════════════════════════════════════════ */

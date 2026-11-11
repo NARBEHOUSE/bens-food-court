@@ -139,9 +139,13 @@
   /** The CSS sizes the counter's layout needs, in px, for this window and Text Size (bb.css's clamp()s). */
   function sizes(W, H) {
     const vw = W / 100, vh = H / 100, t = document.body.dataset.text;
-    const lab = { large: [22, 2.8, 42], xlarge: [26, 3.4, 52] }[t] || [18, 2.2, 34];
-    const sml = { large: [17, 1.8, 27], xlarge: [20, 2.2, 32] }[t] || [14, 1.4, 22];
-    const cl = ([a, b, c]) => Math.max(a, Math.min(b * vw, c));
+    // A short window (a phone held sideways: bb.css @media (max-height: 500px)) sizes its text from its height.
+    const short = H <= 500, u = short ? vh : vw;
+    const lab = short ? ({ large: [16, 4.8, 42], xlarge: [18, 5.6, 52] }[t] || [14, 4, 34])
+      : ({ large: [22, 2.8, 42], xlarge: [26, 3.4, 52] }[t] || [18, 2.2, 34]);
+    const sml = short ? ({ large: [13, 3.8, 27], xlarge: [14, 4.4, 32] }[t] || [12, 3.2, 22])
+      : ({ large: [17, 1.8, 27], xlarge: [20, 2.2, 32] }[t] || [14, 1.4, 22]);
+    const cl = ([a, b, c]) => Math.max(a, Math.min(b * u, c));
     return { vw, vh, label: cl(lab), small: cl(sml), m: Math.max(8, 0.8 * vw) };
   }
   const overlap = (a, b) => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
@@ -383,11 +387,13 @@
   function receiptHeight(el, w, Z) {
     const r = el.getBoundingClientRect();
     if (r && r.height > 0) return r.height;
-    const s = Z.small, lab = Z.label, inner = w - 2.4 * s - 6, lh = s * 1.35;
+    const s = Z.small, lab = Z.label, short = Z.vh * 100 <= 500, inner = w - (short ? 1.8 : 2.4) * s - 6, lh = s * 1.35;
     const lines = t => Math.max(1, Math.ceil(String(t).length * 0.6 * s / Math.max(1, inner - (el.querySelector('ul') ? 1.1 * s : 0))));
     const body = [...el.querySelectorAll('li, p')].reduce((a, x) => a + lines(x.textContent) * lh, 0) + 0.8 * s;
     const tip = el.querySelector('.tip');
-    return 6 + s + lab * 1.4 + lab * 1.8 * 1.35 + body + 3 + 0.9 * s + (tip ? lines(tip.textContent) * lh : lh) + 1.4 * s;
+    // A short window (bb.css): the name and the stars share a line, the stars smaller, the paper's margins narrower.
+    const head = short ? 0.6 * s + lab * 1.4 * 1.35 : s + lab * 1.4 + lab * 1.8 * 1.35;
+    return 6 + head + body + 3 + 0.9 * s + (tip ? lines(tip.textContent) * lh : lh) + (short ? 1 : 1.4) * s;
   }
   /** The receipt (receipt()): right of centre under the corner count, as before, unless that reaches the painted queue:
    *  then raised so it ends above the queue's heads (moved left of the corner count if it must), or narrowed into the
@@ -415,7 +421,8 @@
     if (bw >= minW) { const bh = heightAt(bw); tops.forEach(t => tries.push(at(bx, t, bw, bh))); }
     // Wider (its words wrap less, so it is shorter), between the customer's head and the column or the corner count,
     // ending above the queue's heads.
-    const ww = Math.min(1.6 * W0, Math.min(col ? col.x0 - m : P.W, hud ? hud.x0 - m : P.W) - bx);
+    // (A short window, a phone held sideways, lets it spread wider still: it has the least height above the queue.)
+    const ww = Math.min((P.H <= 500 ? 2.2 : 1.6) * W0, Math.min(col ? col.x0 - m : P.W, hud ? hud.x0 - m : P.W) - bx);
     if (ww > W0) { const wh = heightAt(ww); tries.push(at(bx, P.keep.y0 - wh, ww, wh)); }
     const ok = tries.filter(fits);
     let b = ok.find(x => !overlap(x, P.keep) && !(sign && overlap(x, sign))) || ok.find(x => !overlap(x, P.keep));
