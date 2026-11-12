@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "mitch/pizza:shift.start.1",
+  "speaker": "mitch",
+  "text": "Doors are open. The oven's hot, the dough's proofed, and there's flour somewhere on me I can't reach.",
+  "moment": "shift.start",
+  "delivery": "upbeat, scratching at the flour",
+  "pack": "pizza",
+  "order": 1,
+  "hash": "289d9309",
+  "recorded": false
+ },
+ {
+  "clip": "mitch/pizza:after.3.1",
+  "speaker": "mitch",
+  "text": "Another happy customer. I'll take the credit. I'll take the box, too. We reuse those.",
+  "moment": "after.3",
+  "delivery": "smug, then practical",
+  "pack": "pizza",
+  "order": 3,
+  "hash": "3d1871c1",
+  "recorded": false
+ },
+ {
+  "clip": "mitch/mistake.extra.1.cheese",
+  "speaker": "mitch",
+  "text": "The ticket said no cheese.",
+  "moment": "mistake.extra",
+  "delivery": "flat, reading it off the ticket",
+  "pack": "diner",
+  "order": 3,
+  "hash": "49ebd355",
+  "recorded": false
+ },
+ {
+  "clip": "mitch/intro.2",
+  "speaker": "mitch",
+  "text": "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+  "moment": "tutorial.intro",
+  "delivery": "eager, a touch wounded in the middle, then eager again",
+  "pack": "diner",
+  "order": 0,
+  "hash": "dba939f1",
+  "recorded": false
+ }
+]

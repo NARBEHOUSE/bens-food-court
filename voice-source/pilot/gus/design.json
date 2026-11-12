@@ -1,0 +1,164 @@
+{
+ "texas-s1": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 185,
+  "seconds": 7.48,
+  "rate": 2.27,
+  "clarity": 2.1,
+  "style": "texas",
+  "seed": 1
+ },
+ "texas-s2": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 206,
+  "seconds": 5.19,
+  "rate": 3.28,
+  "clarity": 3.93,
+  "style": "texas",
+  "seed": 2
+ },
+ "texas-s3": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 116,
+  "seconds": 5.63,
+  "rate": 3.02,
+  "clarity": 3.87,
+  "style": "texas",
+  "seed": 3
+ },
+ "texas-s4": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 230,
+  "seconds": 4.57,
+  "rate": 3.72,
+  "clarity": 4.35,
+  "style": "texas",
+  "seed": 4
+ },
+ "southern-s1": {
+  "said": "Hearty buddy, eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [
+   "replace: 'howdy' -> 'hearty'"
+  ],
+  "pitch": 196,
+  "seconds": 7.08,
+  "rate": 2.4,
+  "clarity": 3.2,
+  "style": "southern",
+  "seed": 1
+ },
+ "southern-s2": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 200,
+  "seconds": 5.29,
+  "rate": 3.21,
+  "clarity": 4.03,
+  "style": "southern",
+  "seed": 2
+ },
+ "southern-s3": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 129,
+  "seconds": 5.21,
+  "rate": 3.26,
+  "clarity": 3.29,
+  "style": "southern",
+  "seed": 3
+ },
+ "southern-s4": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 228,
+  "seconds": 4.47,
+  "rate": 3.81,
+  "clarity": 4.13,
+  "style": "southern",
+  "seed": 4
+ },
+ "cowboy-s1": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 195,
+  "seconds": 7.64,
+  "rate": 2.23,
+  "clarity": 2.35,
+  "style": "cowboy",
+  "seed": 1
+ },
+ "cowboy-s2": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 99,
+  "seconds": 5.12,
+  "rate": 3.32,
+  "clarity": 3.67,
+  "style": "cowboy",
+  "seed": 2
+ },
+ "cowboy-s3": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 105,
+  "seconds": 5.99,
+  "rate": 2.84,
+  "clarity": 3.06,
+  "style": "cowboy",
+  "seed": 3
+ },
+ "cowboy-s4": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 153,
+  "seconds": 5.35,
+  "rate": 3.18,
+  "clarity": 4.28,
+  "style": "cowboy",
+  "seed": 4
+ },
+ "country-s1": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 185,
+  "seconds": 4.49,
+  "rate": 3.78,
+  "clarity": 3.5,
+  "style": "country",
+  "seed": 1
+ },
+ "country-s2": {
+  "said": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 167,
+  "seconds": 4.15,
+  "rate": 4.09,
+  "clarity": 3.99,
+  "style": "country",
+  "seed": 2
+ },
+ "country-s3": {
+  "said": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 138,
+  "seconds": 6.13,
+  "rate": 2.77,
+  "clarity": 3.91,
+  "style": "country",
+  "seed": 3
+ },
+ "country-s4": {
+  "said": "Howdy, buddy! Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "diffs": [],
+  "pitch": 231,
+  "seconds": 5.03,
+  "rate": 3.38,
+  "clarity": 4.26,
+  "style": "country",
+  "seed": 4
+ }
+}

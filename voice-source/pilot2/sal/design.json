@@ -1,0 +1,290 @@
+{
+ "ny-s1": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 219,
+  "seconds": 6.76,
+  "rate": 3.85,
+  "clarity": 3.85,
+  "style": "ny",
+  "seed": 1
+ },
+ "ny-s2": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 168,
+  "seconds": 7.65,
+  "rate": 3.4,
+  "clarity": 3.62,
+  "style": "ny",
+  "seed": 2
+ },
+ "ny-s3": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 104,
+  "seconds": 6.16,
+  "rate": 4.22,
+  "clarity": 3.77,
+  "style": "ny",
+  "seed": 3
+ },
+ "ny-s4": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 133,
+  "seconds": 6.94,
+  "rate": 3.74,
+  "clarity": 3.93,
+  "style": "ny",
+  "seed": 4
+ },
+ "ny-s5": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 145,
+  "seconds": 5.95,
+  "rate": 4.37,
+  "clarity": 3.77,
+  "style": "ny",
+  "seed": 5
+ },
+ "ny-s6": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 212,
+  "seconds": 6.2,
+  "rate": 4.19,
+  "clarity": 3.52,
+  "style": "ny",
+  "seed": 6
+ },
+ "nyc-s1": {
+  "said": "Yo! Six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 245,
+  "seconds": 6.78,
+  "rate": 3.83,
+  "clarity": 2.12,
+  "style": "nyc",
+  "seed": 1
+ },
+ "nyc-s2": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 177,
+  "seconds": 8.48,
+  "rate": 3.06,
+  "clarity": 2.12,
+  "style": "nyc",
+  "seed": 2
+ },
+ "nyc-s3": {
+  "said": "Yo, six in the morning at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "delete: 'i'm' -> ''",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 188,
+  "seconds": 6.2,
+  "rate": 4.2,
+  "clarity": 3.62,
+  "style": "nyc",
+  "seed": 3
+ },
+ "nyc-s4": {
+  "said": "Yo, six in the morning. I'm at that cart. My feet are killing me. Gimme a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "delete: 'and' -> ''"
+  ],
+  "pitch": 160,
+  "seconds": 6.79,
+  "rate": 3.83,
+  "clarity": 3.69,
+  "style": "nyc",
+  "seed": 4
+ },
+ "nyc-s5": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 198,
+  "seconds": 6.66,
+  "rate": 3.9,
+  "clarity": 2.99,
+  "style": "nyc",
+  "seed": 5
+ },
+ "nyc-s6": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 244,
+  "seconds": 6.11,
+  "rate": 4.26,
+  "clarity": 3.37,
+  "style": "nyc",
+  "seed": 6
+ },
+ "brooklyn-s1": {
+  "said": "Yo, six in the morning. I'm at that cart. My feet are killing me. Give me a burger and don't talk to me about the pigeons.",
+  "diffs": [
+   "delete: 'and' -> ''",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 270,
+  "seconds": 6.25,
+  "rate": 4.16,
+  "clarity": 2.5,
+  "style": "brooklyn",
+  "seed": 1
+ },
+ "brooklyn-s2": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 125,
+  "seconds": 7.14,
+  "rate": 3.64,
+  "clarity": 3.39,
+  "style": "brooklyn",
+  "seed": 2
+ },
+ "brooklyn-s3": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 132,
+  "seconds": 5.58,
+  "rate": 4.66,
+  "clarity": 3.94,
+  "style": "brooklyn",
+  "seed": 3
+ },
+ "brooklyn-s4": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 122,
+  "seconds": 6.85,
+  "rate": 3.8,
+  "clarity": 3.84,
+  "style": "brooklyn",
+  "seed": 4
+ },
+ "brooklyn-s5": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 211,
+  "seconds": 5.89,
+  "rate": 4.41,
+  "clarity": 3.63,
+  "style": "brooklyn",
+  "seed": 5
+ },
+ "brooklyn-s6": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 218,
+  "seconds": 6.08,
+  "rate": 4.28,
+  "clarity": 3.27,
+  "style": "brooklyn",
+  "seed": 6
+ },
+ "italian-s1": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 172,
+  "seconds": 7.18,
+  "rate": 3.62,
+  "clarity": 3.18,
+  "style": "italian",
+  "seed": 1
+ },
+ "italian-s2": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 227,
+  "seconds": 6.88,
+  "rate": 3.78,
+  "clarity": 3.73,
+  "style": "italian",
+  "seed": 2
+ },
+ "italian-s3": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 127,
+  "seconds": 7.32,
+  "rate": 3.55,
+  "clarity": 3.48,
+  "style": "italian",
+  "seed": 3
+ },
+ "italian-s4": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 123,
+  "seconds": 7.71,
+  "rate": 3.37,
+  "clarity": 2.97,
+  "style": "italian",
+  "seed": 4
+ },
+ "italian-s5": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Give me a burger, and don't talk to me about the pigeons.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 141,
+  "seconds": 6.29,
+  "rate": 4.14,
+  "clarity": 3.31,
+  "style": "italian",
+  "seed": 5
+ },
+ "italian-s6": {
+  "said": "Yo, six in the morning. I'm at that cart, and my feet are killing me. Gimme a burger, and don't talk to me about the pigeons.",
+  "diffs": [],
+  "pitch": 181,
+  "seconds": 6.93,
+  "rate": 3.75,
+  "clarity": 3.15,
+  "style": "italian",
+  "seed": 6
+ }
+}

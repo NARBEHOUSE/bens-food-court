@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "sal/cast:greet.c1",
+  "speaker": "sal",
+  "text": "Ay. Sal. From the cart out front. Don't tell the pigeons I'm in here.",
+  "moment": "greet",
+  "delivery": "gruff, conspiratorial",
+  "pack": "cast",
+  "order": 2,
+  "hash": "d790852a",
+  "recorded": false
+ },
+ {
+  "clip": "sal/smalltalk.1",
+  "speaker": "sal",
+  "text": "Ten feet from my own cart, and I can hear the pigeons from here. They know I'm in here. They always know.",
+  "moment": "smalltalk",
+  "delivery": "gruff, haunted",
+  "pack": "diner",
+  "order": 4,
+  "hash": "79c99df9",
+  "recorded": false
+ },
+ {
+  "clip": "sal/react3.3",
+  "speaker": "sal",
+  "text": "Ay, that's beautiful. I'm gonna cry into my apron. It's seen worse.",
+  "moment": "react.3",
+  "delivery": "gruff, moved",
+  "pack": "diner",
+  "order": 2,
+  "hash": "269005d3",
+  "recorded": false
+ },
+ {
+  "clip": "sal/cast:complain.c1",
+  "speaker": "sal",
+  "text": "Hey. HEY. This ain't what I said.",
+  "moment": "complain",
+  "delivery": "gruff, loud",
+  "pack": "cast",
+  "order": 4,
+  "hash": "062a2952",
+  "recorded": false
+ }
+]

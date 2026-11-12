@@ -1,0 +1,194 @@
+{
+ "butch-s1": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 220,
+  "seconds": 6.18,
+  "rate": 3.56,
+  "clarity": 1.7,
+  "style": "butch",
+  "seed": 1
+ },
+ "butch-s2": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 258,
+  "seconds": 4.8,
+  "rate": 4.59,
+  "clarity": 2.96,
+  "style": "butch",
+  "seed": 2
+ },
+ "butch-s3": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 117,
+  "seconds": 6.59,
+  "rate": 3.34,
+  "clarity": 2.49,
+  "style": "butch",
+  "seed": 3
+ },
+ "butch-s4": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 177,
+  "seconds": 5.42,
+  "rate": 4.06,
+  "clarity": 2.92,
+  "style": "butch",
+  "seed": 4
+ },
+ "sergeant-s1": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 226,
+  "seconds": 6.46,
+  "rate": 3.41,
+  "clarity": 3.4,
+  "style": "sergeant",
+  "seed": 1
+ },
+ "sergeant-s2": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 191,
+  "seconds": 7.25,
+  "rate": 3.03,
+  "clarity": 3.68,
+  "style": "sergeant",
+  "seed": 2
+ },
+ "sergeant-s3": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 155,
+  "seconds": 6.16,
+  "rate": 3.57,
+  "clarity": 3.65,
+  "style": "sergeant",
+  "seed": 3
+ },
+ "sergeant-s4": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 181,
+  "seconds": 5.95,
+  "rate": 3.69,
+  "clarity": 3.31,
+  "style": "sergeant",
+  "seed": 4
+ },
+ "softball-s1": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 231,
+  "seconds": 5.51,
+  "rate": 3.99,
+  "clarity": 3.68,
+  "style": "softball",
+  "seed": 1
+ },
+ "softball-s2": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 184,
+  "seconds": 7.2,
+  "rate": 3.06,
+  "clarity": 3.68,
+  "style": "softball",
+  "seed": 2
+ },
+ "softball-s3": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 123,
+  "seconds": 6.04,
+  "rate": 3.64,
+  "clarity": 3.87,
+  "style": "softball",
+  "seed": 3
+ },
+ "softball-s4": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 179,
+  "seconds": 6.3,
+  "rate": 3.49,
+  "clarity": 3.82,
+  "style": "softball",
+  "seed": 4
+ },
+ "boston-s1": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 211,
+  "seconds": 6.28,
+  "rate": 3.5,
+  "clarity": 3.53,
+  "style": "boston",
+  "seed": 1
+ },
+ "boston-s2": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 197,
+  "seconds": 5.25,
+  "rate": 4.19,
+  "clarity": 3.51,
+  "style": "boston",
+  "seed": 2
+ },
+ "boston-s3": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 169,
+  "seconds": 5.98,
+  "rate": 3.68,
+  "clarity": 4.09,
+  "style": "boston",
+  "seed": 3
+ },
+ "boston-s4": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 219,
+  "seconds": 6.21,
+  "rate": 3.54,
+  "clarity": 3.68,
+  "style": "boston",
+  "seed": 4
+ }
+}

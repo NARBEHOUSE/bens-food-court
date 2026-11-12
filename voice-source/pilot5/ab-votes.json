@@ -1,0 +1,50 @@
+{
+ "mitch-0": {
+  "pick": "same",
+  "note": "Neither line is delivered with a very strong delivery note. A fits the delivery better but B sounds cleaner."
+ },
+ "mitch-1": {
+  "pick": "B",
+  "note": "B is better because the pacing is better and the delivery is a bit cleaner."
+ },
+ "mitch-2": {
+  "pick": "same",
+  "note": "B had stronger delivery but A sounded cleaner. Neither pulls ahead."
+ },
+ "mitch-3": {
+  "pick": "B",
+  "note": "B delivery was better, pacing needs work for both."
+ },
+ "marge-0": {
+  "pick": "B",
+  "note": "Both equally clean, B delivery was better."
+ },
+ "marge-1": {
+  "pick": "B",
+  "note": "Both equally clean, B delivery was better."
+ },
+ "marge-2": {
+  "pick": "B",
+  "note": "A sounds cleaner but delivery much better with B"
+ },
+ "marge-3": {
+  "pick": "B",
+  "note": "Both equally clean, B delivery was better."
+ },
+ "vernon-0": {
+  "pick": "B",
+  "note": "A was very distorted, B had the right voice and clean delivery"
+ },
+ "vernon-1": {
+  "pick": "A",
+  "note": "A has more theaticality, B is a bit cleaner."
+ },
+ "vernon-2": {
+  "pick": "A",
+  "note": "A was cleaner and the voice stayed consistent. B started sounding like someone else."
+ },
+ "vernon-3": {
+  "pick": "B",
+  "note": "B is cleaner. A has the right emotion but not clean enough and the sigh was too long and violent sounding"
+ }
+}

@@ -1,0 +1,2690 @@
+[
+ {
+  "a": "vernon/effete-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.862,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "sal/bronx-s4",
+  "alike": 0.861,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.853,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.853,
+  "pitch_gap": 0.53
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.842,
+  "pitch_gap": 0.06
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "vernon/effete-s4",
+  "alike": 0.835,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "vernon/effete-s4",
+  "alike": 0.831,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "sal/jersey-s4",
+  "alike": 0.826,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "sal/jersey-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.826,
+  "pitch_gap": 0.56
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "sal/jersey-s4",
+  "alike": 0.821,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.819,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "vernon/prissy-s4",
+  "alike": 0.817,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "sal/jersey-s4",
+  "alike": 0.815,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "vernon/effete-s4",
+  "alike": 0.813,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "sal/jersey-s4",
+  "alike": 0.813,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "tony/grand-s3",
+  "alike": 0.813,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "vernon/effete-s4",
+  "alike": 0.809,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "sal/queens-s2",
+  "b": "tony/stage-s2",
+  "alike": 0.809,
+  "pitch_gap": 0.0
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "vernon/prissy-s4",
+  "alike": 0.808,
+  "pitch_gap": 0.21
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "sal/bronx-s4",
+  "alike": 0.807,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.806,
+  "pitch_gap": 0.21
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "bev/boston-s3",
+  "alike": 0.803,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "kai/boy-s4",
+  "alike": 0.802,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "kai/boy-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.8,
+  "pitch_gap": 0.45
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "kai/boy-s4",
+  "alike": 0.798,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "vernon/prissy-s4",
+  "alike": 0.797,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "sal/queens-s2",
+  "alike": 0.793,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "sal/bronx-s4",
+  "alike": 0.787,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "sal/bronx-s4",
+  "alike": 0.787,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "tony/proud-s4",
+  "alike": 0.786,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "tony/grand-s3",
+  "alike": 0.785,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "bev/softball-s3",
+  "alike": 0.782,
+  "pitch_gap": 0.48
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "bev/sergeant-s3",
+  "alike": 0.782,
+  "pitch_gap": 0.11
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "tony/maestro-s2",
+  "alike": 0.779,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "vernon/prissy-s4",
+  "alike": 0.778,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "kai/boy-s4",
+  "alike": 0.777,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "kai/boy-s4",
+  "alike": 0.777,
+  "pitch_gap": 0.5
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "tony/proud-s4",
+  "alike": 0.775,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "tony/stage-s2",
+  "alike": 0.775,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "tony/proud-s4",
+  "alike": 0.774,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "kai/boy-s4",
+  "alike": 0.772,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "sal/queens-s2",
+  "alike": 0.77,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "vernon/effete-s4",
+  "alike": 0.77,
+  "pitch_gap": 0.39
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "vernon/effete-s4",
+  "alike": 0.77,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "kai/boy-s4",
+  "alike": 0.768,
+  "pitch_gap": 1.19
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "sal/jersey-s4",
+  "alike": 0.767,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "sal/jersey-s4",
+  "alike": 0.766,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "bev/butch-s4",
+  "alike": 0.764,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "tony/maestro-s2",
+  "alike": 0.763,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "bev/butch-s4",
+  "alike": 0.759,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "vernon/fussy-s2",
+  "alike": 0.759,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "bev/butch-s4",
+  "alike": 0.758,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "kai/boy-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.758,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "bev/sergeant-s3",
+  "alike": 0.757,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "sal/bronx-s4",
+  "alike": 0.756,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "sal/bronx-s4",
+  "alike": 0.755,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "sal/bronx-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.755,
+  "pitch_gap": 0.6
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "vernon/fussy-s2",
+  "alike": 0.754,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.752,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "sal/bronx-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.752,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "sal/brooklyn-s1",
+  "b": "kai/girl-s1",
+  "alike": 0.752,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "kai/keen-s1",
+  "alike": 0.75,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "tony/grand-s3",
+  "alike": 0.749,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "vernon/effete-s4",
+  "alike": 0.748,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.747,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.747,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "vernon/fussy-s2",
+  "alike": 0.742,
+  "pitch_gap": 0.46
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "sal/queens-s2",
+  "alike": 0.742,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "bev/softball-s3",
+  "alike": 0.741,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "vernon/prissy-s4",
+  "alike": 0.74,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "sal/bronx-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.74,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.739,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "sal/jersey-s4",
+  "alike": 0.739,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.738,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "bev/butch-s4",
+  "alike": 0.736,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "vernon/prissy-s4",
+  "alike": 0.733,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "vernon/fussy-s2",
+  "alike": 0.733,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "tony/proud-s4",
+  "alike": 0.732,
+  "pitch_gap": 0.52
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "tony/stage-s2",
+  "alike": 0.732,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "bev/boston-s3",
+  "alike": 0.731,
+  "pitch_gap": 0.71
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "vernon/fussy-s2",
+  "alike": 0.731,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "bev/softball-s3",
+  "alike": 0.729,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "bev/boston-s3",
+  "alike": 0.729,
+  "pitch_gap": 0.46
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "sal/queens-s2",
+  "alike": 0.729,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "bev/boston-s3",
+  "alike": 0.728,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "vernon/fussy-s2",
+  "alike": 0.728,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "sal/bronx-s4",
+  "alike": 0.728,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "sal/jersey-s4",
+  "alike": 0.728,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.728,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "sal/jersey-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.727,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "vernon/fussy-s2",
+  "alike": 0.726,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "sal/jersey-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.726,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.725,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "gus/cowboy-s2",
+  "alike": 0.725,
+  "pitch_gap": 0.87
+ },
+ {
+  "a": "sal/jersey-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.724,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "kai/girl-s1",
+  "alike": 0.723,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "bev/sergeant-s3",
+  "alike": 0.722,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "vernon/fussy-s2",
+  "alike": 0.72,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "sal/jersey-s4",
+  "alike": 0.72,
+  "pitch_gap": 0.0
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "gus/cowboy-s2",
+  "alike": 0.719,
+  "pitch_gap": 0.74
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "tony/proud-s4",
+  "alike": 0.719,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "sal/bronx-s4",
+  "alike": 0.719,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.718,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "vernon/prissy-s4",
+  "alike": 0.718,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "tony/proud-s4",
+  "alike": 0.718,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.717,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.717,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "kai/boy-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.717,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "sal/bronx-s4",
+  "alike": 0.716,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.716,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.716,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "tony/grand-s3",
+  "alike": 0.715,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "gus/cowboy-s2",
+  "alike": 0.714,
+  "pitch_gap": 0.84
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "vernon/prissy-s4",
+  "alike": 0.714,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "sal/bronx-s4",
+  "alike": 0.712,
+  "pitch_gap": 0.11
+ },
+ {
+  "a": "sal/brooklyn-s1",
+  "b": "tony/stage-s2",
+  "alike": 0.712,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "sal/bronx-s4",
+  "alike": 0.711,
+  "pitch_gap": 0.78
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "sal/jersey-s4",
+  "alike": 0.711,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "sal/queens-s2",
+  "b": "tony/proud-s4",
+  "alike": 0.711,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "sal/queens-s2",
+  "alike": 0.71,
+  "pitch_gap": 0.44
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "sal/bronx-s4",
+  "alike": 0.71,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "tony/stage-s2",
+  "alike": 0.709,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "gus/cowboy-s2",
+  "alike": 0.708,
+  "pitch_gap": 0.64
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "kai/boy-s4",
+  "alike": 0.708,
+  "pitch_gap": 0.76
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "tony/stage-s2",
+  "alike": 0.707,
+  "pitch_gap": 0.44
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "bev/sergeant-s3",
+  "alike": 0.707,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "tony/stage-s2",
+  "alike": 0.707,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "sal/bronx-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.707,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.706,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "vernon/effete-s4",
+  "alike": 0.704,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "marge/southern-s4",
+  "alike": 0.703,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "tony/maestro-s2",
+  "alike": 0.703,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "bev/boston-s3",
+  "alike": 0.703,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.703,
+  "pitch_gap": 0.0
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "bev/butch-s4",
+  "alike": 0.702,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "gus/southern-s3",
+  "alike": 0.702,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.701,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "sal/queens-s2",
+  "alike": 0.7,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "kai/boy-s4",
+  "alike": 0.7,
+  "pitch_gap": 0.56
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "gus/cowboy-s2",
+  "alike": 0.699,
+  "pitch_gap": 0.91
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "bev/boston-s3",
+  "alike": 0.698,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "kai/girl-s1",
+  "alike": 0.698,
+  "pitch_gap": 0.91
+ },
+ {
+  "a": "sal/brooklyn-s1",
+  "b": "kai/keen-s1",
+  "alike": 0.698,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "bev/boston-s3",
+  "alike": 0.697,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "bev/sergeant-s3",
+  "alike": 0.696,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "kai/serious-s1",
+  "alike": 0.696,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "tony/maestro-s2",
+  "alike": 0.696,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "bev/boston-s3",
+  "alike": 0.695,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.695,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "sal/queens-s2",
+  "b": "kai/boy-s4",
+  "alike": 0.695,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "sal/jersey-s4",
+  "alike": 0.694,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "vernon/fussy-s2",
+  "alike": 0.693,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.693,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "tony/grand-s3",
+  "alike": 0.693,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "marge/sweet-s4",
+  "alike": 0.692,
+  "pitch_gap": 0.06
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "sal/bronx-s4",
+  "alike": 0.692,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.692,
+  "pitch_gap": 0.47
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.692,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "marge/midwest-s4",
+  "alike": 0.691,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "vernon/prissy-s4",
+  "alike": 0.691,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "tony/maestro-s2",
+  "alike": 0.691,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "vernon/prissy-s4",
+  "alike": 0.69,
+  "pitch_gap": 0.7
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.69,
+  "pitch_gap": 0.47
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "vernon/effete-s4",
+  "alike": 0.689,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "bev/boston-s3",
+  "alike": 0.689,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "bev/boston-s3",
+  "alike": 0.688,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "tony/maestro-s2",
+  "alike": 0.687,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.686,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "marge/midwest-s4",
+  "alike": 0.685,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.685,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "sal/bronx-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.685,
+  "pitch_gap": 0.96
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.684,
+  "pitch_gap": 0.78
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "sal/queens-s2",
+  "alike": 0.684,
+  "pitch_gap": 0.88
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.684,
+  "pitch_gap": 0.46
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "sal/jersey-s4",
+  "alike": 0.683,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "bev/sergeant-s3",
+  "alike": 0.682,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "sal/bronx-s4",
+  "alike": 0.682,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "sal/brooklyn-s1",
+  "b": "kai/serious-s1",
+  "alike": 0.682,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "tony/stage-s2",
+  "alike": 0.68,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "gus/country-s3",
+  "alike": 0.68,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "bev/softball-s3",
+  "alike": 0.68,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "tony/stage-s2",
+  "alike": 0.68,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "marge/brassy-s1",
+  "alike": 0.679,
+  "pitch_gap": 0.49
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "kai/keen-s1",
+  "alike": 0.679,
+  "pitch_gap": 1.54
+ },
+ {
+  "a": "sal/bronx-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.678,
+  "pitch_gap": 0.85
+ },
+ {
+  "a": "sal/brooklyn-s1",
+  "b": "kai/boy-s4",
+  "alike": 0.678,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.677,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "vernon/effete-s4",
+  "alike": 0.677,
+  "pitch_gap": 0.75
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "sal/queens-s2",
+  "alike": 0.677,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "bev/sergeant-s3",
+  "alike": 0.676,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.676,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.675,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "tony/stage-s2",
+  "alike": 0.675,
+  "pitch_gap": 0.6
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.673,
+  "pitch_gap": 0.74
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.673,
+  "pitch_gap": 1.05
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "tony/maestro-s2",
+  "alike": 0.673,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "sal/queens-s2",
+  "alike": 0.673,
+  "pitch_gap": 0.51
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.673,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "sal/queens-s2",
+  "b": "tony/maestro-s2",
+  "alike": 0.673,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "gus/country-s3",
+  "alike": 0.671,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "gus/cowboy-s2",
+  "alike": 0.671,
+  "pitch_gap": 0.64
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "bev/softball-s3",
+  "alike": 0.671,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "tony/stage-s2",
+  "alike": 0.671,
+  "pitch_gap": 0.88
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "vernon/fussy-s2",
+  "alike": 0.67,
+  "pitch_gap": 0.67
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "sal/jersey-s4",
+  "alike": 0.67,
+  "pitch_gap": 0.74
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "bev/softball-s3",
+  "alike": 0.67,
+  "pitch_gap": 0.5
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "tony/maestro-s2",
+  "alike": 0.67,
+  "pitch_gap": 0.0
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "tony/grand-s3",
+  "alike": 0.67,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "tony/grand-s3",
+  "alike": 0.669,
+  "pitch_gap": 0.45
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "tony/proud-s4",
+  "alike": 0.669,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "vernon/effete-s4",
+  "alike": 0.669,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "vernon/fussy-s2",
+  "alike": 0.669,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.669,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "tony/grand-s3",
+  "alike": 0.668,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "vernon/prissy-s4",
+  "alike": 0.668,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "tony/grand-s3",
+  "alike": 0.667,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "tony/stage-s2",
+  "alike": 0.667,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.666,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "sal/jersey-s4",
+  "alike": 0.666,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.665,
+  "pitch_gap": 0.46
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "bev/boston-s3",
+  "alike": 0.665,
+  "pitch_gap": 0.39
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.665,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "sal/bronx-s4",
+  "alike": 0.665,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "sal/jersey-s4",
+  "alike": 0.665,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "sal/brooklyn-s1",
+  "b": "tony/grand-s3",
+  "alike": 0.665,
+  "pitch_gap": 0.41
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "marge/sweet-s4",
+  "alike": 0.664,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "marge/southern-s4",
+  "alike": 0.664,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "gus/cowboy-s2",
+  "alike": 0.664,
+  "pitch_gap": 1.44
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.664,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.664,
+  "pitch_gap": 0.36
+ },
+ {
+  "a": "sal/jersey-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.664,
+  "pitch_gap": 0.81
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "bev/butch-s4",
+  "alike": 0.663,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "sal/bronx-s4",
+  "alike": 0.663,
+  "pitch_gap": 0.39
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.663,
+  "pitch_gap": 0.65
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "bev/butch-s4",
+  "alike": 0.662,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "tony/stage-s2",
+  "alike": 0.662,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "vernon/prissy-s4",
+  "alike": 0.662,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "sal/jersey-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.662,
+  "pitch_gap": 0.91
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "kai/girl-s1",
+  "alike": 0.661,
+  "pitch_gap": 0.64
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "kai/boy-s4",
+  "alike": 0.661,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "vernon/effete-s4",
+  "alike": 0.661,
+  "pitch_gap": 0.0
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "tony/proud-s4",
+  "alike": 0.661,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "sal/queens-s2",
+  "alike": 0.661,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "gus/southern-s3",
+  "alike": 0.659,
+  "pitch_gap": 0.88
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "vernon/effete-s4",
+  "alike": 0.659,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "kai/girl-s1",
+  "alike": 0.659,
+  "pitch_gap": 1.69
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "tony/grand-s3",
+  "alike": 0.659,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "vernon/prissy-s4",
+  "alike": 0.658,
+  "pitch_gap": 0.16
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "marge/southern-s4",
+  "alike": 0.658,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "marge/midwest-s4",
+  "alike": 0.658,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "bev/softball-s3",
+  "alike": 0.658,
+  "pitch_gap": 0.54
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.658,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "vernon/effete-s4",
+  "alike": 0.658,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "gus/texas-s3",
+  "alike": 0.657,
+  "pitch_gap": 0.63
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "bev/sergeant-s3",
+  "alike": 0.657,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "sal/jersey-s4",
+  "alike": 0.657,
+  "pitch_gap": 0.36
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "sal/bronx-s4",
+  "alike": 0.657,
+  "pitch_gap": 0.36
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.657,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.657,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "sal/bronx-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.657,
+  "pitch_gap": 0.96
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "sal/jersey-s4",
+  "alike": 0.656,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "kai/boy-s4",
+  "alike": 0.656,
+  "pitch_gap": 0.87
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "tony/maestro-s2",
+  "alike": 0.656,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.656,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "tony/stage-s2",
+  "alike": 0.656,
+  "pitch_gap": 0.51
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "sal/queens-s2",
+  "alike": 0.655,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "tony/grand-s3",
+  "alike": 0.655,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "bev/softball-s3",
+  "alike": 0.654,
+  "pitch_gap": 0.97
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.654,
+  "pitch_gap": 0.75
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "sal/bronx-s4",
+  "alike": 0.653,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "vernon/fussy-s2",
+  "alike": 0.653,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "sal/queens-s2",
+  "alike": 0.652,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "gus/texas-s3",
+  "alike": 0.652,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "tony/maestro-s2",
+  "alike": 0.652,
+  "pitch_gap": 0.39
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "tony/proud-s4",
+  "alike": 0.652,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.651,
+  "pitch_gap": 0.38
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "sal/jersey-s4",
+  "alike": 0.65,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "sal/bronx-s4",
+  "alike": 0.649,
+  "pitch_gap": 0.11
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "sal/jersey-s4",
+  "alike": 0.649,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "vernon/fussy-s2",
+  "alike": 0.649,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "kai/girl-s1",
+  "alike": 0.649,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "kai/keen-s1",
+  "alike": 0.648,
+  "pitch_gap": 0.81
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.646,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "vernon/fussy-s2",
+  "alike": 0.645,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.645,
+  "pitch_gap": 0.52
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "sal/queens-s2",
+  "alike": 0.645,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.645,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "kai/boy-s4",
+  "alike": 0.645,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "gus/country-s3",
+  "alike": 0.644,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "sal/queens-s2",
+  "alike": 0.644,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "marge/brassy-s1",
+  "alike": 0.643,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "kai/serious-s1",
+  "alike": 0.643,
+  "pitch_gap": 0.91
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.642,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "gus/texas-s3",
+  "alike": 0.642,
+  "pitch_gap": 0.59
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.642,
+  "pitch_gap": 0.93
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "kai/keen-s1",
+  "alike": 0.64,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "kai/boy-s4",
+  "alike": 0.64,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "kai/girl-s1",
+  "alike": 0.64,
+  "pitch_gap": 1.16
+ },
+ {
+  "a": "sal/brooklyn-s1",
+  "b": "tony/proud-s4",
+  "alike": 0.64,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "sal/brooklyn-s1",
+  "b": "tony/maestro-s2",
+  "alike": 0.639,
+  "pitch_gap": 0.47
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "tony/proud-s4",
+  "alike": 0.638,
+  "pitch_gap": 0.61
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "sal/queens-s2",
+  "alike": 0.638,
+  "pitch_gap": 0.6
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.638,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "bev/sergeant-s3",
+  "alike": 0.637,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "vernon/effete-s4",
+  "alike": 0.637,
+  "pitch_gap": 0.19
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "gus/southern-s3",
+  "alike": 0.636,
+  "pitch_gap": 0.41
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "gus/country-s3",
+  "alike": 0.635,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "gus/texas-s3",
+  "alike": 0.635,
+  "pitch_gap": 1.09
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "gus/country-s3",
+  "alike": 0.635,
+  "pitch_gap": 0.75
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "gus/country-s3",
+  "alike": 0.635,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.635,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.635,
+  "pitch_gap": 0.87
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "marge/sweet-s4",
+  "alike": 0.634,
+  "pitch_gap": 0.0
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.634,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.634,
+  "pitch_gap": 0.77
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "vernon/effete-s4",
+  "alike": 0.633,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "vernon/fussy-s2",
+  "alike": 0.633,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.633,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "sal/jersey-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.633,
+  "pitch_gap": 0.91
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "gus/country-s3",
+  "alike": 0.632,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "tony/maestro-s2",
+  "alike": 0.631,
+  "pitch_gap": 0.75
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "bev/boston-s3",
+  "alike": 0.631,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "vernon/prissy-s4",
+  "alike": 0.631,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "kai/keen-s1",
+  "alike": 0.631,
+  "pitch_gap": 0.49
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "kai/girl-s1",
+  "alike": 0.629,
+  "pitch_gap": 0.72
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "tony/proud-s4",
+  "alike": 0.628,
+  "pitch_gap": 0.16
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "bev/softball-s3",
+  "alike": 0.628,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.626,
+  "pitch_gap": 0.82
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "gus/texas-s3",
+  "alike": 0.625,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "vernon/fussy-s2",
+  "alike": 0.625,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "kai/keen-s1",
+  "alike": 0.625,
+  "pitch_gap": 0.95
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "tony/maestro-s2",
+  "alike": 0.625,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "gus/country-s3",
+  "alike": 0.624,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "sal/bronx-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.624,
+  "pitch_gap": 0.06
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "bev/butch-s4",
+  "alike": 0.623,
+  "pitch_gap": 0.45
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.623,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "kai/boy-s4",
+  "alike": 0.623,
+  "pitch_gap": 0.68
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "vernon/prissy-s4",
+  "alike": 0.623,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "marge/southern-s4",
+  "alike": 0.622,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "gus/southern-s3",
+  "alike": 0.622,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.622,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.622,
+  "pitch_gap": 0.44
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "kai/girl-s1",
+  "alike": 0.621,
+  "pitch_gap": 1.06
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.62,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.62,
+  "pitch_gap": 0.44
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "kai/serious-s1",
+  "alike": 0.62,
+  "pitch_gap": 1.69
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "kai/keen-s1",
+  "alike": 0.62,
+  "pitch_gap": 1.04
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.618,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "bev/sergeant-s3",
+  "alike": 0.618,
+  "pitch_gap": 0.56
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "tony/maestro-s2",
+  "alike": 0.618,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "gus/southern-s3",
+  "alike": 0.617,
+  "pitch_gap": 0.47
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "bev/butch-s4",
+  "alike": 0.617,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "gus/texas-s3",
+  "alike": 0.616,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "marge/brassy-s1",
+  "b": "tony/grand-s3",
+  "alike": 0.616,
+  "pitch_gap": 0.68
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "gus/southern-s3",
+  "alike": 0.615,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "bev/softball-s3",
+  "alike": 0.615,
+  "pitch_gap": 0.06
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "bev/softball-s3",
+  "alike": 0.615,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.615,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "tony/proud-s4",
+  "alike": 0.614,
+  "pitch_gap": 0.29
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "gus/texas-s3",
+  "alike": 0.613,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "kai/keen-s1",
+  "b": "tony/stage-s2",
+  "alike": 0.613,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "vernon/prissy-s4",
+  "alike": 0.611,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "bev/sergeant-s3",
+  "alike": 0.611,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "kai/keen-s1",
+  "alike": 0.611,
+  "pitch_gap": 0.73
+ },
+ {
+  "a": "sal/queens-s2",
+  "b": "tony/grand-s3",
+  "alike": 0.611,
+  "pitch_gap": 0.29
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.61,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.61,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "bev/sergeant-s3",
+  "alike": 0.609,
+  "pitch_gap": 0.27
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "sal/queens-s2",
+  "alike": 0.609,
+  "pitch_gap": 0.52
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "bev/butch-s4",
+  "alike": 0.609,
+  "pitch_gap": 0.53
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "kai/girl-s1",
+  "alike": 0.608,
+  "pitch_gap": 0.93
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.607,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "kai/keen-s1",
+  "alike": 0.607,
+  "pitch_gap": 0.82
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "kai/girl-s1",
+  "alike": 0.607,
+  "pitch_gap": 0.83
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.606,
+  "pitch_gap": 0.64
+ },
+ {
+  "a": "sal/jersey-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.606,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "marge/midwest-s4",
+  "alike": 0.604,
+  "pitch_gap": 0.52
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "kai/serious-s1",
+  "alike": 0.604,
+  "pitch_gap": 1.06
+ },
+ {
+  "a": "sal/queens-s2",
+  "b": "kai/keen-s1",
+  "alike": 0.604,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "mitch/eager-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.602,
+  "pitch_gap": 0.46
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.601,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.601,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "kai/boy-s4",
+  "b": "tony/grand-s3",
+  "alike": 0.601,
+  "pitch_gap": 0.51
+ },
+ {
+  "a": "kai/girl-s1",
+  "b": "tony/stage-s2",
+  "alike": 0.601,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.6,
+  "pitch_gap": 0.64
+ },
+ {
+  "a": "gus/country-s3",
+  "b": "kai/serious-s1",
+  "alike": 0.6,
+  "pitch_gap": 0.93
+ },
+ {
+  "a": "mitch/host-s3",
+  "b": "kai/serious-s1",
+  "alike": 0.598,
+  "pitch_gap": 0.64
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "gus/southern-s3",
+  "alike": 0.598,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "kai/girl-s1",
+  "alike": 0.598,
+  "pitch_gap": 1.29
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.597,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "sal/queens-s2",
+  "alike": 0.597,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.595,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "sal/bronx-s4",
+  "alike": 0.592,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "bev/boston-s3",
+  "b": "kai/serious-s1",
+  "alike": 0.592,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "sal/queens-s2",
+  "b": "kai/girl-s1",
+  "alike": 0.591,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.59,
+  "pitch_gap": 0.36
+ },
+ {
+  "a": "kai/girl-s1",
+  "b": "tony/grand-s3",
+  "alike": 0.59,
+  "pitch_gap": 0.85
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "bev/softball-s3",
+  "alike": 0.589,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "gus/texas-s3",
+  "alike": 0.589,
+  "pitch_gap": 0.48
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "kai/girl-s1",
+  "alike": 0.589,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.588,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "bev/softball-s3",
+  "b": "kai/serious-s1",
+  "alike": 0.588,
+  "pitch_gap": 1.16
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "kai/keen-s1",
+  "alike": 0.587,
+  "pitch_gap": 1.16
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "sal/queens-s2",
+  "alike": 0.587,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "kai/keen-s1",
+  "b": "tony/proud-s4",
+  "alike": 0.587,
+  "pitch_gap": 0.67
+ },
+ {
+  "a": "vernon/effete-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.586,
+  "pitch_gap": 0.93
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.585,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "marge/brassy-s1",
+  "alike": 0.584,
+  "pitch_gap": 0.41
+ },
+ {
+  "a": "vernon/atlantic-s1",
+  "b": "tony/proud-s4",
+  "alike": 0.584,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "tony/stage-s2",
+  "alike": 0.583,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "sal/jersey-s4",
+  "alike": 0.582,
+  "pitch_gap": 0.27
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.582,
+  "pitch_gap": 0.42
+ },
+ {
+  "a": "gus/texas-s3",
+  "b": "kai/serious-s1",
+  "alike": 0.579,
+  "pitch_gap": 1.29
+ },
+ {
+  "a": "vernon/prissy-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.579,
+  "pitch_gap": 0.87
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.577,
+  "pitch_gap": 0.27
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "kai/serious-s1",
+  "alike": 0.577,
+  "pitch_gap": 0.72
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "gus/cowboy-s2",
+  "alike": 0.576,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.575,
+  "pitch_gap": 0.5
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "sal/brooklyn-s1",
+  "alike": 0.574,
+  "pitch_gap": 0.66
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "sal/queens-s2",
+  "alike": 0.574,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.574,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.574,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "marge/sweet-s4",
+  "alike": 0.573,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "kai/keen-s1",
+  "alike": 0.571,
+  "pitch_gap": 0.46
+ },
+ {
+  "a": "marge/midwest-s4",
+  "b": "sal/queens-s2",
+  "alike": 0.569,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "gus/southern-s3",
+  "alike": 0.568,
+  "pitch_gap": 0.06
+ },
+ {
+  "a": "bev/sergeant-s3",
+  "b": "kai/keen-s1",
+  "alike": 0.566,
+  "pitch_gap": 0.62
+ },
+ {
+  "a": "kai/girl-s1",
+  "b": "tony/proud-s4",
+  "alike": 0.566,
+  "pitch_gap": 0.77
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "marge/brassy-s1",
+  "alike": 0.564,
+  "pitch_gap": 0.98
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.564,
+  "pitch_gap": 1.18
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.564,
+  "pitch_gap": 1.18
+ },
+ {
+  "a": "vernon/fussy-s2",
+  "b": "kai/serious-s1",
+  "alike": 0.563,
+  "pitch_gap": 0.83
+ },
+ {
+  "a": "kai/serious-s1",
+  "b": "tony/grand-s3",
+  "alike": 0.563,
+  "pitch_gap": 0.85
+ },
+ {
+  "a": "kai/girl-s1",
+  "b": "tony/maestro-s2",
+  "alike": 0.56,
+  "pitch_gap": 0.93
+ },
+ {
+  "a": "mitch/chipper-s4",
+  "b": "kai/keen-s1",
+  "alike": 0.557,
+  "pitch_gap": 1.06
+ },
+ {
+  "a": "kai/keen-s1",
+  "b": "tony/maestro-s2",
+  "alike": 0.555,
+  "pitch_gap": 0.82
+ },
+ {
+  "a": "kai/keen-s1",
+  "b": "tony/grand-s3",
+  "alike": 0.552,
+  "pitch_gap": 0.74
+ },
+ {
+  "a": "marge/sweet-s4",
+  "b": "vernon/atlantic-s1",
+  "alike": 0.55,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "kai/girl-s1",
+  "alike": 0.55,
+  "pitch_gap": 0.41
+ },
+ {
+  "a": "sal/queens-s2",
+  "b": "kai/serious-s1",
+  "alike": 0.55,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "kai/serious-s1",
+  "b": "tony/stage-s2",
+  "alike": 0.549,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "kai/serious-s1",
+  "b": "tony/proud-s4",
+  "alike": 0.544,
+  "pitch_gap": 0.77
+ },
+ {
+  "a": "gus/southern-s3",
+  "b": "bev/butch-s4",
+  "alike": 0.542,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "bev/butch-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.537,
+  "pitch_gap": 0.5
+ },
+ {
+  "a": "gus/cowboy-s2",
+  "b": "bev/butch-s4",
+  "alike": 0.535,
+  "pitch_gap": 0.79
+ },
+ {
+  "a": "marge/southern-s4",
+  "b": "kai/serious-s1",
+  "alike": 0.534,
+  "pitch_gap": 0.41
+ },
+ {
+  "a": "mitch/dry-s3",
+  "b": "kai/serious-s1",
+  "alike": 0.531,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "kai/serious-s1",
+  "b": "tony/maestro-s2",
+  "alike": 0.522,
+  "pitch_gap": 0.93
+ }
+]

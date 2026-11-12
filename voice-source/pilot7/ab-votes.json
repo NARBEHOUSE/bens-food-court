@@ -1,0 +1,50 @@
+{
+ "mitch-0": {
+  "pick": "same",
+  "note": "All sound different but very close in quality"
+ },
+ "mitch-1": {
+  "pick": "A",
+  "note": "A has the best pacing, I think B is our current model, C is probably chatterbox and the cadence is a bit off"
+ },
+ "mitch-2": {
+  "pick": "B",
+  "note": "B fits the \"flat\" direction best"
+ },
+ "mitch-3": {
+  "pick": "same",
+  "note": "All sound fine but they have trouble with the sentence structure and natural delivery. Something to note is that line format might need tweaking to get the right delivery regardless of model"
+ },
+ "marge-0": {
+  "pick": "B",
+  "note": "B has best delivery and voice"
+ },
+ "marge-1": {
+  "pick": "C",
+  "note": "C has the best character and delivery"
+ },
+ "marge-2": {
+  "pick": "A",
+  "note": "A has the best character and delivery, could be a little clearer"
+ },
+ "marge-3": {
+  "pick": "same",
+  "note": "All about the same, seems like less expressive line instructions are harder to tell apart"
+ },
+ "vernon-0": {
+  "pick": "A",
+  "note": "A is best for quality, C is bad. All had about the same delivery"
+ },
+ "vernon-1": {
+  "pick": "B",
+  "note": "B and C are close. A has clarity issues. All have the correct delivery."
+ },
+ "vernon-2": {
+  "pick": "B",
+  "note": "B wins on clarity. A and B are close. C is too excited for the delivery notes."
+ },
+ "vernon-3": {
+  "pick": "same",
+  "note": "A and C win on delivery and clarity."
+ }
+}

@@ -1,0 +1,162 @@
+{
+ "eager-s1": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 344,
+  "seconds": 5.68,
+  "rate": 3.52,
+  "clarity": 2.96,
+  "style": "eager",
+  "seed": 1
+ },
+ "eager-s2": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 194,
+  "seconds": 5.75,
+  "rate": 3.48,
+  "clarity": 3.82,
+  "style": "eager",
+  "seed": 2
+ },
+ "eager-s3": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 205,
+  "seconds": 5.3,
+  "rate": 3.77,
+  "clarity": 3.64,
+  "style": "eager",
+  "seed": 3
+ },
+ "eager-s4": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 5.45,
+  "rate": 3.67,
+  "clarity": 3.53,
+  "style": "eager",
+  "seed": 4
+ },
+ "chipper-s1": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 5.06,
+  "rate": 3.96,
+  "clarity": 3.94,
+  "style": "chipper",
+  "seed": 1
+ },
+ "chipper-s2": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 180,
+  "seconds": 4.98,
+  "rate": 4.01,
+  "clarity": 3.89,
+  "style": "chipper",
+  "seed": 2
+ },
+ "chipper-s3": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 119,
+  "seconds": 5.36,
+  "rate": 3.73,
+  "clarity": 3.37,
+  "style": "chipper",
+  "seed": 3
+ },
+ "chipper-s4": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 122,
+  "seconds": 5.03,
+  "rate": 3.97,
+  "clarity": 4.09,
+  "style": "chipper",
+  "seed": 4
+ },
+ "dry-s1": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 245,
+  "seconds": 4.8,
+  "rate": 4.17,
+  "clarity": 2.69,
+  "style": "dry",
+  "seed": 1
+ },
+ "dry-s2": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 145,
+  "seconds": 5.71,
+  "rate": 3.5,
+  "clarity": 3.52,
+  "style": "dry",
+  "seed": 2
+ },
+ "dry-s3": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 172,
+  "seconds": 5.84,
+  "rate": 3.43,
+  "clarity": 3.67,
+  "style": "dry",
+  "seed": 3
+ },
+ "dry-s4": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 155,
+  "seconds": 5.09,
+  "rate": 3.93,
+  "clarity": 3.43,
+  "style": "dry",
+  "seed": 4
+ },
+ "host-s1": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 391,
+  "seconds": 6.47,
+  "rate": 3.09,
+  "clarity": 3.39,
+  "style": "host",
+  "seed": 1
+ },
+ "host-s2": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 230,
+  "seconds": 5.82,
+  "rate": 3.44,
+  "clarity": 3.76,
+  "style": "host",
+  "seed": 2
+ },
+ "host-s3": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 162,
+  "seconds": 5.18,
+  "rate": 3.86,
+  "clarity": 3.86,
+  "style": "host",
+  "seed": 3
+ },
+ "host-s4": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 239,
+  "seconds": 6.81,
+  "rate": 2.94,
+  "clarity": 3.31,
+  "style": "host",
+  "seed": 4
+ }
+}

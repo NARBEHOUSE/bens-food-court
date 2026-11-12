@@ -1,0 +1,162 @@
+{
+ "serious-s1": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 266,
+  "seconds": 7.45,
+  "rate": 2.69,
+  "clarity": 3.52,
+  "style": "serious",
+  "seed": 1
+ },
+ "serious-s2": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 420,
+  "seconds": 9.58,
+  "rate": 2.09,
+  "clarity": 1.24,
+  "style": "serious",
+  "seed": 2
+ },
+ "serious-s3": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 278,
+  "seconds": 8.59,
+  "rate": 2.33,
+  "clarity": 3.41,
+  "style": "serious",
+  "seed": 3
+ },
+ "serious-s4": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 367,
+  "seconds": 8.44,
+  "rate": 2.37,
+  "clarity": 3.6,
+  "style": "serious",
+  "seed": 4
+ },
+ "boy-s1": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 213,
+  "seconds": 6.43,
+  "rate": 3.11,
+  "clarity": 3.84,
+  "style": "boy",
+  "seed": 1
+ },
+ "boy-s2": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 263,
+  "seconds": 6.29,
+  "rate": 3.18,
+  "clarity": 3.87,
+  "style": "boy",
+  "seed": 2
+ },
+ "boy-s3": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 196,
+  "seconds": 6.74,
+  "rate": 2.97,
+  "clarity": 2.85,
+  "style": "boy",
+  "seed": 3
+ },
+ "boy-s4": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 217,
+  "seconds": 6.94,
+  "rate": 2.88,
+  "clarity": 4.03,
+  "style": "boy",
+  "seed": 4
+ },
+ "girl-s1": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 266,
+  "seconds": 7.47,
+  "rate": 2.68,
+  "clarity": 4.02,
+  "style": "girl",
+  "seed": 1
+ },
+ "girl-s2": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 331,
+  "seconds": 8.42,
+  "rate": 2.38,
+  "clarity": 3.59,
+  "style": "girl",
+  "seed": 2
+ },
+ "girl-s3": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 276,
+  "seconds": 8.36,
+  "rate": 2.39,
+  "clarity": 3.83,
+  "style": "girl",
+  "seed": 3
+ },
+ "girl-s4": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 332,
+  "seconds": 8.34,
+  "rate": 2.4,
+  "clarity": 3.45,
+  "style": "girl",
+  "seed": 4
+ },
+ "keen-s1": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 251,
+  "seconds": 8.55,
+  "rate": 2.34,
+  "clarity": 3.82,
+  "style": "keen",
+  "seed": 1
+ },
+ "keen-s2": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 406,
+  "seconds": 10.17,
+  "rate": 1.97,
+  "clarity": 1.46,
+  "style": "keen",
+  "seed": 2
+ },
+ "keen-s3": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 267,
+  "seconds": 8.8,
+  "rate": 2.27,
+  "clarity": 3.1,
+  "style": "keen",
+  "seed": 3
+ },
+ "keen-s4": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 356,
+  "seconds": 9.77,
+  "rate": 2.05,
+  "clarity": 3.18,
+  "style": "keen",
+  "seed": 4
+ }
+}

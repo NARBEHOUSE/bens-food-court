@@ -1,0 +1,64 @@
+{
+ "mitch": {
+  "best": "eager-s4",
+  "also": [
+   "chipper-s4"
+  ],
+  "notes": {
+   "chipper-s4": "This could be good for a teen customer, sounds young.",
+   "eager-s4": "Couple of lines, like line 4 sound weird but we can tweak delivery."
+  },
+  "note": ""
+ },
+ "marge": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "None of them sound like a retired aged person and none are particularly distinctive"
+ },
+ "gus": {
+  "best": "country-s3",
+  "also": [
+   "southern-s3"
+  ],
+  "notes": {
+   "southern-s3": "This is definitely an African American voice with a lot of character.",
+   "country-s3": "This voice is good, got a little noise"
+  },
+  "note": ""
+ },
+ "bev": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "Voice gets a bit too masculine across candidates and starts to sound like other voices, loses it's qualities on other lines."
+ },
+ "vernon": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "None of them really took on the qualities described in the prompt and the sighs created weird long hissing sounds"
+ },
+ "sal": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "All the new york/jersey accents drift toward southern for some reason"
+ },
+ "kai": {
+  "best": "keen-s1",
+  "also": [],
+  "notes": {
+   "keen-s1": "A bit of noise in the voice but this is good"
+  },
+  "note": ""
+ },
+ "tony": {
+  "best": "grand-s3",
+  "also": [],
+  "notes": {
+   "grand-s3": "Good voice, need to improve clarity."
+  },
+  "note": ""
+ }
+}

@@ -1,0 +1,242 @@
+{
+ "elderly-mw-s1": {
+  "said": "Hi, Hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 190,
+  "seconds": 6.01,
+  "rate": 2.99,
+  "clarity": 3.8,
+  "style": "elderly-mw",
+  "seed": 1
+ },
+ "elderly-mw-s2": {
+  "said": "Hi, Hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 286,
+  "seconds": 4.88,
+  "rate": 3.69,
+  "clarity": 3.59,
+  "style": "elderly-mw",
+  "seed": 2
+ },
+ "elderly-mw-s3": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 200,
+  "seconds": 8.94,
+  "rate": 2.01,
+  "clarity": 3.34,
+  "style": "elderly-mw",
+  "seed": 3
+ },
+ "elderly-mw-s4": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 4.95,
+  "rate": 3.63,
+  "clarity": 4.08,
+  "style": "elderly-mw",
+  "seed": 4
+ },
+ "elderly-mw-s5": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 187,
+  "seconds": 6.2,
+  "rate": 2.9,
+  "clarity": 1.3,
+  "style": "elderly-mw",
+  "seed": 5
+ },
+ "elderly-mw-s6": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 150,
+  "seconds": 6.2,
+  "rate": 2.9,
+  "clarity": 3.8,
+  "style": "elderly-mw",
+  "seed": 6
+ },
+ "elderly-s1": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 173,
+  "seconds": 5.8,
+  "rate": 3.1,
+  "clarity": 3.98,
+  "style": "elderly",
+  "seed": 1
+ },
+ "elderly-s2": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 5.82,
+  "rate": 3.09,
+  "clarity": 4.24,
+  "style": "elderly",
+  "seed": 2
+ },
+ "elderly-s3": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 266,
+  "seconds": 5.87,
+  "rate": 3.07,
+  "clarity": 3.72,
+  "style": "elderly",
+  "seed": 3
+ },
+ "elderly-s4": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 177,
+  "seconds": 6.31,
+  "rate": 2.85,
+  "clarity": 4.3,
+  "style": "elderly",
+  "seed": 4
+ },
+ "elderly-s5": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 141,
+  "seconds": 7.24,
+  "rate": 2.49,
+  "clarity": 3.01,
+  "style": "elderly",
+  "seed": 5
+ },
+ "elderly-s6": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 216,
+  "seconds": 7.51,
+  "rate": 2.4,
+  "clarity": 2.61,
+  "style": "elderly",
+  "seed": 6
+ },
+ "busdriver-s1": {
+  "said": "Hi, Hun, the usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 5.72,
+  "rate": 3.15,
+  "clarity": 3.78,
+  "style": "busdriver",
+  "seed": 1
+ },
+ "busdriver-s2": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 293,
+  "seconds": 4.84,
+  "rate": 3.72,
+  "clarity": 3.17,
+  "style": "busdriver",
+  "seed": 2
+ },
+ "busdriver-s3": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 219,
+  "seconds": 7.27,
+  "rate": 2.48,
+  "clarity": 3.47,
+  "style": "busdriver",
+  "seed": 3
+ },
+ "busdriver-s4": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 177,
+  "seconds": 4.64,
+  "rate": 3.88,
+  "clarity": 4.18,
+  "style": "busdriver",
+  "seed": 4
+ },
+ "busdriver-s5": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 154,
+  "seconds": 5.17,
+  "rate": 3.48,
+  "clarity": 3.77,
+  "style": "busdriver",
+  "seed": 5
+ },
+ "busdriver-s6": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 152,
+  "seconds": 7.12,
+  "rate": 2.53,
+  "clarity": 4.02,
+  "style": "busdriver",
+  "seed": 6
+ },
+ "nana-s1": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 196,
+  "seconds": 5.74,
+  "rate": 3.13,
+  "clarity": 3.91,
+  "style": "nana",
+  "seed": 1
+ },
+ "nana-s2": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 227,
+  "seconds": 5.48,
+  "rate": 3.28,
+  "clarity": 4.19,
+  "style": "nana",
+  "seed": 2
+ },
+ "nana-s3": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 189,
+  "seconds": 6.88,
+  "rate": 2.61,
+  "clarity": 2.62,
+  "style": "nana",
+  "seed": 3
+ },
+ "nana-s4": {
+  "said": "Hi hun, the usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 172,
+  "seconds": 4.74,
+  "rate": 3.8,
+  "clarity": 4.29,
+  "style": "nana",
+  "seed": 4
+ },
+ "nana-s5": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 173,
+  "seconds": 6.97,
+  "rate": 2.58,
+  "clarity": 3.68,
+  "style": "nana",
+  "seed": 5
+ },
+ "nana-s6": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 163,
+  "seconds": 7.54,
+  "rate": 2.39,
+  "clarity": 3.8,
+  "style": "nana",
+  "seed": 6
+ }
+}

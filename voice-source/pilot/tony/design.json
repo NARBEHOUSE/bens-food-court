@@ -1,0 +1,162 @@
+{
+ "grand-s1": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 138,
+  "seconds": 6.42,
+  "rate": 3.11,
+  "clarity": 1.58,
+  "style": "grand",
+  "seed": 1
+ },
+ "grand-s2": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 196,
+  "seconds": 6.69,
+  "rate": 2.99,
+  "clarity": 2.78,
+  "style": "grand",
+  "seed": 2
+ },
+ "grand-s3": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 144,
+  "seconds": 7.86,
+  "rate": 2.55,
+  "clarity": 3.22,
+  "style": "grand",
+  "seed": 3
+ },
+ "grand-s4": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 141,
+  "seconds": 6.71,
+  "rate": 2.98,
+  "clarity": 3.1,
+  "style": "grand",
+  "seed": 4
+ },
+ "maestro-s1": {
+  "said": "Good evening. I am Tony. Forty years at the Opera House, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 124,
+  "seconds": 6.68,
+  "rate": 2.99,
+  "clarity": 1.47,
+  "style": "maestro",
+  "seed": 1
+ },
+ "maestro-s2": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 138,
+  "seconds": 6.94,
+  "rate": 2.88,
+  "clarity": 3.6,
+  "style": "maestro",
+  "seed": 2
+ },
+ "maestro-s3": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 108,
+  "seconds": 7.65,
+  "rate": 2.61,
+  "clarity": 2.88,
+  "style": "maestro",
+  "seed": 3
+ },
+ "maestro-s4": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 87,
+  "seconds": 6.04,
+  "rate": 3.31,
+  "clarity": 3.71,
+  "style": "maestro",
+  "seed": 4
+ },
+ "stage-s1": {
+  "said": "Good evening, I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 139,
+  "seconds": 12.08,
+  "rate": 1.66,
+  "clarity": 1.48,
+  "style": "stage",
+  "seed": 1
+ },
+ "stage-s2": {
+  "said": "Good evening. I am Tony. Forty years at the Opera House, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 186,
+  "seconds": 8.12,
+  "rate": 2.46,
+  "clarity": 3.47,
+  "style": "stage",
+  "seed": 2
+ },
+ "stage-s3": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 227,
+  "seconds": 7.57,
+  "rate": 2.64,
+  "clarity": 3.11,
+  "style": "stage",
+  "seed": 3
+ },
+ "stage-s4": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 205,
+  "seconds": 7.0,
+  "rate": 2.86,
+  "clarity": 3.64,
+  "style": "stage",
+  "seed": 4
+ },
+ "proud-s1": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 180,
+  "seconds": 6.97,
+  "rate": 2.87,
+  "clarity": 2.7,
+  "style": "proud",
+  "seed": 1
+ },
+ "proud-s2": {
+  "said": "Good evening. I am Tony. Forty years at the Opera House, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 337,
+  "seconds": 5.34,
+  "rate": 3.75,
+  "clarity": 2.19,
+  "style": "proud",
+  "seed": 2
+ },
+ "proud-s3": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 215,
+  "seconds": 6.82,
+  "rate": 2.93,
+  "clarity": 2.78,
+  "style": "proud",
+  "seed": 3
+ },
+ "proud-s4": {
+  "said": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "diffs": [],
+  "pitch": 150,
+  "seconds": 7.9,
+  "rate": 2.53,
+  "clarity": 3.63,
+  "style": "proud",
+  "seed": 4
+ }
+}

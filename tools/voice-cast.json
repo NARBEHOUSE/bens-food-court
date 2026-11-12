@@ -1,0 +1,1278 @@
+{
+ "_about": "The voice pass (2026-11): every character's candidate voices, for tools/voice-pilot.py. Each style is a Voice Studio 'Describe a voice' description in three parts: who they are, how the voice sounds, how they speak. sample: what each designed candidate says (the clip every game line is later cloned from), written in the character's usual manner. pitch (Hz, median) and rate (words a second): what a candidate should roughly land on. lines: the moments the test lines are taken from (the first clip of that moment, from the packs in 'packs' order). calm: the model is given the line with full stops for '!' and lower case for ALL CAPS (captions keep the script's words). Wording rules from the earlier voice tests: no loud, booming, brash, shouting or barking (the model shouts, far too high, and distorts); no rasp or gravel (comes out as distortion); say low-pitched, deep, steadily. An accent goes first and plainly ('heavy Texas accent'). Voices are designed from words only, never cloned from a real person.",
+ "_pilot": [
+  "mitch",
+  "marge",
+  "gus",
+  "bev",
+  "vernon",
+  "sal",
+  "kai",
+  "tony"
+ ],
+ "mitch": {
+  "name": "Mitch",
+  "brief": "Eager, upbeat and a little too confident",
+  "sample": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "pitch": [
+   115,
+   190
+  ],
+  "rate": [
+   2.6,
+   4.2
+  ],
+  "packs": [
+   "diner",
+   "court",
+   "pizza"
+  ],
+  "lines": [
+   "shift.start",
+   "after.3",
+   "mistake.",
+   "tutorial."
+  ],
+  "styles": [
+   {
+    "id": "eager",
+    "label": "Eager and smug (the first test's wording)",
+    "describe": "A man in his early thirties, an eager, overconfident diner assistant manager. Medium-high, slightly nasal voice, a little strained. Fast, chatty and upbeat, with a smug, sarcastic edge, like he has had four coffees. Clear studio recording."
+   },
+   {
+    "id": "chipper",
+    "label": "Chipper",
+    "describe": "A man in his early thirties, an eager assistant manager at a food court. A bright, friendly tenor voice, medium-high. Quick, chatty and upbeat, very pleased with himself. Clear studio recording."
+   },
+   {
+    "id": "dry",
+    "label": "Dry and sure of himself",
+    "describe": "A man around thirty, an overconfident junior manager. A clear, medium-pitched voice with a knowing, slightly smug tone. Brisk and dry, lightly sarcastic, always sure he is right. Clear studio recording."
+   },
+   {
+    "id": "host",
+    "label": "Game-show host",
+    "describe": "A man in his thirties with a smooth, peppy voice like a game-show host, medium-high. Energetic and cheerful, a little cheesy, selling every sentence. Clear studio recording."
+   }
+  ]
+ },
+ "marge": {
+  "name": "Marge",
+  "brief": "Warm, unhurried",
+  "sample": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "pitch": [
+   140,
+   280
+  ],
+  "rate": [
+   2.0,
+   3.6
+  ],
+  "packs": [
+   "diner",
+   "cast",
+   "pizza"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "elderly-mw",
+    "label": "Elderly, Midwestern",
+    "describe": "Midwestern accent. An elderly woman, about seventy-five, a retired school-bus driver. An aged, slightly creaky voice. Warm, chatty and slow. Clear studio recording."
+   },
+   {
+    "id": "elderly",
+    "label": "Elderly and frail",
+    "describe": "An elderly woman in her late seventies. A thin, aged grandmother's voice with a slight tremble. Warm, slow and knowing. Clear studio recording."
+   },
+   {
+    "id": "busdriver",
+    "label": "Old bus driver",
+    "describe": "Midwestern accent. An elderly retired bus driver, a woman around seventy-five. A sturdy, no-nonsense, aged voice. Dry and friendly, unhurried. Clear studio recording."
+   },
+   {
+    "id": "nana",
+    "label": "Great-grandmother",
+    "describe": "An elderly great-grandmother, about eighty-five. A soft, old, fragile voice. Sweet and slow, a little absent-minded. Clear studio recording."
+   }
+  ],
+  "tried_r1": {
+   "styles": [
+    {
+     "id": "sweet",
+     "label": "Sweet grandma",
+     "describe": "An elderly woman around seventy, a retired school-bus driver. A warm, smooth, gentle voice, medium pitch. Unhurried, sweet and kind, with a dry, knowing sense of humor. Clear studio recording."
+    },
+    {
+     "id": "southern",
+     "label": "Southern charm",
+     "describe": "An elderly woman around seventy from Georgia with a light Southern accent. A warm, smooth, honeyed voice. Sweet, unhurried and gently teasing. Clear studio recording."
+    },
+    {
+     "id": "brassy",
+     "label": "Brassy and dry",
+     "describe": "An older woman around seventy, a no-nonsense retired bus driver. A clear, confident, brassy voice. Dry, deadpan and wisecracking, but warm underneath. Clear studio recording."
+    },
+    {
+     "id": "midwest",
+     "label": "Chatty Midwest",
+     "describe": "A cheerful elderly woman around seventy from Minnesota with a Midwestern accent. A bright, friendly, clear voice. Chatty, polite and sweet as pie. Clear studio recording."
+    }
+   ],
+   "bryan": "None of them sound like a retired aged person and none are particularly distinctive"
+  },
+  "sample_r1": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ],
+  "tried_r2": {
+   "styles": [
+    {
+     "id": "old",
+     "label": "Old and warm",
+     "describe": "An old woman, about eighty. A thin, light, slightly wavering old voice. Warm and slow, sweet but knowing. Clear studio recording."
+    },
+    {
+     "id": "granny",
+     "label": "Tiny granny",
+     "describe": "A tiny old grandmother in her eighties. A high, soft, papery voice. Gentle, chatty and a little dotty. Clear studio recording."
+    },
+    {
+     "id": "smoky",
+     "label": "Low and dry",
+     "describe": "An old woman in her seventies who has seen it all. A low, husky, smoky voice. Dry, deadpan and warm. Clear studio recording."
+    },
+    {
+     "id": "irish",
+     "label": "Irish grandmother",
+     "describe": "Heavy Irish accent. An old grandmother, about eighty. A warm, lilting, gentle voice. Clear studio recording."
+    }
+   ],
+   "bryan": "Still don't sound old, or like a bus driver. Irish grandmother has a lot of noise/distortion. The + does change the delivery, not consistently better or worse. Maybe try \"elderly\" and \"midwestern\" accent?"
+  },
+  "picked": "round 3 elderly-mw-s4 (VoxCPM2)"
+ },
+ "gus": {
+  "name": "Gus",
+  "brief": "Deep and friendly, with a Western drawl, not slow",
+  "sample": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "pitch": [
+   78,
+   145
+  ],
+  "rate": [
+   2.4,
+   3.8
+  ],
+  "packs": [
+   "diner",
+   "cast",
+   "pizza"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "texas",
+    "label": "Texas drawl",
+    "describe": "Heavy Texas accent. A big, friendly long-haul trucker around fifty with a Western drawl. A deep, warm voice. Easygoing and friendly, at an easy, steady pace. Clear studio recording."
+   },
+   {
+    "id": "southern",
+    "label": "Southern drawl",
+    "describe": "Heavy Southern accent. A big, burly trucker around fifty from Tennessee. A deep, warm, friendly voice. Relaxed but lively, at a steady pace. Clear studio recording."
+   },
+   {
+    "id": "cowboy",
+    "label": "Cowboy",
+    "describe": "A weathered cowboy around fifty from Wyoming with a Western drawl. A low, warm, friendly voice. Laid-back and good-humored, but not slow. Clear studio recording."
+   },
+   {
+    "id": "country",
+    "label": "Country",
+    "describe": "Heavy country accent. A friendly trucker around fifty from Oklahoma. A deep, warm, rumbling voice. Chatty and good-natured, at a natural pace. Clear studio recording."
+   }
+  ]
+ },
+ "bev": {
+  "name": "Coach Bev",
+  "brief": "Low, butch and booming",
+  "calm": true,
+  "sample": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "pitch": [
+   150,
+   235
+  ],
+  "rate": [
+   2.4,
+   4.0
+  ],
+  "packs": [
+   "diner",
+   "cast",
+   "pizza"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "alto",
+    "label": "Strong alto",
+    "describe": "A woman in her forties, a gym coach. A strong, clear alto woman's voice. Confident, firm and upbeat, speaking steadily. Clear studio recording."
+   },
+   {
+    "id": "chesty",
+    "label": "Sporty and full",
+    "describe": "A sporty, energetic woman in her forties. A full, warm, chesty woman's voice, medium-low. Firm and encouraging, like a coach at practice. Clear studio recording."
+   },
+   {
+    "id": "brisk",
+    "label": "Brisk PE teacher",
+    "describe": "A brisk, no-nonsense woman PE teacher in her forties. A crisp, clear, medium-pitched woman's voice. Blunt and businesslike. Clear studio recording."
+   },
+   {
+    "id": "midwest",
+    "label": "Midwest coach",
+    "describe": "Heavy Minnesota accent. A cheerful, sturdy woman gym coach in her forties. A clear, firm woman's voice. Upbeat and steady. Clear studio recording."
+   }
+  ],
+  "tried_r1": {
+   "styles": [
+    {
+     "id": "butch",
+     "label": "Butch coach",
+     "describe": "A tough, butch woman in her forties, a high-school gym coach. A low-pitched, deep voice for a woman, almost masculine. Firm, blunt and no-nonsense, speaking steadily. Clear studio recording."
+    },
+    {
+     "id": "sergeant",
+     "label": "Drill sergeant",
+     "describe": "A burly, muscular woman in her forties, a retired army drill sergeant who now coaches gym. A deep, low-pitched, powerful alto voice. Firm and intense, but calm. Clear studio recording."
+    },
+    {
+     "id": "softball",
+     "label": "Softball coach",
+     "describe": "A stocky woman softball coach in her forties. A deep, low-pitched alto voice, confident and gruff. Matter-of-fact and competitive. Clear studio recording."
+    },
+    {
+     "id": "boston",
+     "label": "Boston coach",
+     "describe": "Heavy Boston accent. A tough woman gym coach in her forties. A low-pitched, deep voice. Blunt and competitive, talking steadily. Clear studio recording."
+    }
+   ],
+   "bryan": "Voice gets a bit too masculine across candidates and starts to sound like other voices, loses it's qualities on other lines."
+  },
+  "identity": "a woman coach, firm and confident",
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ],
+  "picked": "round 2 brisk-s6"
+ },
+ "vernon": {
+  "name": "Vernon",
+  "brief": "Foppish, fussy and refined, with theatrical sighs",
+  "sample": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "pitch": [
+   110,
+   200
+  ],
+  "rate": [
+   2.0,
+   3.4
+  ],
+  "packs": [
+   "diner",
+   "cast",
+   "pizza"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "fop-man",
+    "label": "Foppish man",
+    "describe": "A foppish, effeminate man in his forties. A man's light, airy tenor voice. Precise and snobbish. Clear studio recording."
+   },
+   {
+    "id": "dandy",
+    "label": "Dandy",
+    "describe": "A dandy, a vain and fussy gentleman of forty. A man's refined, slightly nasal tenor voice. Clipped, precise, disdainful diction. Clear studio recording."
+   },
+   {
+    "id": "critic",
+    "label": "Effete critic",
+    "describe": "A pompous, effeminate male food critic. A man's voice, light and nasal, with clipped, over-precise diction. Superior and easily offended. Clear studio recording."
+   },
+   {
+    "id": "camp",
+    "label": "Camp and arch",
+    "describe": "A camp, theatrical man in his forties. A man's light, expressive voice. Arch, witty and fussy, savouring every word. Clear studio recording."
+   }
+  ],
+  "tried_r1": {
+   "styles": [
+    {
+     "id": "fussy",
+     "label": "Fussy snob",
+     "describe": "A fussy, foppish man around forty, a snobbish food blogger. A light, refined tenor voice with crisp, precise, over-enunciated diction and a haughty, slightly nasal tone. Prissy and pompous. Clear studio recording."
+    },
+    {
+     "id": "effete",
+     "label": "Effete and theatrical",
+     "describe": "An effete, delicate, upper-class man around forty. A soft, light, airy voice, theatrical and easily offended, savouring every word. Clear studio recording."
+    },
+    {
+     "id": "atlantic",
+     "label": "Mid-Atlantic",
+     "describe": "A pompous, over-educated man around forty with a polished mid-Atlantic accent. A smooth, refined tenor voice, precise and fastidious, every word chosen with great care. Clear studio recording."
+    },
+    {
+     "id": "prissy",
+     "label": "Prissy and high-strung",
+     "describe": "A prim, high-strung, finicky man around forty. A thin, slightly high, nasal voice, fluttery and dramatic, fussing over every detail. Clear studio recording."
+    }
+   ],
+   "bryan": "None of them really took on the qualities described in the prompt and the sighs created weird long hissing sounds"
+  },
+  "no_tags": true,
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ],
+  "tried_r2": {
+   "styles": [
+    {
+     "id": "fop",
+     "label": "Foppish",
+     "describe": "A foppish, effeminate man. A light, airy, refined voice. Precise and snobbish. Clear studio recording."
+    },
+    {
+     "id": "snob",
+     "label": "Nasal snob",
+     "describe": "An upper-class snob, a fussy man in his forties. A high, nasal, prissy voice. Every word over-pronounced. Clear studio recording."
+    },
+    {
+     "id": "posh",
+     "label": "Posh English",
+     "describe": "Posh English accent. A delicate, fussy man in his forties. A soft, light voice, refined and disdainful. Clear studio recording."
+    },
+    {
+     "id": "aesthete",
+     "label": "Languid aesthete",
+     "describe": "A theatrical, effete aesthete. A breathy, light tenor voice. Languid and superior, savouring every word. Clear studio recording."
+    }
+   ],
+   "bryan": "Foppish is in the right direction but nasal snob didn't have much character and the other two were clearly female voices"
+  },
+  "picked": "round 4 critic-s2 (Qwen3-TTS VoiceDesign)"
+ },
+ "sal": {
+  "name": "Sal",
+  "brief": "Gruff, loud New Yorker, a bit crude",
+  "calm": true,
+  "sample": "Yo. I been at that cart since six. You want cawfee, you go next door. You want to tawk about the pigeons? Don't.",
+  "pitch": [
+   85,
+   165
+  ],
+  "rate": [
+   2.6,
+   4.4
+  ],
+  "packs": [
+   "diner",
+   "cast",
+   "pizza"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "bronx",
+    "label": "Thick Bronx",
+    "describe": "Thick New York accent, from the Bronx. A man in his fifties, a street vendor. Gruff and sarcastic. A deep, nasal voice, fast-talking. Clear studio recording."
+   },
+   {
+    "id": "brooklyn",
+    "label": "Thick Brooklyn",
+    "describe": "Thick Brooklyn accent, New York City. A gruff, cranky hot-dog vendor in his fifties. A low, nasal voice, talking out of the side of his mouth. Clear studio recording."
+   },
+   {
+    "id": "cabbie",
+    "label": "New York cabbie",
+    "describe": "Thick New York City accent. An old-school New York taxi driver in his fifties. A gruff, nasal, fast voice. Wisecracking and impatient. Clear studio recording."
+   }
+  ],
+  "tried_r1": {
+   "styles": [
+    {
+     "id": "bronx",
+     "label": "The Bronx",
+     "describe": "Heavy New York accent. A heavyset man in his fifties from the Bronx. A low-pitched, deep, gruff voice. Blunt, grumpy and crude, grumbling. Clear studio recording."
+    },
+    {
+     "id": "brooklyn",
+     "label": "Brooklyn",
+     "describe": "Thick Brooklyn accent. A big, burly hot-dog vendor in his fifties. A deep, low-pitched, chesty voice. Sarcastic and grumpy, talking out of the side of his mouth. Clear studio recording."
+    },
+    {
+     "id": "queens",
+     "label": "Queens",
+     "describe": "Strong New York accent. A grouchy, heavyset man around sixty from Queens. A deep, low, gruff voice. Impatient and wisecracking, in a gruff mutter. Clear studio recording."
+    },
+    {
+     "id": "jersey",
+     "label": "Jersey",
+     "describe": "Heavy New Jersey accent. A heavyset, crude man in his fifties. A deep, low-pitched voice. Lazy, cranky and blunt. Clear studio recording."
+    }
+   ],
+   "bryan": "All the new york/jersey accents drift toward southern for some reason"
+  },
+  "sample_r1": "Yo. I been standin' at that hot dog cart since six in the mornin', and my feet are killin' me. Gimme a burger.",
+  "respell_ing": true,
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ],
+  "tried_r2": {
+   "styles": [
+    {
+     "id": "ny",
+     "label": "New York",
+     "describe": "Heavy New York accent. A gruff, heavyset man in his fifties. A deep voice. Blunt and grumpy. Clear studio recording."
+    },
+    {
+     "id": "nyc",
+     "label": "New York City, nasal",
+     "describe": "New York City accent. A grumpy hot-dog vendor. A low, gruff, nasal voice. Clear studio recording."
+    },
+    {
+     "id": "brooklyn",
+     "label": "Brooklyn, fast",
+     "describe": "Thick Brooklyn accent. A cranky old street vendor. A deep, nasal voice. Fast and cranky. Clear studio recording."
+    },
+    {
+     "id": "italian",
+     "label": "Italian-American New Yorker",
+     "describe": "Italian-American New York accent. A big, gruff man in his fifties. A deep, warm voice. Sarcastic and blunt. Clear studio recording."
+    }
+   ],
+   "bryan": "The region still isn't coming through."
+  },
+  "sample_r2": "Yo. Six in the morning I'm at that cart, and my feet are killing me. Gimme a burger, and don't talk to me about the pigeons."
+ },
+ "kai": {
+  "name": "Kai",
+  "brief": "Bright, very serious (ten years old)",
+  "sample": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "pitch": [
+   200,
+   340
+  ],
+  "rate": [
+   2.2,
+   3.8
+  ],
+  "packs": [
+   "diner",
+   "cast",
+   "pizza"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "serious",
+    "label": "Very serious child",
+    "describe": "A ten-year-old child, small and very serious, a young food reviewer. A bright, clear, high child's voice. Calm, precise and solemn, like a tiny professional. Clear studio recording."
+   },
+   {
+    "id": "boy",
+    "label": "Serious boy",
+    "describe": "A ten-year-old boy with big glasses, bookish and earnest. A clear, bright, young boy's voice. Careful and matter-of-fact, saying each word exactly. Clear studio recording."
+   },
+   {
+    "id": "girl",
+    "label": "Serious girl",
+    "describe": "A ten-year-old girl, bookish and earnest, very sure of herself. A clear, bright, young girl's voice. Crisp, matter-of-fact and businesslike. Clear studio recording."
+   },
+   {
+    "id": "keen",
+    "label": "Keen young critic",
+    "describe": "A precocious ten-year-old child who talks like a small grown-up. A light, bright, high voice. Polite, formal and confident, with quiet enthusiasm. Clear studio recording."
+   }
+  ]
+ },
+ "tony": {
+  "name": "Tony",
+  "brief": "Big, loud and operatic: every complaint is a performance",
+  "sample": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "pitch": [
+   105,
+   200
+  ],
+  "rate": [
+   1.8,
+   3.4
+  ],
+  "packs": [
+   "pizza",
+   "cast",
+   "smoothie"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "react.1"
+  ],
+  "styles": [
+   {
+    "id": "grand",
+    "label": "Grand tenor",
+    "describe": "A retired opera tenor in his sixties, barrel-chested and proud. A rich, resonant, ringing tenor voice, full and round. Grand and theatrical, every sentence a performance, savouring each word. Clear studio recording."
+   },
+   {
+    "id": "maestro",
+    "label": "Warm maestro",
+    "describe": "A retired opera singer in his sixties, a warm and generous showman. A deep, rich, velvety voice with great resonance. Expansive and dramatic, with the timing of a stage actor. Clear studio recording."
+   },
+   {
+    "id": "stage",
+    "label": "Stage actor",
+    "describe": "A grand old stage actor in his sixties with a powerful, resonant, well-trained voice, medium pitch. Dramatic and passionate, rolling his words, pausing for effect. Clear studio recording."
+   },
+   {
+    "id": "proud",
+    "label": "Proud and wounded",
+    "describe": "A proud, sentimental retired tenor in his sixties. A full, bright, ringing voice. Emotional and easily wounded, swinging between delight and heartbreak, always dignified. Clear studio recording."
+   }
+  ]
+ },
+ "_rest": "The other sixteen: first drafts, to be reworded with what the pilot round teaches before they are designed.",
+ "reginald": {
+  "name": "Reginald",
+  "brief": "Theatrical, sweeping",
+  "sample": "Ah. The aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "pitch": [
+   85,
+   150
+  ],
+  "rate": [
+   1.8,
+   3.2
+  ],
+  "packs": [
+   "diner",
+   "cast",
+   "pizza"
+  ],
+  "lines": [
+   "visitor.arrive",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "grand",
+    "label": "Grand baritone",
+    "describe": "A self-important food critic in his fifties. A deep, rich, rolling baritone voice. Grand and sweeping, relishing long words, like a man narrating his own documentary. Clear studio recording."
+   },
+   {
+    "id": "plummy",
+    "label": "Plummy English",
+    "describe": "Posh English accent. A pompous critic in his fifties. A deep, plummy, resonant voice. Leisurely and theatrical, delighted by the sound of his own sentences. Clear studio recording."
+   },
+   {
+    "id": "velvet",
+    "label": "Velvet radio voice",
+    "describe": "A man in his fifties with the smooth, velvety voice of a late-night radio host, low and warm. Unhurried and dramatic, making every remark sound important. Clear studio recording."
+   }
+  ]
+ },
+ "dale": {
+  "name": "Dale",
+  "brief": "Gravelly drawl, never in a hurry",
+  "sample": "Well. I heard your fryer from the parking lot. Bearing's going. Not today, but it's going. Onion rings, please.",
+  "pitch": [
+   95,
+   165
+  ],
+  "rate": [
+   1.6,
+   3.0
+  ],
+  "packs": [
+   "diner",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "laconic",
+    "label": "Laconic mechanic",
+    "describe": "A wiry mechanic in his fifties, a man of few words. A dry, thin, slightly reedy voice, medium-low. Slow and laconic, never in a hurry, with long easy pauses. Clear studio recording."
+   },
+   {
+    "id": "mountain",
+    "label": "Mountain drawl",
+    "describe": "Heavy Appalachian accent. A lean, weathered mechanic in his fifties. A dry, worn, medium-low voice. Slow, plain-spoken and unbothered. Clear studio recording."
+   },
+   {
+    "id": "deadpan",
+    "label": "Dry and deadpan",
+    "describe": "A lean, tired mechanic in his fifties. A low, flat, dry voice. Deadpan and unhurried, every sentence said like a diagnosis. Clear studio recording."
+   }
+  ]
+ },
+ "priya": {
+  "name": "Priya",
+  "brief": "Dry, quick",
+  "sample": "Coffee. Large. I've been awake since yesterday, so if I close my eyes, that is not a nap, that is a risk.",
+  "pitch": [
+   165,
+   250
+  ],
+  "rate": [
+   3.0,
+   4.6
+  ],
+  "packs": [
+   "cafe",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "dry",
+    "label": "Dry and quick",
+    "describe": "A night-shift nurse in her thirties, sharp and worn out. A clear, level, medium-pitched voice. Quick, dry and matter-of-fact, with a deadpan sense of humor. Clear studio recording."
+   },
+   {
+    "id": "wry",
+    "label": "Tired and wry",
+    "describe": "A tired but witty woman in her thirties at the end of a long shift. A smooth, slightly low voice. Brisk and wry, amused by her own exhaustion. Clear studio recording."
+   },
+   {
+    "id": "brisk",
+    "label": "Brisk professional",
+    "describe": "A capable, no-nonsense nurse in her thirties. A crisp, clear voice. Fast, efficient and dry, like she is reading a chart. Clear studio recording."
+   }
+  ]
+ },
+ "oakes": {
+  "name": "Professor Oakes",
+  "brief": "Nasal, nerdy, slightly too fast",
+  "sample": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "pitch": [
+   120,
+   210
+  ],
+  "rate": [
+   3.0,
+   4.6
+  ],
+  "packs": [
+   "diner",
+   "cast",
+   "pizza"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "nasal",
+    "label": "Nasal and nerdy",
+    "describe": "A food-science professor in his fifties in a bow tie. A thin, nasal, slightly high voice. Fussy and precise, talking a little too fast, thrilled by his own facts. Clear studio recording."
+   },
+   {
+    "id": "lecturer",
+    "label": "Eager lecturer",
+    "describe": "An excitable, bookish professor in his fifties. A light, reedy tenor voice. Quick and pedantic, lecturing happily, tripping over his own enthusiasm. Clear studio recording."
+   },
+   {
+    "id": "fusty",
+    "label": "Fusty academic",
+    "describe": "A stuffy, old-fashioned academic in his sixties. A dry, pinched, nasal voice. Brisk and particular, correcting everything, never pausing for breath. Clear studio recording."
+   }
+  ]
+ },
+ "tasha": {
+  "name": "Tasha",
+  "brief": "Flat, deadpan",
+  "sample": "Hey. So I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "pitch": [
+   170,
+   260
+  ],
+  "rate": [
+   1.8,
+   3.4
+  ],
+  "packs": [
+   "smoothie",
+   "icecream",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "flat",
+    "label": "Flat teenager",
+    "describe": "A sixteen-year-old girl, a skateboarder, deeply unimpressed. A plain, level, medium-pitched teenage voice. Flat, bored and deadpan, with almost no expression. Clear studio recording."
+   },
+   {
+    "id": "dry",
+    "label": "Dry and low-key",
+    "describe": "A cool, low-key teenage girl around sixteen. A slightly low, relaxed voice. Dry and monotone, sarcastic without trying. Clear studio recording."
+   },
+   {
+    "id": "mumble",
+    "label": "Laid-back",
+    "describe": "A laid-back teenage girl around sixteen who does not care much. A soft, level voice. Slow, flat and offhand, trailing off at the ends of sentences. Clear studio recording."
+   }
+  ]
+ },
+ "pam": {
+  "name": "Pam",
+  "brief": "Cheerful, exhausted, talks in lists",
+  "sample": "Hi! Okay. Twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "pitch": [
+   185,
+   290
+  ],
+  "rate": [
+   3.2,
+   4.8
+  ],
+  "packs": [
+   "pizza",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "frazzled",
+    "label": "Frazzled and cheerful",
+    "describe": "A frazzled mom in her late thirties running a children's birthday party. A bright, friendly, slightly breathless voice. Cheerful and fast, rattling off lists, running on very little sleep. Clear studio recording."
+   },
+   {
+    "id": "sunny",
+    "label": "Sunny and worn out",
+    "describe": "A warm, upbeat mother in her late thirties who is completely exhausted. A light, pleasant voice. Chatty and quick, determined to stay positive. Clear studio recording."
+   },
+   {
+    "id": "organised",
+    "label": "Over-organised",
+    "describe": "A super-organised mom in her late thirties with a clipboard. A clear, bright, energetic voice. Brisk and peppy, counting things off one after another. Clear studio recording."
+   }
+  ]
+ },
+ "breeze": {
+  "name": "Breeze",
+  "brief": "Dreamy and relaxed; the joke is in his words, not their length",
+  "sample": "Hey, friend. The waves were talking this morning. Mostly about lunch. So here I am, listening to the waves.",
+  "pitch": [
+   100,
+   175
+  ],
+  "rate": [
+   2.0,
+   3.4
+  ],
+  "packs": [
+   "smoothie",
+   "pizza",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "surfer",
+    "label": "California surfer",
+    "describe": "California surfer accent. A laid-back surfer in his twenties. A soft, warm, easy voice. Dreamy and relaxed, amazed by small things, at a natural pace. Clear studio recording."
+   },
+   {
+    "id": "mellow",
+    "label": "Mellow and dreamy",
+    "describe": "A mellow, gentle young man in his twenties who has spent the whole day at the beach. A smooth, breathy, relaxed voice. Calm and dreamy, smiling as he talks. Clear studio recording."
+   },
+   {
+    "id": "sunny",
+    "label": "Sunny and easygoing",
+    "describe": "A friendly, easygoing beach bum in his late twenties. A light, warm, slightly husky voice. Unbothered and content, speaking easily. Clear studio recording."
+   }
+  ]
+ },
+ "brock": {
+  "name": "Brock",
+  "brief": "Loud, eager and friendly",
+  "calm": true,
+  "sample": "Hey, big guy. Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "pitch": [
+   100,
+   180
+  ],
+  "rate": [
+   2.8,
+   4.4
+  ],
+  "packs": [
+   "smoothie",
+   "icecream",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "gymbro",
+    "label": "Friendly gym bro",
+    "describe": "A big, muscular gym enthusiast in his twenties. A full, chesty, energetic voice, medium-low. Eager, upbeat and friendly, like an encouraging personal trainer. Clear studio recording."
+   },
+   {
+    "id": "pumped",
+    "label": "Pumped up",
+    "describe": "An enthusiastic bodybuilder in his twenties who loves everybody. A strong, bright, hearty voice. Quick and excited, cheering everyone on. Clear studio recording."
+   },
+   {
+    "id": "sweet",
+    "label": "Big and sweet",
+    "describe": "A huge, gentle weightlifter in his twenties, sweet-natured and a little simple. A deep, warm, open voice. Earnest and keen, completely sincere. Clear studio recording."
+   }
+  ]
+ },
+ "jitters": {
+  "name": "Jitters",
+  "brief": "Very fast and wired",
+  "sample": "Hi, hi, hello. I've had six coffees and I can hear colors now. One more should fix it. Or two. Let's say two.",
+  "pitch": [
+   130,
+   235
+  ],
+  "rate": [
+   3.6,
+   5.4
+  ],
+  "packs": [
+   "cafe",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "wired",
+    "label": "Wired",
+    "describe": "An office worker in his thirties who has had far too much coffee. A tight, bright, slightly high voice. Very fast and jittery, words tumbling out, barely stopping to breathe. Clear studio recording."
+   },
+   {
+    "id": "nervy",
+    "label": "Nervy and cheerful",
+    "describe": "A twitchy, over-caffeinated man in his thirties, friendly and unable to slow down. A light, quick tenor voice. Rapid, cheerful and scattered. Clear studio recording."
+   },
+   {
+    "id": "buzzing",
+    "label": "Buzzing",
+    "describe": "A hyperactive office clerk in his thirties buzzing with energy. A thin, eager voice. Speaking very quickly, jumping from thought to thought. Clear studio recording."
+   }
+  ]
+ },
+ "hiro": {
+  "name": "Chef Hiro",
+  "brief": "Calm, low and exacting; quietly funny",
+  "sample": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please, begin.",
+  "pitch": [
+   85,
+   150
+  ],
+  "rate": [
+   1.6,
+   3.0
+  ],
+  "packs": [
+   "sushi",
+   "burrito",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "master",
+    "label": "Stern master",
+    "describe": "A stern, dignified master chef in his sixties. A low, calm, steady voice. Quiet and exacting, choosing few words, with a very dry sense of humor. Clear studio recording."
+   },
+   {
+    "id": "quiet",
+    "label": "Quiet authority",
+    "describe": "A reserved, elderly master craftsman in his sixties. A deep, soft, even voice. Measured and patient, never raising his voice, faintly amused. Clear studio recording."
+   },
+   {
+    "id": "judge",
+    "label": "The judge",
+    "describe": "A strict, formal judge of fine food in his sixties. A low, firm, level voice. Slow and precise, every word a verdict. Clear studio recording."
+   }
+  ]
+ },
+ "dennis": {
+  "name": "Dennis",
+  "brief": "Anxious, polite, easily alarmed",
+  "sample": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "pitch": [
+   120,
+   215
+  ],
+  "rate": [
+   2.8,
+   4.4
+  ],
+  "packs": [
+   "sushi",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "nervous",
+    "label": "Nervous and polite",
+    "describe": "A nervous, mild-mannered man in his thirties trying something new. A soft, slightly high, unsteady voice. Anxious and very polite, apologising often, easily alarmed. Clear studio recording."
+   },
+   {
+    "id": "timid",
+    "label": "Timid",
+    "describe": "A timid, gentle office worker in his thirties. A light, quiet, hesitant voice. Worried and careful, starting sentences and second-guessing them. Clear studio recording."
+   },
+   {
+    "id": "flustered",
+    "label": "Flustered",
+    "describe": "A flustered, well-meaning man in his thirties who worries about everything. A thin, quick tenor voice. Jumpy and apologetic, trying hard to stay calm. Clear studio recording."
+   }
+  ]
+ },
+ "inferno": {
+  "name": "Inferno",
+  "brief": "Intense, proud and gravelly",
+  "calm": true,
+  "sample": "They call me Inferno. Last week I ate a pepper so hot it filed a complaint. Give me your hottest. Then make it hotter.",
+  "pitch": [
+   85,
+   155
+  ],
+  "rate": [
+   2.4,
+   4.0
+  ],
+  "packs": [
+   "burrito",
+   "sushi",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "intense",
+    "label": "Intense",
+    "describe": "A hot-sauce fanatic in his forties, proud and intense. A low-pitched, deep, dark voice. Slow-burning and dramatic, like a wrestler making a promise. Clear studio recording."
+   },
+   {
+    "id": "action",
+    "label": "Action hero",
+    "describe": "A tough, proud man in his forties who talks like an action-movie hero. A deep, low, steady voice. Serious and intense about small things. Clear studio recording."
+   },
+   {
+    "id": "boastful",
+    "label": "Proud boaster",
+    "describe": "A proud, boastful daredevil in his forties. A deep, strong, chesty voice. Confident and fiery, bragging happily. Clear studio recording."
+   }
+  ]
+ },
+ "rita": {
+  "name": "Rita",
+  "brief": "Hearty, always hungry",
+  "sample": "Hey there. I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "pitch": [
+   150,
+   235
+  ],
+  "rate": [
+   2.4,
+   4.0
+  ],
+  "packs": [
+   "burrito",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "hearty",
+    "label": "Hearty",
+    "describe": "A strong, cheerful construction worker in her forties. A full, warm, sturdy voice, medium-low for a woman. Hearty and good-humored, always ready to eat. Clear studio recording."
+   },
+   {
+    "id": "foreman",
+    "label": "The foreman",
+    "describe": "A confident woman in her forties who runs a building site. A clear, strong, practical voice. Direct and friendly, with a big appetite and a big laugh. Clear studio recording."
+   },
+   {
+    "id": "easy",
+    "label": "Easygoing",
+    "describe": "A big-hearted, easygoing woman in her forties in a hard hat. A warm, round, relaxed voice. Jolly and plain-spoken. Clear studio recording."
+   }
+  ]
+ },
+ "lulu": {
+  "name": "Little Lulu",
+  "brief": "Big dramatic sighs, then very sure of herself (seven years old)",
+  "sample": "Hmm. Chocolate. No. Strawberry. No. This is the hardest day of my whole life. Okay. I know. Vanilla.",
+  "pitch": [
+   230,
+   390
+  ],
+  "rate": [
+   1.8,
+   3.4
+  ],
+  "packs": [
+   "icecream",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "dramatic",
+    "label": "Dramatic little girl",
+    "describe": "A seven-year-old girl, small and very dramatic. A high, bright, little girl's voice. Agonising over every choice, then suddenly completely certain. Clear studio recording."
+   },
+   {
+    "id": "bossy",
+    "label": "Small and bossy",
+    "describe": "A bossy, confident seven-year-old girl. A high, clear child's voice. Serious and decisive, like a tiny queen. Clear studio recording."
+   },
+   {
+    "id": "sweet",
+    "label": "Sweet and thoughtful",
+    "describe": "A sweet, thoughtful seven-year-old girl. A soft, high, young child's voice. Slow and careful, thinking out loud. Clear studio recording."
+   }
+  ]
+ },
+ "walt": {
+  "name": "Grandpa Walt",
+  "brief": "Cheerful and nostalgic, a little slow",
+  "sample": "Well, hello there! In nineteen fifty-five, a sundae cost a nickel, and you got a handshake with it. Those were the days.",
+  "pitch": [
+   100,
+   185
+  ],
+  "rate": [
+   1.6,
+   3.0
+  ],
+  "packs": [
+   "icecream",
+   "cafe",
+   "cast"
+  ],
+  "lines": [
+   "greet",
+   "smalltalk",
+   "react.3",
+   "complain"
+  ],
+  "styles": [
+   {
+    "id": "jolly",
+    "label": "Jolly grandpa",
+    "describe": "A cheerful grandfather around eighty in a letterman jacket. A warm, light, slightly wavering old man's voice. Jolly and nostalgic, taking his time. Clear studio recording."
+   },
+   {
+    "id": "oldtime",
+    "label": "Old-time radio",
+    "describe": "A sprightly old man around eighty who sounds like a nineteen-fifties radio announcer. A bright, friendly, old-fashioned voice. Chipper and sentimental, a little slow. Clear studio recording."
+   },
+   {
+    "id": "gentle",
+    "label": "Gentle storyteller",
+    "describe": "A kind, elderly man around eighty who loves to tell stories. A soft, warm, aged voice. Slow, fond and contented. Clear studio recording."
+   }
+  ]
+ },
+ "pa": {
+  "name": "Announcer",
+  "brief": "Smooth, bright public-address voice",
+  "sample": "Attention, food court guests. A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "pitch": [
+   110,
+   260
+  ],
+  "rate": [
+   2.0,
+   3.4
+  ],
+  "packs": [
+   "court"
+  ],
+  "lines": [
+   "court.announce."
+  ],
+  "styles": [
+   {
+    "id": "bright",
+    "label": "Bright (woman)",
+    "describe": "A professional shopping-mall announcer, a woman in her thirties. A smooth, bright, pleasant voice. Calm, clear and friendly, evenly paced. Clear studio recording."
+   },
+   {
+    "id": "smooth",
+    "label": "Smooth (man)",
+    "describe": "A professional public-address announcer, a man in his forties. A smooth, warm, polished voice. Calm, clear and reassuring, evenly paced. Clear studio recording."
+   },
+   {
+    "id": "cheery",
+    "label": "Cheery (woman)",
+    "describe": "A cheerful department-store announcer, a woman in her forties. A warm, sing-song, pleasant voice. Upbeat and clear, like good news over the speakers. Clear studio recording."
+   }
+  ]
+ },
+ "_round2": [
+  "marge",
+  "bev",
+  "vernon",
+  "sal"
+ ],
+ "_round2_about": "Round 2 (2026-11-11), after Bryan's pilot notes: shorter descriptions that lead with the defining trait (the accent study found long trait lists come out wrong), six seeds a style. identity: a short description added to a line's delivery for the '+ description' takes, to test whether a cloned voice keeps its qualities on every line. respell_ing: the model gets -ing for -in' (dropped g's read as Southern). no_tags: sound tags are left out for the model.",
+ "_round3": [
+  "marge",
+  "vernon",
+  "sal"
+ ],
+ "_round3_about": "Round 3 (2026-11-11), after round 2: Bev picked (round 2 brisk-s6). Briefs in the order voice-design guides recommend (accent first, then age and gender, persona, then the sound itself); 'elderly' and Midwestern for Marge (Bryan); 'a man's voice' for Vernon (two round-2 takes came out female); Sal tries eye-dialect spellings in his sample (cawfee, tawk) to pull the New York vowels. No identity takes (round 2: '+ changes the delivery, not consistently better or worse').",
+ "_round4": [
+  "marge",
+  "vernon",
+  "sal"
+ ],
+ "_round4_about": "Round 4 (2026-11-11): the round-3 descriptions made with Qwen3-TTS (tools/voice-qwen.py) instead of VoxCPM2, so the two models are compared on identical briefs. Qwen's cloning takes no delivery note.",
+ "_round5": [
+  "mitch",
+  "marge",
+  "vernon"
+ ],
+ "_round5_about": "Round 5 (2026-11-11): cloner A/B test, VoxCPM2 vs Qwen3-TTS Base, on picked voices (voice-pilot.py clonetest).",
+ "_round6": [
+  "mitch",
+  "marge",
+  "vernon"
+ ],
+ "_round6_about": "Round 6 (2026-11-11): cloner test 2: VoxCPM2 then Seed-VC (pitch model) vs VoxCPM2 vs Qwen3-TTS (voice-pilot.py vctest).",
+ "_round7": [
+  "mitch",
+  "marge",
+  "vernon"
+ ],
+ "_round7_about": "Round 7 (2026-11-12): cloner test 3: Chatterbox Turbo (delivery tags) vs VoxCPM2 vs Qwen3-TTS (voice-pilot.py cbtest)."
+}

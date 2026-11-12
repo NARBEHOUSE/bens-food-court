@@ -54,6 +54,9 @@
     // ── customers ──
     { id: 'greet', who: 'customer', min: 3, files: ['pack', 'cast'], when: 'as they walk up' },
     { id: 'visitor.arrive', who: 'customer', only: 'visitor', files: ['pack'], when: 'a visitor, before their greet' },
+    // Voice pass (2026-11-11): a customer no longer says the order itself (it was recorded as parts, one clip per
+    // ingredient per customer); they say a lead-in and the ticket read-out, in the game's voice, gives the order.
+    { id: 'order.intro', who: 'customer', min: 3, files: ['cast', 'pack'], when: 'instead of the order (the ticket read-out says it): a short lead-in naming no food' },
     { id: 'order.usual', who: 'customer', only: 'usual', files: ['pack'], when: 'instead of the order, when it is exactly their usual' },
     { id: 'order.twin', who: 'customer', only: 'twin', need: 'twoItems', files: ['pack'], when: 'after an order of two of one thing' },
     { id: 'order.dislike', who: 'customer', only: 'dislikes', blanks: ING, files: ['pack'], when: 'after an order that leaves off something they never take' },

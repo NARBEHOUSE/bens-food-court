@@ -1,0 +1,46 @@
+[
+ {
+  "pack": "burrito",
+  "said": "Steak Burrito, white rice, pinto beans, medium sauce, toasted, no lettuce.",
+  "parts": [
+   "Steak Burrito",
+   "white rice",
+   "pinto beans",
+   "medium sauce",
+   "toasted",
+   "no lettuce"
+  ]
+ },
+ {
+  "pack": "cafe",
+  "said": "Cappuccino, medium cup, smooth, oat milk, add caramel.",
+  "parts": [
+   "Cappuccino",
+   "medium cup",
+   "smooth",
+   "oat milk",
+   "add caramel"
+  ]
+ },
+ {
+  "pack": "diner",
+  "said": "Double Cheeseburger, well done, no lettuce, no ketchup.",
+  "parts": [
+   "Double Cheeseburger",
+   "well done",
+   "no lettuce",
+   "no ketchup"
+  ]
+ },
+ {
+  "pack": "pizza",
+  "said": "Meat Lover's Pizza, golden, regular crust, red sauce, 8 slices.",
+  "parts": [
+   "Meat Lover's Pizza",
+   "golden",
+   "regular crust",
+   "red sauce",
+   "8 slices"
+  ]
+ }
+]

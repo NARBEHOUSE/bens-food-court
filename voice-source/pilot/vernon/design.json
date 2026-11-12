@@ -1,0 +1,162 @@
+{
+ "fussy-s1": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 201,
+  "seconds": 5.36,
+  "rate": 3.17,
+  "clarity": 3.87,
+  "style": "fussy",
+  "seed": 1
+ },
+ "fussy-s2": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 145,
+  "seconds": 6.53,
+  "rate": 2.6,
+  "clarity": 3.73,
+  "style": "fussy",
+  "seed": 2
+ },
+ "fussy-s3": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 176,
+  "seconds": 6.82,
+  "rate": 2.49,
+  "clarity": 3.65,
+  "style": "fussy",
+  "seed": 3
+ },
+ "fussy-s4": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 124,
+  "seconds": 6.73,
+  "rate": 2.53,
+  "clarity": 3.4,
+  "style": "fussy",
+  "seed": 4
+ },
+ "effete-s1": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 174,
+  "seconds": 6.82,
+  "rate": 2.49,
+  "clarity": 3.9,
+  "style": "effete",
+  "seed": 1
+ },
+ "effete-s2": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 5.92,
+  "rate": 2.87,
+  "clarity": 3.83,
+  "style": "effete",
+  "seed": 2
+ },
+ "effete-s3": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 155,
+  "seconds": 10.03,
+  "rate": 1.69,
+  "clarity": 3.07,
+  "style": "effete",
+  "seed": 3
+ },
+ "effete-s4": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 138,
+  "seconds": 6.47,
+  "rate": 2.63,
+  "clarity": 4.02,
+  "style": "effete",
+  "seed": 4
+ },
+ "atlantic-s1": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 139,
+  "seconds": 5.84,
+  "rate": 2.91,
+  "clarity": 3.9,
+  "style": "atlantic",
+  "seed": 1
+ },
+ "atlantic-s2": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 170,
+  "seconds": 5.31,
+  "rate": 3.2,
+  "clarity": 3.59,
+  "style": "atlantic",
+  "seed": 2
+ },
+ "atlantic-s3": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 188,
+  "seconds": 5.45,
+  "rate": 3.12,
+  "clarity": 3.75,
+  "style": "atlantic",
+  "seed": 3
+ },
+ "atlantic-s4": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 232,
+  "seconds": 5.09,
+  "rate": 3.34,
+  "clarity": 3.84,
+  "style": "atlantic",
+  "seed": 4
+ },
+ "prissy-s1": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 157,
+  "seconds": 5.76,
+  "rate": 2.95,
+  "clarity": 2.97,
+  "style": "prissy",
+  "seed": 1
+ },
+ "prissy-s2": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 6.04,
+  "rate": 2.82,
+  "clarity": 3.36,
+  "style": "prissy",
+  "seed": 2
+ },
+ "prissy-s3": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 170,
+  "seconds": 7.1,
+  "rate": 2.39,
+  "clarity": 3.09,
+  "style": "prissy",
+  "seed": 3
+ },
+ "prissy-s4": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 142,
+  "seconds": 6.8,
+  "rate": 2.5,
+  "clarity": 4.04,
+  "style": "prissy",
+  "seed": 4
+ }
+}

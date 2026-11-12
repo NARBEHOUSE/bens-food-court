@@ -1,0 +1,1041 @@
+"""Ben's Food Court - the voice pass: candidate voices to choose from, and how each says real lines.
+
+Runs in Voice Studio's Python, like tools/voices.py (which finds Voice Studio and holds the worker and the checks):
+  <voice studio python> tools/voice-pilot.py design [characters...]
+      For each character in tools/voice-cast.json (default: its "_pilot" list), every style is designed with
+      several seeds, saying the character's sample. Each candidate gets the speech check, its pitch and pace, and
+      its clarity score. The best of each style is kept (heard right, pitch in the character's range, then clearest).
+  <voice studio python> tools/voice-pilot.py lines [characters...]
+      Each kept candidate says the character's test lines the way the game records them: cloned from the
+      candidate, with the line's delivery note; a second take if the first is unclear or off the voice's pitch.
+  <voice studio python> tools/voice-pilot.py distinct
+      How alike the kept candidates of different characters sound (Voice Studio's voice encoder, 1 = the same
+      voice) and how far apart their pitches are: pairs that could be confused are listed.
+  <voice studio python> tools/voice-pilot.py page
+      Builds the listening page, voice-source/pilot/page/ (small mp3s and index.html).
+  <voice studio python> tools/voice-pilot.py serve [port]
+      Serves the page on this PC only (default port 8810). Picks and notes are saved to
+      voice-source/pilot/picks.json as they are made.
+Every step picks up where it stopped: nothing already made is made again. Nothing here changes the game.
+"""
+import html
+import json
+import re
+import subprocess
+import sys
+import time
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import voices  # noqa: E402
+from voices import CFG, GAME, STEPS, VS, Worker, checks, clarity, export, measure, respell  # noqa: E402
+
+SPEC = json.loads((GAME / 'tools' / 'voice-cast.json').read_text(encoding='utf-8'))
+PILOT1 = GAME / 'voice-source' / 'pilot'
+ROUND = 1             # --round N: voice-source/pilot<N> (round 1 is voice-source/pilot)
+ROOT = PILOT1
+PAGE = ROOT / 'page'
+TAGS = re.compile(r'\s*\[[^\]]*\]\s*')
+SEEDS = [1, 2, 3, 4]
+CLEAR = 3.0           # a cloned line under this clarity gets a second take
+DRIFT = 0.20          # ... and so does one this far off its voice's own pitch
+LOUD = re.compile(r'\b(booming|loud|bellowing|shouting|yelling|barking)\b,?\s*', re.I)
+# Sounds more than words: the speech checker spells them its own way, so they are not words said wrong.
+SOUNDS = {'ay', 'aye', 'ayy', 'eh', 'ugh', 'yo', 'mm', 'mmm', 'hm', 'hmm', 'huh', 'oh', 'ah', 'uh', 'i', 'hi', 'hey',
+          'a', 'howdy', 'hun', 'hon'}
+DIFF = re.compile(r"^\w+: '(.*)' -> '(.*)'$")
+
+
+def names(args):
+    return args or (SPEC['_round%d' % ROUND] if ROUND > 1 else SPEC['_pilot'])
+
+
+def load(path, default):
+    try:
+        return json.loads(path.read_text(encoding='utf-8'))
+    except FileNotFoundError:
+        return default
+
+
+def save(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=1), encoding='utf-8')
+
+
+def real_diffs(diffs):
+    """Word differences that are words said wrong, not the checker's spelling of a sound."""
+    out = []
+    for d in diffs:
+        m = DIFF.match(d)
+        if m and all(w in SOUNDS for w in m.group(1).split() + m.group(2).split()):
+            continue
+        out.append(d)
+    return out
+
+
+def allowed(text):
+    return 1 if len(checks.words(text)) > 8 else 0
+
+
+def model_text(who, text):
+    """The words the voice model is given: tools/voices.json respellings, and the calm punctuation."""
+    text = respell(who, text)
+    if SPEC[who].get('respell_ing'):      # dropped g's read as Southern to the model: "standin'" -> "standing"
+        text = re.sub(r"\b(\w+in)'(?=\W|$)", r'\1g', text)
+    if SPEC[who].get('no_tags'):          # Vernon's [sigh] came out as a long hiss
+        text = TAGS.sub(' ', text).strip()
+    if SPEC[who].get('calm'):
+        text = re.sub(r'\b[A-Z]{2,}\b', lambda m: m.group(0).lower(), text.replace('!', '.'))
+    # A respelling or the lower-casing can leave the line starting small ("hun, this isn't..."): capital again. Only
+    # at the very start: after a full stop it also caught abbreviations ("The ASST. is tape" -> "ASST. Is").
+    return text[:1].upper() + text[1:]
+
+
+def model_delivery(who, delivery):
+    """A delivery note as the model gets it. For a calm character the loud words are left out (they make the model
+    shout, too high, and distort); the manner comes from the voice itself."""
+    if delivery and SPEC[who].get('calm'):
+        delivery = LOUD.sub('', delivery).strip(' ,')
+    if delivery and SPEC[who].get('no_tags'):
+        # a delivery that asks for a sigh makes one anyway, long and harsh (Vernon, cloner test 2026-11-11)
+        parts = [p.strip() for p in re.split(r',|\bthen\b', delivery) if p.strip() and not re.search(r'sigh|pause', p, re.I)]
+        delivery = ', '.join(parts)
+    return delivery or ''
+
+
+class LazyWorker:
+    """The voice model, loaded only when something actually needs making: a round whose takes were all made by
+    another model (tools/voice-qwen.py) is only measured, and never loads VoxCPM."""
+
+    def __init__(self):
+        self.w = None
+
+    def render(self, job):
+        if self.w is None:
+            voices.TAKES_DIR = ROOT / 'takes'
+            voices.TAKES_DIR.mkdir(parents=True, exist_ok=True)
+            self.w = Worker()
+        return self.w.render(job)
+
+    def close(self):
+        if self.w is not None:
+            self.w.close()
+
+
+def worker():
+    return LazyWorker()
+
+
+def check(wav, text, work):
+    said, diffs, pitch, secs, rate = measure(wav, text, work)
+    return {'said': said, 'diffs': real_diffs(diffs), 'pitch': round(pitch), 'seconds': round(secs, 2),
+            'rate': round(rate, 2), 'clarity': clarity(work / wav.name)}
+
+
+# ── design ──────────────────────────────────────────────────────────────────────────────────────────────────────
+def design(who_list):
+    w = worker()
+    try:
+        for who in who_list:
+            c = SPEC[who]
+            folder = ROOT / who
+            work = folder / 'work'
+            work.mkdir(parents=True, exist_ok=True)
+            rep = load(folder / 'design.json', {})
+            for style in c['styles']:
+                for seed in c.get('seeds', SEEDS):
+                    name = f"{style['id']}-s{seed}"
+                    wav = folder / (name + '.wav')
+                    if name in rep and wav.exists():
+                        continue
+                    if not wav.exists():
+                        ans = w.render({'id': f'{who}-{name}', 'text': f"({style['describe']}){c['sample']}",
+                                        'out': str(wav), 'seed': seed, 'steps': STEPS, 'cfg': CFG, 'retry': True})
+                        if not ans.get('ok'):
+                            print('  failed', who, name, ans.get('error'), flush=True)
+                            continue
+                    r = check(wav, c['sample'], work)
+                    r.update(style=style['id'], seed=seed)
+                    rep[name] = r
+                    save(folder / 'design.json', rep)
+                    print(f"  {who} {name}: {r['pitch']} Hz, {r['rate']} words/s, clarity {r['clarity']}, "
+                          f"{len(r['diffs'])} word differences", flush=True)
+            # The best of each style: heard right, inside the pitch range, then the clearest.
+            lo, hi = c['pitch']
+            kept = []
+            for style in c['styles']:
+                rows = [(n, r) for n, r in rep.items() if r['style'] == style['id']]
+                rows.sort(key=lambda nr: (len(nr[1]['diffs']) > allowed(c['sample']), not lo <= nr[1]['pitch'] <= hi,
+                                          -nr[1]['clarity']))
+                if rows:
+                    kept.append(rows[0][0])
+            save(folder / 'kept.json', kept)
+            # The test lines, with the words the model is to be given, for another model's tool (voice-qwen.py).
+            save(folder / 'tests.json', [dict(t, said_as=model_text(who, t['text']),
+                                              note=model_delivery(who, t.get('delivery')))
+                                         for t in test_lines(who, all_clips())])
+            print(f"{who}: kept {', '.join(kept)}", flush=True)
+    finally:
+        w.close()
+
+
+# ── the test lines ──────────────────────────────────────────────────────────────────────────────────────────────
+def all_clips():
+    path = ROOT / 'clips-all.json'
+    if not path.exists():
+        ROOT.mkdir(parents=True, exist_ok=True)
+        subprocess.run(['node', str(GAME / 'tools' / 'voice-clips.cjs'), 'all', str(path)], check=True, cwd=str(GAME))
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+def test_lines(who, clips):
+    """One clip per moment in the character's "lines": the first of that moment, from its "packs" in order."""
+    c = SPEC[who]
+    mine = [x for x in clips if x['speaker'] == who and x.get('delivery')]
+    out = []
+    for m in c['lines']:
+        hits = [x for x in mine if (x['moment'].startswith(m) if m.endswith('.') else x['moment'] == m)
+                and x['clip'] not in [o['clip'] for o in out]]
+        hits.sort(key=lambda x: c['packs'].index(x['pack']) if x['pack'] in c['packs'] else 99)
+        if hits:
+            out.append(hits[0])
+    return out
+
+
+def lines(who_list):
+    clips = all_clips()
+    w = worker()
+    try:
+        for who in who_list:
+            folder = ROOT / who
+            rep_d = load(folder / 'design.json', {})
+            tests = test_lines(who, clips)
+            save(folder / 'tests.json', tests)
+            rep = load(folder / 'lines.json', {})
+            for cand in load(folder / 'kept.json', []):
+                ref = folder / (cand + '.wav')
+                home = rep_d[cand]['pitch']
+                out_dir = folder / 'lines' / cand
+                work = out_dir / 'work'
+                work.mkdir(parents=True, exist_ok=True)
+                # 'b' takes: the character's short identity added to the delivery, to keep the voice's qualities.
+                variants = [('', '')] + ([('b', SPEC[who]['identity'])] if SPEC[who].get('identity') else [])
+                for i, t in [(i, t) for i, t in enumerate(tests)]:
+                  for suffix, ident in variants:
+                    key = f'{cand}/{i}{suffix}'
+                    final = out_dir / f'{i}{suffix}.wav'
+                    if key in rep and final.exists():
+                        continue
+                    said_as = model_text(who, t['text'])
+                    note = model_delivery(who, t.get('delivery'))
+                    if ident:
+                        note = ident + (', ' + note if note else '')
+                    if final.exists():   # made by another model (tools/voice-qwen.py): measure it only
+                        r = check(final, said_as, work)
+                        r.update(seed=1, drift=bool(home and r['pitch']) and abs(r['pitch'] - home) > DRIFT * home,
+                                 clip=t['clip'], said_as=said_as, note='', takes=1)
+                        rep[key] = r
+                        save(folder / 'lines.json', rep)
+                        print(f"  {who} {key} (measured): {r['pitch']} Hz (voice {home}), clarity {r['clarity']}, "
+                              f"{len(r['diffs'])} word differences", flush=True)
+                        continue
+                    takes = []
+                    for seed in (1, 2):
+                        wav = out_dir / f'{i}{suffix}-s{seed}.wav'
+                        ans = w.render({'id': f'{who}-{key}-{seed}', 'text': (f'({note})' if note else '') + said_as,
+                                        'out': str(wav), 'seed': seed, 'steps': STEPS, 'cfg': CFG,
+                                        'reference': str(ref), 'retry': True})
+                        if not ans.get('ok'):
+                            continue
+                        r = check(wav, said_as, work)
+                        r.update(seed=seed, wav=wav.name, drift=bool(home and r['pitch']) and
+                                 abs(r['pitch'] - home) > DRIFT * home)
+                        takes.append(r)
+                        if len(r['diffs']) <= allowed(said_as) and not r['drift'] and r['clarity'] >= CLEAR:
+                            break
+                    if not takes:
+                        print('  NO TAKE', who, key, flush=True)
+                        continue
+                    best = sorted(takes, key=lambda r: (len(r['diffs']), r['drift'], -r['clarity']))[0]
+                    (out_dir / best['wav']).replace(final)
+                    for r in takes:
+                        (out_dir / r['wav']).unlink(missing_ok=True)
+                    best.update(clip=t['clip'], said_as=said_as, note=note, takes=len(takes))
+                    del best['wav']
+                    rep[key] = best
+                    save(folder / 'lines.json', rep)
+                    print(f"  {who} {key}: {best['pitch']} Hz (voice {home}), clarity {best['clarity']}, "
+                          f"{len(best['diffs'])} word differences, {len(takes)} take(s)", flush=True)
+    finally:
+        w.close()
+
+
+# ── how alike ───────────────────────────────────────────────────────────────────────────────────────────────────
+_ve = None
+
+
+def embed(wav16):
+    """Voice Studio's speaker encoder (Chatterbox's, as studio.py loads it): one vector per clip."""
+    global _ve
+    import soundfile as sf
+    if _ve is None:
+        from huggingface_hub import hf_hub_download
+        from safetensors.torch import load_file
+        from voice_encoder import VoiceEncoder
+        _ve = VoiceEncoder()
+        _ve.load_state_dict(load_file(hf_hub_download('ResembleAI/chatterbox', 've.safetensors',
+                                                      revision='5bb1f6ee58e50c3b8d408bc82a6d3740c2db6e18')))
+        _ve.eval()
+    wav, sr = sf.read(str(wav16), dtype='float32')
+    return _ve.embeds_from_wavs([wav], sr, as_spk=True)
+
+
+def distinct(who_list):
+    from voice_encoder import VoiceEncoder
+    cands = []
+    for who in who_list:
+        folder = ROOT / who
+        rep = load(folder / 'design.json', {})
+        for cand in load(folder / 'kept.json', []):
+            cands.append({'who': who, 'cand': cand, 'pitch': rep[cand]['pitch'],
+                          'emb': embed(folder / 'work' / (cand + '.wav'))})
+    if ROUND > 1:   # the voices already picked are part of the cast these must stand apart from
+        for who, (where, cand) in picked(True).items():
+            rep = load(where / who / 'design.json', {})
+            cands.append({'who': who, 'cand': cand + ' (picked)', 'pitch': rep[cand]['pitch'],
+                          'emb': embed(where / who / 'work' / (cand + '.wav'))})
+    pairs = []
+    for i, a in enumerate(cands):
+        for b in cands[i + 1:]:
+            if a['who'] == b['who']:
+                continue
+            sim = float(VoiceEncoder.voice_similarity(a['emb'], b['emb']))
+            gap = abs(a['pitch'] - b['pitch']) / max(1, min(a['pitch'], b['pitch']))
+            pairs.append({'a': a['who'] + '/' + a['cand'], 'b': b['who'] + '/' + b['cand'], 'alike': round(sim, 3),
+                          'pitch_gap': round(gap, 2)})
+    pairs.sort(key=lambda p: -p['alike'])
+    save(ROOT / 'distinct.json', pairs)
+    print('Most alike across characters (1 = the same voice; pitch gap as a share of the lower pitch):')
+    for p in pairs[:15]:
+        print(f"  {p['alike']:.3f}  gap {p['pitch_gap']:.2f}  {p['a']}  ~  {p['b']}")
+
+
+# ── the listening page ──────────────────────────────────────────────────────────────────────────────────────────
+PAGE_HTML = r'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Court voices: pilot</title>
+<style>
+:root { --bg:#f6f4ef; --card:#fff; --ink:#1d1b18; --soft:#5d574d; --line:#d9d3c6; --pick:#1f6f4a; --pickbg:#e3f3ea; --warn:#8a5a00; }
+@media (prefers-color-scheme: dark) { :root { --bg:#191815; --card:#24221e; --ink:#eeeae2; --soft:#aaa397; --line:#3b3832; --pick:#7fd3a6; --pickbg:#1d3529; --warn:#e2b25a; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width:1100px; margin:0 auto; padding:16px; }
+h1 { font-size:1.5rem; margin:.2em 0; } h2 { font-size:1.3rem; margin:0; }
+p { margin:.4em 0; } .soft { color:var(--soft); } .warn { color:var(--warn); }
+section { border-top:2px solid var(--line); margin-top:28px; padding-top:16px; }
+.lines { margin:.5em 0 1em; padding-left:1.4em; } .lines li { margin:.2em 0; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:12px; }
+.card { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:12px; }
+.card.best { border-color:var(--pick); background:var(--pickbg); }
+.card h3 { margin:0 0 .1em; font-size:1.05rem; }
+.clip { display:flex; align-items:center; gap:8px; margin:6px 0; } .clip span { width:5.2em; flex:none; font-size:.9rem; }
+audio { width:100%; height:34px; }
+label { display:flex; gap:8px; align-items:center; padding:6px 0; cursor:pointer; }
+input[type=radio], input[type=checkbox] { width:20px; height:20px; flex:none; }
+input[type=text], textarea { width:100%; font:inherit; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); }
+details { margin-top:6px; } summary { cursor:pointer; color:var(--soft); font-size:.9rem; }
+#status { position:sticky; top:0; background:var(--bg); padding:6px 0; z-index:2; font-size:.95rem; }
+nav a { margin-right:12px; }
+</style></head><body><main>
+<h1>Food Court voices: pilot round</h1>
+<p>Eight characters, four candidate voices each. For each candidate: the <b>sample</b> is the voice as designed; the numbered clips are real game lines spoken in that voice. Choose a <b>best</b> voice for each character (or "none of these"), tick any others worth keeping, and add notes. Everything saves as you go.</p>
+<p class="soft">The numbers under each name are measured, not judged: pitch in Hz and a clarity score (about 1 = distorted, 4.5 = clean). Trust your ear over them.</p>
+<div id="status" class="soft" role="status">Loading...</div>
+<nav id="nav"></nav>
+<div id="app"></div>
+</main>
+<script src="data.js"></script>
+<script>
+const D = window.PILOT, app = document.getElementById('app'), statusEl = document.getElementById('status');
+let picks = {};
+const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v); } for (const kid of kids.flat()) if (kid != null) e.append(kid); return e; };
+const entry = who => (picks[who] = picks[who] || { best: '', also: [], notes: {}, note: '' });
+let timer = null;
+function saveSoon() { clearTimeout(timer); statusEl.textContent = 'Saving...'; timer = setTimeout(async () => {
+  try { const r = await fetch('picks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(picks) }); if (!r.ok) throw new Error(r.status); summary('Saved. '); }
+  catch (e) { statusEl.textContent = 'NOT saved (' + e.message + '). Is the page server still running?'; } }, 400); }
+function summary(lead) { const done = D.cast.filter(c => entry(c.id).best).length; statusEl.textContent = (lead || '') + done + ' of ' + D.cast.length + ' characters have a choice.'; }
+function audio(src) { const a = el('audio', { controls: true, preload: 'none', src }); a.addEventListener('play', () => document.querySelectorAll('audio').forEach(o => { if (o !== a) o.pause(); })); return a; }
+function render() {
+  app.textContent = '';
+  document.getElementById('nav').replaceChildren(...D.cast.map(c => el('a', { href: '#' + c.id }, c.name)));
+  for (const c of D.cast) {
+    const p = entry(c.id), sec = el('section', { id: c.id });
+    sec.append(el('h2', {}, c.name), el('p', { class: 'soft' }, c.who + ' Voice brief: ' + c.brief + '.'),
+      el('p', {}, el('b', {}, 'Sample: '), '“' + c.sample + '”'),
+      el('ol', { class: 'lines' }, c.tests.map(t => el('li', {}, '“' + t.text + '” ', el('span', { class: 'soft' }, '(' + t.delivery + ')')))));
+    if (c.alike.length) sec.append(el('p', { class: 'warn' }, 'Could be confused with: ' + c.alike.join('; ') + '.'));
+    const grid = el('div', { class: 'grid' });
+    for (const v of c.voices) {
+      const card = el('div', { class: 'card' + (p.best === v.id ? ' best' : '') });
+      card.append(...[el('h3', {}, v.label), el('p', { class: 'soft' }, v.pitch + ' Hz, clarity ' + v.clarity),
+        el('div', { class: 'clip' }, el('span', {}, 'Sample'), audio(v.sample)),
+        v.lines.map(l => el('div', { class: 'clip' }, el('span', {}, 'Line ' + l.n + (l.plus ? ' +' : '') + (l.flag ? ' *' : '')), audio(l.src))),
+        v.lines.some(l => l.plus) ? el('p', { class: 'soft' }, '+ the same line with the character’s short description added to the delivery, to see if it keeps the voice’s qualities') : null,
+        v.lines.some(l => l.flag) ? el('p', { class: 'soft' }, '* the checker flagged this take (a word, the pitch or the clarity)') : null,
+        el('label', {}, el('input', { type: 'radio', name: 'best-' + c.id, checked: p.best === v.id, onchange: () => { p.best = v.id; p.also = p.also.filter(x => x !== v.id); saveSoon(); render(); } }), 'Best for ' + c.name),
+        el('label', {}, el('input', { type: 'checkbox', checked: p.also.includes(v.id), onchange: e => { p.also = p.also.filter(x => x !== v.id); if (e.target.checked) p.also.push(v.id); saveSoon(); } }), 'Also worth keeping'),
+        el('input', { type: 'text', 'aria-label': 'Notes on ' + v.label, placeholder: 'Notes on this voice', value: p.notes[v.id] || '', oninput: e => { p.notes[v.id] = e.target.value; saveSoon(); } }),
+        el('details', {}, el('summary', {}, 'The description used'), el('p', { class: 'soft' }, v.describe))].flat().filter(x => x != null));
+      grid.append(card);
+    }
+    sec.append(grid,
+      el('label', {}, el('input', { type: 'radio', name: 'best-' + c.id, checked: p.best === 'none', onchange: () => { p.best = 'none'; saveSoon(); render(); } }), 'None of these: try again for ' + c.name),
+      el('textarea', { rows: 2, 'aria-label': 'Notes on ' + c.name, placeholder: 'What ' + c.name + ' should sound like instead, or anything else', oninput: e => { p.note = e.target.value; saveSoon(); } }, p.note || ''));
+    app.append(sec);
+  }
+  summary();
+}
+fetch('picks').then(r => r.ok ? r.json() : {}).catch(() => ({})).then(saved => { picks = saved || {}; const y = scrollY; render(); scrollTo(0, y); });
+</script></body></html>
+'''
+
+
+def page(who_list):
+    clips = all_clips()
+    cast = json.loads(subprocess.run(['node', '-e', "console.log(JSON.stringify(require('./packs/cast/cast.js').people))"],
+                                     cwd=str(GAME), check=True, capture_output=True, text=True, encoding='utf-8').stdout)
+    pairs = load(ROOT / 'distinct.json', [])
+    (PAGE / 'audio').mkdir(parents=True, exist_ok=True)
+    data = []
+    for who in who_list:
+        c = SPEC[who]
+        folder = ROOT / who
+        rep_d, rep_l = load(folder / 'design.json', {}), load(folder / 'lines.json', {})
+        tests = load(folder / 'tests.json', None) or test_lines(who, clips)
+        label = {s['id']: s for s in c['styles']}
+        voices_out = []
+        for cand in load(folder / 'kept.json', []):
+            style = label[rep_d[cand]['style']]
+            dst = PAGE / 'audio' / who / (cand + '-sample.mp3')
+            if not dst.exists():
+                export(folder / (cand + '.wav'), dst)
+            line_out = []
+            for i in range(len(tests)):
+              for suffix in ('', 'b'):
+                r = rep_l.get(f'{cand}/{i}{suffix}')
+                src = folder / 'lines' / cand / f'{i}{suffix}.wav'
+                if not r or not src.exists():
+                    continue
+                d = PAGE / 'audio' / who / f'{cand}-l{i}{suffix}.mp3'
+                if not d.exists():
+                    export(src, d)
+                line_out.append({'src': f'audio/{who}/{cand}-l{i}{suffix}.mp3', 'n': i + 1, 'plus': bool(suffix),
+                                 'flag': bool(r['diffs']) or r['drift'] or r['clarity'] < CLEAR})
+            voices_out.append({'id': cand, 'label': style['label'], 'describe': style['describe'],
+                               'pitch': rep_d[cand]['pitch'], 'clarity': rep_d[cand]['clarity'],
+                               'sample': f'audio/{who}/{cand}-sample.mp3', 'lines': line_out})
+        # Another character's candidate that sounds much like one of these, and is near it in pitch.
+        alike = sorted({(p['b'] if p['a'].startswith(who + '/') else p['a']).split('/')[0] for p in pairs
+                        if who + '/' in (p['a'][:len(who) + 1], p['b'][:len(who) + 1])
+                        and p['alike'] >= 0.80 and p['pitch_gap'] < 0.15})
+        data.append({'id': who, 'name': c['name'], 'who': cast[who]['who'] + '.', 'brief': c['brief'],
+                     'sample': c['sample'], 'tests': [{'text': t['text'], 'delivery': t.get('delivery', '')} for t in tests],
+                     'voices': voices_out, 'alike': [SPEC[a]['name'] for a in alike]})
+    (PAGE / 'data.js').write_text('window.PILOT = ' + json.dumps({'made': time.strftime('%Y-%m-%d %H:%M'), 'cast': data}) + ';\n',
+                                  encoding='utf-8')
+    (PAGE / 'index.html').write_text(PAGE_HTML, encoding='utf-8')
+    print(f"page: {PAGE / 'index.html'} ({sum(len(c['voices']) for c in data)} voices)")
+
+
+PARTS_HTML = r'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order parts test</title>
+<style>
+:root { --bg:#f6f4ef; --card:#fff; --ink:#1d1b18; --soft:#5d574d; --line:#d9d3c6; }
+@media (prefers-color-scheme: dark) { :root { --bg:#191815; --card:#24221e; --ink:#eeeae2; --soft:#aaa397; --line:#3b3832; } }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width:900px; margin:0 auto; padding:16px; } .soft { color:var(--soft); }
+.card { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:12px; margin:12px 0; }
+.row { display:flex; gap:8px; align-items:center; margin:6px 0; } .row span { width:9em; flex:none; }
+audio { width:100%; height:34px; }
+</style></head><body><main>
+<h1>Order parts test</h1>
+<p>The game says an order as separate recorded pieces played one after another (90 ms apart). <b>Joined pieces</b> is exactly that. <b>Whole sentence</b> is the same order said in one go, for comparison. Is "joined pieces" acceptable?</p>
+<div id="app"></div></main>
+<script src="parts.js"></script>
+<script>
+const app = document.getElementById('app');
+for (const o of window.PARTS) {
+  const c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = '<b></b> <span class="soft"></span><div class="soft"></div>';
+  c.querySelector('b').textContent = o.name; c.querySelector('span').textContent = '(' + o.pack + ')';
+  c.querySelector('div').textContent = o.parts.join('  ·  ');
+  for (const [label, src] of [['Joined pieces', o.joined], ['Whole sentence', o.whole]]) {
+    const r = document.createElement('div'); r.className = 'row';
+    const s = document.createElement('span'); s.textContent = label;
+    const a = document.createElement('audio'); a.controls = true; a.preload = 'none'; a.src = src;
+    r.append(s, a); c.append(r);
+  }
+  app.append(c);
+}
+</script></body></html>
+'''
+
+
+def parts(who_list):
+    """The order-parts test: real orders said as separate pieces joined the way the game plays them, against the
+    same order said whole. Uses each character's first kept candidate as the voice."""
+    import numpy as np
+    import soundfile as sf
+    orders = json.loads((ROOT / 'parts' / 'orders.json').read_text(encoding='utf-8'))
+    out = PAGE / 'parts'
+    out.mkdir(parents=True, exist_ok=True)
+    rows = []
+    w = worker()
+    try:
+        for who in who_list:
+            cand = load(ROOT / who / 'kept.json', [None])[0]
+            ref = ROOT / who / (cand + '.wav')
+            work = ROOT / 'parts' / who
+            chk = work / 'check'      # the speech check's own files (it writes a 16 kHz copy named like the take)
+            chk.mkdir(parents=True, exist_ok=True)
+
+            def make(text, name):
+                raw = work / (name + '.wav')
+                if not raw.exists():
+                    for seed in (1, 2):
+                        ans = w.render({'id': f'{who}-{name}', 'text': model_text(who, text), 'out': str(raw),
+                                        'seed': seed, 'steps': STEPS, 'cfg': CFG, 'reference': str(ref), 'retry': True})
+                        if ans.get('ok'):
+                            r = check(raw, text, chk)
+                            print(f"  {who} '{text}': heard '{r['said']}', {r['pitch']} Hz", flush=True)
+                            if len(r['diffs']) <= allowed(text):
+                                break
+                # trimmed and levelled exactly as a game clip is, kept as wav for joining
+                lev = work / (name + '.lev.wav')
+                if not lev.exists():
+                    trim = 'silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.06'
+                    subprocess.run([checks.ffmpeg(), '-v', 'error', '-y', '-i', str(raw), '-af',
+                                    f'{trim},areverse,{trim},areverse,loudnorm=I=-17:TP=-1.5:LRA=11', '-ac', '1',
+                                    '-ar', '44100', str(lev)], check=True)
+                return lev
+
+            for k, o in enumerate(orders):
+                pieces = [make(p, 'p-' + re.sub(r'\W+', '_', p.lower())) for p in o['parts']]
+                gap = np.zeros(int(44100 * 0.09), dtype='float32')
+                joined = []
+                for i, f in enumerate(pieces):
+                    x, _ = sf.read(str(f), dtype='float32')
+                    joined += [x] + ([gap] if i < len(pieces) - 1 else [])
+                jw = work / f'order{k}-joined.wav'
+                sf.write(str(jw), np.concatenate(joined), 44100)
+                whole = make(o['said'].strip(), f'order{k}-whole')
+                export(jw, out / f'{who}-order{k}-joined.mp3')
+                export(whole, out / f'{who}-order{k}-whole.mp3')
+                rows.append({'name': f"{SPEC[who]['name']}: order {k + 1}", 'pack': o['pack'], 'parts': o['parts'],
+                             'joined': f'{who}-order{k}-joined.mp3', 'whole': f'{who}-order{k}-whole.mp3'})
+    finally:
+        w.close()
+    (out / 'parts.js').write_text('window.PARTS = ' + json.dumps(rows) + ';\n', encoding='utf-8')
+    (out / 'index.html').write_text(PARTS_HTML, encoding='utf-8')
+    print(f'parts test: {out / "index.html"} ({len(rows)} orders)')
+
+
+def serve(port):
+    picks = ROOT / 'picks.json'
+    stores = {'picks': picks, 'clean-votes': ROOT / 'clean-votes.json', 'clean2-votes': ROOT / 'clean2-votes.json',
+              'ab-votes': ROOT / 'ab-votes.json'}
+
+    def store(path):
+        name = path.split('?')[0].rstrip('/').rsplit('/', 1)[-1]
+        return stores.get(name)
+
+    class H(SimpleHTTPRequestHandler):
+        def __init__(self, *a, **k):
+            super().__init__(*a, directory=str(PAGE), **k)
+
+        def log_message(self, *a):
+            pass
+
+        def end_headers(self):
+            self.send_header('Cache-Control', 'no-store')
+            super().end_headers()
+
+        def do_GET(self):
+            f = store(self.path)
+            if f:
+                body = f.read_bytes() if f.exists() else b'{}'
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            else:
+                super().do_GET()
+
+        def do_POST(self):
+            f = store(self.path)
+            if not f:
+                self.send_error(404)
+                return
+            data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))) or b'{}')
+            tmp = f.with_suffix('.tmp')
+            tmp.write_text(json.dumps(data, indent=1), encoding='utf-8')
+            tmp.replace(f)
+            self.send_response(204)
+            self.end_headers()
+
+    print(f'Listening page: http://127.0.0.1:{port}/  (picks: {picks})', flush=True)
+    ThreadingHTTPServer(('127.0.0.1', port), H).serve_forever()
+
+
+def round_dir(n):
+    return PILOT1 if n == 1 else GAME / 'voice-source' / f'pilot{n}'
+
+
+def picked(with_folder=False):
+    """The voices picked so far, in any earlier round: {who: candidate} (or {who: (round folder, candidate)})."""
+    out = {}
+    for n in range(1, ROUND if ROUND > 1 else 2):
+        for w, p in load(round_dir(n) / 'picks.json', {}).items():
+            if p.get('best') not in (None, '', 'none'):
+                out[w] = (round_dir(n), p['best'])
+    return out if with_folder else {w: c for w, (f, c) in out.items()}
+
+
+CLEAN_HTML = r'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice clarity test</title>
+<style>
+:root { --bg:#f6f4ef; --card:#fff; --ink:#1d1b18; --soft:#5d574d; --line:#d9d3c6; }
+@media (prefers-color-scheme: dark) { :root { --bg:#191815; --card:#24221e; --ink:#eeeae2; --soft:#aaa397; --line:#3b3832; } }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width:900px; margin:0 auto; padding:16px; } .soft { color:var(--soft); }
+.card { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:12px; margin:12px 0; }
+.row { display:flex; gap:8px; align-items:center; margin:6px 0; flex-wrap:wrap; } .row span { width:3em; flex:none; font-weight:600; }
+.row audio { flex:1; min-width:200px; height:34px; } select { font:inherit; padding:4px; }
+</style></head><body><main>
+<h1>Voice clarity test</h1>
+<p>The four voices picked in round 1, two lines each, made five ways (A to E, shuffled per line so you judge by ear). Rate each: <b>clean</b>, <b>a little rough</b> or <b>rough</b>. Ratings save as you go; the key is revealed in the results, not here.</p>
+<div id="status" class="soft" role="status"></div><div id="app"></div></main>
+<script src="clean.js"></script>
+<script>
+const app = document.getElementById('app'), st = document.getElementById('status');
+let votes = {};
+const save = () => fetch('clean-votes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(votes) })
+  .then(r => { st.textContent = r.ok ? 'Saved: ' + Object.keys(votes).length + ' ratings.' : 'NOT saved'; }).catch(() => { st.textContent = 'NOT saved: is the page server running?'; });
+function render() {
+  app.textContent = '';
+  for (const g of window.CLEAN) {
+    const c = document.createElement('div'); c.className = 'card';
+    const h = document.createElement('p'); h.innerHTML = '<b></b> <span class="soft"></span>'; h.querySelector('b').textContent = g.name; h.querySelector('span').textContent = '“' + g.text + '”'; c.append(h);
+    g.clips.forEach((src, i) => {
+      const key = g.id + '/' + i, r = document.createElement('div'); r.className = 'row';
+      const s = document.createElement('span'); s.textContent = 'ABCDE'[i];
+      const a = document.createElement('audio'); a.controls = true; a.preload = 'none'; a.src = src;
+      a.addEventListener('play', () => document.querySelectorAll('audio').forEach(o => { if (o !== a) o.pause(); }));
+      const sel = document.createElement('select'); sel.setAttribute('aria-label', 'Rating for ' + g.name + ' ' + 'ABCDE'[i]);
+      for (const [v, t] of [['', 'rate...'], ['clean', 'clean'], ['little', 'a little rough'], ['rough', 'rough']]) { const o = document.createElement('option'); o.value = v; o.textContent = t; if (votes[key] === v) o.selected = true; sel.append(o); }
+      sel.onchange = () => { votes[key] = sel.value; save(); };
+      r.append(s, a, sel); c.append(r);
+    });
+    app.append(c);
+  }
+}
+fetch('clean-votes').then(r => r.ok ? r.json() : {}).catch(() => ({})).then(v => { votes = v || {}; render(); });
+</script></body></html>
+'''
+
+
+def clean():
+    """The clarity test: each round-1 pick's lines 1 and 3, five ways: A as heard (64 kbps mp3), B the same take at
+    128 kbps, C the same take as full-quality wav, D the same take filtered (rumble and the top end cut, light
+    de-noise, de-ess) at 128 kbps, E re-made with more model steps (40) at 128 kbps. Shuffled per line; the key is
+    in clean-key.json."""
+    import random
+    out = PAGE / 'clean'
+    out.mkdir(parents=True, exist_ok=True)
+    trim = 'silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.06'
+    lev = f'{trim},areverse,{trim},areverse,loudnorm=I=-17:TP=-1.5:LRA=11'
+    filt = 'highpass=f=70,lowpass=f=11000,afftdn=nf=-40:nr=8,deesser=i=0.4,'
+
+    def enc(src, dst, af, rate):
+        if not dst.exists():
+            args = ['-b:a', rate] if rate else ['-c:a', 'pcm_s16le']
+            subprocess.run([checks.ffmpeg(), '-v', 'error', '-y', '-i', str(src), '-af', af, '-ac', '1', '-ar', '44100',
+                            *args, str(dst)], check=True)
+
+    groups, key, rnd = [], {}, random.Random(11)
+    w = None
+    try:
+        for who, cand in picked().items():
+            folder = PILOT1 / who
+            rep = load(folder / 'lines.json', {})
+            tests = load(folder / 'tests.json', [])
+            for i in (0, 2):
+                r = rep.get(f'{cand}/{i}')
+                src = folder / 'lines' / cand / f'{i}.wav'
+                if not r or not src.exists():
+                    continue
+                more = ROOT / 'clean' / who / f'{cand}-{i}-steps40.wav'
+                if not more.exists():
+                    if w is None:
+                        w = worker()
+                    more.parent.mkdir(parents=True, exist_ok=True)
+                    w.render({'id': f'{who}-{i}-s40', 'text': (f"({r['note']})" if r.get('note') else '') + r['said_as'],
+                              'out': str(more), 'seed': r['seed'], 'steps': 40, 'cfg': CFG,
+                              'reference': str(folder / (cand + '.wav')), 'retry': True})
+                base = f'{who}-{i}'
+                made = {'A as heard (64k mp3)': (src, lev, '64k', '.mp3'), 'B same take, 128k mp3': (src, lev, '128k', '.mp3'),
+                        'C same take, full-quality wav': (src, lev, None, '.wav'),
+                        'D same take, filtered, 128k': (src, filt + lev, '128k', '.mp3'),
+                        'E more model steps (40), 128k': (more, lev, '128k', '.mp3')}
+                names_ = list(made)
+                rnd.shuffle(names_)
+                clips = []
+                for n, label in enumerate(names_):
+                    s, af, rate, ext = made[label]
+                    f = f'{base}-{n}{ext}'
+                    enc(s, out / f, af, rate)
+                    clips.append(f)
+                    key[f'{who}-{i}/{n}'] = label
+                groups.append({'id': f'{who}-{i}', 'name': f"{SPEC[who]['name']} ({cand})", 'text': tests[i]['text'], 'clips': clips})
+    finally:
+        if w:
+            w.close()
+    save(ROOT / 'clean-key.json', key)
+    (out / 'clean.js').write_text('window.CLEAN = ' + json.dumps(groups) + ';\n', encoding='utf-8')
+    (out / 'index.html').write_text(CLEAN_HTML, encoding='utf-8')
+    print(f'clarity test: {out / "index.html"} ({len(groups)} lines x 5)')
+
+
+def clean2():
+    """Clarity test 2: the model's guidance setting. VoxCPM's usage guide: cfg 2.0-3.0 carries "more risk of noise or
+    artifacts", and noisy or buzzy output is "often more stable" toward 1.5-1.6; steps "recommended 4-30". Each pick's
+    lines 1 and 3, same seed, four ways, all lossless wav (no mp3 in the way): cfg 2.0 / 24 steps (what we use),
+    cfg 1.6 / 24, cfg 1.6 / 30, cfg 2.0 / 30. Shuffled per line; the key is clean2-key.json."""
+    import random
+    out = PAGE / 'clean2'
+    out.mkdir(parents=True, exist_ok=True)
+    trim = 'silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.06'
+    lev = f'{trim},areverse,{trim},areverse,loudnorm=I=-17:TP=-1.5:LRA=11'
+    # clean test 1 (Bryan, 2026-11-11): the mp3 was not the cause; the filter (D) took 6 of 8 lines to clean.
+    filt = 'highpass=f=70,lowpass=f=11000,afftdn=nf=-40:nr=8,deesser=i=0.4,'
+    ways = {'cfg 2.0, 24 steps (now)': (2.0, 24, ''), 'cfg 1.6, 24 steps': (1.6, 24, ''), 'cfg 1.6, 30 steps': (1.6, 30, ''),
+            'cfg 2.0, 30 steps': (2.0, 30, ''), 'cfg 1.6, 24 steps + filter': (1.6, 24, filt)}
+    groups, key, rnd = [], {}, random.Random(12)
+    w = worker()
+    try:
+        for who, cand in picked().items():
+            folder = PILOT1 / who
+            rep, tests = load(folder / 'lines.json', {}), load(folder / 'tests.json', [])
+            for i in (0, 2):
+                r = rep.get(f'{cand}/{i}')
+                if not r:
+                    continue
+                labels = list(ways)
+                rnd.shuffle(labels)
+                clips = []
+                for n, label in enumerate(labels):
+                    cfg, steps, extra = ways[label]
+                    raw = ROOT / 'clean2' / who / f'{cand}-{i}-cfg{cfg}-st{steps}.wav'
+                    if not raw.exists():
+                        raw.parent.mkdir(parents=True, exist_ok=True)
+                        w.render({'id': f'{who}-{i}-{cfg}-{steps}', 'out': str(raw), 'seed': r['seed'], 'steps': steps,
+                                  'cfg': cfg, 'text': (f"({r['note']})" if r.get('note') else '') + r['said_as'],
+                                  'reference': str(folder / (cand + '.wav')), 'retry': True})
+                    f = f'{who}-{i}-{n}.wav'
+                    if not (out / f).exists():
+                        subprocess.run([checks.ffmpeg(), '-v', 'error', '-y', '-i', str(raw), '-af', extra + lev, '-ac', '1',
+                                        '-ar', '44100', '-c:a', 'pcm_s16le', str(out / f)], check=True)
+                    clips.append(f)
+                    key[f'{who}-{i}/{n}'] = label
+                groups.append({'id': f'{who}-{i}', 'name': f"{SPEC[who]['name']} ({cand})", 'text': tests[i]['text'], 'clips': clips})
+    finally:
+        w.close()
+    save(ROOT / 'clean2-key.json', key)
+    (out / 'clean2.js').write_text('window.CLEAN = ' + json.dumps(groups) + ';\n', encoding='utf-8')
+    page_html = (CLEAN_HTML.replace('clean-votes', 'clean2-votes').replace('clean.js', 'clean2.js')
+                 .replace('Voice clarity test</title>', 'Voice clarity test 2</title>')
+                 .replace('<h1>Voice clarity test</h1>', '<h1>Voice clarity test 2: the model setting</h1>')
+                 .replace('made five ways (A to E', 'made five ways with different model settings, all full quality (A to E'))
+    (out / 'index.html').write_text(page_html, encoding='utf-8')
+    print(f'clarity test 2: {out / "index.html"} ({len(groups)} lines x {len(ways)})')
+
+
+AB_HTML = r'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which cloner</title>
+<style>
+:root { --bg:#f6f4ef; --card:#fff; --ink:#1d1b18; --soft:#5d574d; --line:#d9d3c6; }
+@media (prefers-color-scheme: dark) { :root { --bg:#191815; --card:#24221e; --ink:#eeeae2; --soft:#aaa397; --line:#3b3832; } }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width:900px; margin:0 auto; padding:16px; } .soft { color:var(--soft); }
+.card { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:12px; margin:12px 0; }
+.row { display:flex; gap:8px; align-items:center; margin:6px 0; } .row span { width:2em; flex:none; font-weight:600; }
+.row audio { flex:1; min-width:200px; height:34px; }
+label { display:inline-flex; gap:6px; align-items:center; margin-right:16px; padding:6px 0; cursor:pointer; }
+input[type=radio] { width:20px; height:20px; } input[type=text] { width:100%; font:inherit; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); }
+</style></head><body><main>
+<h1>Which model should say the lines?</h1>
+<p>Each line, said by a voice you picked, made two ways (A and B, in random order). One way follows the line's delivery note (in brackets); the other is cleaner but ignores it. Choose the one you would put in the game, and say why if you like. Everything saves as you go.</p>
+<div id="status" class="soft" role="status"></div><div id="app"></div></main>
+<script src="ab.js"></script>
+<script>
+const app = document.getElementById('app'), st = document.getElementById('status');
+let votes = {};
+const save = () => fetch('ab-votes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(votes) })
+  .then(r => { st.textContent = r.ok ? 'Saved.' : 'NOT saved'; }).catch(() => { st.textContent = 'NOT saved: is the page server running?'; });
+for (const g of window.AB) {
+  const v = votes[g.id] = votes[g.id] || {};
+  const c = document.createElement('div'); c.className = 'card';
+  const h = document.createElement('p'); const b = document.createElement('b'); b.textContent = g.name + ': '; h.append(b, '“' + g.text + '” ');
+  const s = document.createElement('span'); s.className = 'soft'; s.textContent = '(' + g.delivery + ')'; h.append(s); c.append(h);
+  const LET = 'ABCDE'.slice(0, g.clips.length).split('');
+  LET.forEach((L, i) => { const r = document.createElement('div'); r.className = 'row'; const sp = document.createElement('span'); sp.textContent = L;
+    const a = document.createElement('audio'); a.controls = true; a.preload = 'none'; a.src = g.clips[i];
+    a.addEventListener('play', () => document.querySelectorAll('audio').forEach(o => { if (o !== a) o.pause(); })); r.append(sp, a); c.append(r); });
+  const p = document.createElement('div');
+  for (const [val, t] of LET.map(L => [L, L + ' is best']).concat([['same', 'No clear best']])) {
+    const l = document.createElement('label'); const inp = document.createElement('input'); inp.type = 'radio'; inp.name = 'ab-' + g.id; inp.value = val;
+    inp.dataset.g = g.id; inp.onchange = () => { votes[g.id].pick = val; save(); }; l.append(inp, t); p.append(l); }
+  const n = document.createElement('input'); n.type = 'text'; n.placeholder = 'Why (optional)'; n.setAttribute('aria-label', 'Notes on ' + g.name + ' line');
+  n.dataset.g = g.id; n.oninput = () => { votes[g.id].note = n.value; save(); }; c.append(p, n); app.append(c);
+}
+fetch('ab-votes').then(r => r.ok ? r.json() : {}).catch(() => ({})).then(saved => { Object.assign(votes, saved || {});
+  document.querySelectorAll('input[type=radio]').forEach(i => { i.checked = (votes[i.dataset.g] || {}).pick === i.value; });
+  document.querySelectorAll('input[type=text]').forEach(i => { i.value = (votes[i.dataset.g] || {}).note || ''; }); });
+</script></body></html>
+'''
+CLONE_TEST = ['mitch', 'marge', 'vernon']
+
+
+def clonetest(stage):
+    """Which model clones the picked voices for the script: VoxCPM2 (takes the delivery note) or Qwen3-TTS Base
+    (cleaner, no delivery note). stage 'prep' writes qwen-jobs.json for tools/voice-qwen.py; stage 'make' renders the
+    VoxCPM takes and builds the A/B page (same filter and loudness for both)."""
+    import random
+    clips = all_clips()
+    jobs, rows = [], []
+    for who in CLONE_TEST:
+        where, cand = picked(True)[who]
+        ref = where / who / (cand + '.wav')
+        for i, t in enumerate(test_lines(who, clips)):
+            said, note = model_text(who, t['text']), model_delivery(who, t.get('delivery'))
+            base = ROOT / 'clone' / who / f'{i}'
+            jobs.append({'who': who, 'ref': str(ref), 'ref_text': SPEC[who]['sample'], 'text': said, 'out': str(base) + '-qwen.wav'})
+            rows.append({'who': who, 'i': i, 'ref': ref, 'said': said, 'note': note, 'base': base, 'text': t['text'],
+                         'delivery': t.get('delivery', '')})
+    if stage == 'prep':
+        save(ROOT / 'qwen-jobs.json', jobs)
+        print(f"{len(jobs)} Qwen jobs: {ROOT / 'qwen-jobs.json'}")
+        return
+    out = PAGE / 'ab'
+    out.mkdir(parents=True, exist_ok=True)
+    w, key, groups, rnd = worker(), {}, [], random.Random(5)
+    try:
+        for r in rows:
+            vox = Path(str(r['base']) + '-voxcpm.wav')
+            if not vox.exists():
+                vox.parent.mkdir(parents=True, exist_ok=True)
+                w.render({'id': f"{r['who']}-{r['i']}-vox", 'text': (f"({r['note']})" if r['note'] else '') + r['said'],
+                          'out': str(vox), 'seed': 1, 'steps': STEPS, 'cfg': CFG, 'reference': str(r['ref']), 'retry': True})
+            pair = [('VoxCPM2 (delivery note)', vox), ('Qwen3-TTS (no delivery note)', Path(str(r['base']) + '-qwen.wav'))]
+            rnd.shuffle(pair)
+            gid = f"{r['who']}-{r['i']}"
+            files = []
+            for n, (label, src) in enumerate(pair):
+                f = f'{gid}-{"ab"[n]}.mp3'
+                if not (out / f).exists():
+                    export(src, out / f)
+                files.append(f)
+                key[f'{gid}/{"AB"[n]}'] = label
+            groups.append({'id': gid, 'name': SPEC[r['who']]['name'], 'text': r['text'], 'delivery': r['delivery'], 'clips': files})
+    finally:
+        w.close()
+    save(ROOT / 'ab-key.json', key)
+    (out / 'ab.js').write_text('window.AB = ' + json.dumps(groups) + ';\n', encoding='utf-8')
+    (out / 'index.html').write_text(AB_HTML, encoding='utf-8')
+    print(f'cloner test: {out / "index.html"} ({len(groups)} lines)')
+
+
+def vctest():
+    """Cloner test 2: VoxCPM2 performs each line with its delivery note, then Seed-VC's pitch-following model (Voice
+    Studio's vc_boot.py, the "pitch" model) rebuilds it in the picked voice, to keep the delivery and get the clean,
+    steady voice. Compared with plain VoxCPM2 and with Qwen3-TTS (round 5's takes), three ways, shuffled."""
+    import random
+    import config as vsconfig
+    C = vsconfig.CONFIG
+    clips = all_clips()
+    rows = []
+    for who in CLONE_TEST:
+        where, cand = picked(True)[who]
+        for i, t in enumerate(test_lines(who, clips)):
+            rows.append({'who': who, 'i': i, 'ref': where / who / (cand + '.wav'), 'text': t['text'],
+                         'delivery': t.get('delivery', ''), 'said': model_text(who, t['text']),
+                         'note': model_delivery(who, t.get('delivery')), 'base': ROOT / 'vc' / who / f'{i}',
+                         'qwen': round_dir(5) / 'clone' / who / f'{i}-qwen.wav'})
+    w = worker()
+    try:
+        for r in rows:
+            vox = Path(str(r['base']) + '-voxcpm.wav')
+            if not vox.exists():
+                vox.parent.mkdir(parents=True, exist_ok=True)
+                w.render({'id': f"{r['who']}-{r['i']}-vox", 'text': (f"({r['note']})" if r['note'] else '') + r['said'],
+                          'out': str(vox), 'seed': 1, 'steps': STEPS, 'cfg': CFG, 'reference': str(r['ref']), 'retry': True})
+    finally:
+        w.close()   # free the card for Seed-VC
+    ff = checks.ffmpeg()
+    for who in CLONE_TEST:
+        mine = [r for r in rows if r['who'] == who and not Path(str(r['base']) + '-vc.wav').exists()]
+        if not mine:
+            continue
+        work = ROOT / 'vc' / who / 'work'
+        work.mkdir(parents=True, exist_ok=True)
+        target = work / 'target.wav'   # as recordings.py: at most 10 s of the voice, levelled to -32 LUFS
+        subprocess.run([ff, '-v', 'error', '-y', '-i', str(mine[0]['ref']), '-t', '10', '-af', 'loudnorm=I=-32:TP=-6:LRA=11',
+                        '-ac', '1', '-ar', '44100', str(target)], check=True)
+        pieces = []
+        for r in mine:
+            src = work / f"src{r['i']}.wav"
+            subprocess.run([ff, '-v', 'error', '-y', '-i', str(r['base']) + '-voxcpm.wav', '-af', 'loudnorm=I=-28:TP=-8:LRA=7',
+                            '-ac', '1', '-ar', '44100', str(src)], check=True)
+            pieces.append({'src': str(src), 'out': str(r['base']) + '-vc.wav'})
+        job = {'model': 'pitch', 'target': str(target), 'steps': 30, 'shift': 0, 'match': True, 'similarity': 0.7,
+               'intelligibility': 0.7, 'style': False, 'fp32': True, 'pieces': pieces}
+        save(work / 'job.json', job)
+        env = dict(__import__('os').environ, PYTHONIOENCODING='utf-8', HF_HUB_DISABLE_SYMLINKS_WARNING='1')
+        if C.get('hf_home'):
+            env['HF_HOME'] = C['hf_home']
+        with open(work / 'vc.log', 'w', encoding='utf-8') as log:
+            subprocess.run([C['vc_python'], str(Path(VS) / 'vc_boot.py'), C['vc_dir'], str(work / 'job.json')],
+                           stdout=log, stderr=log, env=env, check=True)
+        print(f'  {who}: {len(pieces)} lines converted', flush=True)
+    out = PAGE / 'ab'
+    out.mkdir(parents=True, exist_ok=True)
+    key, groups, rnd = {}, [], random.Random(6)
+    for r in rows:
+        three = [('VoxCPM2', Path(str(r['base']) + '-voxcpm.wav')), ('VoxCPM2 then Seed-VC', Path(str(r['base']) + '-vc.wav')),
+                 ('Qwen3-TTS', r['qwen'])]
+        rnd.shuffle(three)
+        gid, files = f"{r['who']}-{r['i']}", []
+        for n, (label, src) in enumerate(three):
+            f = f'{gid}-{n}.mp3'
+            if not (out / f).exists():
+                export(src, out / f)
+            files.append(f)
+            key[f'{gid}/{"ABC"[n]}'] = label
+        groups.append({'id': gid, 'name': SPEC[r['who']]['name'], 'text': r['text'], 'delivery': r['delivery'], 'clips': files})
+    save(ROOT / 'ab-key.json', key)
+    (out / 'ab.js').write_text('window.AB = ' + json.dumps(groups) + ';\n', encoding='utf-8')
+    (out / 'index.html').write_text(AB_HTML.replace("made two ways (A and B, in random order). One way follows the line's delivery note (in brackets); the other is cleaner but ignores it.",
+                                                    'made three ways (A, B and C, in random order).'), encoding='utf-8')
+    print(f'cloner test 2: {out / "index.html"} ({len(groups)} lines x 3)')
+
+
+TURBO_TAGS = [   # a delivery note's words -> one Chatterbox Turbo delivery tag (first match wins); none = no tag
+    ('', r'let down|wounded|disappoint|\bsad\b|misty|wistful|nostalgic|flat'),   # no tag fits: better none than wrong
+    ('[angry]', r'angry|outraged|indignant|furious|appalled'),
+    ('[surprised]', r'surpris|shock|disbelief|alarmed|startled'),
+    ('[dramatic]', r'dramatic|theatrical|grand|operatic|sweeping|tragic|anguish|crescendo|ceremonial|emotional'),
+    ('[sarcastic]', r'sarcas|smug|dry|deadpan|icy|pointed|sly|wry|unimpressed|haughty|grudging'),
+    ('[happy]', r'happy|pleased|delighted|warm|cheerful|proud|upbeat|ecstatic|eager|bright|fond|triumphant'),
+    ('[whispering]', r'whisper'),
+]
+
+
+def turbo_tag(note):
+    for tag, words in TURBO_TAGS:
+        if note and re.search(words, note, re.I):
+            return tag
+    return ''
+
+
+def cbtest(stage):
+    """Cloner test 3: Chatterbox Turbo (with a delivery tag made from each line's note) against VoxCPM2 (round 6's takes,
+    sigh-free notes) and Qwen3-TTS (round 5's takes), on the same 12 lines. 'prep' writes cb-jobs.json for
+    tools/voice-chatterbox.py; 'make' builds the three-way page."""
+    import random
+    clips = all_clips()
+    rows = []
+    for who in CLONE_TEST:
+        where, cand = picked(True)[who]
+        for i, t in enumerate(test_lines(who, clips)):
+            note = model_delivery(who, t.get('delivery'))
+            tag = turbo_tag(note)
+            rows.append({'who': who, 'i': i, 'text': t['text'], 'delivery': t.get('delivery', ''), 'tag': tag,
+                         'ref': str(where / who / (cand + '.wav')), 'said': model_text(who, t['text']),
+                         'cb': ROOT / 'cb' / who / f'{i}-chatterbox.wav',
+                         'vox': round_dir(6) / 'vc' / who / f'{i}-voxcpm.wav',
+                         'qwen': round_dir(5) / 'clone' / who / f'{i}-qwen.wav'})
+    if stage == 'prep':
+        save(ROOT / 'cb-jobs.json', [{'ref': r['ref'], 'text': (r['tag'] + ' ' if r['tag'] else '') + r['said'],
+                                       'out': str(r['cb'])} for r in rows])
+        for r in rows:
+            print(f"  {r['who']} {r['i']}: {r['tag'] or '(no tag)':12} <- {r['delivery']}")
+        return
+    out = PAGE / 'ab'
+    out.mkdir(parents=True, exist_ok=True)
+    key, groups, rnd = {}, [], random.Random(7)
+    for r in rows:
+        three = [('VoxCPM2', r['vox']), ('Chatterbox Turbo ' + (r['tag'] or '(no tag)'), r['cb']), ('Qwen3-TTS', r['qwen'])]
+        rnd.shuffle(three)
+        gid, files = f"{r['who']}-{r['i']}", []
+        for n, (label, src) in enumerate(three):
+            f = f'{gid}-{n}.mp3'
+            if not (out / f).exists():
+                export(src, out / f)
+            files.append(f)
+            key[f'{gid}/{"ABC"[n]}'] = label
+        groups.append({'id': gid, 'name': SPEC[r['who']]['name'], 'text': r['text'], 'delivery': r['delivery'], 'clips': files})
+    save(ROOT / 'ab-key.json', key)
+    (out / 'ab.js').write_text('window.AB = ' + json.dumps(groups) + ';\n', encoding='utf-8')
+    (out / 'index.html').write_text(AB_HTML.replace("made two ways (A and B, in random order). One way follows the line's delivery note (in brackets); the other is cleaner but ignores it.",
+                                                    'made three ways (A, B and C, in random order).'), encoding='utf-8')
+    print(f'cloner test 3: {out / "index.html"} ({len(groups)} lines x 3)')
+
+
+def main():
+    global ROUND, ROOT, PAGE
+    if '--round' in sys.argv:
+        k = sys.argv.index('--round')
+        ROUND = int(sys.argv[k + 1])
+        del sys.argv[k:k + 2]
+        ROOT = PILOT1 if ROUND == 1 else GAME / 'voice-source' / f'pilot{ROUND}'
+        PAGE = ROOT / 'page'
+    cmd, args = (sys.argv[1] if len(sys.argv) > 1 else ''), sys.argv[2:]
+    if cmd == 'clean':
+        clean()
+        return
+    if cmd == 'clean2':
+        clean2()
+        return
+    if cmd == 'cbtest':
+        cbtest(args[0] if args else 'make')
+        return
+    if cmd == 'vctest':
+        vctest()
+        return
+    if cmd == 'clonetest':
+        clonetest(args[0] if args else 'make')
+        return
+    if cmd == 'design':
+        design(names(args))
+    elif cmd == 'lines':
+        lines(names(args))
+    elif cmd == 'distinct':
+        distinct(names(args))
+    elif cmd == 'page':
+        page(names(args))
+    elif cmd == 'parts':
+        parts(args or ['marge', 'gus'])
+    elif cmd == 'serve':
+        serve(int(args[0]) if args else 8810)
+    else:
+        sys.exit(__doc__)
+
+
+if __name__ == '__main__':
+    main()

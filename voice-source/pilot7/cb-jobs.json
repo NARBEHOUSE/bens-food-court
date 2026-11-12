@@ -1,0 +1,62 @@
+[
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "text": "[happy] Doors are open. The oven's hot, the dough's proofed, and there's flour somewhere on me I can't reach.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\mitch\\0-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "text": "[sarcastic] Another happy customer. I'll take the credit. I'll take the box, too. We reuse those.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\mitch\\1-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "text": "The ticket said no cheese.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\mitch\\2-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "text": "Hi. Mitch. Assistant manager. The ASST. Is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\mitch\\3-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "text": "[happy] Hi hun. I've just come from bingo, and I'm feeling lucky.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\marge\\0-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "text": "I had my retirement party in that corner booth hun. Twelve bus drivers and one cake. The cake didn't make it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\marge\\1-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "text": "Oh hun. That's just like the one from my first date. Different fella. Same burger.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\marge\\2-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "text": "Hun, this isn't what I said. I'm old, not blind.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\marge\\3-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "text": "[sarcastic] Good evening. I will be reviewing tonight.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\vernon\\0-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "text": "My blog began at this very counter. Post one. 'Hm.' It remains my most popular.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\vernon\\1-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "text": "[sarcastic] Acceptable. Don't let it go to your head.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\vernon\\2-chatterbox.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "text": "I will be writing about this. At length.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot7\\cb\\vernon\\3-chatterbox.wav"
+ }
+]

@@ -1,0 +1,162 @@
+{
+ "sweet-s1": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 209,
+  "seconds": 5.62,
+  "rate": 3.2,
+  "clarity": 4.02,
+  "style": "sweet",
+  "seed": 1
+ },
+ "sweet-s2": {
+  "said": "Hi, Hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 214,
+  "seconds": 5.01,
+  "rate": 3.59,
+  "clarity": 3.55,
+  "style": "sweet",
+  "seed": 2
+ },
+ "sweet-s3": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 211,
+  "seconds": 7.44,
+  "rate": 2.42,
+  "clarity": 3.87,
+  "style": "sweet",
+  "seed": 3
+ },
+ "sweet-s4": {
+  "said": "Hi hun, the usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 162,
+  "seconds": 4.97,
+  "rate": 3.62,
+  "clarity": 4.26,
+  "style": "sweet",
+  "seed": 4
+ },
+ "southern-s1": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 216,
+  "seconds": 6.24,
+  "rate": 2.89,
+  "clarity": 3.82,
+  "style": "southern",
+  "seed": 1
+ },
+ "southern-s2": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 265,
+  "seconds": 4.92,
+  "rate": 3.66,
+  "clarity": 3.25,
+  "style": "southern",
+  "seed": 2
+ },
+ "southern-s3": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 209,
+  "seconds": 5.35,
+  "rate": 3.36,
+  "clarity": 3.6,
+  "style": "southern",
+  "seed": 3
+ },
+ "southern-s4": {
+  "said": "Hi hun, the usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 189,
+  "seconds": 5.08,
+  "rate": 3.54,
+  "clarity": 4.08,
+  "style": "southern",
+  "seed": 4
+ },
+ "brassy-s1": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 242,
+  "seconds": 4.81,
+  "rate": 3.74,
+  "clarity": 3.94,
+  "style": "brassy",
+  "seed": 1
+ },
+ "brassy-s2": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 255,
+  "seconds": 5.21,
+  "rate": 3.45,
+  "clarity": 3.4,
+  "style": "brassy",
+  "seed": 2
+ },
+ "brassy-s3": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 213,
+  "seconds": 6.71,
+  "rate": 2.68,
+  "clarity": 2.77,
+  "style": "brassy",
+  "seed": 3
+ },
+ "brassy-s4": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 184,
+  "seconds": 4.81,
+  "rate": 3.74,
+  "clarity": 3.81,
+  "style": "brassy",
+  "seed": 4
+ },
+ "midwest-s1": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 238,
+  "seconds": 5.3,
+  "rate": 3.4,
+  "clarity": 3.71,
+  "style": "midwest",
+  "seed": 1
+ },
+ "midwest-s2": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 283,
+  "seconds": 4.88,
+  "rate": 3.69,
+  "clarity": 3.81,
+  "style": "midwest",
+  "seed": 2
+ },
+ "midwest-s3": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 242,
+  "seconds": 6.9,
+  "rate": 2.61,
+  "clarity": 3.88,
+  "style": "midwest",
+  "seed": 3
+ },
+ "midwest-s4": {
+  "said": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "diffs": [],
+  "pitch": 185,
+  "seconds": 4.61,
+  "rate": 3.9,
+  "clarity": 4.14,
+  "style": "midwest",
+  "seed": 4
+ }
+}

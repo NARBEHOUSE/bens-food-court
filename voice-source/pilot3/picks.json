@@ -1,0 +1,22 @@
+{
+ "marge": {
+  "best": "elderly-mw-s4",
+  "also": [],
+  "notes": {
+   "elderly-mw-s4": "Closest to sounding like a working class senior citizen."
+  },
+  "note": ""
+ },
+ "vernon": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "None of the descriptions seem to carry through to the delivered voice."
+ },
+ "sal": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "The voices are distinct and varying amounts of gruff but none get the regional accent."
+ }
+}

@@ -40,10 +40,9 @@ function packClips(id) {
   if (!R || R.error) throw new Error('no pack ' + id + (R && R.error ? ': ' + R.error : ''));
   const pack = R.pack;
   const customers = S.castOf(pack).map(c => c.id);
+  // Voice pass (2026-11-11): no order parts. A customer says an order.intro line and the ticket read-out (text to
+  // speech, the game's voice) says the order, so the 3,268 one-word clips are not recorded.
   const clips = SC.everyClip(pack, R.script, { customers, said });
-  // Every order part, in each customer's own voice, for the recipes on offer.
-  const parts = W.allOrderParts(pack, S.recipesFor(pack, 2));
-  for (const c of customers) for (const p of parts) clips.push({ clip: c + '/order.' + p.id, speaker: c, text: p.text, moment: 'order.part' });
   const rank = c => {
     if (c.moment.startsWith('tutorial')) return 0;
     if (c.speaker === pack.manager.id && /^(shift|gross)/.test(c.moment)) return 1;

@@ -1,0 +1,252 @@
+{
+ "bronx-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 178,
+  "seconds": 8.12,
+  "rate": 2.83,
+  "clarity": 3.84,
+  "style": "bronx",
+  "seed": 1
+ },
+ "bronx-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 162,
+  "seconds": 8.14,
+  "rate": 2.83,
+  "clarity": 3.99,
+  "style": "bronx",
+  "seed": 2
+ },
+ "bronx-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 213,
+  "seconds": 8.64,
+  "rate": 2.66,
+  "clarity": 3.71,
+  "style": "bronx",
+  "seed": 3
+ },
+ "bronx-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 120,
+  "seconds": 9.09,
+  "rate": 2.53,
+  "clarity": 4.05,
+  "style": "bronx",
+  "seed": 4
+ },
+ "bronx-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 147,
+  "seconds": 6.83,
+  "rate": 3.37,
+  "clarity": 3.74,
+  "style": "bronx",
+  "seed": 5
+ },
+ "bronx-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 147,
+  "seconds": 9.14,
+  "rate": 2.52,
+  "clarity": 4.21,
+  "style": "bronx",
+  "seed": 6
+ },
+ "brooklyn-s1": {
+  "said": "Yo, I been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 189,
+  "seconds": 7.31,
+  "rate": 3.15,
+  "clarity": 4.19,
+  "style": "brooklyn",
+  "seed": 1
+ },
+ "brooklyn-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 162,
+  "seconds": 8.03,
+  "rate": 2.86,
+  "clarity": 3.98,
+  "style": "brooklyn",
+  "seed": 2
+ },
+ "brooklyn-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 202,
+  "seconds": 9.81,
+  "rate": 2.34,
+  "clarity": 3.55,
+  "style": "brooklyn",
+  "seed": 3
+ },
+ "brooklyn-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 196,
+  "seconds": 8.02,
+  "rate": 2.87,
+  "clarity": 3.91,
+  "style": "brooklyn",
+  "seed": 4
+ },
+ "brooklyn-s5": {
+  "said": "Yo, I've been at that car since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 134,
+  "seconds": 10.78,
+  "rate": 2.13,
+  "clarity": 4.11,
+  "style": "brooklyn",
+  "seed": 5
+ },
+ "brooklyn-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 220,
+  "seconds": 7.46,
+  "rate": 3.08,
+  "clarity": 3.42,
+  "style": "brooklyn",
+  "seed": 6
+ },
+ "cabbie-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 148,
+  "seconds": 6.17,
+  "rate": 3.73,
+  "clarity": 3.98,
+  "style": "cabbie",
+  "seed": 1
+ },
+ "cabbie-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 172,
+  "seconds": 5.95,
+  "rate": 3.86,
+  "clarity": 4.11,
+  "style": "cabbie",
+  "seed": 2
+ },
+ "cabbie-s3": {
+  "said": "Yo, I been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 166,
+  "seconds": 7.49,
+  "rate": 3.07,
+  "clarity": 3.25,
+  "style": "cabbie",
+  "seed": 3
+ },
+ "cabbie-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 211,
+  "seconds": 7.67,
+  "rate": 3.0,
+  "clarity": 3.8,
+  "style": "cabbie",
+  "seed": 4
+ },
+ "cabbie-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 225,
+  "seconds": 6.69,
+  "rate": 3.44,
+  "clarity": 3.31,
+  "style": "cabbie",
+  "seed": 5
+ },
+ "cabbie-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 172,
+  "seconds": 7.52,
+  "rate": 3.06,
+  "clarity": 4.02,
+  "style": "cabbie",
+  "seed": 6
+ }
+}

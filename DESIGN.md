@@ -369,9 +369,11 @@ words.
 
 **The voice plan.** Brand-new character voices will be made later, from scratch (every earlier voice was removed).
 Until then nothing changes: recordings are switched off (`BBCourt.recordedVoices = false`). When the voice pass comes,
-`node tools/voice-clips.cjs all` lists every clip to record (about 8,000, most of them order parts); each clip carries
-a hash of its words, so an edited line falls back to text to speech until it is recorded again, and an order with any
-part unrecorded is spoken wholly by text to speech so one sentence never mixes two voices.
+`node tools/voice-clips.cjs all` lists every clip to record (about 4,850); each clip carries a hash of its words, so an
+edited line falls back to text to speech until it is recorded again. **No order is said in recorded parts** (voice pass,
+2026-11-11, proposed): a customer says a short `order.intro` lead-in in their own voice ("Here's the play."), and the
+ticket read-out that follows, in the game's voice, says the order itself. That drops about 3,270 one-word clips, keeps
+every recording a whole sentence, and means each order is heard once instead of twice.
 
 ## Saves
 

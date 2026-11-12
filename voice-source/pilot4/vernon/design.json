@@ -1,0 +1,242 @@
+{
+ "fop-man-s1": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 104,
+  "seconds": 8.69,
+  "rate": 1.96,
+  "clarity": 4.22,
+  "style": "fop-man",
+  "seed": 1
+ },
+ "fop-man-s2": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 100,
+  "seconds": 8.69,
+  "rate": 1.96,
+  "clarity": 4.33,
+  "style": "fop-man",
+  "seed": 2
+ },
+ "fop-man-s3": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 171,
+  "seconds": 8.34,
+  "rate": 2.04,
+  "clarity": 4.18,
+  "style": "fop-man",
+  "seed": 3
+ },
+ "fop-man-s4": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 112,
+  "seconds": 8.17,
+  "rate": 2.08,
+  "clarity": 4.21,
+  "style": "fop-man",
+  "seed": 4
+ },
+ "fop-man-s5": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 108,
+  "seconds": 7.36,
+  "rate": 2.31,
+  "clarity": 4.19,
+  "style": "fop-man",
+  "seed": 5
+ },
+ "fop-man-s6": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 164,
+  "seconds": 7.73,
+  "rate": 2.2,
+  "clarity": 4.14,
+  "style": "fop-man",
+  "seed": 6
+ },
+ "dandy-s1": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 98,
+  "seconds": 8.13,
+  "rate": 2.09,
+  "clarity": 4.17,
+  "style": "dandy",
+  "seed": 1
+ },
+ "dandy-s2": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 94,
+  "seconds": 8.97,
+  "rate": 1.89,
+  "clarity": 4.23,
+  "style": "dandy",
+  "seed": 2
+ },
+ "dandy-s3": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 163,
+  "seconds": 8.04,
+  "rate": 2.12,
+  "clarity": 4.05,
+  "style": "dandy",
+  "seed": 3
+ },
+ "dandy-s4": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 116,
+  "seconds": 8.39,
+  "rate": 2.03,
+  "clarity": 4.04,
+  "style": "dandy",
+  "seed": 4
+ },
+ "dandy-s5": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 127,
+  "seconds": 7.69,
+  "rate": 2.21,
+  "clarity": 4.18,
+  "style": "dandy",
+  "seed": 5
+ },
+ "dandy-s6": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 102,
+  "seconds": 8.07,
+  "rate": 2.11,
+  "clarity": 4.22,
+  "style": "dandy",
+  "seed": 6
+ },
+ "critic-s1": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 96,
+  "seconds": 8.46,
+  "rate": 2.01,
+  "clarity": 4.31,
+  "style": "critic",
+  "seed": 1
+ },
+ "critic-s2": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 166,
+  "seconds": 9.07,
+  "rate": 1.87,
+  "clarity": 4.29,
+  "style": "critic",
+  "seed": 2
+ },
+ "critic-s3": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 124,
+  "seconds": 6.87,
+  "rate": 2.47,
+  "clarity": 4.27,
+  "style": "critic",
+  "seed": 3
+ },
+ "critic-s4": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 131,
+  "seconds": 9.72,
+  "rate": 1.75,
+  "clarity": 4.03,
+  "style": "critic",
+  "seed": 4
+ },
+ "critic-s5": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 113,
+  "seconds": 8.11,
+  "rate": 2.1,
+  "clarity": 4.04,
+  "style": "critic",
+  "seed": 5
+ },
+ "critic-s6": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 136,
+  "seconds": 8.28,
+  "rate": 2.05,
+  "clarity": 4.01,
+  "style": "critic",
+  "seed": 6
+ },
+ "camp-s1": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 98,
+  "seconds": 10.46,
+  "rate": 1.63,
+  "clarity": 4.3,
+  "style": "camp",
+  "seed": 1
+ },
+ "camp-s2": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 129,
+  "seconds": 8.09,
+  "rate": 2.1,
+  "clarity": 4.25,
+  "style": "camp",
+  "seed": 2
+ },
+ "camp-s3": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 105,
+  "seconds": 8.7,
+  "rate": 1.95,
+  "clarity": 4.01,
+  "style": "camp",
+  "seed": 3
+ },
+ "camp-s4": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 83,
+  "seconds": 9.35,
+  "rate": 1.82,
+  "clarity": 4.34,
+  "style": "camp",
+  "seed": 4
+ },
+ "camp-s5": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 118,
+  "seconds": 7.79,
+  "rate": 2.18,
+  "clarity": 4.2,
+  "style": "camp",
+  "seed": 5
+ },
+ "camp-s6": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 100,
+  "seconds": 8.0,
+  "rate": 2.12,
+  "clarity": 4.23,
+  "style": "camp",
+  "seed": 6
+ }
+}
