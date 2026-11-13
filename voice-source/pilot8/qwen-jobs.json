@@ -1,0 +1,639 @@
+[
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Hey, I asked for no onions. This is a whole mountain of onions!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\grumpy-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Oh, wow! That is the best burger I have ever had in my whole life!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\delighted-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Thank you so much. That's exactly how I like it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\thanks-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Aw, you're out of milkshakes? That was the best part of my day.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\sad-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Psst. Don't tell anyone, but I'm going to order a second dessert.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\whisper-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Uh oh. Is that smoke? Is the grill on fire?",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\nervous-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Oh, that's too funny. You put the pickles on top of the bun!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\laugh-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Oh, wonderful. Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\sarcasm-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\sigh-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "So I'll have the, the chicken sandwich. No, wait, the fish.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\unsure-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Okay, okay, I need a cheeseburger, fries, a chocolate shake and extra ketchup, and I need it right now, please!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\fast-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\slow-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\mitch\\long-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Hey, I asked for no onions. This is a whole mountain of onions!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\grumpy-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Oh, wow! That is the best burger I have ever had in my whole life!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\delighted-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Thank you so much. That's exactly how I like it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\thanks-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Aw, you're out of milkshakes? That was the best part of my day.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\sad-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Psst. Don't tell anyone, but I'm going to order a second dessert.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\whisper-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Uh oh. Is that smoke? Is the grill on fire?",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\nervous-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Oh, that's too funny. You put the pickles on top of the bun!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\laugh-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Oh, wonderful. Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\sarcasm-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\sigh-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "So I'll have the, the chicken sandwich. No, wait, the fish.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\unsure-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Okay, okay, I need a cheeseburger, fries, a chocolate shake and extra ketchup, and I need it right now, please!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\fast-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\slow-qwen.wav"
+ },
+ {
+  "who": "gus",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\gus\\country-s3.wav",
+  "ref_text": "Howdy, buddy. Eleven hours of highway behind me, and I'm hungry enough to eat the steering wheel.",
+  "text": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\gus\\long-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Hey, I asked for no onions. This is a whole mountain of onions!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\grumpy-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Oh, wow! That is the best burger I have ever had in my whole life!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\delighted-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Thank you so much. That's exactly how I like it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\thanks-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Aw, you're out of milkshakes? That was the best part of my day.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\sad-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Psst. Don't tell anyone, but I'm going to order a second dessert.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\whisper-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Uh oh. Is that smoke? Is the grill on fire?",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\nervous-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Oh, that's too funny. You put the pickles on top of the bun!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\laugh-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Oh, wonderful. Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\sarcasm-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\sigh-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "So I'll have the, the chicken sandwich. No, wait, the fish.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\unsure-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Okay, okay, I need a cheeseburger, fries, a chocolate shake and extra ketchup, and I need it right now, please!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\fast-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\slow-qwen.wav"
+ },
+ {
+  "who": "kai",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\kai\\keen-s1.wav",
+  "ref_text": "Hello. I'm Kai. I review food, and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "text": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\kai\\long-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Hey, I asked for no onions. This is a whole mountain of onions!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\grumpy-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Oh, wow! That is the best burger I have ever had in my whole life!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\delighted-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Thank you so much. That's exactly how I like it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\thanks-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Aw, you're out of milkshakes? That was the best part of my day.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\sad-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Psst. Don't tell anyone, but I'm going to order a second dessert.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\whisper-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Uh oh. Is that smoke? Is the grill on fire?",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\nervous-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Oh, that's too funny. You put the pickles on top of the bun!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\laugh-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Oh, wonderful. Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\sarcasm-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\sigh-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "So I'll have the, the chicken sandwich. No, wait, the fish.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\unsure-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Okay, okay, I need a cheeseburger, fries, a chocolate shake and extra ketchup, and I need it right now, please!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\fast-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\slow-qwen.wav"
+ },
+ {
+  "who": "tony",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\tony\\grand-s3.wav",
+  "ref_text": "Good evening. I am Tony. Forty years at the opera house, and now, my friends, I sing only for pizza.",
+  "text": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\tony\\long-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Hey, I asked for no onions. This is a whole mountain of onions.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\grumpy-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Oh, wow. That is the best burger I have ever had in my whole life.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\delighted-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Thank you so much. That's exactly how I like it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\thanks-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Aw, you're out of milkshakes? That was the best part of my day.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\sad-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Psst. Don't tell anyone, but I'm going to order a second dessert.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\whisper-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Uh oh. Is that smoke? Is the grill on fire?",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\nervous-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Oh, that's too funny. You put the pickles on top of the bun.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\laugh-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Oh, wonderful. Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\sarcasm-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\sigh-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "So I'll have the, the chicken sandwich. No, wait, the fish.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\unsure-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Okay, okay, I need a cheeseburger, fries, a chocolate shake and extra ketchup, and I need it right now, please.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\fast-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\slow-qwen.wav"
+ },
+ {
+  "who": "bev",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot2\\bev\\brisk-s6.wav",
+  "ref_text": "Alright, listen up. I want a double cheeseburger, medium. And I want it like we're down by six in the fourth quarter.",
+  "text": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\bev\\long-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Hey, I asked for no onions. This is a whole mountain of onions!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\grumpy-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Oh, wow! That is the best burger I have ever had in my whole life!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\delighted-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Thank you so much. That's exactly how I like it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\thanks-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Aw, you're out of milkshakes? That was the best part of my day.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\sad-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Psst. Don't tell anyone, but I'm going to order a second dessert.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\whisper-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Uh oh. Is that smoke? Is the grill on fire?",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\nervous-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Oh, that's too funny. You put the pickles on top of the bun!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\laugh-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Oh, wonderful. Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\sarcasm-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\sigh-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "So I'll have the, the chicken sandwich. No, wait, the fish.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\unsure-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Okay, okay, I need a cheeseburger, fries, a chocolate shake and extra ketchup, and I need it right now, please!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\fast-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\slow-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\marge\\long-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Hey, I asked for no onions. This is a whole mountain of onions!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\grumpy-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Oh, wow! That is the best burger I have ever had in my whole life!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\delighted-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Thank you so much. That's exactly how I like it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\thanks-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Aw, you're out of milkshakes? That was the best part of my day.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\sad-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Psst. Don't tell anyone, but I'm going to order a second dessert.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\whisper-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Uh oh. Is that smoke? Is the grill on fire?",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\nervous-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Oh, that's too funny. You put the pickles on top of the bun!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\laugh-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Oh, wonderful. Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\sarcasm-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\sigh-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "So I'll have the, the chicken sandwich. No, wait, the fish.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\unsure-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Okay, okay, I need a cheeseburger, fries, a chocolate shake and extra ketchup, and I need it right now, please!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\fast-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\slow-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot8\\stress\\vernon\\long-qwen.wav"
+ }
+]

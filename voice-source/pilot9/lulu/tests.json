@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "lulu/icecream:greet.1",
+  "speaker": "lulu",
+  "text": "[sigh] Okay. I've been thinking about this since breakfast. Since yesterday's breakfast.",
+  "moment": "greet",
+  "delivery": "a huge sigh, then very sure of herself",
+  "pack": "icecream",
+  "order": 2,
+  "hash": "ed0c6c1c",
+  "recorded": false
+ },
+ {
+  "clip": "lulu/icecream:smalltalk.1",
+  "speaker": "lulu",
+  "text": "My brother picks his flavor in one second. One second! He is going to have a very sad life.",
+  "moment": "smalltalk",
+  "delivery": "scandalised",
+  "pack": "icecream",
+  "order": 4,
+  "hash": "25a76c0c",
+  "recorded": false
+ },
+ {
+  "clip": "lulu/icecream:react.3.1",
+  "speaker": "lulu",
+  "text": "Vanilla! I knew it. I knew it the whole time. I just had to check everything else first.",
+  "moment": "react.3",
+  "delivery": "delighted, very sure of herself",
+  "pack": "icecream",
+  "order": 2,
+  "hash": "c5f73a2f",
+  "recorded": false
+ },
+ {
+  "clip": "lulu/cast:complain.c1",
+  "speaker": "lulu",
+  "text": "I thought about it for a long time, and that's not what I picked.",
+  "moment": "complain",
+  "delivery": "bright, seven, very sure",
+  "pack": "cast",
+  "order": 4,
+  "hash": "8d5585a6",
+  "recorded": false
+ }
+]

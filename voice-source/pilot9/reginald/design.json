@@ -1,0 +1,122 @@
+{
+ "grand-s1": {
+  "said": "The aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 142,
+  "seconds": 9.71,
+  "rate": 1.96,
+  "clarity": 3.19,
+  "style": "grand",
+  "seed": 1
+ },
+ "grand-s2": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 111,
+  "seconds": 7.57,
+  "rate": 2.51,
+  "clarity": 3.44,
+  "style": "grand",
+  "seed": 2
+ },
+ "grand-s3": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 123,
+  "seconds": 7.41,
+  "rate": 2.56,
+  "clarity": 3.81,
+  "style": "grand",
+  "seed": 3
+ },
+ "grand-s4": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 180,
+  "seconds": 8.17,
+  "rate": 2.33,
+  "clarity": 3.59,
+  "style": "grand",
+  "seed": 4
+ },
+ "plummy-s1": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 137,
+  "seconds": 8.94,
+  "rate": 2.13,
+  "clarity": 3.16,
+  "style": "plummy",
+  "seed": 1
+ },
+ "plummy-s2": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 187,
+  "seconds": 8.28,
+  "rate": 2.29,
+  "clarity": 3.6,
+  "style": "plummy",
+  "seed": 2
+ },
+ "plummy-s3": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 113,
+  "seconds": 6.41,
+  "rate": 2.97,
+  "clarity": 3.41,
+  "style": "plummy",
+  "seed": 3
+ },
+ "plummy-s4": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 146,
+  "seconds": 7.86,
+  "rate": 2.42,
+  "clarity": 3.47,
+  "style": "plummy",
+  "seed": 4
+ },
+ "velvet-s1": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 82,
+  "seconds": 8.53,
+  "rate": 2.23,
+  "clarity": 3.94,
+  "style": "velvet",
+  "seed": 1
+ },
+ "velvet-s2": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 112,
+  "seconds": 7.19,
+  "rate": 2.64,
+  "clarity": 3.83,
+  "style": "velvet",
+  "seed": 2
+ },
+ "velvet-s3": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 100,
+  "seconds": 7.85,
+  "rate": 2.42,
+  "clarity": 3.28,
+  "style": "velvet",
+  "seed": 3
+ },
+ "velvet-s4": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 154,
+  "seconds": 7.98,
+  "rate": 2.38,
+  "clarity": 3.89,
+  "style": "velvet",
+  "seed": 4
+ }
+}

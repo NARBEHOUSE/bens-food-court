@@ -1,0 +1,314 @@
+{
+ "japanese-master-s1/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 106,
+  "seconds": 4.44,
+  "rate": 3.38,
+  "clarity": 3.47,
+  "drift": true,
+  "takes": 2
+ },
+ "japanese-master-s1/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 112,
+  "seconds": 4.33,
+  "rate": 3.0,
+  "clarity": 3.18,
+  "drift": true,
+  "takes": 2
+ },
+ "japanese-master-s1/sad": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 85,
+  "seconds": 4.46,
+  "rate": 2.91,
+  "clarity": 2.89,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-master-s1/sarcasm": {
+  "said": "Oh wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 94,
+  "seconds": 5.93,
+  "rate": 2.19,
+  "clarity": 2.6,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-master-s1/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 90,
+  "seconds": 3.12,
+  "rate": 3.2,
+  "clarity": 2.96,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-master-s5/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 122,
+  "seconds": 4.57,
+  "rate": 3.29,
+  "clarity": 3.64,
+  "drift": false,
+  "takes": 1
+ },
+ "japanese-master-s5/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 127,
+  "seconds": 4.24,
+  "rate": 3.07,
+  "clarity": 2.87,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-master-s5/sad": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 102,
+  "seconds": 4.27,
+  "rate": 3.04,
+  "clarity": 3.05,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-master-s5/sarcasm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 111,
+  "seconds": 4.98,
+  "rate": 2.61,
+  "clarity": 2.93,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-master-s5/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 121,
+  "seconds": 2.81,
+  "rate": 3.55,
+  "clarity": 2.88,
+  "drift": false,
+  "takes": 2
+ },
+ "tokyo-s5/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 134,
+  "seconds": 4.53,
+  "rate": 3.31,
+  "clarity": 3.31,
+  "drift": false,
+  "takes": 1
+ },
+ "tokyo-s5/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 149,
+  "seconds": 4.36,
+  "rate": 2.98,
+  "clarity": 3.07,
+  "drift": true,
+  "takes": 2
+ },
+ "tokyo-s5/sad": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 116,
+  "seconds": 4.72,
+  "rate": 2.76,
+  "clarity": 3.06,
+  "drift": false,
+  "takes": 2
+ },
+ "tokyo-s5/sarcasm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 124,
+  "seconds": 4.88,
+  "rate": 2.66,
+  "clarity": 2.62,
+  "drift": false,
+  "takes": 2
+ },
+ "tokyo-s5/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 113,
+  "seconds": 3.05,
+  "rate": 3.28,
+  "clarity": 2.88,
+  "drift": false,
+  "takes": 2
+ },
+ "tokyo-s6/delighted": {
+  "said": "Oh wow, that is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 124,
+  "seconds": 4.76,
+  "rate": 3.15,
+  "clarity": 3.35,
+  "drift": false,
+  "takes": 2
+ },
+ "tokyo-s6/grumpy": {
+  "said": "Hey, I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 134,
+  "seconds": 4.85,
+  "rate": 2.68,
+  "clarity": 3.11,
+  "drift": true,
+  "takes": 2
+ },
+ "tokyo-s6/sad": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 101,
+  "seconds": 4.35,
+  "rate": 2.99,
+  "clarity": 2.38,
+  "drift": false,
+  "takes": 2
+ },
+ "tokyo-s6/sarcasm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 113,
+  "seconds": 6.03,
+  "rate": 2.16,
+  "clarity": 2.42,
+  "drift": false,
+  "takes": 2
+ },
+ "tokyo-s6/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 97,
+  "seconds": 2.96,
+  "rate": 3.38,
+  "clarity": 2.57,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-judge-s5/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 154,
+  "seconds": 4.26,
+  "rate": 3.52,
+  "clarity": 3.36,
+  "drift": false,
+  "takes": 1
+ },
+ "japanese-judge-s5/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 157,
+  "seconds": 4.64,
+  "rate": 2.8,
+  "clarity": 3.2,
+  "drift": false,
+  "takes": 1
+ },
+ "japanese-judge-s5/sad": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 135,
+  "seconds": 4.72,
+  "rate": 2.75,
+  "clarity": 3.3,
+  "drift": false,
+  "takes": 1
+ },
+ "japanese-judge-s5/sarcasm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 149,
+  "seconds": 5.33,
+  "rate": 2.44,
+  "clarity": 3.08,
+  "drift": false,
+  "takes": 1
+ },
+ "japanese-judge-s5/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 127,
+  "seconds": 3.07,
+  "rate": 3.26,
+  "clarity": 3.33,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-judge-s4/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 125,
+  "seconds": 4.49,
+  "rate": 3.34,
+  "clarity": 3.17,
+  "drift": false,
+  "takes": 1
+ },
+ "japanese-judge-s4/grumpy": {
+  "said": "Hey, I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 115,
+  "seconds": 4.59,
+  "rate": 2.83,
+  "clarity": 3.07,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-judge-s4/sad": {
+  "said": "Or you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'or'"
+  ],
+  "pitch": 108,
+  "seconds": 4.09,
+  "rate": 3.18,
+  "clarity": 2.86,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-judge-s4/sarcasm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 134,
+  "seconds": 6.37,
+  "rate": 2.04,
+  "clarity": 2.95,
+  "drift": false,
+  "takes": 2
+ },
+ "japanese-judge-s4/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 104,
+  "seconds": 3.07,
+  "rate": 3.26,
+  "clarity": 3.08,
+  "drift": false,
+  "takes": 1
+ }
+}

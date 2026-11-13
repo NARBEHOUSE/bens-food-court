@@ -1,0 +1,65 @@
+{
+ "retake-s1": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 200,
+  "seconds": 6.38,
+  "rate": 2.66,
+  "clarity": 3.97,
+  "source": "retake"
+ },
+ "retake-s2": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 206,
+  "seconds": 7.4,
+  "rate": 2.3,
+  "clarity": 3.69,
+  "source": "retake"
+ },
+ "retake-s3": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 140,
+  "seconds": 9.25,
+  "rate": 1.84,
+  "clarity": 3.83,
+  "source": "retake"
+ },
+ "retake-s4": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 129,
+  "seconds": 6.3,
+  "rate": 2.7,
+  "clarity": 3.8,
+  "source": "retake"
+ },
+ "retake-s5": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 187,
+  "seconds": 7.97,
+  "rate": 2.13,
+  "clarity": 3.8,
+  "source": "retake"
+ },
+ "retake-s6": {
+  "said": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 7.47,
+  "rate": 2.27,
+  "clarity": 3.16,
+  "source": "retake"
+ },
+ "current": {
+  "said": "Good evening. I'll be reviewing tonight the bun, the patty, the presentation. My readers expect nothing less.",
+  "diffs": [],
+  "pitch": 166,
+  "seconds": 9.07,
+  "rate": 1.87,
+  "clarity": 4.29,
+  "source": "current"
+ }
+}

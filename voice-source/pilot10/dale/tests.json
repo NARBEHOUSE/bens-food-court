@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "dale/cast:greet.c1",
+  "speaker": "dale",
+  "text": "Evenin'. Just pulled a transmission. Earned this.",
+  "moment": "greet",
+  "delivery": "slow drawl, unhurried",
+  "pack": "cast",
+  "order": 2,
+  "hash": "318e7ecb",
+  "recorded": false
+ },
+ {
+  "clip": "dale/smalltalk.1",
+  "speaker": "dale",
+  "text": "That fryer's got a nice hum to it. Sixty cycles. Could set a clock by it. I have.",
+  "moment": "smalltalk",
+  "delivery": "slow, admiring",
+  "pack": "diner",
+  "order": 4,
+  "hash": "fc46e5e1",
+  "recorded": false
+ },
+ {
+  "clip": "dale/react3.1",
+  "speaker": "dale",
+  "text": "Well, now. That's a ring you could hang a wrench on.",
+  "moment": "react.3",
+  "delivery": "slow, admiring",
+  "pack": "diner",
+  "order": 2,
+  "hash": "b86218be",
+  "recorded": false
+ },
+ {
+  "clip": "dale/cast:complain.c1",
+  "speaker": "dale",
+  "text": "Now, that ain't what I said. I don't say much. When I do, I mean it.",
+  "moment": "complain",
+  "delivery": "gravelly, slow, unimpressed",
+  "pack": "cast",
+  "order": 4,
+  "hash": "f53c1d91",
+  "recorded": false
+ }
+]

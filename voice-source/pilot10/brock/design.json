@@ -1,0 +1,172 @@
+{
+ "gymbro-s1": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 224,
+  "seconds": 6.42,
+  "rate": 3.43,
+  "clarity": 4.09,
+  "style": "gymbro",
+  "seed": 1
+ },
+ "gymbro-s2": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What do you got?",
+  "diffs": [
+   "replace: 'have' -> 'do'"
+  ],
+  "pitch": 223,
+  "seconds": 7.01,
+  "rate": 3.14,
+  "clarity": 4.0,
+  "style": "gymbro",
+  "seed": 2
+ },
+ "gymbro-s3": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 248,
+  "seconds": 6.82,
+  "rate": 3.23,
+  "clarity": 3.83,
+  "style": "gymbro",
+  "seed": 3
+ },
+ "gymbro-s4": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 265,
+  "seconds": 7.06,
+  "rate": 3.11,
+  "clarity": 4.25,
+  "style": "gymbro",
+  "seed": 4
+ },
+ "pumped-s1": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What do you got?",
+  "diffs": [
+   "replace: 'have' -> 'do'"
+  ],
+  "pitch": 279,
+  "seconds": 6.81,
+  "rate": 3.23,
+  "clarity": 3.97,
+  "style": "pumped",
+  "seed": 1
+ },
+ "pumped-s2": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 338,
+  "seconds": 6.88,
+  "rate": 3.2,
+  "clarity": 3.73,
+  "style": "pumped",
+  "seed": 2
+ },
+ "pumped-s3": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 285,
+  "seconds": 6.81,
+  "rate": 3.23,
+  "clarity": 3.95,
+  "style": "pumped",
+  "seed": 3
+ },
+ "pumped-s4": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 358,
+  "seconds": 9.29,
+  "rate": 2.37,
+  "clarity": 3.64,
+  "style": "pumped",
+  "seed": 4
+ },
+ "sweet-s1": {
+  "said": "Hey, big guy. Leg day was this morning. Arm days this afternoon. Protein day is every day. What have you got?",
+  "diffs": [
+   "replace: 'day is' -> 'days'"
+  ],
+  "pitch": 158,
+  "seconds": 8.34,
+  "rate": 2.64,
+  "clarity": 4.18,
+  "style": "sweet",
+  "seed": 1
+ },
+ "sweet-s2": {
+  "said": "Hey, big guy, leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 156,
+  "seconds": 8.8,
+  "rate": 2.5,
+  "clarity": 4.41,
+  "style": "sweet",
+  "seed": 2
+ },
+ "sweet-s3": {
+  "said": "Hey, big guy, leg day was this morning. Arm day is this afternoon. Protein day is every day. What do you got?",
+  "diffs": [
+   "replace: 'have' -> 'do'"
+  ],
+  "pitch": 140,
+  "seconds": 9.4,
+  "rate": 2.34,
+  "clarity": 4.28,
+  "style": "sweet",
+  "seed": 3
+ },
+ "sweet-s4": {
+  "said": "Hey, big guy, leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 126,
+  "seconds": 11.0,
+  "rate": 2.0,
+  "clarity": 4.06,
+  "style": "sweet",
+  "seed": 4
+ },
+ "southafrican-s1": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 220,
+  "seconds": 6.49,
+  "rate": 3.39,
+  "clarity": 3.99,
+  "style": "southafrican",
+  "seed": 1
+ },
+ "southafrican-s2": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 211,
+  "seconds": 7.42,
+  "rate": 2.97,
+  "clarity": 4.02,
+  "style": "southafrican",
+  "seed": 2
+ },
+ "southafrican-s3": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What do you got?",
+  "diffs": [
+   "replace: 'have' -> 'do'"
+  ],
+  "pitch": 200,
+  "seconds": 5.2,
+  "rate": 4.23,
+  "clarity": 4.11,
+  "style": "southafrican",
+  "seed": 3
+ },
+ "southafrican-s4": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 234,
+  "seconds": 7.01,
+  "rate": 3.14,
+  "clarity": 3.81,
+  "style": "southafrican",
+  "seed": 4
+ }
+}

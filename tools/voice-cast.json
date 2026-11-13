@@ -288,7 +288,41 @@
    5,
    6
   ],
-  "picked": "round 2 brisk-s6"
+  "picked": "round 2 brisk-s6",
+  "r11": {
+   "retake_note": "brisk, confident and upbeat",
+   "styles": [
+    {
+     "id": "brisk",
+     "label": "Brisk PE teacher (more seeds)",
+     "seeds": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "describe": "A brisk, no-nonsense woman PE teacher in her forties. A crisp, clear, medium-pitched woman's voice. Blunt and businesslike. Clear studio recording."
+    },
+    {
+     "id": "coach",
+     "label": "Cheerful coach",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A cheerful, sporty woman in her forties, a softball coach. A clear, bright, medium-pitched woman's voice. Upbeat, confident and businesslike. Clear studio recording."
+    }
+   ],
+   "old": [
+    "pilot2/bev/brisk-s4"
+   ]
+  }
  },
  "vernon": {
   "name": "Vernon",
@@ -394,7 +428,12 @@
    ],
    "bryan": "Foppish is in the right direction but nasal snob didn't have much character and the other two were clearly female voices"
   },
-  "picked": "round 4 critic-s2 (Qwen3-TTS VoiceDesign)"
+  "picked": "round 4 critic-s2 (Qwen3-TTS VoiceDesign)",
+  "r11": {
+   "retake_note": "superior, fussy and precise, easily offended",
+   "styles": [],
+   "old": []
+  }
  },
  "sal": {
   "name": "Sal",
@@ -543,7 +582,42 @@
     "label": "Keen young critic",
     "describe": "A precocious ten-year-old child who talks like a small grown-up. A light, bright, high voice. Polite, formal and confident, with quiet enthusiasm. Clear studio recording."
    }
-  ]
+  ],
+  "r11": {
+   "retake_note": "polite, serious and confident",
+   "styles": [
+    {
+     "id": "keen",
+     "label": "Small grown-up (more seeds)",
+     "seeds": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "describe": "A precocious ten-year-old child who talks like a small grown-up. A light, bright, high voice. Polite, formal and confident, with quiet enthusiasm. Clear studio recording."
+    },
+    {
+     "id": "calm",
+     "label": "Calm young reviewer",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A polite, serious ten-year-old child, a young food reviewer. A clear, smooth, medium-high child's voice. Calm, formal and confident. Clear studio recording."
+    }
+   ],
+   "old": [
+    "pilot/kai/boy-s4",
+    "pilot/kai/girl-s1"
+   ]
+  }
  },
  "tony": {
   "name": "Tony",
@@ -591,7 +665,7 @@
    }
   ]
  },
- "_rest": "The other sixteen: first drafts, to be reworded with what the pilot round teaches before they are designed.",
+ "_rest": "The other sixteen: briefs reworded 2026-11-12 with the pilot lessons; rounds 9 (VoxCPM2) and 10 (Qwen3-TTS).",
  "reginald": {
   "name": "Reginald",
   "brief": "Theatrical, sweeping",
@@ -624,18 +698,23 @@
    {
     "id": "plummy",
     "label": "Plummy English",
-    "describe": "Posh English accent. A pompous critic in his fifties. A deep, plummy, resonant voice. Leisurely and theatrical, delighted by the sound of his own sentences. Clear studio recording."
+    "describe": "London accent. A pompous critic in his fifties. A deep, plummy, resonant voice. Leisurely and theatrical, delighted by the sound of his own sentences. Clear studio recording."
    },
    {
     "id": "velvet",
     "label": "Velvet radio voice",
     "describe": "A man in his fifties with the smooth, velvety voice of a late-night radio host, low and warm. Unhurried and dramatic, making every remark sound important. Clear studio recording."
    }
-  ]
+  ],
+  "r12": {
+   "current": "pilot9/reginald/velvet-s2",
+   "retake_note": "unhurried and dramatic",
+   "retakes": 4
+  }
  },
  "dale": {
   "name": "Dale",
-  "brief": "Gravelly drawl, never in a hurry",
+  "brief": "Dry drawl, never in a hurry",
   "sample": "Well. I heard your fryer from the parking lot. Bearing's going. Not today, but it's going. Onion rings, please.",
   "pitch": [
    95,
@@ -659,12 +738,12 @@
    {
     "id": "laconic",
     "label": "Laconic mechanic",
-    "describe": "A wiry mechanic in his fifties, a man of few words. A dry, thin, slightly reedy voice, medium-low. Slow and laconic, never in a hurry, with long easy pauses. Clear studio recording."
+    "describe": "A wiry mechanic in his fifties, a man of few words. A dry, plain, medium-low man's voice. Slow and laconic, never in a hurry, with long easy pauses. Clear studio recording."
    },
    {
     "id": "mountain",
     "label": "Mountain drawl",
-    "describe": "Heavy Appalachian accent. A lean, weathered mechanic in his fifties. A dry, worn, medium-low voice. Slow, plain-spoken and unbothered. Clear studio recording."
+    "describe": "Heavy Scottish accent. A lean, weathered mechanic in his fifties. A dry, worn, medium-low voice. Slow, plain-spoken and unbothered. Clear studio recording."
    },
    {
     "id": "deadpan",
@@ -710,8 +789,174 @@
     "id": "brisk",
     "label": "Brisk professional",
     "describe": "A capable, no-nonsense nurse in her thirties. A crisp, clear voice. Fast, efficient and dry, like she is reading a chart. Clear studio recording."
+   },
+   {
+    "id": "indian",
+    "label": "Indian nurse",
+    "describe": "Heavy Indian accent. A night-shift nurse in her thirties, sharp and worn out. A clear, level, medium-pitched woman's voice. Quick, dry and matter-of-fact. Clear studio recording."
    }
-  ]
+  ],
+  "r12": {
+   "current": null,
+   "per_style": 2,
+   "styles": [
+    {
+     "id": "indian-dry",
+     "label": "Indian, dry",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "Heavy Indian accent. A night-shift nurse in her thirties, tired and quick-witted. A clear, smooth, medium-pitched woman's voice. Quick, dry and matter-of-fact. Clear studio recording."
+    },
+    {
+     "id": "mumbai",
+     "label": "Woman from Mumbai",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "An Indian woman from Mumbai in her thirties, a nurse at the end of a night shift. A clear, warm, level voice. Brisk and deadpan, amused by her own exhaustion. Clear studio recording."
+    },
+    {
+     "id": "indian-calm",
+     "label": "Indian, calm",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "Heavy Indian accent. A calm, capable nurse in her thirties. A smooth, clear woman's voice, evenly paced. Dry and matter-of-fact. Clear studio recording."
+    }
+   ]
+  },
+  "r13": {
+   "current": null,
+   "per_style": 2,
+   "lines": false,
+   "styles": [
+    {
+     "id": "a3",
+     "label": "Sphere Splash wording",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A tired night-shift nurse in her thirties, dry and quick-witted, with an Indian English accent. Natural and authentic, not exaggerated. Clear studio recording."
+    },
+    {
+     "id": "a3-plain",
+     "label": "Accent only",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A woman in her thirties with an Indian English accent. Natural and authentic, not exaggerated. Clear studio recording."
+    },
+    {
+     "id": "heavy-end",
+     "label": "Heavy, at the end",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A night-shift nurse in her thirties, dry and matter-of-fact, with a heavy Indian accent. Clear studio recording."
+    },
+    {
+     "id": "delhi",
+     "label": "From Delhi",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A woman from Delhi, India, in her thirties, a nurse, speaking English with an Indian accent. Dry and matter-of-fact. Clear studio recording."
+    },
+    {
+     "id": "chennai",
+     "label": "From Chennai",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A nurse from Chennai in South India, in her thirties, speaking English with a strong Indian accent. Quick and dry. Clear studio recording."
+    }
+   ]
+  },
+  "r14": {
+   "current": null,
+   "old": [
+    "pilot13/priya/delhi-s4",
+    "pilot13/priya/chennai-s5",
+    "pilot13/priya/delhi-s6"
+   ],
+   "retake_from": [
+    "pilot13/priya/delhi-s4",
+    "pilot13/priya/chennai-s5",
+    "pilot13/priya/delhi-s6"
+   ],
+   "retake_note": "dry, quick and matter-of-fact",
+   "retakes": 2,
+   "per_style": 1,
+   "styles": [
+    {
+     "id": "delhi",
+     "label": "From Delhi (more seeds)",
+     "seeds": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "describe": "A woman from Delhi, India, in her thirties, a nurse, speaking English with an Indian accent. Dry and matter-of-fact. Clear studio recording."
+    },
+    {
+     "id": "chennai",
+     "label": "From Chennai (more seeds)",
+     "seeds": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "describe": "A nurse from Chennai in South India, in her thirties, speaking English with a strong Indian accent. Quick and dry. Clear studio recording."
+    }
+   ]
+  }
  },
  "oakes": {
   "name": "Professor Oakes",
@@ -745,14 +990,23 @@
    {
     "id": "lecturer",
     "label": "Eager lecturer",
-    "describe": "An excitable, bookish professor in his fifties. A light, reedy tenor voice. Quick and pedantic, lecturing happily, tripping over his own enthusiasm. Clear studio recording."
+    "describe": "An excitable, bookish professor in his fifties. A light, quick tenor voice. Quick and pedantic, lecturing happily, tripping over his own enthusiasm. Clear studio recording."
    },
    {
     "id": "fusty",
     "label": "Fusty academic",
-    "describe": "A stuffy, old-fashioned academic in his sixties. A dry, pinched, nasal voice. Brisk and particular, correcting everything, never pausing for breath. Clear studio recording."
+    "describe": "A stuffy, old-fashioned academic in his sixties. A dry, crisp, slightly high voice. Brisk and particular, correcting everything, never pausing for breath. Clear studio recording."
    }
-  ]
+  ],
+  "r12": {
+   "current": "pilot9/oakes/lecturer-s2",
+   "retake_from": "pilot10/oakes/lecturer-s3",
+   "retake_note": "quick and pedantic, happily lecturing",
+   "retakes": 3,
+   "old": [
+    "pilot10/oakes/lecturer-s3"
+   ]
+  }
  },
  "tasha": {
   "name": "Tasha",
@@ -862,23 +1116,60 @@
    {
     "id": "surfer",
     "label": "California surfer",
-    "describe": "California surfer accent. A laid-back surfer in his twenties. A soft, warm, easy voice. Dreamy and relaxed, amazed by small things, at a natural pace. Clear studio recording."
+    "describe": "A laid-back California surfer dude in his twenties. A soft, warm, easy voice. Dreamy and relaxed, amazed by small things, at a natural pace. Clear studio recording."
    },
    {
     "id": "mellow",
     "label": "Mellow and dreamy",
-    "describe": "A mellow, gentle young man in his twenties who has spent the whole day at the beach. A smooth, breathy, relaxed voice. Calm and dreamy, smiling as he talks. Clear studio recording."
+    "describe": "A mellow, gentle young man in his twenties who has spent the whole day at the beach. A smooth, soft, relaxed voice. Calm and dreamy, smiling as he talks. Clear studio recording."
    },
    {
     "id": "sunny",
     "label": "Sunny and easygoing",
-    "describe": "A friendly, easygoing beach bum in his late twenties. A light, warm, slightly husky voice. Unbothered and content, speaking easily. Clear studio recording."
+    "describe": "A friendly, easygoing beach bum in his late twenties. A light, warm, easy voice. Unbothered and content, speaking easily. Clear studio recording."
    }
-  ]
+  ],
+  "r12": {
+   "current": "pilot10/breeze/mellow-s3",
+   "retake_note": "dreamy and relaxed",
+   "retakes": 2,
+   "old": [
+    "pilot9/breeze/mellow-s2",
+    "pilot9/breeze/surfer-s2"
+   ],
+   "styles": [
+    {
+     "id": "socal",
+     "label": "SoCal surfer",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A laid-back Southern California surfer in his twenties. A warm, relaxed, easy voice, unhurried, his sentences drifting up at the end. Happy and carefree, like he has nowhere to be. Clear studio recording."
+    },
+    {
+     "id": "hippie",
+     "label": "Gentle hippie",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A gentle, peaceful hippie in his twenties. A soft, warm, mellow voice. Slow and dreamy, kind, and amazed by everything. Clear studio recording."
+    }
+   ]
+  }
  },
  "brock": {
   "name": "Brock",
-  "brief": "Loud, eager and friendly",
+  "brief": "Big, eager and friendly",
   "calm": true,
   "sample": "Hey, big guy. Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
   "pitch": [
@@ -904,7 +1195,7 @@
    {
     "id": "gymbro",
     "label": "Friendly gym bro",
-    "describe": "A big, muscular gym enthusiast in his twenties. A full, chesty, energetic voice, medium-low. Eager, upbeat and friendly, like an encouraging personal trainer. Clear studio recording."
+    "describe": "A big, muscular gym enthusiast in his twenties. A full, warm, energetic voice, medium-low. Eager, upbeat and friendly, like an encouraging personal trainer. Clear studio recording."
    },
    {
     "id": "pumped",
@@ -915,8 +1206,18 @@
     "id": "sweet",
     "label": "Big and sweet",
     "describe": "A huge, gentle weightlifter in his twenties, sweet-natured and a little simple. A deep, warm, open voice. Earnest and keen, completely sincere. Clear studio recording."
+   },
+   {
+    "id": "southafrican",
+    "label": "South African",
+    "describe": "Heavy South African accent. A big, friendly rugby player in his twenties. A full, warm, energetic voice. Eager and upbeat, cheering everyone on. Clear studio recording."
    }
-  ]
+  ],
+  "r12": {
+   "current": "pilot9/brock/sweet-s1",
+   "retake_note": "earnest, keen and friendly",
+   "retakes": 4
+  }
  },
  "jitters": {
   "name": "Jitters",
@@ -954,7 +1255,7 @@
    {
     "id": "buzzing",
     "label": "Buzzing",
-    "describe": "A hyperactive office clerk in his thirties buzzing with energy. A thin, eager voice. Speaking very quickly, jumping from thought to thought. Clear studio recording."
+    "describe": "A hyperactive office clerk in his thirties buzzing with energy. A light, eager voice. Speaking very quickly, jumping from thought to thought. Clear studio recording."
    }
   ]
  },
@@ -997,7 +1298,168 @@
     "label": "The judge",
     "describe": "A strict, formal judge of fine food in his sixties. A low, firm, level voice. Slow and precise, every word a verdict. Clear studio recording."
    }
-  ]
+  ],
+  "r12": {
+   "current": null,
+   "per_style": 2,
+   "styles": [
+    {
+     "id": "japanese-master",
+     "label": "Japanese, master",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "Heavy Japanese accent. A dignified sushi master in his sixties. A low, calm, steady man's voice. Quiet and exacting, with a very dry sense of humor. Clear studio recording."
+    },
+    {
+     "id": "tokyo",
+     "label": "Man from Tokyo",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A Japanese man from Tokyo in his sixties, a sushi master. A calm, low, even voice. Measured and patient, faintly amused. Clear studio recording."
+    },
+    {
+     "id": "japanese-judge",
+     "label": "Japanese, judge",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "Heavy Japanese accent. A strict, formal judge of fine food in his sixties. A low, firm, level man's voice. Slow and precise. Clear studio recording."
+    }
+   ]
+  },
+  "r13": {
+   "current": null,
+   "per_style": 2,
+   "lines": false,
+   "styles": [
+    {
+     "id": "a3",
+     "label": "Sphere Splash wording",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A dignified sushi master in his sixties, calm and exacting, with a Japanese accent. Natural and authentic, not exaggerated. Clear studio recording."
+    },
+    {
+     "id": "a3-plain",
+     "label": "Accent only",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A man in his sixties with a Japanese accent. Natural and authentic, not exaggerated. Clear studio recording."
+    },
+    {
+     "id": "heavy-end",
+     "label": "Heavy, at the end",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A calm, dignified sushi master in his sixties, with a heavy Japanese accent. Clear studio recording."
+    },
+    {
+     "id": "osaka",
+     "label": "Second language",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A Japanese man from Osaka in his sixties, a sushi master who speaks English as a second language, with a strong Japanese accent. Calm and measured. Clear studio recording."
+    },
+    {
+     "id": "formal",
+     "label": "Careful, formal English",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A Japanese sushi chef in his sixties, speaking careful, formal English with a Japanese accent. A low, calm, steady voice. Clear studio recording."
+    }
+   ]
+  },
+  "r15": {
+   "current": null,
+   "pitch": [
+    100,
+    150
+   ],
+   "retake_from": "pilot9/hiro/master-s2",
+   "retake_note": "calm, dry and exacting",
+   "retakes": 2,
+   "old": [
+    "pilot9/hiro/master-s2",
+    "pilot9/hiro/judge-s1",
+    "pilot9/hiro/master-s4"
+   ],
+   "per_style": 2,
+   "styles": [
+    {
+     "id": "master",
+     "label": "Master chef (more seeds)",
+     "describe": "A stern, dignified master chef in his sixties. A low, calm, steady voice. Quiet and exacting, choosing few words, with a very dry sense of humor. Clear studio recording.",
+     "seeds": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ]
+    },
+    {
+     "id": "steady",
+     "label": "Steady, no \"low\"",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A dignified master sushi chef in his sixties. A calm, warm, steady, medium-pitched man's voice. Quiet and exacting, choosing few words, with a very dry sense of humor. Clear studio recording."
+    }
+   ]
+  }
  },
  "dennis": {
   "name": "Dennis",
@@ -1035,13 +1497,13 @@
    {
     "id": "flustered",
     "label": "Flustered",
-    "describe": "A flustered, well-meaning man in his thirties who worries about everything. A thin, quick tenor voice. Jumpy and apologetic, trying hard to stay calm. Clear studio recording."
+    "describe": "A flustered, well-meaning man in his thirties who worries about everything. A light, quick tenor voice. Jumpy and apologetic, trying hard to stay calm. Clear studio recording."
    }
   ]
  },
  "inferno": {
   "name": "Inferno",
-  "brief": "Intense, proud and gravelly",
+  "brief": "Intense and proud",
   "calm": true,
   "sample": "They call me Inferno. Last week I ate a pepper so hot it filed a complaint. Give me your hottest. Then make it hotter.",
   "pitch": [
@@ -1067,7 +1529,7 @@
    {
     "id": "intense",
     "label": "Intense",
-    "describe": "A hot-sauce fanatic in his forties, proud and intense. A low-pitched, deep, dark voice. Slow-burning and dramatic, like a wrestler making a promise. Clear studio recording."
+    "describe": "A hot-sauce fanatic in his forties, proud and intense. A low-pitched, deep, steady voice. Slow-burning and dramatic, like a wrestler making a promise. Clear studio recording."
    },
    {
     "id": "action",
@@ -1077,7 +1539,7 @@
    {
     "id": "boastful",
     "label": "Proud boaster",
-    "describe": "A proud, boastful daredevil in his forties. A deep, strong, chesty voice. Confident and fiery, bragging happily. Clear studio recording."
+    "describe": "A proud, boastful daredevil in his forties. A deep, strong, warm voice. Confident and fiery, bragging happily. Clear studio recording."
    }
   ]
  },
@@ -1118,6 +1580,11 @@
     "id": "easy",
     "label": "Easygoing",
     "describe": "A big-hearted, easygoing woman in her forties in a hard hat. A warm, round, relaxed voice. Jolly and plain-spoken. Clear studio recording."
+   },
+   {
+    "id": "irish",
+    "label": "Irish builder",
+    "describe": "Heavy Irish accent. A cheerful construction worker in her forties. A full, warm, sturdy woman's voice. Hearty and good-humored, always hungry. Clear studio recording."
    }
   ]
  },
@@ -1188,7 +1655,7 @@
    {
     "id": "jolly",
     "label": "Jolly grandpa",
-    "describe": "A cheerful grandfather around eighty in a letterman jacket. A warm, light, slightly wavering old man's voice. Jolly and nostalgic, taking his time. Clear studio recording."
+    "describe": "A cheerful elderly grandfather around eighty in a letterman jacket. A warm, aged, slightly creaky old man's voice. Jolly and nostalgic, taking his time. Clear studio recording."
    },
    {
     "id": "oldtime",
@@ -1235,8 +1702,69 @@
     "id": "cheery",
     "label": "Cheery (woman)",
     "describe": "A cheerful department-store announcer, a woman in her forties. A warm, sing-song, pleasant voice. Upbeat and clear, like good news over the speakers. Clear studio recording."
+   },
+   {
+    "id": "london",
+    "label": "London announcer",
+    "describe": "London accent. A professional food-court announcer, a woman in her thirties. A smooth, bright, pleasant voice. Calm, clear and friendly, evenly paced. Clear studio recording."
    }
-  ]
+  ],
+  "r12": {
+   "current": null,
+   "per_style": 2,
+   "old": [
+    "pilot9/pa/bright-s4"
+   ],
+   "effect": {
+    "low_cut": 250,
+    "high_cut": 5000,
+    "grit": 0.12,
+    "squash": 0.5,
+    "room": "hall",
+    "room_mix": 0.25
+   },
+   "styles": [
+    {
+     "id": "bright",
+     "label": "Bright (more seeds)",
+     "seeds": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "describe": "A professional shopping-mall announcer, a woman in her thirties. A smooth, bright, pleasant voice. Calm, clear and friendly, evenly paced. Clear studio recording."
+    },
+    {
+     "id": "bright-warm",
+     "label": "Bright and warm",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A professional shopping-mall announcer, a woman in her thirties. A smooth, bright, warm voice. Friendly and clear, with a gentle smile, evenly paced. Clear studio recording."
+    },
+    {
+     "id": "bright-crisp",
+     "label": "Bright and crisp",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A professional public-address announcer, a woman in her thirties. A crisp, bright, pleasant voice. Clear and polished, evenly paced, every word distinct. Clear studio recording."
+    }
+   ]
+  }
  },
  "_round2": [
   "marge",
@@ -1274,5 +1802,73 @@
   "marge",
   "vernon"
  ],
- "_round7_about": "Round 7 (2026-11-12): cloner test 3: Chatterbox Turbo (delivery tags) vs VoxCPM2 vs Qwen3-TTS (voice-pilot.py cbtest)."
+ "_round7_about": "Round 7 (2026-11-12): cloner test 3: Chatterbox Turbo (delivery tags) vs VoxCPM2 vs Qwen3-TTS (voice-pilot.py cbtest).",
+ "_round9": [
+  "reginald",
+  "dale",
+  "priya",
+  "oakes",
+  "tasha",
+  "pam",
+  "breeze",
+  "brock",
+  "jitters",
+  "hiro",
+  "dennis",
+  "inferno",
+  "rita",
+  "lulu",
+  "walt",
+  "pa"
+ ],
+ "_round9_about": "Round 9 (2026-11-12): the other sixteen, briefs reworded with the pilot lessons (accents from the known-good list only, no rough-texture words, \"elderly/aged\" for age, one extra accent style for variety on four). Designed with VoxCPM2.",
+ "_round10": [
+  "reginald",
+  "dale",
+  "priya",
+  "oakes",
+  "tasha",
+  "pam",
+  "breeze",
+  "brock",
+  "jitters",
+  "hiro",
+  "dennis",
+  "inferno",
+  "rita",
+  "lulu",
+  "walt",
+  "pa"
+ ],
+ "_round10_about": "Round 10 (2026-11-12): the same sixteen briefs as round 9, designed with Qwen3-TTS (tools/voice-qwen.py), so each character can come from whichever model gets it.",
+ "_round11": [
+  "vernon",
+  "bev",
+  "kai"
+ ],
+ "_round11_about": "Round 11 (2026-11-12), after the stress test: Vernon, Bev and Kai redone for VoxCPM2, picked on expression. Candidates come from (a) \"retakes\": VoxCPM2 cloning the current pick saying the sample, three seeds with a delivery note and three without, so the reference is VoxCPM-native and as clean as the best take (Vernon's Qwen voice drifted under VoxCPM); (b) new designs; (c) earlier runners-up never tried on expressive lines. Every kept candidate then says five expressive lines the way the game makes them (two takes, the better kept), next to the current pick.",
+ "_round12": [
+  "reginald",
+  "brock",
+  "oakes",
+  "breeze",
+  "priya",
+  "hiro",
+  "pa"
+ ],
+ "_round12_about": "Round 12 (2026-11-13), after Bryan's round 9/10 picks: the expressive-line test (as round 11) for the voices still undecided. Reginald, Brock: round 9 picks + retakes (consistency). Oakes: round 9 lecturer-s2 vs round 10 Qwen lecturer-s3 cloned by VoxCPM. Breeze: round 10 Qwen mellow-s3 + retakes vs new SoCal/hippie designs. Priya (Indian), Hiro (Japanese, untested accent): accent-led designs. PA: variations on round 9 'bright', heard through a speaker effect on the page. The other nine keep their round 9 picks.",
+ "_round13": [
+  "priya",
+  "hiro"
+ ],
+ "_round13_ask": "accent",
+ "_round13_about": "Round 13 (2026-11-13): accent-only round for Priya (Indian) and Hiro (Japanese) after round 12 missed. Wordings built on the Sphere Splash accent test (Assets/tools/voice README, round A3: 'with an Indian English accent. Natural and authentic, not exaggerated.' nailed Indian; Japanese 'close'), accent at the end, shorter character text, place-of-origin and second-language phrasings. Sample line only, rated on 'accent came through'; winners then get the expressive-line test.",
+ "_round14": [
+  "priya"
+ ],
+ "_round14_about": "Round 14 (2026-11-13): Priya's accent found in round 13 (Bryan: C delhi-s6, D chennai-s5, E delhi-s4 good accents, clarity needs work; picked E). Clarity: VoxCPM retakes of all three (a clone keeps its clip's accent) + more seeds of the place wordings; then the five expressive lines.",
+ "_round15": [
+  "hiro"
+ ],
+ "_round15_about": "Round 15 (2026-11-13): Hiro WITHOUT an accent (no Japanese in VoxCPM's reach; GLOBE has no Japanese data for a LoRA). Round 13's takes all distorted, so: the cleanest round 9 designs, retakes of the clearest (master-s2, clarity 4.23), more master seeds, and a 'steady' wording without 'low/deep' (the low end distorts); keep-range 100-150 Hz; then the expressive lines."
 }

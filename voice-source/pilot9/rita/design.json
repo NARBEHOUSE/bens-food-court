@@ -1,0 +1,162 @@
+{
+ "hearty-s1": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 343,
+  "seconds": 6.54,
+  "rate": 3.21,
+  "clarity": 3.34,
+  "style": "hearty",
+  "seed": 1
+ },
+ "hearty-s2": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 195,
+  "seconds": 5.87,
+  "rate": 3.58,
+  "clarity": 3.97,
+  "style": "hearty",
+  "seed": 2
+ },
+ "hearty-s3": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 171,
+  "seconds": 7.3,
+  "rate": 2.88,
+  "clarity": 3.02,
+  "style": "hearty",
+  "seed": 3
+ },
+ "hearty-s4": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 147,
+  "seconds": 6.13,
+  "rate": 3.43,
+  "clarity": 2.57,
+  "style": "hearty",
+  "seed": 4
+ },
+ "foreman-s1": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 336,
+  "seconds": 6.29,
+  "rate": 3.34,
+  "clarity": 2.2,
+  "style": "foreman",
+  "seed": 1
+ },
+ "foreman-s2": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 227,
+  "seconds": 5.98,
+  "rate": 3.51,
+  "clarity": 3.19,
+  "style": "foreman",
+  "seed": 2
+ },
+ "foreman-s3": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 225,
+  "seconds": 6.66,
+  "rate": 3.16,
+  "clarity": 3.31,
+  "style": "foreman",
+  "seed": 3
+ },
+ "foreman-s4": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 241,
+  "seconds": 5.67,
+  "rate": 3.7,
+  "clarity": 3.55,
+  "style": "foreman",
+  "seed": 4
+ },
+ "easy-s1": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 306,
+  "seconds": 5.97,
+  "rate": 3.52,
+  "clarity": 2.83,
+  "style": "easy",
+  "seed": 1
+ },
+ "easy-s2": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 183,
+  "seconds": 6.59,
+  "rate": 3.19,
+  "clarity": 3.37,
+  "style": "easy",
+  "seed": 2
+ },
+ "easy-s3": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 254,
+  "seconds": 6.97,
+  "rate": 3.01,
+  "clarity": 3.27,
+  "style": "easy",
+  "seed": 3
+ },
+ "easy-s4": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 6.84,
+  "rate": 3.07,
+  "clarity": 2.99,
+  "style": "easy",
+  "seed": 4
+ },
+ "irish-s1": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 191,
+  "seconds": 7.31,
+  "rate": 2.87,
+  "clarity": 2.34,
+  "style": "irish",
+  "seed": 1
+ },
+ "irish-s2": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 176,
+  "seconds": 6.59,
+  "rate": 3.19,
+  "clarity": 3.01,
+  "style": "irish",
+  "seed": 2
+ },
+ "irish-s3": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 220,
+  "seconds": 6.61,
+  "rate": 3.18,
+  "clarity": 3.21,
+  "style": "irish",
+  "seed": 3
+ },
+ "irish-s4": {
+  "said": "Hey there! I've been pouring concrete since five this morning. I'll take one of everything, and then we'll talk about lunch.",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 6.79,
+  "rate": 3.09,
+  "clarity": 3.29,
+  "style": "irish",
+  "seed": 4
+ }
+}

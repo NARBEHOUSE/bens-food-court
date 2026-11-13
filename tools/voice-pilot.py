@@ -546,7 +546,8 @@ def parts(who_list):
 def serve(port):
     picks = ROOT / 'picks.json'
     stores = {'picks': picks, 'clean-votes': ROOT / 'clean-votes.json', 'clean2-votes': ROOT / 'clean2-votes.json',
-              'ab-votes': ROOT / 'ab-votes.json'}
+              'ab-votes': ROOT / 'ab-votes.json', 'stress-votes': ROOT / 'stress-votes.json',
+              'req-votes': ROOT / 'req-votes.json'}
 
     def store(path):
         name = path.split('?')[0].rstrip('/').rsplit('/', 1)[-1]
@@ -997,6 +998,365 @@ def cbtest(stage):
     print(f'cloner test 3: {out / "index.html"} ({len(groups)} lines x 3)')
 
 
+# ── stress test ─────────────────────────────────────────────────────────────────────────────────────────────────
+# The same twelve lines for every picked voice, so a difference between voices is the voice's, not the words'.
+# A lighthearted game (Bryan, 2026-11-12): expressive but never angry or shouting. What matters is a clean voice,
+# natural expressive delivery, and the characters staying distinct; this finds how far each voice can go.
+STRESS = [
+    ('grumpy', "Hey, I asked for no onions. This is a whole mountain of onions!", 'grumpy and put out, but playful'),
+    ('delighted', "Oh, wow! That is the best burger I have ever had in my whole life!", 'delighted and excited'),
+    ('thanks', "Thank you so much. That's exactly how I like it.", 'warm and grateful'),
+    ('sad', "Aw, you're out of milkshakes? That was the best part of my day.", 'disappointed, a little sad'),
+    ('whisper', "Psst. Don't tell anyone, but I'm going to order a second dessert.", 'whispering, secretive'),
+    ('nervous', "Uh oh. Is that smoke? Is the grill on fire?", 'worried, a little nervous'),
+    ('laugh', "[laughing] Oh, that's too funny. You put the pickles on top of the bun!", 'laughing, amused'),
+    ('sarcasm', "Oh, wonderful. Another twenty minutes for one grilled cheese. I simply can't wait.", 'sarcastic, dry'),
+    ('sigh', "[sigh] Well, I suppose it's fine. It's not what I pictured, but it's fine.", 'disappointed, resigned'),
+    ('unsure', "So I'll have the, [Uhm] the chicken sandwich. No, wait, the fish.", 'unsure, thinking it over'),
+    ('fast', "Okay, okay, I need a cheeseburger, fries, a chocolate shake and extra ketchup, and I need it right now, please!",
+     'talking very fast, in a hurry'),
+    ('slow', "Take your time. There's no rush at all. Good food is worth the wait.", 'slow, relaxed and unhurried'),
+    ('long', "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town "
+             "for one cheeseburger, which we split three ways, and it was the best thing all week.",
+     'fond, telling a story'),
+]
+STRESS_WHO = ['mitch', 'gus', 'kai', 'tony', 'bev', 'marge', 'vernon']
+
+
+def stress_rows():
+    """The lines as the game would make them: the same text and delivery rules as the script (model_text,
+    model_delivery), so Bev's calm rule and Vernon's no-tags rule apply."""
+    rows, refs = [], picked(True)
+    for who in STRESS_WHO:
+        where, cand = refs[who]
+        home = load(where / who / 'design.json', {}).get(cand, {}).get('pitch')
+        for kind, text, note in STRESS:
+            said, note = model_text(who, text), model_delivery(who, note)
+            base = ROOT / 'stress' / who / kind
+            rows.append({'who': who, 'kind': kind, 'text': text, 'note': note, 'said': said, 'home': home,
+                         'ref': where / who / (cand + '.wav'), 'cand': cand,
+                         'vox': Path(str(base) + '-voxcpm.wav'), 'qwen': Path(str(base) + '-qwen.wav')})
+    return rows
+
+
+STRESS_HTML = r'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice stress test</title>
+<style>
+:root { --bg:#f6f4ef; --card:#fff; --ink:#1d1b18; --soft:#5d574d; --line:#d9d3c6; --warn:#a4372a; }
+@media (prefers-color-scheme: dark) { :root { --bg:#191815; --card:#24221e; --ink:#eeeae2; --soft:#aaa397; --line:#3b3832; --warn:#f0907f; } }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width:960px; margin:0 auto; padding:16px; } .soft { color:var(--soft); } .warn { color:var(--warn); }
+nav { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 16px; } nav button { font:inherit; padding:6px 12px; border-radius:6px;
+  border:2px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; } nav button[aria-pressed=true] { border-color:var(--ink); font-weight:700; }
+.card { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:12px; margin:12px 0; }
+.row { display:flex; gap:8px; align-items:center; margin:6px 0; flex-wrap:wrap; } .row .who { width:9.5em; flex:none; font-weight:600; }
+.row audio { flex:1; min-width:200px; height:34px; } select { font:inherit; padding:4px; } .m { font-size:13px; width:100%; margin:-4px 0 4px 9.5em; }
+input[type=text] { width:100%; box-sizing:border-box; font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); }
+@media (max-width:600px) { .row .who { width:100%; } .m { margin-left:0; } }
+</style></head><body><main>
+<h1>Voice stress test</h1>
+<p>Each picked voice says the same thirteen expressive lines (grumpy, delighted, grateful, a little sad, a whisper, nervous, laughing, sarcasm, sound tags, fast, slow, long), made by both models with the game's normal text rules. <b>VoxCPM2</b> is given the delivery note; <b>Qwen3-TTS</b> ignores notes and gets the words only (sound tags removed), so it shows the voice's default. For each take: does the voice <b>hold up</b>, and did the <b>feeling come through</b>? The numbers under each take are the machine's: clarity (about 4 = clean, under 3 = rough), pitch against the voice's own, and words heard wrong.</p>
+<nav id="nav" aria-label="Voices"></nav>
+<div id="status" class="soft" role="status"></div><div id="app"></div></main>
+<script src="stress.js"></script>
+<script>
+const app = document.getElementById('app'), st = document.getElementById('status'), nav = document.getElementById('nav');
+let votes = {}, who = location.hash.slice(1) || window.STRESS[0].who;
+const save = () => fetch('stress-votes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(votes) })
+  .then(r => { st.textContent = r.ok ? 'Saved.' : 'NOT saved'; }).catch(() => { st.textContent = 'NOT saved: is the page server running?'; });
+function sel(key, label, opts) {
+  const s = document.createElement('select'); s.setAttribute('aria-label', label);
+  for (const [v, t] of opts) { const o = document.createElement('option'); o.value = v; o.textContent = t; if ((votes[key] || '') === v) o.selected = true; s.append(o); }
+  s.onchange = () => { votes[key] = s.value; save(); }; return s;
+}
+function render() {
+  nav.textContent = '';
+  for (const v of window.STRESS) { const b = document.createElement('button'); b.textContent = v.name; b.setAttribute('aria-pressed', v.who === who);
+    b.onclick = () => { who = v.who; location.hash = who; render(); }; nav.append(b); }
+  app.textContent = '';
+  const v = window.STRESS.find(x => x.who === who);
+  if (v.cands) {   // the redesign page: pick one voice for the character
+    const c = document.createElement('div'); c.className = 'card'; const h = document.createElement('p'); h.innerHTML = '<b>Your pick for ' + v.name + '</b>'; c.append(h);
+    const pk = v.who + '/pick';
+    for (const L of v.cands.concat(['none'])) {
+      const l = document.createElement('label'); l.style.marginRight = '16px'; const i = document.createElement('input'); i.type = 'radio'; i.name = pk; i.value = L;
+      i.checked = votes[pk] === L; i.onchange = () => { votes[pk] = L; save(); }; l.append(i, ' ' + (L === 'none' ? 'None of them' : 'Voice ' + L)); c.append(l);
+    }
+    app.append(c);
+  }
+  for (const g of v.lines) {
+    const c = document.createElement('div'); c.className = 'card';
+    const h = document.createElement('p'); const b = document.createElement('b'); b.textContent = g.kind + ': ';
+    const n = document.createElement('span'); n.className = 'soft'; n.textContent = ' (' + g.note + ')'; h.append(b, '“' + g.text + '”', n); c.append(h);
+    for (const t of g.takes) {
+      const key = v.who + '/' + g.kind + '/' + t.model, r = document.createElement('div'); r.className = 'row';
+      const s = document.createElement('span'); s.className = 'who'; s.textContent = t.label;
+      const a = document.createElement('audio'); a.controls = true; a.preload = 'none'; a.src = t.file;
+      a.addEventListener('play', () => document.querySelectorAll('audio').forEach(o => { if (o !== a) o.pause(); }));
+      r.append(s, a, sel(key + '/holds', 'Voice holds up, ' + t.label, [['', 'voice...'], ['good', 'holds up'], ['little', 'a little rough'], ['breaks', 'breaks']]),
+        sel(key + '/feel', 'Feeling came through, ' + t.label, [['', 'feeling...'], ['yes', 'came through'], ['partly', 'partly'], ['no', 'flat / wrong']]));
+      const m = document.createElement('div'); m.className = 'm soft';
+      m.innerHTML = 'clarity ' + t.clarity + ' · ' + t.pitch + ' Hz (voice ' + v.home + ')' + (t.drift ? ' <span class="warn">off pitch</span>' : '') +
+        ' · ' + (t.diffs.length ? '<span class="warn">' + t.diffs.length + ' word(s) wrong</span>' : 'words right');
+      if (t.diffs.length) m.title = t.diffs.join('\n');
+      r.append(m); c.append(r);
+    }
+    const note = document.createElement('input'); note.type = 'text'; note.placeholder = 'Notes (optional)'; note.setAttribute('aria-label', 'Notes on ' + v.name + ' ' + g.kind);
+    const nk = v.who + '/' + g.kind + '/note'; note.value = votes[nk] || ''; note.oninput = () => { votes[nk] = note.value; save(); }; c.append(note);
+    app.append(c);
+  }
+}
+fetch('stress-votes').then(r => r.ok ? r.json() : {}).catch(() => ({})).then(s => { votes = s || {}; render(); });
+</script></body></html>
+'''
+
+
+def stresstest(stage):
+    """Stress test (round 8): the seven picked voices, thirteen expressive lines each, by VoxCPM2 (with the delivery note) and
+    Qwen3-TTS (words only). 'prep' writes qwen-jobs.json for `tools/voice-qwen.py jobs`; 'make' renders VoxCPM's takes
+    (seed 1, one take: no second chances, this is to find where voices break), measures both and builds the page."""
+    rows = stress_rows()
+    if stage == 'prep':
+        save(ROOT / 'qwen-jobs.json', [{'who': r['who'], 'ref': str(r['ref']), 'ref_text': SPEC[r['who']]['sample'],
+                                         'text': TAGS.sub(' ', r['said']).strip(), 'out': str(r['qwen'])} for r in rows])
+        print(f"{len(rows)} Qwen jobs: {ROOT / 'qwen-jobs.json'}")
+        return
+    w = worker()
+    try:
+        for r in rows:
+            if not r['vox'].exists():
+                r['vox'].parent.mkdir(parents=True, exist_ok=True)
+                ans = w.render({'id': f"{r['who']}-{r['kind']}", 'text': (f"({r['note']})" if r['note'] else '') + r['said'],
+                                'out': str(r['vox']),
+                                'seed': 1, 'steps': STEPS, 'cfg': CFG, 'reference': str(r['ref']), 'retry': True})
+                print(f"  {r['who']} {r['kind']}: {'ok' if ans.get('ok') else 'FAILED'}", flush=True)
+    finally:
+        w.close()
+    rep = load(ROOT / 'stress.json', {})
+    out = PAGE / 'stress'
+    out.mkdir(parents=True, exist_ok=True)
+    voices_out = {}
+    for r in rows:
+        v = voices_out.setdefault(r['who'], {'who': r['who'], 'name': SPEC[r['who']]['name'], 'home': r['home'],
+                                             'ref': r['cand'], 'lines': []})
+        takes = []
+        for model, label, src, text in (('voxcpm', 'VoxCPM2 + note', r['vox'], r['said']),
+                                        ('qwen', 'Qwen3-TTS', r['qwen'], TAGS.sub(' ', r['said']).strip())):
+            if not src.exists():
+                print(f"  missing: {src}", flush=True)
+                continue
+            key = f"{r['who']}/{r['kind']}/{model}"
+            if key not in rep:
+                work = ROOT / 'stress' / r['who'] / 'work'
+                work.mkdir(parents=True, exist_ok=True)
+                m = check(src, TAGS.sub(' ', text).strip(), work)
+                m['drift'] = bool(r['home'] and m['pitch']) and abs(m['pitch'] - r['home']) > DRIFT * r['home']
+                rep[key] = m
+                save(ROOT / 'stress.json', rep)
+                print(f"  {key}: clarity {m['clarity']}, {m['pitch']} Hz (voice {r['home']}), {len(m['diffs'])} wrong", flush=True)
+            f = f"{r['who']}-{r['kind']}-{model}.mp3"
+            if not (out / f).exists():
+                export(src, out / f)
+            m = rep[key]
+            takes.append({'model': model, 'label': label, 'file': f, 'clarity': m['clarity'], 'pitch': m['pitch'],
+                          'drift': m['drift'], 'diffs': m['diffs']})
+        v['lines'].append({'kind': r['kind'], 'text': r['text'], 'note': r['note'], 'takes': takes})
+    (out / 'stress.js').write_text('window.STRESS = ' + json.dumps(list(voices_out.values())) + ';\n', encoding='utf-8')
+    (out / 'index.html').write_text(STRESS_HTML, encoding='utf-8')
+    print(f'stress test: {out / "index.html"} ({len(rows)} lines x 2)')
+
+
+# ── requalify (round 11) ────────────────────────────────────────────────────────────────────────────────────────
+# After the stress test (2026-11-12): a voice is picked on how it carries expressive lines, not on one calm sample.
+REQ_LINES = ['delighted', 'grumpy', 'sad', 'sarcasm', 'thanks']
+REQ_RETAKES = 2       # best retakes kept per character
+REQ_PER_STYLE = 1     # best take kept per new style
+
+
+def ranked(rows, c):
+    lo, hi = c['pitch']
+    return sorted(rows, key=lambda nr: (len(nr[1]['diffs']) > allowed(c['sample']), not lo <= nr[1]['pitch'] <= hi,
+                                        -nr[1]['clarity']))
+
+
+def export_fx(src, dst, params):
+    """export() plus a Voice Studio effect (effects.py), for a voice the game plays through one (the PA's speakers)."""
+    if not params:
+        return export(src, dst)
+    sys.path.insert(0, str(VS))
+    import effects
+    effects.init(str(ROOT / 'fx'))
+    clean = 'highpass=f=70,lowpass=f=11000,afftdn=nf=-40:nr=8,deesser=i=0.4'
+    trim = 'silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.06'
+    parts, files = effects.build(params, 'dry', 'wet', 1)
+    graph = ';'.join([f'[0:a]{clean},{trim},areverse,{trim},areverse[dry]'] + parts + ['[wet]loudnorm=I=-17:TP=-1.5:LRA=11[out]'])
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run([voices.checks.ffmpeg(), '-v', 'error', '-y', '-i', str(src)] + [x for f in files for x in ('-i', f)] +
+                   ['-filter_complex', graph, '-map', '[out]', '-ac', '1', '-ar', '44100', '-b:a', '64k', str(dst)], check=True)
+
+
+def requal(stage):
+    """Rounds 11+: candidates for each character in _round<N> (retakes of a voice, new designs, earlier runners-up),
+    the best kept, each saying REQ_LINES as the game would make them (VoxCPM2 + note, two seeds, the better kept), then
+    a blind page with the current pick (if any) among them. Each character's settings are its "r<N>" entry:
+      current      voice-source path of the current voice (default: the latest pick; null = none yet)
+      retake_from  path the retakes clone (default: current); retake_note  their delivery note
+      styles, old  new designs ({id, seeds, describe}) and earlier takes to include
+      retakes, per_style  how many retakes / takes per style are kept;  effect  Voice Studio effect for the page
+    'make' does it all and picks up where it stopped."""
+    import random
+    import shutil
+    who_list = SPEC[f'_round{ROUND}']
+    cur = picked(True)
+    lines_by = {k: (t, n) for k, t, n in STRESS}
+    vsrc = GAME / 'voice-source'
+    w = worker()
+    try:
+        for who in who_list:
+            c, r11 = SPEC[who], SPEC[who][f'r{ROUND}']
+            if r11.get('pitch'):   # a round's own pitch range for choosing which takes to keep
+                c = dict(c, pitch=r11['pitch'])
+            folder = ROOT / who
+            work = folder / 'work'
+            work.mkdir(parents=True, exist_ok=True)
+            rep = load(folder / 'cands.json', {})
+            if 'current' in r11:
+                home_ref = vsrc / (r11['current'] + '.wav') if r11['current'] else None
+            else:
+                where, pick = cur[who]
+                home_ref = where / who / (pick + '.wav')
+            # retake_from: one path, or a list (each gets its own retakes, named retake-<its name>-s<seed>, kept per source)
+            rf = r11.get('retake_from')
+            retake_refs = ([('', vsrc / (rf + '.wav'))] if isinstance(rf, str) else
+                           [(Path(x).name + '-', vsrc / (x + '.wav')) for x in rf] if rf else
+                           [('', home_ref)] if home_ref else [])
+            r11.setdefault('styles', [])
+            r11.setdefault('old', [])
+            jobs = []   # (name, source, render job or None for an existing file)
+            for tag, retake_ref in retake_refs:
+                note = model_delivery(who, r11['retake_note'])
+                for seed in range(1, 7):
+                    with_note = seed <= 3
+                    jobs.append((f'retake-{tag}s{seed}', 'retake:' + tag, {'text': (f'({note})' if with_note and note else '') + model_text(who, c['sample']),
+                                                                           'seed': seed, 'reference': str(retake_ref)}))
+            for st in r11['styles']:
+                for seed in st['seeds']:
+                    jobs.append((f"{st['id']}-s{seed}", 'design:' + st['id'], {'text': f"({st['describe']}){c['sample']}", 'seed': seed}))
+            if home_ref:
+                jobs.append(('current', 'current', home_ref))
+            for o in r11['old']:
+                jobs.append(('old-' + Path(o).name, 'old', vsrc / (o + '.wav')))
+            for name, source, job in jobs:
+                wav = folder / (name + '.wav')
+                if name in rep and wav.exists():
+                    continue
+                if isinstance(job, Path):
+                    shutil.copyfile(job, wav)
+                elif not wav.exists():
+                    ans = w.render(dict(job, id=f'{who}-{name}', out=str(wav), steps=STEPS, cfg=CFG, retry=True))
+                    if not ans.get('ok'):
+                        print('  failed', who, name, ans.get('error'), flush=True)
+                        continue
+                r = check(wav, c['sample'], work)
+                r['source'] = source
+                rep[name] = r
+                save(folder / 'cands.json', rep)
+                print(f"  {who} {name}: {r['pitch']} Hz, clarity {r['clarity']}, {len(r['diffs'])} wrong", flush=True)
+            # kept: the current pick, the earlier runners-up, the best retakes, the best of each new style
+            kept = [n for n, r in rep.items() if r['source'] in ('current', 'old')]
+            n_retakes = r11.get('retakes', REQ_RETAKES if r11['styles'] or r11['old'] else 4)   # retakes the only source (Vernon): more
+            for tag, _ in retake_refs:   # 'retake' was round 11's name for the one source ('retake:' now)
+                kept += [n for n, _ in ranked([(n, r) for n, r in rep.items() if r['source'] in ('retake:' + tag, 'retake' if not tag else '')], c)[:n_retakes]]
+            for st in r11['styles']:
+                kept += [n for n, _ in ranked([(n, r) for n, r in rep.items() if r['source'] == 'design:' + st['id']], c)[:r11.get('per_style', REQ_PER_STYLE)]]
+            save(folder / 'kept.json', kept)
+            # each kept candidate says the expressive lines, as the game makes lines: two seeds, the better kept
+            lrep = load(folder / 'lines.json', {})
+            for cand in (kept if r11.get('lines', True) else []):   # lines: false = the sample only (an accent round)
+                home = rep[cand]['pitch']
+                out_dir = folder / 'lines' / cand
+                out_dir.mkdir(parents=True, exist_ok=True)
+                for kind in REQ_LINES:
+                    key = f'{cand}/{kind}'
+                    final = out_dir / f'{kind}.wav'
+                    if key in lrep and final.exists():
+                        continue
+                    text, dnote = lines_by[kind]
+                    said, dnote = model_text(who, text), model_delivery(who, dnote)
+                    takes = []
+                    for seed in (1, 2):
+                        wav = out_dir / f'{kind}-s{seed}.wav'
+                        ans = w.render({'id': f'{who}-{key}-{seed}', 'text': (f'({dnote})' if dnote else '') + said, 'out': str(wav),
+                                        'seed': seed, 'steps': STEPS, 'cfg': CFG, 'reference': str(folder / (cand + '.wav')), 'retry': True})
+                        if not ans.get('ok'):
+                            continue
+                        r = check(wav, said, work)
+                        r.update(wav=wav.name, drift=bool(home and r['pitch']) and abs(r['pitch'] - home) > DRIFT * home)
+                        takes.append(r)
+                        if len(r['diffs']) <= allowed(said) and not r['drift'] and r['clarity'] >= CLEAR:
+                            break
+                    if not takes:
+                        continue
+                    best = sorted(takes, key=lambda r: (len(r['diffs']), r['drift'], -r['clarity']))[0]
+                    (out_dir / best['wav']).replace(final)
+                    for r in takes:
+                        (out_dir / r['wav']).unlink(missing_ok=True)
+                    best.update(takes=len(takes))
+                    del best['wav']
+                    lrep[key] = best
+                    save(folder / 'lines.json', lrep)
+                    print(f"  {who} {key}: clarity {best['clarity']}, {best['pitch']} Hz (voice {home}), {len(takes)} take(s)", flush=True)
+    finally:
+        w.close()
+    # the page: candidates as letters, shuffled per character (key in req-key.json), sample first, then the lines
+    out = PAGE / 'req'
+    out.mkdir(parents=True, exist_ok=True)
+    key, voices_out, rnd = {}, [], random.Random(ROUND)
+    for who in who_list:
+        folder = ROOT / who
+        rep, lrep, kept = load(folder / 'cands.json', {}), load(folder / 'lines.json', {}), load(folder / 'kept.json', [])
+        fx = SPEC[who][f'r{ROUND}'].get('effect')
+        order = kept[:]
+        rnd.shuffle(order)
+        letters = {cand: 'ABCDEFGHIJKL'[i] for i, cand in enumerate(order)}
+        for cand, L in letters.items():
+            key[f'{who}/{L}'] = cand
+        groups = [('sample', SPEC[who]['sample'], 'the voice as designed', lambda cand: (folder / (cand + '.wav'), rep[cand]))]
+        groups += [(k, lines_by[k][0], lines_by[k][1], (lambda k: lambda cand: (folder / 'lines' / cand / f'{k}.wav', lrep.get(f'{cand}/{k}')))(k))
+                   for k in REQ_LINES if SPEC[who][f'r{ROUND}'].get('lines', True)]
+        home = rep['current']['pitch'] if 'current' in rep else round(sum(SPEC[who]['pitch']) / 2)
+        v = {'who': who, 'name': SPEC[who]['name'] + (' (heard through the speaker effect)' if fx else ''), 'home': home,
+             'cands': [letters[x] for x in order], 'lines': []}
+        for kind, text, gnote, get in groups:
+            takes = []
+            for cand in order:
+                src, m = get(cand)
+                if not src.exists() or not m:
+                    continue
+                f = f'{who}-{kind}-{letters[cand]}.mp3'
+                if not (out / f).exists():
+                    export_fx(src, out / f, fx)
+                takes.append({'model': letters[cand], 'label': 'Voice ' + letters[cand], 'file': f, 'clarity': m['clarity'],
+                              'pitch': m['pitch'], 'drift': bool(m.get('drift')), 'diffs': m['diffs']})
+            v['lines'].append({'kind': kind, 'text': text, 'note': gnote, 'takes': takes})
+        voices_out.append(v)
+    save(ROOT / 'req-key.json', key)
+    (out / 'stress.js').write_text('window.STRESS = ' + json.dumps(voices_out) + ';\n', encoding='utf-8')
+    html_src = STRESS_HTML
+    if SPEC.get(f'_round{ROUND}_ask') == 'accent':   # the second rating asks about the accent, not the feeling
+        html_src = (html_src.replace("'Feeling came through, '", "'Accent came through, '")
+                    .replace("[['', 'feeling...'], ['yes', 'came through'], ['partly', 'partly'], ['no', 'flat / wrong']]",
+                             "[['', 'accent...'], ['yes', 'clearly there'], ['partly', 'some / overdone'], ['no', 'missing / wrong']]"))
+    (out / 'index.html').write_text(
+        html_src.replace('stress-votes', 'req-votes').replace('<title>Voice stress test</title>', '<title>Voice redesign</title>')
+        .replace('<h1>Voice stress test</h1>', f"<h1>{', '.join(SPEC[w]['name'] for w in who_list)}: which voice carries the feeling?</h1>")
+        .replace(re.search(r'<p>Each picked voice.*?</p>', STRESS_HTML, re.S).group(0),
+                 '<p>Each character\'s candidates (letters, shuffled; the current voice, where there is one, is among them) say the sample' + ('' if SPEC.get(f'_round{ROUND}_ask') == 'accent' else ', then five expressive lines made the way the game makes them') + '. Rate each take, then pick the voice at the top. Machine numbers are under each take (clarity about 4 = clean, under 3 = rough).</p>'),
+        encoding='utf-8')
+    print(f'requalify page: {out / "index.html"}')
+
+
 def main():
     global ROUND, ROOT, PAGE
     if '--round' in sys.argv:
@@ -1011,6 +1371,12 @@ def main():
         return
     if cmd == 'clean2':
         clean2()
+        return
+    if cmd == 'requal':
+        requal(args[0] if args else 'make')
+        return
+    if cmd == 'stresstest':
+        stresstest(args[0] if args else 'make')
         return
     if cmd == 'cbtest':
         cbtest(args[0] if args else 'make')

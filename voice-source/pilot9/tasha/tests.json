@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "tasha/smoothie:greet.1",
+  "speaker": "tasha",
+  "text": "Sup. This is my spot. Not my spot. It's just where I end up. Every day.",
+  "moment": "greet",
+  "delivery": "flat, deadpan",
+  "pack": "smoothie",
+  "order": 2,
+  "hash": "4274a6f8",
+  "recorded": false
+ },
+ {
+  "clip": "tasha/cast:smalltalk.c1",
+  "speaker": "tasha",
+  "text": "Landed a kickflip today. Nobody saw. Whatever. It counts.",
+  "moment": "smalltalk",
+  "delivery": "flat, secretly proud",
+  "pack": "cast",
+  "order": 4,
+  "hash": "9f99f48f",
+  "recorded": false
+ },
+ {
+  "clip": "tasha/smoothie:react.3.1",
+  "speaker": "tasha",
+  "text": "Okay. That's good. That's really good. Don't make it a thing.",
+  "moment": "react.3",
+  "delivery": "flat, then a crack of delight, then flat again",
+  "pack": "smoothie",
+  "order": 2,
+  "hash": "93c71732",
+  "recorded": false
+ },
+ {
+  "clip": "tasha/cast:complain.c1",
+  "speaker": "tasha",
+  "text": "It was the one thing I said.",
+  "moment": "complain",
+  "delivery": "flat, deadpan",
+  "pack": "cast",
+  "order": 4,
+  "hash": "907b3b24",
+  "recorded": false
+ }
+]

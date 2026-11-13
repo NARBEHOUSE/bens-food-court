@@ -1,0 +1,221 @@
+{
+ "retake-s1": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 250,
+  "seconds": 6.42,
+  "rate": 3.43,
+  "clarity": 3.87,
+  "source": "retake"
+ },
+ "retake-s2": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 242,
+  "seconds": 5.5,
+  "rate": 4.0,
+  "clarity": 3.68,
+  "source": "retake"
+ },
+ "retake-s3": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 251,
+  "seconds": 5.29,
+  "rate": 4.16,
+  "clarity": 3.64,
+  "source": "retake"
+ },
+ "retake-s4": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 207,
+  "seconds": 5.84,
+  "rate": 3.77,
+  "clarity": 3.57,
+  "source": "retake"
+ },
+ "retake-s5": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 217,
+  "seconds": 5.68,
+  "rate": 3.87,
+  "clarity": 3.76,
+  "source": "retake"
+ },
+ "retake-s6": {
+  "said": "I've had this enough. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright listen up' -> 'i've had this enough'"
+  ],
+  "pitch": 230,
+  "seconds": 5.8,
+  "rate": 3.79,
+  "clarity": 3.38,
+  "source": "retake"
+ },
+ "brisk-s7": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 197,
+  "seconds": 4.25,
+  "rate": 5.18,
+  "clarity": 3.65,
+  "source": "design:brisk"
+ },
+ "brisk-s8": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 281,
+  "seconds": 5.88,
+  "rate": 3.74,
+  "clarity": 2.9,
+  "source": "design:brisk"
+ },
+ "brisk-s9": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 210,
+  "seconds": 5.25,
+  "rate": 4.19,
+  "clarity": 3.81,
+  "source": "design:brisk"
+ },
+ "brisk-s10": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 249,
+  "seconds": 6.64,
+  "rate": 3.31,
+  "clarity": 3.94,
+  "source": "design:brisk"
+ },
+ "brisk-s11": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 184,
+  "seconds": 5.28,
+  "rate": 4.17,
+  "clarity": 3.18,
+  "source": "design:brisk"
+ },
+ "brisk-s12": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 206,
+  "seconds": 5.8,
+  "rate": 3.79,
+  "clarity": 4.06,
+  "source": "design:brisk"
+ },
+ "coach-s1": {
+  "said": "All right, Rosanna. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright listen up' -> 'all right rosanna'"
+  ],
+  "pitch": 224,
+  "seconds": 5.68,
+  "rate": 3.87,
+  "clarity": 3.67,
+  "source": "design:coach"
+ },
+ "coach-s2": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 218,
+  "seconds": 5.92,
+  "rate": 3.72,
+  "clarity": 3.7,
+  "source": "design:coach"
+ },
+ "coach-s3": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 259,
+  "seconds": 5.57,
+  "rate": 3.95,
+  "clarity": 3.65,
+  "source": "design:coach"
+ },
+ "coach-s4": {
+  "said": "Yeah, my Roxanne and Terry version one. We will watch. So Jack join here for live. All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter. And I'm buried on a cane, pink print, or while mizzly, and then carrying one. I'm happy to see the face after they take some ice off a piece of pink. It works on the chain. And what did I say? I'm sorry you haven't done my. My one thing, make it a man named Jason, and so that not me.",
+  "diffs": [
+   "replace: 'alright' -> 'yeah my roxanne and terry version one we will watch so jack join here for live all right'",
+   "insert: '' -> 'and i'm buried on a cane pink print or while mizzly and then carrying one i'm happy to see the face after they take some ice off a piece of pink it works on the chain and what did i say i'm sorry you haven't done my my one thing make it a man named jason and so that not me'"
+  ],
+  "pitch": 184,
+  "seconds": 25.34,
+  "rate": 0.87,
+  "clarity": 3.23,
+  "source": "design:coach"
+ },
+ "coach-s5": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 232,
+  "seconds": 6.34,
+  "rate": 3.47,
+  "clarity": 2.75,
+  "source": "design:coach"
+ },
+ "coach-s6": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 332,
+  "seconds": 5.53,
+  "rate": 3.98,
+  "clarity": 3.19,
+  "source": "design:coach"
+ },
+ "current": {
+  "said": "All right, listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [
+   "replace: 'alright' -> 'all right'"
+  ],
+  "pitch": 226,
+  "seconds": 5.76,
+  "rate": 3.82,
+  "clarity": 3.88,
+  "source": "current"
+ },
+ "old-brisk-s4": {
+  "said": "Right. Listen up. I want a double cheeseburger, medium, and I want it like we're down by six in the fourth quarter.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 6.79,
+  "rate": 3.24,
+  "clarity": 3.87,
+  "source": "old"
+ }
+}

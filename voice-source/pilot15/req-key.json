@@ -1,0 +1,11 @@
+{
+ "hiro/A": "steady-s4",
+ "hiro/B": "old-master-s4",
+ "hiro/C": "master-s8",
+ "hiro/D": "old-judge-s1",
+ "hiro/E": "steady-s2",
+ "hiro/F": "master-s5",
+ "hiro/G": "retake-s3",
+ "hiro/H": "old-master-s2",
+ "hiro/I": "retake-s5"
+}

@@ -1,0 +1,13 @@
+[
+ {
+  "clip": "pa/court:open.1.bensBurritos",
+  "speaker": "pa",
+  "text": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "moment": "court.announce.open",
+  "delivery": "smooth, bright, over-formal",
+  "pack": "court",
+  "order": 1,
+  "hash": "7387aa99",
+  "recorded": false
+ }
+]

@@ -1,0 +1,181 @@
+{
+ "jolly-s4/0": {
+  "said": "Well, hello there! A real ice cream parlor, stools and everything. I'm home.",
+  "diffs": [],
+  "pitch": 186,
+  "seconds": 5.62,
+  "rate": 2.31,
+  "clarity": 3.49,
+  "seed": 2,
+  "drift": false,
+  "clip": "walt/icecream:greet.1",
+  "said_as": "Well, hello there! A real ice cream parlor. Stools and everything. I'm home.",
+  "note": "cheerful, delighted, a little slow",
+  "takes": 2
+ },
+ "jolly-s4/1": {
+  "said": "I proposed at a soda fountain in 'fifty-five, down on one knee. These days, I'd need a crew to get back up.",
+  "diffs": [
+   "replace: ''55' -> ''fifty five'"
+  ],
+  "pitch": 184,
+  "seconds": 6.78,
+  "rate": 3.24,
+  "clarity": 3.52,
+  "seed": 1,
+  "drift": false,
+  "clip": "walt/icecream:smalltalk.1",
+  "said_as": "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up.",
+  "note": "fond, chuckling",
+  "takes": 1
+ },
+ "jolly-s4/2": {
+  "said": "Swell, just swell. That's the way they made it. Exactly the way.",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 4.43,
+  "rate": 2.71,
+  "clarity": 3.76,
+  "seed": 2,
+  "drift": false,
+  "clip": "walt/icecream:react.3.1",
+  "said_as": "Swell! Just swell. That's the way they made it. Exactly the way.",
+  "note": "delighted, beaming",
+  "takes": 2
+ },
+ "jolly-s4/3": {
+  "said": "In fifty-five, if you asked for something, you got it, and a smile.",
+  "diffs": [
+   "replace: ''55' -> 'fifty five'"
+  ],
+  "pitch": 189,
+  "seconds": 4.3,
+  "rate": 3.03,
+  "clarity": 3.52,
+  "seed": 1,
+  "drift": false,
+  "clip": "walt/cast:complain.c1",
+  "said_as": "In '55, if you asked for something, you got it. And a smile.",
+  "note": "slow, warm, a long memory",
+  "takes": 1
+ },
+ "oldtime-s2/0": {
+  "said": "Well, hello there! A real ice cream parlor, stools and everything. I'm home.",
+  "diffs": [],
+  "pitch": 169,
+  "seconds": 5.05,
+  "rate": 2.57,
+  "clarity": 4.05,
+  "seed": 2,
+  "drift": false,
+  "clip": "walt/icecream:greet.1",
+  "said_as": "Well, hello there! A real ice cream parlor. Stools and everything. I'm home.",
+  "note": "cheerful, delighted, a little slow",
+  "takes": 2
+ },
+ "oldtime-s2/1": {
+  "said": "I proposed at a soda fountain in '55, down on one knee. These days, I'd need a crew to get back up.",
+  "diffs": [],
+  "pitch": 141,
+  "seconds": 6.53,
+  "rate": 3.37,
+  "clarity": 4.08,
+  "seed": 1,
+  "drift": false,
+  "clip": "walt/icecream:smalltalk.1",
+  "said_as": "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up.",
+  "note": "fond, chuckling",
+  "takes": 1
+ },
+ "oldtime-s2/2": {
+  "said": "Swell, just swell. That's the way they made it. Exactly the way.",
+  "diffs": [],
+  "pitch": 161,
+  "seconds": 3.9,
+  "rate": 3.08,
+  "clarity": 3.63,
+  "seed": 1,
+  "drift": false,
+  "clip": "walt/icecream:react.3.1",
+  "said_as": "Swell! Just swell. That's the way they made it. Exactly the way.",
+  "note": "delighted, beaming",
+  "takes": 1
+ },
+ "oldtime-s2/3": {
+  "said": "In fifty-five, if you asked for something, you got it and a smile.",
+  "diffs": [
+   "replace: ''55' -> 'fifty five'"
+  ],
+  "pitch": 145,
+  "seconds": 4.76,
+  "rate": 2.73,
+  "clarity": 4.04,
+  "seed": 1,
+  "drift": false,
+  "clip": "walt/cast:complain.c1",
+  "said_as": "In '55, if you asked for something, you got it. And a smile.",
+  "note": "slow, warm, a long memory",
+  "takes": 1
+ },
+ "gentle-s3/0": {
+  "said": "Well, hello there! A real ice cream parlor, stools and everything. I'm home.",
+  "diffs": [],
+  "pitch": 198,
+  "seconds": 5.01,
+  "rate": 2.6,
+  "clarity": 3.85,
+  "seed": 1,
+  "drift": true,
+  "clip": "walt/icecream:greet.1",
+  "said_as": "Well, hello there! A real ice cream parlor. Stools and everything. I'm home.",
+  "note": "cheerful, delighted, a little slow",
+  "takes": 2
+ },
+ "gentle-s3/1": {
+  "said": "I propose at a soda fountain in 'fifty-five, down on one knee. These days, I'd need a crew to get back up.",
+  "diffs": [
+   "replace: ''55' -> ''fifty five'"
+  ],
+  "pitch": 176,
+  "seconds": 6.49,
+  "rate": 3.39,
+  "clarity": 3.87,
+  "seed": 1,
+  "drift": true,
+  "clip": "walt/icecream:smalltalk.1",
+  "said_as": "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up.",
+  "note": "fond, chuckling",
+  "takes": 2
+ },
+ "gentle-s3/2": {
+  "said": "Swell, just swell. That's the way they made it. Exactly the way.",
+  "diffs": [],
+  "pitch": 173,
+  "seconds": 4.79,
+  "rate": 2.51,
+  "clarity": 3.85,
+  "seed": 1,
+  "drift": true,
+  "clip": "walt/icecream:react.3.1",
+  "said_as": "Swell! Just swell. That's the way they made it. Exactly the way.",
+  "note": "delighted, beaming",
+  "takes": 2
+ },
+ "gentle-s3/3": {
+  "said": "In fifty-five, if you ask for something, you got it, and a smile.",
+  "diffs": [
+   "replace: ''55' -> 'fifty five'",
+   "replace: 'asked' -> 'ask'"
+  ],
+  "pitch": 138,
+  "seconds": 4.01,
+  "rate": 3.24,
+  "clarity": 3.74,
+  "seed": 1,
+  "drift": false,
+  "clip": "walt/cast:complain.c1",
+  "said_as": "In '55, if you asked for something, you got it. And a smile.",
+  "note": "slow, warm, a long memory",
+  "takes": 2
+ }
+}

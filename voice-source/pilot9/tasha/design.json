@@ -1,0 +1,122 @@
+{
+ "flat-s1": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 8.58,
+  "rate": 2.1,
+  "clarity": 1.92,
+  "style": "flat",
+  "seed": 1
+ },
+ "flat-s2": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 250,
+  "seconds": 9.33,
+  "rate": 1.93,
+  "clarity": 3.11,
+  "style": "flat",
+  "seed": 2
+ },
+ "flat-s3": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 238,
+  "seconds": 8.12,
+  "rate": 2.22,
+  "clarity": 3.31,
+  "style": "flat",
+  "seed": 3
+ },
+ "flat-s4": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 295,
+  "seconds": 8.39,
+  "rate": 2.14,
+  "clarity": 3.86,
+  "style": "flat",
+  "seed": 4
+ },
+ "dry-s1": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 175,
+  "seconds": 7.53,
+  "rate": 2.39,
+  "clarity": 3.47,
+  "style": "dry",
+  "seed": 1
+ },
+ "dry-s2": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 176,
+  "seconds": 8.05,
+  "rate": 2.23,
+  "clarity": 3.68,
+  "style": "dry",
+  "seed": 2
+ },
+ "dry-s3": {
+  "said": "Hey. So I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 166,
+  "seconds": 8.96,
+  "rate": 2.01,
+  "clarity": 3.96,
+  "style": "dry",
+  "seed": 3
+ },
+ "dry-s4": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 169,
+  "seconds": 8.14,
+  "rate": 2.21,
+  "clarity": 4.15,
+  "style": "dry",
+  "seed": 4
+ },
+ "mumble-s1": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 9.29,
+  "rate": 1.94,
+  "clarity": 2.79,
+  "style": "mumble",
+  "seed": 1
+ },
+ "mumble-s2": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 201,
+  "seconds": 8.35,
+  "rate": 2.16,
+  "clarity": 3.84,
+  "style": "mumble",
+  "seed": 2
+ },
+ "mumble-s3": {
+  "said": "So, I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 190,
+  "seconds": 12.36,
+  "rate": 1.46,
+  "clarity": 3.73,
+  "style": "mumble",
+  "seed": 3
+ },
+ "mumble-s4": {
+  "said": "Hey, so I guess I'm getting a smoothie. It's fine. Everything's fine. Whatever you make is probably fine.",
+  "diffs": [],
+  "pitch": 187,
+  "seconds": 8.05,
+  "rate": 2.24,
+  "clarity": 3.82,
+  "style": "mumble",
+  "seed": 4
+ }
+}

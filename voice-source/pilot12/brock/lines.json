@@ -1,0 +1,264 @@
+{
+ "current/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 188,
+  "seconds": 3.89,
+  "rate": 3.85,
+  "clarity": 3.88,
+  "drift": false,
+  "takes": 1
+ },
+ "current/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 192,
+  "seconds": 4.23,
+  "rate": 3.07,
+  "clarity": 3.8,
+  "drift": false,
+  "takes": 1
+ },
+ "current/sad": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 117,
+  "seconds": 5.06,
+  "rate": 2.57,
+  "clarity": 4.02,
+  "drift": true,
+  "takes": 2
+ },
+ "current/sarcasm": {
+  "said": "Ah, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 209,
+  "seconds": 5.46,
+  "rate": 2.38,
+  "clarity": 3.97,
+  "drift": false,
+  "takes": 1
+ },
+ "current/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 204,
+  "seconds": 3.05,
+  "rate": 3.28,
+  "clarity": 3.75,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s6/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 176,
+  "seconds": 3.8,
+  "rate": 3.94,
+  "clarity": 3.93,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 162,
+  "seconds": 3.95,
+  "rate": 3.29,
+  "clarity": 3.78,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/sad": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 160,
+  "seconds": 3.91,
+  "rate": 3.33,
+  "clarity": 4.08,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/sarcasm": {
+  "said": "Oh, wonderful! Another 20 minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [
+   "replace: 'twenty' -> '20'"
+  ],
+  "pitch": 161,
+  "seconds": 5.48,
+  "rate": 2.37,
+  "clarity": 3.73,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 153,
+  "seconds": 2.73,
+  "rate": 3.66,
+  "clarity": 3.56,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s4/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 103,
+  "seconds": 3.68,
+  "rate": 4.08,
+  "clarity": 4.04,
+  "drift": true,
+  "takes": 2
+ },
+ "retake-s4/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 143,
+  "seconds": 4.35,
+  "rate": 2.99,
+  "clarity": 3.75,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s4/sad": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 128,
+  "seconds": 3.83,
+  "rate": 3.4,
+  "clarity": 4.02,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s4/sarcasm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 130,
+  "seconds": 5.0,
+  "rate": 2.6,
+  "clarity": 3.48,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s4/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 143,
+  "seconds": 2.6,
+  "rate": 3.84,
+  "clarity": 3.61,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 148,
+  "seconds": 3.63,
+  "rate": 4.13,
+  "clarity": 3.88,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s1/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 195,
+  "seconds": 4.04,
+  "rate": 3.21,
+  "clarity": 3.91,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/sad": {
+  "said": "Uh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'uh'"
+  ],
+  "pitch": 177,
+  "seconds": 3.87,
+  "rate": 3.36,
+  "clarity": 3.67,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/sarcasm": {
+  "said": "Ah, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 155,
+  "seconds": 5.47,
+  "rate": 2.38,
+  "clarity": 3.45,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 2.95,
+  "rate": 3.39,
+  "clarity": 3.95,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/delighted": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 100,
+  "seconds": 4.18,
+  "rate": 3.59,
+  "clarity": 3.88,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/grumpy": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 121,
+  "seconds": 3.9,
+  "rate": 3.33,
+  "clarity": 3.38,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/sad": {
+  "said": "Uh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'uh'"
+  ],
+  "pitch": 103,
+  "seconds": 3.83,
+  "rate": 3.39,
+  "clarity": 3.41,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/sarcasm": {
+  "said": "Wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 121,
+  "seconds": 5.66,
+  "rate": 2.3,
+  "clarity": 3.55,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/thanks": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 116,
+  "seconds": 2.55,
+  "rate": 3.92,
+  "clarity": 3.82,
+  "drift": false,
+  "takes": 1
+ }
+}

@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "jitters/cafe:greet.1",
+  "speaker": "jitters",
+  "text": "Hi! Hello! Jitters! That's not my real name. It's my real name now.",
+  "moment": "greet",
+  "delivery": "very fast, wired, beaming",
+  "pack": "cafe",
+  "order": 2,
+  "hash": "82bfa2b1",
+  "recorded": false
+ },
+ {
+  "clip": "jitters/cafe:smalltalk.1",
+  "speaker": "jitters",
+  "text": "I finished my to-do list. Then I wrote a new one. Then I finished that one. Before sunrise.",
+  "moment": "smalltalk",
+  "delivery": "very fast, proud, a list",
+  "pack": "cafe",
+  "order": 4,
+  "hash": "13945720",
+  "recorded": false
+ },
+ {
+  "clip": "jitters/cafe:react.3.1",
+  "speaker": "jitters",
+  "text": "Yes! Yes yes yes! That's the one! I can see sounds!",
+  "moment": "react.3",
+  "delivery": "very fast, ecstatic",
+  "pack": "cafe",
+  "order": 2,
+  "hash": "80a1abc9",
+  "recorded": false
+ },
+ {
+  "clip": "jitters/cast:complain.c1",
+  "speaker": "jitters",
+  "text": "That's not it! I said it fast, but I said it!",
+  "moment": "complain",
+  "delivery": "very fast, wired",
+  "pack": "cast",
+  "order": 4,
+  "hash": "4cfc0fad",
+  "recorded": false
+ }
+]

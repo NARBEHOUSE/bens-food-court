@@ -1,0 +1,280 @@
+{
+ "a3-s1": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 102,
+  "seconds": 9.93,
+  "rate": 1.91,
+  "clarity": 2.36,
+  "source": "design:a3"
+ },
+ "a3-s2": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 109,
+  "seconds": 7.79,
+  "rate": 2.44,
+  "clarity": 2.63,
+  "source": "design:a3"
+ },
+ "a3-s3": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 120,
+  "seconds": 8.86,
+  "rate": 2.14,
+  "clarity": 2.28,
+  "source": "design:a3"
+ },
+ "a3-s4": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 130,
+  "seconds": 8.05,
+  "rate": 2.36,
+  "clarity": 2.92,
+  "source": "design:a3"
+ },
+ "a3-s5": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 154,
+  "seconds": 7.46,
+  "rate": 2.55,
+  "clarity": 3.36,
+  "source": "design:a3"
+ },
+ "a3-s6": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 103,
+  "seconds": 12.56,
+  "rate": 1.51,
+  "clarity": 1.95,
+  "source": "design:a3"
+ },
+ "a3-plain-s1": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 118,
+  "seconds": 6.56,
+  "rate": 2.9,
+  "clarity": 2.53,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s2": {
+  "said": "Good evening. I have made sushi for 40 years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [
+   "replace: 'forty' -> '40'"
+  ],
+  "pitch": 121,
+  "seconds": 7.4,
+  "rate": 2.57,
+  "clarity": 2.76,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s3": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 96,
+  "seconds": 8.55,
+  "rate": 2.22,
+  "clarity": 2.22,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s4": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 135,
+  "seconds": 9.32,
+  "rate": 2.04,
+  "clarity": 3.08,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s5": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 132,
+  "seconds": 8.39,
+  "rate": 2.26,
+  "clarity": 3.19,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s6": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 137,
+  "seconds": 9.02,
+  "rate": 2.11,
+  "clarity": 2.96,
+  "source": "design:a3-plain"
+ },
+ "heavy-end-s1": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 109,
+  "seconds": 8.05,
+  "rate": 2.36,
+  "clarity": 2.78,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s2": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 113,
+  "seconds": 8.55,
+  "rate": 2.22,
+  "clarity": 2.8,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s3": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 101,
+  "seconds": 8.93,
+  "rate": 2.13,
+  "clarity": 1.98,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s4": {
+  "said": "Good evening. I have made sushi for 40 years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [
+   "replace: 'forty' -> '40'"
+  ],
+  "pitch": 104,
+  "seconds": 8.22,
+  "rate": 2.31,
+  "clarity": 2.77,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s5": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 118,
+  "seconds": 8.04,
+  "rate": 2.36,
+  "clarity": 2.8,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s6": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 111,
+  "seconds": 10.32,
+  "rate": 1.84,
+  "clarity": 2.71,
+  "source": "design:heavy-end"
+ },
+ "osaka-s1": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 153,
+  "seconds": 6.78,
+  "rate": 2.8,
+  "clarity": 2.93,
+  "source": "design:osaka"
+ },
+ "osaka-s2": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 150,
+  "seconds": 7.04,
+  "rate": 2.7,
+  "clarity": 2.77,
+  "source": "design:osaka"
+ },
+ "osaka-s3": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 101,
+  "seconds": 8.85,
+  "rate": 2.15,
+  "clarity": 2.25,
+  "source": "design:osaka"
+ },
+ "osaka-s4": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 120,
+  "seconds": 9.59,
+  "rate": 1.98,
+  "clarity": 2.66,
+  "source": "design:osaka"
+ },
+ "osaka-s5": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 137,
+  "seconds": 8.78,
+  "rate": 2.16,
+  "clarity": 2.92,
+  "source": "design:osaka"
+ },
+ "osaka-s6": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 132,
+  "seconds": 8.6,
+  "rate": 2.21,
+  "clarity": 3.12,
+  "source": "design:osaka"
+ },
+ "formal-s1": {
+  "said": "Good evening. I have made sushi for 40 years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [
+   "replace: 'forty' -> '40'"
+  ],
+  "pitch": 102,
+  "seconds": 8.28,
+  "rate": 2.29,
+  "clarity": 2.05,
+  "source": "design:formal"
+ },
+ "formal-s2": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 115,
+  "seconds": 8.23,
+  "rate": 2.31,
+  "clarity": 2.29,
+  "source": "design:formal"
+ },
+ "formal-s3": {
+  "said": "Good evening. I have made sushi for 40 years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [
+   "replace: 'forty' -> '40'"
+  ],
+  "pitch": 114,
+  "seconds": 8.79,
+  "rate": 2.16,
+  "clarity": 1.96,
+  "source": "design:formal"
+ },
+ "formal-s4": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 119,
+  "seconds": 8.16,
+  "rate": 2.33,
+  "clarity": 2.67,
+  "source": "design:formal"
+ },
+ "formal-s5": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 149,
+  "seconds": 8.17,
+  "rate": 2.33,
+  "clarity": 2.72,
+  "source": "design:formal"
+ },
+ "formal-s6": {
+  "said": "Good evening. I have made sushi for forty years. Tonight I make nothing. Tonight I only watch. Please begin.",
+  "diffs": [],
+  "pitch": 76,
+  "seconds": 10.84,
+  "rate": 1.75,
+  "clarity": 1.97,
+  "source": "design:formal"
+ }
+}

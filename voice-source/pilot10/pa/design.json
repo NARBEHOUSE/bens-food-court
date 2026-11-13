@@ -1,0 +1,162 @@
+{
+ "bright-s1": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 205,
+  "seconds": 7.94,
+  "rate": 2.39,
+  "clarity": 4.25,
+  "style": "bright",
+  "seed": 1
+ },
+ "bright-s2": {
+  "said": "Attention, food court guests. A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 207,
+  "seconds": 6.21,
+  "rate": 3.06,
+  "clarity": 4.11,
+  "style": "bright",
+  "seed": 2
+ },
+ "bright-s3": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 222,
+  "seconds": 6.78,
+  "rate": 2.8,
+  "clarity": 4.26,
+  "style": "bright",
+  "seed": 3
+ },
+ "bright-s4": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 203,
+  "seconds": 8.2,
+  "rate": 2.32,
+  "clarity": 4.19,
+  "style": "bright",
+  "seed": 4
+ },
+ "smooth-s1": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 91,
+  "seconds": 6.45,
+  "rate": 2.95,
+  "clarity": 3.42,
+  "style": "smooth",
+  "seed": 1
+ },
+ "smooth-s2": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 120,
+  "seconds": 6.44,
+  "rate": 2.95,
+  "clarity": 4.27,
+  "style": "smooth",
+  "seed": 2
+ },
+ "smooth-s3": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 107,
+  "seconds": 7.68,
+  "rate": 2.47,
+  "clarity": 4.12,
+  "style": "smooth",
+  "seed": 3
+ },
+ "smooth-s4": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 97,
+  "seconds": 7.43,
+  "rate": 2.56,
+  "clarity": 4.24,
+  "style": "smooth",
+  "seed": 4
+ },
+ "cheery-s1": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 292,
+  "seconds": 7.5,
+  "rate": 2.53,
+  "clarity": 4.21,
+  "style": "cheery",
+  "seed": 1
+ },
+ "cheery-s2": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 344,
+  "seconds": 7.2,
+  "rate": 2.64,
+  "clarity": 3.83,
+  "style": "cheery",
+  "seed": 2
+ },
+ "cheery-s3": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 260,
+  "seconds": 8.59,
+  "rate": 2.21,
+  "clarity": 3.87,
+  "style": "cheery",
+  "seed": 3
+ },
+ "cheery-s4": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 319,
+  "seconds": 7.06,
+  "rate": 2.69,
+  "clarity": 4.22,
+  "style": "cheery",
+  "seed": 4
+ },
+ "london-s1": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 228,
+  "seconds": 7.66,
+  "rate": 2.48,
+  "clarity": 4.12,
+  "style": "london",
+  "seed": 1
+ },
+ "london-s2": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 184,
+  "seconds": 7.47,
+  "rate": 2.54,
+  "clarity": 4.26,
+  "style": "london",
+  "seed": 2
+ },
+ "london-s3": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 233,
+  "seconds": 7.21,
+  "rate": 2.63,
+  "clarity": 4.18,
+  "style": "london",
+  "seed": 3
+ },
+ "london-s4": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 250,
+  "seconds": 6.82,
+  "rate": 2.79,
+  "clarity": 4.33,
+  "style": "london",
+  "seed": 4
+ }
+}

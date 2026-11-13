@@ -1,0 +1,122 @@
+{
+ "wired-s1": {
+  "said": "Hi! Hi! Hello! I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 230,
+  "seconds": 7.07,
+  "rate": 3.25,
+  "clarity": 4.07,
+  "style": "wired",
+  "seed": 1
+ },
+ "wired-s2": {
+  "said": "Hi! Hi! Hello! I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 246,
+  "seconds": 5.74,
+  "rate": 4.0,
+  "clarity": 2.95,
+  "style": "wired",
+  "seed": 2
+ },
+ "wired-s3": {
+  "said": "Hi, hi, hello! I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 247,
+  "seconds": 6.97,
+  "rate": 3.3,
+  "clarity": 3.2,
+  "style": "wired",
+  "seed": 3
+ },
+ "wired-s4": {
+  "said": "Hi hi hello. I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 149,
+  "seconds": 5.62,
+  "rate": 4.09,
+  "clarity": 3.13,
+  "style": "wired",
+  "seed": 4
+ },
+ "nervy-s1": {
+  "said": "Hi! Hi! Hello! I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 166,
+  "seconds": 6.63,
+  "rate": 3.47,
+  "clarity": 3.7,
+  "style": "nervy",
+  "seed": 1
+ },
+ "nervy-s2": {
+  "said": "Hi! Hi! Hello! I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 184,
+  "seconds": 6.57,
+  "rate": 3.5,
+  "clarity": 3.85,
+  "style": "nervy",
+  "seed": 2
+ },
+ "nervy-s3": {
+  "said": "Hi, hi, hello. I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 127,
+  "seconds": 6.89,
+  "rate": 3.34,
+  "clarity": 3.13,
+  "style": "nervy",
+  "seed": 3
+ },
+ "nervy-s4": {
+  "said": "Hi! Hi! Hello. I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 135,
+  "seconds": 6.34,
+  "rate": 3.63,
+  "clarity": 3.96,
+  "style": "nervy",
+  "seed": 4
+ },
+ "buzzing-s1": {
+  "said": "Hi! Hi! Hello! I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 213,
+  "seconds": 6.34,
+  "rate": 3.63,
+  "clarity": 3.72,
+  "style": "buzzing",
+  "seed": 1
+ },
+ "buzzing-s2": {
+  "said": "Hi! Hi! Hello! I've had six coffees, and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 267,
+  "seconds": 5.43,
+  "rate": 4.23,
+  "clarity": 3.88,
+  "style": "buzzing",
+  "seed": 2
+ },
+ "buzzing-s3": {
+  "said": "Hi! Hi! Hello! I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 213,
+  "seconds": 6.72,
+  "rate": 3.42,
+  "clarity": 2.68,
+  "style": "buzzing",
+  "seed": 3
+ },
+ "buzzing-s4": {
+  "said": "Hi! Hi! Hello. I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "diffs": [],
+  "pitch": 156,
+  "seconds": 5.42,
+  "rate": 4.24,
+  "clarity": 4.21,
+  "style": "buzzing",
+  "seed": 4
+ }
+}

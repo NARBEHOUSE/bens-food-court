@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "inferno/burrito:greet.1",
+  "speaker": "inferno",
+  "text": "Inferno. You've heard of me. Your fire extinguisher has definitely heard of me.",
+  "moment": "greet",
+  "delivery": "intense, proud",
+  "pack": "burrito",
+  "order": 2,
+  "hash": "dd21a49c",
+  "recorded": false
+ },
+ {
+  "clip": "inferno/burrito:smalltalk.1",
+  "speaker": "inferno",
+  "text": "I keep a bottle of hot sauce in my holster. For emergencies. Every meal is an emergency.",
+  "moment": "smalltalk",
+  "delivery": "proud, patting the holster",
+  "pack": "burrito",
+  "order": 4,
+  "hash": "e4e0866f",
+  "recorded": false
+ },
+ {
+  "clip": "inferno/burrito:react.3.1",
+  "speaker": "inferno",
+  "text": "Ooh. OOH. There it is. My eyebrows just left the building.",
+  "moment": "react.3",
+  "delivery": "intense, delighted",
+  "pack": "burrito",
+  "order": 2,
+  "hash": "45a410dc",
+  "recorded": false
+ },
+ {
+  "clip": "inferno/cast:complain.c1",
+  "speaker": "inferno",
+  "text": "This knows what it did.",
+  "moment": "complain",
+  "delivery": "intense, a slow burn",
+  "pack": "cast",
+  "order": 4,
+  "hash": "9407679b",
+  "recorded": false
+ }
+]

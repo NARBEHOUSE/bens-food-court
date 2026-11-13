@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "rita/burrito:greet.1",
+  "speaker": "rita",
+  "text": "Hey there! Rita. The hard hat's for work. The appetite's for here.",
+  "moment": "greet",
+  "delivery": "hearty, cheerful",
+  "pack": "burrito",
+  "order": 2,
+  "hash": "5cbe0377",
+  "recorded": false
+ },
+ {
+  "clip": "rita/burrito:smalltalk.1",
+  "speaker": "rita",
+  "text": "We poured a foundation this morning. Six trucks of concrete. I could eat six trucks. Not of concrete.",
+  "moment": "smalltalk",
+  "delivery": "hearty, clarifying",
+  "pack": "burrito",
+  "order": 4,
+  "hash": "0a085d1f",
+  "recorded": false
+ },
+ {
+  "clip": "rita/burrito:react.3.1",
+  "speaker": "rita",
+  "text": "Now that is load-bearing. You could build a house on this.",
+  "moment": "react.3",
+  "delivery": "hearty, impressed",
+  "pack": "burrito",
+  "order": 2,
+  "hash": "de52671d",
+  "recorded": false
+ },
+ {
+  "clip": "rita/cast:complain.c1",
+  "speaker": "rita",
+  "text": "This didn't follow the blueprint.",
+  "moment": "complain",
+  "delivery": "no-nonsense, site boss",
+  "pack": "cast",
+  "order": 4,
+  "hash": "39ea2cd8",
+  "recorded": false
+ }
+]

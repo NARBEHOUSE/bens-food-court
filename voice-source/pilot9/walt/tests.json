@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "walt/icecream:greet.1",
+  "speaker": "walt",
+  "text": "Well, hello there! A real ice cream parlor. Stools and everything. I'm home.",
+  "moment": "greet",
+  "delivery": "cheerful, delighted, a little slow",
+  "pack": "icecream",
+  "order": 2,
+  "hash": "f5dc6bbe",
+  "recorded": false
+ },
+ {
+  "clip": "walt/icecream:smalltalk.1",
+  "speaker": "walt",
+  "text": "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up.",
+  "moment": "smalltalk",
+  "delivery": "fond, chuckling",
+  "pack": "icecream",
+  "order": 4,
+  "hash": "70bb1fea",
+  "recorded": false
+ },
+ {
+  "clip": "walt/icecream:react.3.1",
+  "speaker": "walt",
+  "text": "Swell! Just swell. That's the way they made it. Exactly the way.",
+  "moment": "react.3",
+  "delivery": "delighted, beaming",
+  "pack": "icecream",
+  "order": 2,
+  "hash": "7a7514e3",
+  "recorded": false
+ },
+ {
+  "clip": "walt/cast:complain.c1",
+  "speaker": "walt",
+  "text": "In '55, if you asked for something, you got it. And a smile.",
+  "moment": "complain",
+  "delivery": "slow, warm, a long memory",
+  "pack": "cast",
+  "order": 4,
+  "hash": "1d56bcea",
+  "recorded": false
+ }
+]
