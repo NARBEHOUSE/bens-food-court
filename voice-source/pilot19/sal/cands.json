@@ -1,0 +1,28 @@
+{
+ "current": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 127,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.11,
+  "source": "current"
+ },
+ "old-g3-p1-n2-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 152,
+  "seconds": 8.09,
+  "rate": 2.84,
+  "clarity": 3.39,
+  "source": "old"
+ }
+}

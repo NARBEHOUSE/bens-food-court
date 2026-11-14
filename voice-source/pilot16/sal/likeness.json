@@ -1,0 +1,290 @@
+{
+ "retake-vc-r3-cabbie-s4-s4.wav": [
+  1794624510.8924637,
+  0.747
+ ],
+ "retake-vc-r4-brooklyn-s5-s2.wav": [
+  1794624565.005094,
+  0.73
+ ],
+ "old-vc-r3-cabbie-s4.wav": [
+  1794624812.7477262,
+  0.752
+ ],
+ "retake-deeper-3.5-s6.wav": [
+  1794624790.8989813,
+  0.749
+ ],
+ "old-vc-r1-bronx-s3.wav": [
+  1794624796.9551923,
+  0.733
+ ],
+ "old-vc-r4-brooklyn-s5.wav": [
+  1794624820.5380363,
+  0.772
+ ],
+ "old-vc-r2-brooklyn-s3.wav": [
+  1794624804.8855176,
+  0.676
+ ],
+ "retake-vc-r1-bronx-s3-s4.wav": [
+  1794624328.3321495,
+  0.751
+ ],
+ "old-deeper-2.wav": [
+  1794624828.4616952,
+  0.848
+ ],
+ "retake-deeper-2-s3.wav": [
+  1794624664.8068228,
+  0.815
+ ],
+ "retake-vc-r2-brooklyn-s3-s4.wav": [
+  1794624421.080948,
+  0.675
+ ],
+ "old-deeper-3.5.wav": [
+  1794624836.4797866,
+  0.769
+ ],
+ "lines/retake-vc-r3-cabbie-s4-s4/delighted.wav": [
+  1794625709.2379608,
+  0.658
+ ],
+ "lines/retake-vc-r4-brooklyn-s5-s2/delighted.wav": [
+  1794625793.6024044,
+  0.615
+ ],
+ "lines/old-vc-r3-cabbie-s4/delighted.wav": [
+  1794625058.3315375,
+  0.661
+ ],
+ "lines/retake-deeper-3.5-s6/delighted.wav": [
+  1794625984.3554795,
+  0.699
+ ],
+ "lines/old-vc-r1-bronx-s3/delighted.wav": [
+  1794624849.8125825,
+  0.718
+ ],
+ "lines/old-vc-r4-brooklyn-s5/delighted.wav": [
+  1794625193.9319315,
+  0.622
+ ],
+ "lines/old-vc-r2-brooklyn-s3/delighted.wav": [
+  1794624968.337353,
+  0.703
+ ],
+ "lines/retake-vc-r1-bronx-s3-s4/delighted.wav": [
+  1794625529.8454127,
+  0.702
+ ],
+ "lines/old-deeper-2/delighted.wav": [
+  1794625308.975748,
+  0.736
+ ],
+ "lines/retake-deeper-2-s3/delighted.wav": [
+  1794625879.4605103,
+  0.672
+ ],
+ "lines/retake-vc-r2-brooklyn-s3-s4/delighted.wav": [
+  1794625614.3937087,
+  0.666
+ ],
+ "lines/old-deeper-3.5/delighted.wav": [
+  1794625422.1429725,
+  0.705
+ ],
+ "lines/retake-vc-r3-cabbie-s4-s4/grumpy.wav": [
+  1794625720.3097248,
+  0.715
+ ],
+ "lines/retake-vc-r4-brooklyn-s5-s2/grumpy.wav": [
+  1794625816.791655,
+  0.674
+ ],
+ "lines/old-vc-r3-cabbie-s4/grumpy.wav": [
+  1794625096.645303,
+  0.739
+ ],
+ "lines/retake-deeper-3.5-s6/grumpy.wav": [
+  1794626015.5447507,
+  0.714
+ ],
+ "lines/old-vc-r1-bronx-s3/grumpy.wav": [
+  1794624881.3642867,
+  0.703
+ ],
+ "lines/old-vc-r4-brooklyn-s5/grumpy.wav": [
+  1794625216.8146994,
+  0.74
+ ],
+ "lines/old-vc-r2-brooklyn-s3/grumpy.wav": [
+  1794624981.08175,
+  0.637
+ ],
+ "lines/retake-vc-r1-bronx-s3-s4/grumpy.wav": [
+  1794625541.992455,
+  0.663
+ ],
+ "lines/old-deeper-2/grumpy.wav": [
+  1794625330.4125457,
+  0.823
+ ],
+ "lines/retake-deeper-2-s3/grumpy.wav": [
+  1794625890.6020164,
+  0.757
+ ],
+ "lines/retake-vc-r2-brooklyn-s3-s4/grumpy.wav": [
+  1794625626.762351,
+  0.645
+ ],
+ "lines/old-deeper-3.5/grumpy.wav": [
+  1794625445.41123,
+  0.767
+ ],
+ "lines/retake-vc-r3-cabbie-s4-s4/sad.wav": [
+  1794625731.2880056,
+  0.677
+ ],
+ "lines/retake-vc-r4-brooklyn-s5-s2/sad.wav": [
+  1794625831.2967026,
+  0.713
+ ],
+ "lines/old-vc-r3-cabbie-s4/sad.wav": [
+  1794625120.8803766,
+  0.634
+ ],
+ "lines/retake-deeper-3.5-s6/sad.wav": [
+  1794626045.9448407,
+  0.638
+ ],
+ "lines/old-vc-r1-bronx-s3/sad.wav": [
+  1794624893.3998418,
+  0.704
+ ],
+ "lines/old-vc-r4-brooklyn-s5/sad.wav": [
+  1794625246.2081096,
+  0.665
+ ],
+ "lines/old-vc-r2-brooklyn-s3/sad.wav": [
+  1794625006.3882458,
+  0.668
+ ],
+ "lines/retake-vc-r1-bronx-s3-s4/sad.wav": [
+  1794625566.9362636,
+  0.714
+ ],
+ "lines/old-deeper-2/sad.wav": [
+  1794625359.4698572,
+  0.758
+ ],
+ "lines/retake-deeper-2-s3/sad.wav": [
+  1794625925.5883954,
+  0.797
+ ],
+ "lines/retake-vc-r2-brooklyn-s3-s4/sad.wav": [
+  1794625638.4066463,
+  0.619
+ ],
+ "lines/old-deeper-3.5/sad.wav": [
+  1794625468.6141863,
+  0.693
+ ],
+ "lines/retake-vc-r3-cabbie-s4-s4/sarcasm.wav": [
+  1794625756.7112267,
+  0.658
+ ],
+ "lines/retake-vc-r4-brooklyn-s5-s2/sarcasm.wav": [
+  1794625846.645655,
+  0.687
+ ],
+ "lines/old-vc-r3-cabbie-s4/sarcasm.wav": [
+  1794625133.2194376,
+  0.712
+ ],
+ "lines/retake-deeper-3.5-s6/sarcasm.wav": [
+  1794626077.59922,
+  0.694
+ ],
+ "lines/old-vc-r1-bronx-s3/sarcasm.wav": [
+  1794624922.7571912,
+  0.678
+ ],
+ "lines/old-vc-r4-brooklyn-s5/sarcasm.wav": [
+  1794625263.350501,
+  0.672
+ ],
+ "lines/old-vc-r2-brooklyn-s3/sarcasm.wav": [
+  1794625034.9873214,
+  0.634
+ ],
+ "lines/retake-vc-r1-bronx-s3-s4/sarcasm.wav": [
+  1794625580.160621,
+  0.682
+ ],
+ "lines/old-deeper-2/sarcasm.wav": [
+  1794625388.1382413,
+  0.794
+ ],
+ "lines/retake-deeper-2-s3/sarcasm.wav": [
+  1794625937.0589628,
+  0.75
+ ],
+ "lines/retake-vc-r2-brooklyn-s3-s4/sarcasm.wav": [
+  1794625676.4366457,
+  0.575
+ ],
+ "lines/old-deeper-3.5/sarcasm.wav": [
+  1794625497.0345912,
+  0.69
+ ],
+ "lines/retake-vc-r3-cabbie-s4-s4/thanks.wav": [
+  1794625766.8474028,
+  0.658
+ ],
+ "lines/retake-vc-r4-brooklyn-s5-s2/thanks.wav": [
+  1794625857.6861353,
+  0.688
+ ],
+ "lines/old-vc-r3-cabbie-s4/thanks.wav": [
+  1794625157.9681768,
+  0.706
+ ],
+ "lines/retake-deeper-3.5-s6/thanks.wav": [
+  1794626088.0716295,
+  0.65
+ ],
+ "lines/old-vc-r1-bronx-s3/thanks.wav": [
+  1794624933.8865316,
+  0.702
+ ],
+ "lines/old-vc-r4-brooklyn-s5/thanks.wav": [
+  1794625298.2593517,
+  0.623
+ ],
+ "lines/old-vc-r2-brooklyn-s3/thanks.wav": [
+  1794625046.4737227,
+  0.608
+ ],
+ "lines/retake-vc-r1-bronx-s3-s4/thanks.wav": [
+  1794625602.6225455,
+  0.716
+ ],
+ "lines/old-deeper-2/thanks.wav": [
+  1794625398.775293,
+  0.828
+ ],
+ "lines/retake-deeper-2-s3/thanks.wav": [
+  1794625971.5519671,
+  0.773
+ ],
+ "lines/retake-vc-r2-brooklyn-s3-s4/thanks.wav": [
+  1794625686.495831,
+  0.604
+ ],
+ "lines/old-deeper-3.5/thanks.wav": [
+  1794625517.1139953,
+  0.717
+ ]
+}

@@ -1,5 +1,5 @@
 {
- "_about": "The chosen voice for each speaker: the reference clip (voice-source/<path>.wav) VoxCPM2 clones for every line. Picked by Bryan in the voice pilot rounds 1-15 (2026-11-11 to 2026-11-13), on expressive lines where tested. Sal is still open (a recorded New York performance converted into a designed timbre).",
+ "_about": "The chosen voice for each speaker: the reference clip (voice-source/<path>.wav) VoxCPM2 clones for every line. Picked by Bryan in the voice pilot rounds 1-15 (2026-11-11 to 2026-11-13), on expressive lines where tested. Sal (2026-11-13): VoxCPM2's retake of a New York performance (round 17 retake-s3); the source recording itself is never shipped, and Bryan approved this voice for this game only.",
  "mitch": "pilot/mitch/eager-s4",
  "gus": "pilot/gus/country-s3",
  "tony": "pilot/tony/grand-s3",
@@ -23,5 +23,5 @@
  "pa": "pilot12/pa/old-bright-s4",
  "priya": "pilot14/priya/retake-chennai-s5-s6",
  "hiro": "pilot15/hiro/old-master-s4",
- "sal": null
+ "sal": "pilot17/sal/retake-s3"
 }

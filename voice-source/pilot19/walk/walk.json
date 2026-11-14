@@ -1,0 +1,822 @@
+{
+ "g1-p0-n0-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 189,
+  "seconds": 6.67,
+  "rate": 3.45,
+  "clarity": 3.66,
+  "like": 0.896,
+  "gen": 1,
+  "parent": "perf",
+  "note": 0,
+  "seed": 1
+ },
+ "g1-p0-n0-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 232,
+  "seconds": 6.75,
+  "rate": 3.41,
+  "clarity": 3.08,
+  "like": 0.873,
+  "gen": 1,
+  "parent": "perf",
+  "note": 0,
+  "seed": 2
+ },
+ "g1-p0-n0-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 127,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.11,
+  "like": 0.926,
+  "gen": 1,
+  "parent": "perf",
+  "note": 0,
+  "seed": 3
+ },
+ "g1-p0-n0-s4": {
+  "said": "Yo, I've been at that court since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cart' -> 'court'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 195,
+  "seconds": 6.84,
+  "rate": 3.36,
+  "clarity": 2.92,
+  "like": 0.91,
+  "gen": 1,
+  "parent": "perf",
+  "note": 0,
+  "seed": 4
+ },
+ "g1-p0-n1-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 190,
+  "seconds": 6.47,
+  "rate": 3.55,
+  "clarity": 3.61,
+  "like": 0.9,
+  "gen": 1,
+  "parent": "perf",
+  "note": 1,
+  "seed": 1
+ },
+ "g1-p0-n1-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 170,
+  "seconds": 6.25,
+  "rate": 3.68,
+  "clarity": 3.15,
+  "like": 0.913,
+  "gen": 1,
+  "parent": "perf",
+  "note": 1,
+  "seed": 2
+ },
+ "g1-p0-n1-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 130,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.04,
+  "like": 0.928,
+  "gen": 1,
+  "parent": "perf",
+  "note": 1,
+  "seed": 3
+ },
+ "g1-p0-n1-s4": {
+  "said": "Yo, I been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 193,
+  "seconds": 8.37,
+  "rate": 2.75,
+  "clarity": 3.72,
+  "like": 0.891,
+  "gen": 1,
+  "parent": "perf",
+  "note": 1,
+  "seed": 4
+ },
+ "g1-p0-n2-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 186,
+  "seconds": 6.68,
+  "rate": 3.44,
+  "clarity": 3.66,
+  "like": 0.9,
+  "gen": 1,
+  "parent": "perf",
+  "note": 2,
+  "seed": 1
+ },
+ "g1-p0-n2-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 185,
+  "seconds": 6.74,
+  "rate": 3.41,
+  "clarity": 3.53,
+  "like": 0.907,
+  "gen": 1,
+  "parent": "perf",
+  "note": 2,
+  "seed": 2
+ },
+ "g1-p0-n2-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 191,
+  "seconds": 5.81,
+  "rate": 3.96,
+  "clarity": 3.3,
+  "like": 0.915,
+  "gen": 1,
+  "parent": "perf",
+  "note": 2,
+  "seed": 3
+ },
+ "g1-p0-n2-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 159,
+  "seconds": 6.88,
+  "rate": 3.34,
+  "clarity": 3.21,
+  "like": 0.93,
+  "gen": 1,
+  "parent": "perf",
+  "note": 2,
+  "seed": 4
+ },
+ "g2-p0-n0-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 237,
+  "seconds": 6.28,
+  "rate": 3.66,
+  "clarity": 3.37,
+  "like": 0.822,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 0,
+  "seed": 1
+ },
+ "g2-p0-n0-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 176,
+  "seconds": 6.83,
+  "rate": 3.37,
+  "clarity": 2.45,
+  "like": 0.853,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 0,
+  "seed": 2
+ },
+ "g2-p0-n0-s3": {
+  "said": "Yo, I've been at that carton six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cart since' -> 'carton'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 168,
+  "seconds": 7.88,
+  "rate": 2.92,
+  "clarity": 2.87,
+  "like": 0.857,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 0,
+  "seed": 3
+ },
+ "g2-p0-n1-s1": {
+  "said": "Yeah, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'yo i' -> 'yeah i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 254,
+  "seconds": 6.27,
+  "rate": 3.67,
+  "clarity": 3.23,
+  "like": 0.809,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 1,
+  "seed": 1
+ },
+ "g2-p0-n1-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 166,
+  "seconds": 6.83,
+  "rate": 3.37,
+  "clarity": 2.48,
+  "like": 0.854,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 1,
+  "seed": 2
+ },
+ "g2-p0-n1-s3": {
+  "said": "Yo, I've been at that carton six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cart since' -> 'carton'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 172,
+  "seconds": 7.86,
+  "rate": 2.93,
+  "clarity": 3.46,
+  "like": 0.856,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 1,
+  "seed": 3
+ },
+ "g2-p0-n2-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 188,
+  "seconds": 6.57,
+  "rate": 3.5,
+  "clarity": 3.09,
+  "like": 0.835,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 2,
+  "seed": 1
+ },
+ "g2-p0-n2-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 168,
+  "seconds": 6.84,
+  "rate": 3.36,
+  "clarity": 3.13,
+  "like": 0.858,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 2,
+  "seed": 2
+ },
+ "g2-p0-n2-s3": {
+  "said": "Yo, I've been at that carton six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cart since' -> 'carton'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 167,
+  "seconds": 7.85,
+  "rate": 2.93,
+  "clarity": 3.14,
+  "like": 0.849,
+  "gen": 2,
+  "parent": "g1-p0-n1-s4",
+  "note": 2,
+  "seed": 3
+ },
+ "g2-p1-n0-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 216,
+  "seconds": 6.38,
+  "rate": 3.61,
+  "clarity": 3.2,
+  "like": 0.814,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 0,
+  "seed": 1
+ },
+ "g2-p1-n0-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 161,
+  "seconds": 7.02,
+  "rate": 3.28,
+  "clarity": 2.9,
+  "like": 0.826,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 0,
+  "seed": 2
+ },
+ "g2-p1-n0-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 176,
+  "seconds": 6.18,
+  "rate": 3.72,
+  "clarity": 3.3,
+  "like": 0.824,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 0,
+  "seed": 3
+ },
+ "g2-p1-n1-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 183,
+  "seconds": 6.34,
+  "rate": 3.63,
+  "clarity": 3.42,
+  "like": 0.825,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 1,
+  "seed": 1
+ },
+ "g2-p1-n1-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 172,
+  "seconds": 7.28,
+  "rate": 3.16,
+  "clarity": 3.33,
+  "like": 0.836,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 1,
+  "seed": 2
+ },
+ "g2-p1-n1-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 183,
+  "seconds": 5.97,
+  "rate": 3.85,
+  "clarity": 3.08,
+  "like": 0.828,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 1,
+  "seed": 3
+ },
+ "g2-p1-n2-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 239,
+  "seconds": 6.39,
+  "rate": 3.6,
+  "clarity": 3.29,
+  "like": 0.802,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 2,
+  "seed": 1
+ },
+ "g2-p1-n2-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 176,
+  "seconds": 7.1,
+  "rate": 3.24,
+  "clarity": 3.07,
+  "like": 0.824,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 2,
+  "seed": 2
+ },
+ "g2-p1-n2-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 183,
+  "seconds": 7.7,
+  "rate": 2.99,
+  "clarity": 3.58,
+  "like": 0.815,
+  "gen": 2,
+  "parent": "g1-p0-n0-s1",
+  "note": 2,
+  "seed": 3
+ },
+ "g3-p0-n0-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 143,
+  "seconds": 6.41,
+  "rate": 3.59,
+  "clarity": 1.88,
+  "like": 0.738,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 0,
+  "seed": 1
+ },
+ "g3-p0-n0-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 147,
+  "seconds": 7.0,
+  "rate": 3.29,
+  "clarity": 1.88,
+  "like": 0.738,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 0,
+  "seed": 2
+ },
+ "g3-p0-n0-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 115,
+  "seconds": 7.95,
+  "rate": 2.89,
+  "clarity": 1.24,
+  "like": 0.711,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 0,
+  "seed": 3
+ },
+ "g3-p0-n1-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 175,
+  "seconds": 7.22,
+  "rate": 3.19,
+  "clarity": 1.4,
+  "like": 0.732,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 1,
+  "seed": 1
+ },
+ "g3-p0-n1-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 138,
+  "seconds": 7.14,
+  "rate": 3.22,
+  "clarity": 1.83,
+  "like": 0.739,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 1,
+  "seed": 2
+ },
+ "g3-p0-n1-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 116,
+  "seconds": 7.99,
+  "rate": 2.88,
+  "clarity": 1.29,
+  "like": 0.702,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 1,
+  "seed": 3
+ },
+ "g3-p0-n2-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 197,
+  "seconds": 7.44,
+  "rate": 3.09,
+  "clarity": 2.65,
+  "like": 0.747,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 2,
+  "seed": 1
+ },
+ "g3-p0-n2-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 147,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 1.45,
+  "like": 0.747,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 2,
+  "seed": 2
+ },
+ "g3-p0-n2-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 116,
+  "seconds": 8.08,
+  "rate": 2.85,
+  "clarity": 1.46,
+  "like": 0.72,
+  "gen": 3,
+  "parent": "g2-p1-n2-s3",
+  "note": 2,
+  "seed": 3
+ },
+ "g3-p1-n0-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 171,
+  "seconds": 6.7,
+  "rate": 3.43,
+  "clarity": 3.47,
+  "like": 0.796,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 0,
+  "seed": 1
+ },
+ "g3-p1-n0-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 178,
+  "seconds": 6.19,
+  "rate": 3.72,
+  "clarity": 3.03,
+  "like": 0.783,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 0,
+  "seed": 2
+ },
+ "g3-p1-n0-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 186,
+  "seconds": 7.65,
+  "rate": 3.01,
+  "clarity": 3.55,
+  "like": 0.724,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 0,
+  "seed": 3
+ },
+ "g3-p1-n1-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 241,
+  "seconds": 6.31,
+  "rate": 3.64,
+  "clarity": 2.88,
+  "like": 0.777,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 1,
+  "seed": 1
+ },
+ "g3-p1-n1-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 179,
+  "seconds": 7.48,
+  "rate": 3.08,
+  "clarity": 1.77,
+  "like": 0.803,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 1,
+  "seed": 2
+ },
+ "g3-p1-n1-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 166,
+  "seconds": 7.71,
+  "rate": 2.98,
+  "clarity": 3.56,
+  "like": 0.736,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 1,
+  "seed": 3
+ },
+ "g3-p1-n2-s1": {
+  "said": "Yo, I've been in that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'at' -> 'in'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 192,
+  "seconds": 7.22,
+  "rate": 3.19,
+  "clarity": 3.62,
+  "like": 0.798,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 2,
+  "seed": 1
+ },
+ "g3-p1-n2-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 156,
+  "seconds": 7.57,
+  "rate": 3.04,
+  "clarity": 2.56,
+  "like": 0.782,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 2,
+  "seed": 2
+ },
+ "g3-p1-n2-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 152,
+  "seconds": 8.09,
+  "rate": 2.84,
+  "clarity": 3.39,
+  "like": 0.759,
+  "gen": 3,
+  "parent": "g2-p0-n0-s1",
+  "note": 2,
+  "seed": 3
+ }
+}

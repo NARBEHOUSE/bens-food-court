@@ -1098,6 +1098,7 @@ function render() {
         sel(key + '/feel', 'Feeling came through, ' + t.label, [['', 'feeling...'], ['yes', 'came through'], ['partly', 'partly'], ['no', 'flat / wrong']]));
       const m = document.createElement('div'); m.className = 'm soft';
       m.innerHTML = 'clarity ' + t.clarity + ' · ' + t.pitch + ' Hz (voice ' + v.home + ')' + (t.drift ? ' <span class="warn">off pitch</span>' : '') +
+        (t.like != null ? ' · likeness to the recording ' + t.like : '') +
         ' · ' + (t.diffs.length ? '<span class="warn">' + t.diffs.length + ' word(s) wrong</span>' : 'words right');
       if (t.diffs.length) m.title = t.diffs.join('\n');
       r.append(m); c.append(r);
@@ -1230,7 +1231,7 @@ def requal(stage):
             rf = r11.get('retake_from')
             retake_refs = ([('', vsrc / (rf + '.wav'))] if isinstance(rf, str) else
                            [(Path(x).name + '-', vsrc / (x + '.wav')) for x in rf] if rf else
-                           [('', home_ref)] if home_ref else [])
+                           [] if rf == [] else [('', home_ref)] if home_ref else [])   # [] = no retakes
             r11.setdefault('styles', [])
             r11.setdefault('old', [])
             jobs = []   # (name, source, render job or None for an existing file)
@@ -1317,6 +1318,22 @@ def requal(stage):
         folder = ROOT / who
         rep, lrep, kept = load(folder / 'cands.json', {}), load(folder / 'lines.json', {}), load(folder / 'kept.json', [])
         fx = SPEC[who][f'r{ROUND}'].get('effect')
+        like_to = SPEC[who][f'r{ROUND}'].get('likeness_to')   # a recording no take should sound like (Sal's source)
+        if like_to:
+            import numpy as np
+            likes = load(folder / 'likeness.json', {})
+
+            def like(src):
+                k = src.relative_to(folder).as_posix()
+                if k not in likes or likes[k][0] != src.stat().st_mtime:
+                    w16 = folder / 'work' / ('like16-' + k.replace('/', '-'))
+                    subprocess.run([voices.checks.ffmpeg(), '-v', 'error', '-y', '-i', str(src), '-ac', '1', '-ar', '16000', str(w16)], check=True)
+                    a, b = embed(w16), base
+                    likes[k] = [src.stat().st_mtime, round(float(np.dot(a, b) / np.linalg.norm(a) / np.linalg.norm(b)), 3)]
+                return likes[k][1]
+            ref16 = folder / 'work' / 'like16-reference.wav'
+            subprocess.run([voices.checks.ffmpeg(), '-v', 'error', '-y', '-i', str(GAME / 'voice-source' / (like_to + '.wav')), '-ac', '1', '-ar', '16000', str(ref16)], check=True)
+            base = embed(ref16)
         order = kept[:]
         rnd.shuffle(order)
         letters = {cand: 'ABCDEFGHIJKL'[i] for i, cand in enumerate(order)}
@@ -1338,8 +1355,11 @@ def requal(stage):
                 if not (out / f).exists():
                     export_fx(src, out / f, fx)
                 takes.append({'model': letters[cand], 'label': 'Voice ' + letters[cand], 'file': f, 'clarity': m['clarity'],
-                              'pitch': m['pitch'], 'drift': bool(m.get('drift')), 'diffs': m['diffs']})
+                              'pitch': m['pitch'], 'drift': bool(m.get('drift')), 'diffs': m['diffs'],
+                              'like': like(src) if like_to else None})
             v['lines'].append({'kind': kind, 'text': text, 'note': gnote, 'takes': takes})
+        if like_to:
+            save(folder / 'likeness.json', likes)
         voices_out.append(v)
     save(ROOT / 'req-key.json', key)
     (out / 'stress.js').write_text('window.STRESS = ' + json.dumps(voices_out) + ';\n', encoding='utf-8')

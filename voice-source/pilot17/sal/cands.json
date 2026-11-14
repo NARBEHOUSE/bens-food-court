@@ -1,0 +1,89 @@
+{
+ "retake-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 189,
+  "seconds": 6.67,
+  "rate": 3.45,
+  "clarity": 3.66,
+  "source": "retake:"
+ },
+ "retake-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 232,
+  "seconds": 6.75,
+  "rate": 3.41,
+  "clarity": 3.08,
+  "source": "retake:"
+ },
+ "retake-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 127,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.11,
+  "source": "retake:"
+ },
+ "retake-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 177,
+  "seconds": 6.84,
+  "rate": 3.36,
+  "clarity": 3.74,
+  "source": "retake:"
+ },
+ "retake-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 196,
+  "seconds": 4.54,
+  "rate": 5.07,
+  "clarity": 3.06,
+  "source": "retake:"
+ },
+ "retake-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 135,
+  "seconds": 6.47,
+  "rate": 3.55,
+  "clarity": 3.03,
+  "source": "retake:"
+ },
+ "current": {
+  "said": "(the source recording: not kept here)",
+  "diffs": [],
+  "pitch": 146,
+  "seconds": 9.25,
+  "rate": 2.49,
+  "clarity": 3.36,
+  "source": "current"
+ }
+}

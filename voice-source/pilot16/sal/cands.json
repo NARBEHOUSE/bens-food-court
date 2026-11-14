@@ -1,0 +1,523 @@
+{
+ "retake-vc-r1-bronx-s3-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 194,
+  "seconds": 7.35,
+  "rate": 3.13,
+  "clarity": 3.19,
+  "source": "retake:vc-r1-bronx-s3-"
+ },
+ "retake-vc-r1-bronx-s3-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 185,
+  "seconds": 6.83,
+  "rate": 3.37,
+  "clarity": 3.02,
+  "source": "retake:vc-r1-bronx-s3-"
+ },
+ "retake-vc-r1-bronx-s3-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 142,
+  "seconds": 5.95,
+  "rate": 3.87,
+  "clarity": 3.32,
+  "source": "retake:vc-r1-bronx-s3-"
+ },
+ "retake-vc-r1-bronx-s3-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 135,
+  "seconds": 7.05,
+  "rate": 3.26,
+  "clarity": 3.52,
+  "source": "retake:vc-r1-bronx-s3-"
+ },
+ "retake-vc-r1-bronx-s3-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 212,
+  "seconds": 5.69,
+  "rate": 4.04,
+  "clarity": 3.02,
+  "source": "retake:vc-r1-bronx-s3-"
+ },
+ "retake-vc-r1-bronx-s3-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 172,
+  "seconds": 7.46,
+  "rate": 3.08,
+  "clarity": 3.41,
+  "source": "retake:vc-r1-bronx-s3-"
+ },
+ "retake-vc-r2-brooklyn-s3-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 212,
+  "seconds": 6.8,
+  "rate": 3.38,
+  "clarity": 3.2,
+  "source": "retake:vc-r2-brooklyn-s3-"
+ },
+ "retake-vc-r2-brooklyn-s3-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 175,
+  "seconds": 7.29,
+  "rate": 3.15,
+  "clarity": 3.51,
+  "source": "retake:vc-r2-brooklyn-s3-"
+ },
+ "retake-vc-r2-brooklyn-s3-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 149,
+  "seconds": 5.92,
+  "rate": 3.89,
+  "clarity": 3.36,
+  "source": "retake:vc-r2-brooklyn-s3-"
+ },
+ "retake-vc-r2-brooklyn-s3-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 146,
+  "seconds": 6.54,
+  "rate": 3.51,
+  "clarity": 3.42,
+  "source": "retake:vc-r2-brooklyn-s3-"
+ },
+ "retake-vc-r2-brooklyn-s3-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 211,
+  "seconds": 5.67,
+  "rate": 4.06,
+  "clarity": 3.31,
+  "source": "retake:vc-r2-brooklyn-s3-"
+ },
+ "retake-vc-r2-brooklyn-s3-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 160,
+  "seconds": 7.44,
+  "rate": 3.09,
+  "clarity": 3.35,
+  "source": "retake:vc-r2-brooklyn-s3-"
+ },
+ "retake-vc-r3-cabbie-s4-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 183,
+  "seconds": 8.02,
+  "rate": 2.87,
+  "clarity": 3.32,
+  "source": "retake:vc-r3-cabbie-s4-"
+ },
+ "retake-vc-r3-cabbie-s4-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 198,
+  "seconds": 6.47,
+  "rate": 3.56,
+  "clarity": 3.15,
+  "source": "retake:vc-r3-cabbie-s4-"
+ },
+ "retake-vc-r3-cabbie-s4-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 173,
+  "seconds": 5.93,
+  "rate": 3.88,
+  "clarity": 3.11,
+  "source": "retake:vc-r3-cabbie-s4-"
+ },
+ "retake-vc-r3-cabbie-s4-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 164,
+  "seconds": 5.85,
+  "rate": 3.93,
+  "clarity": 3.08,
+  "source": "retake:vc-r3-cabbie-s4-"
+ },
+ "retake-vc-r3-cabbie-s4-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 201,
+  "seconds": 5.32,
+  "rate": 4.32,
+  "clarity": 2.63,
+  "source": "retake:vc-r3-cabbie-s4-"
+ },
+ "retake-vc-r3-cabbie-s4-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 176,
+  "seconds": 5.96,
+  "rate": 3.86,
+  "clarity": 3.37,
+  "source": "retake:vc-r3-cabbie-s4-"
+ },
+ "retake-vc-r4-brooklyn-s5-s1": {
+  "said": "Yo, I been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 287,
+  "seconds": 6.36,
+  "rate": 3.62,
+  "clarity": 3.43,
+  "source": "retake:vc-r4-brooklyn-s5-"
+ },
+ "retake-vc-r4-brooklyn-s5-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 162,
+  "seconds": 6.45,
+  "rate": 3.56,
+  "clarity": 3.49,
+  "source": "retake:vc-r4-brooklyn-s5-"
+ },
+ "retake-vc-r4-brooklyn-s5-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 140,
+  "seconds": 6.41,
+  "rate": 3.59,
+  "clarity": 3.09,
+  "source": "retake:vc-r4-brooklyn-s5-"
+ },
+ "retake-vc-r4-brooklyn-s5-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 144,
+  "seconds": 6.62,
+  "rate": 3.48,
+  "clarity": 3.15,
+  "source": "retake:vc-r4-brooklyn-s5-"
+ },
+ "retake-vc-r4-brooklyn-s5-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 192,
+  "seconds": 5.2,
+  "rate": 4.43,
+  "clarity": 3.18,
+  "source": "retake:vc-r4-brooklyn-s5-"
+ },
+ "retake-vc-r4-brooklyn-s5-s6": {
+  "said": "Joe, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'yo i' -> 'joe i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 137,
+  "seconds": 7.83,
+  "rate": 2.94,
+  "clarity": 3.49,
+  "source": "retake:vc-r4-brooklyn-s5-"
+ },
+ "retake-deeper-2-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 157,
+  "seconds": 6.44,
+  "rate": 3.57,
+  "clarity": 2.81,
+  "source": "retake:deeper-2-"
+ },
+ "retake-deeper-2-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 128,
+  "seconds": 6.3,
+  "rate": 3.65,
+  "clarity": 2.75,
+  "source": "retake:deeper-2-"
+ },
+ "retake-deeper-2-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 162,
+  "seconds": 6.01,
+  "rate": 3.83,
+  "clarity": 2.96,
+  "source": "retake:deeper-2-"
+ },
+ "retake-deeper-2-s4": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 144,
+  "seconds": 6.19,
+  "rate": 3.71,
+  "clarity": 2.27,
+  "source": "retake:deeper-2-"
+ },
+ "retake-deeper-2-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 127,
+  "seconds": 6.33,
+  "rate": 3.63,
+  "clarity": 2.66,
+  "source": "retake:deeper-2-"
+ },
+ "retake-deeper-2-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 140,
+  "seconds": 6.1,
+  "rate": 3.77,
+  "clarity": 2.29,
+  "source": "retake:deeper-2-"
+ },
+ "retake-deeper-3.5-s1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You wanna talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'want to tawk' -> 'wanna talk'"
+  ],
+  "pitch": 122,
+  "seconds": 6.41,
+  "rate": 3.59,
+  "clarity": 2.09,
+  "source": "retake:deeper-3.5-"
+ },
+ "retake-deeper-3.5-s2": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 126,
+  "seconds": 5.95,
+  "rate": 3.86,
+  "clarity": 2.27,
+  "source": "retake:deeper-3.5-"
+ },
+ "retake-deeper-3.5-s3": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 139,
+  "seconds": 7.17,
+  "rate": 3.21,
+  "clarity": 2.46,
+  "source": "retake:deeper-3.5-"
+ },
+ "retake-deeper-3.5-s4": {
+  "said": "Yo, I've been at that car since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 134,
+  "seconds": 7.16,
+  "rate": 3.21,
+  "clarity": 2.32,
+  "source": "retake:deeper-3.5-"
+ },
+ "retake-deeper-3.5-s5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 126,
+  "seconds": 6.3,
+  "rate": 3.65,
+  "clarity": 2.05,
+  "source": "retake:deeper-3.5-"
+ },
+ "retake-deeper-3.5-s6": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 131,
+  "seconds": 5.78,
+  "rate": 3.98,
+  "clarity": 2.48,
+  "source": "retake:deeper-3.5-"
+ },
+ "old-vc-r1-bronx-s3": {
+  "said": "(the source recording: not kept here)",
+  "diffs": [],
+  "pitch": 127,
+  "seconds": 9.12,
+  "rate": 2.52,
+  "clarity": 2.73,
+  "source": "old"
+ },
+ "old-vc-r2-brooklyn-s3": {
+  "said": "(the source recording: not kept here)",
+  "diffs": [],
+  "pitch": 132,
+  "seconds": 9.14,
+  "rate": 2.52,
+  "clarity": 2.79,
+  "source": "old"
+ },
+ "old-vc-r3-cabbie-s4": {
+  "said": "(the source recording: not kept here)",
+  "diffs": [],
+  "pitch": 163,
+  "seconds": 9.15,
+  "rate": 2.51,
+  "clarity": 2.97,
+  "source": "old"
+ },
+ "old-vc-r4-brooklyn-s5": {
+  "said": "(the source recording: not kept here)",
+  "diffs": [],
+  "pitch": 130,
+  "seconds": 8.34,
+  "rate": 2.76,
+  "clarity": 2.8,
+  "source": "old"
+ },
+ "old-deeper-2": {
+  "said": "(the source recording: not kept here)",
+  "diffs": [],
+  "pitch": 133,
+  "seconds": 9.15,
+  "rate": 2.51,
+  "clarity": 2.05,
+  "source": "old"
+ },
+ "old-deeper-3.5": {
+  "said": "(the source recording: not kept here)",
+  "diffs": [],
+  "pitch": 123,
+  "seconds": 9.15,
+  "rate": 2.51,
+  "clarity": 1.43,
+  "source": "old"
+ }
+}

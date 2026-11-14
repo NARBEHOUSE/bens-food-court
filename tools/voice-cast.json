@@ -536,7 +536,56 @@
    ],
    "bryan": "The region still isn't coming through."
   },
-  "sample_r2": "Yo. Six in the morning I'm at that cart, and my feet are killing me. Gimme a burger, and don't talk to me about the pigeons."
+  "sample_r2": "Yo. Six in the morning I'm at that cart, and my feet are killing me. Gimme a burger, and don't talk to me about the pigeons.",
+  "r16": {
+   "current": null,
+   "old": [
+    "pilot16/src/vc-r1-bronx-s3",
+    "pilot16/src/vc-r2-brooklyn-s3",
+    "pilot16/src/vc-r3-cabbie-s4",
+    "pilot16/src/vc-r4-brooklyn-s5",
+    "pilot16/src/deeper-2",
+    "pilot16/src/deeper-3.5"
+   ],
+   "retake_from": [
+    "pilot16/src/vc-r1-bronx-s3",
+    "pilot16/src/vc-r2-brooklyn-s3",
+    "pilot16/src/vc-r3-cabbie-s4",
+    "pilot16/src/vc-r4-brooklyn-s5",
+    "pilot16/src/deeper-2",
+    "pilot16/src/deeper-3.5"
+   ],
+   "retake_note": "casual and blunt, a little grumpy",
+   "retakes": 1,
+   "likeness_to": "pilot16/src/perf"
+  },
+  "r17": {
+   "current": "pilot16/src/perf",
+   "retake_note": "casual and blunt, a little grumpy",
+   "retakes": 1,
+   "likeness_to": "pilot16/src/perf"
+  },
+  "r18": {
+   "current": "pilot17/sal/retake-s3",
+   "lines": false,
+   "likeness_to": "pilot16/src/perf",
+   "old": [
+    "pilot18/src/tune-p-1_t-0.5",
+    "pilot18/src/tune-p-2_t-1",
+    "pilot18/src/tune-p-3_t-1",
+    "pilot18/src/tune-p0_t-1",
+    "pilot18/src/tune-p-2_t0"
+   ],
+   "retake_from": []
+  },
+  "r19": {
+   "current": "pilot17/sal/retake-s3",
+   "old": [
+    "pilot19/walk/g3-p1-n2-s3"
+   ],
+   "retake_from": [],
+   "likeness_to": "pilot16/src/perf"
+  }
  },
  "kai": {
   "name": "Kai",
@@ -1870,5 +1919,22 @@
  "_round15": [
   "hiro"
  ],
- "_round15_about": "Round 15 (2026-11-13): Hiro WITHOUT an accent (no Japanese in VoxCPM's reach; GLOBE has no Japanese data for a LoRA). Round 13's takes all distorted, so: the cleanest round 9 designs, retakes of the clearest (master-s2, clarity 4.23), more master seeds, and a 'steady' wording without 'low/deep' (the low end distorts); keep-range 100-150 Hz; then the expressive lines."
+ "_round15_about": "Round 15 (2026-11-13): Hiro WITHOUT an accent (no Japanese in VoxCPM's reach; GLOBE has no Japanese data for a LoRA). Round 13's takes all distorted, so: the cleanest round 9 designs, retakes of the clearest (master-s2, clarity 4.23), more master seeds, and a 'steady' wording without 'low/deep' (the low end distorts); keep-range 100-150 Hz; then the expressive lines.",
+ "_round16": [
+  "sal"
+ ],
+ "_round16_about": "Round 16 (2026-11-13): Sal from a recorded New York performance (Bryan's Voice Studio voice 'sal', made from a real person's recording; Sal must NOT be that person's voice). tools/voice-sal.py makes the sources: Seed-VC into four earlier designed Sal timbres (accent kept, style off) and the performance 2 / 3.5 semitones deeper with formants moved. VoxCPM2 re-records each; the page shows each take's likeness to the recording (Voice Studio's speaker encoder, 1 = same voice).",
+ "_round17": [
+  "sal"
+ ],
+ "_round17_about": "Round 17 (2026-11-13): CONTROL test, diagnostic only (not a Sal candidate): VoxCPM2 clones the unaltered performance (pilot16/src/perf) for the five expressive lines, plus its best retake. Clean + NY accent kept -> round 16's roughness/accent drift came from Seed-VC/rubberband, so a gentle Voice Studio pitch/timbre change is worth trying; rough or drifting -> VoxCPM is the limit.",
+ "_round18": [
+  "sal"
+ ],
+ "_round18_ask": "accent",
+ "_round18_about": "Round 18 (2026-11-13): Bryan liked the control's VoxCPM retake of the performance (pilot17 retake-s3) but it is still the person. Gentle changes with Voice Studio's pitch/timbre changer (tools/voice-sal.py tune), samples only, judged by ear: does it still sound like the person? (The speaker encoder barely moves: 0.90-0.92 for all of them.)",
+ "_round19": [
+  "sal"
+ ],
+ "_round19_about": "Round 19 (2026-11-13): Sal walked away from the person with VoxCPM's own takes (tools/voice-sal.py walk): retakes of the performance, some noted 'big, heavyset man in his sixties', keep the 2 least like the recording that are clear (>=3.3) and in range, re-record from those, 3 generations. Final voices + the control's retake-s3 (current) say the expressive lines; likeness shown."
 }
