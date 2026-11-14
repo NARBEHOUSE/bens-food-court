@@ -1,0 +1,3763 @@
+[
+ {
+  "clip": "mitch/court:goldSign.1.bensBurritos",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "goldSign.1",
+   "who": "mitch",
+   "moment": "court.goldSign",
+   "text": "A gold sign on {name}! I'd like to thank my mom, who is also corporate.",
+   "delivery": "thrilled, then an aside"
+  },
+  "suffix": "bensBurritos"
+ },
+ {
+  "clip": "mitch/court:goldSign.1.bensSmoothieShack",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "goldSign.1",
+   "who": "mitch",
+   "moment": "court.goldSign",
+   "text": "A gold sign on {name}! I'd like to thank my mom, who is also corporate.",
+   "delivery": "thrilled, then an aside"
+  },
+  "suffix": "bensSmoothieShack"
+ },
+ {
+  "clip": "mitch/court:goldSign.1.bensPizzaParlor",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "goldSign.1",
+   "who": "mitch",
+   "moment": "court.goldSign",
+   "text": "A gold sign on {name}! I'd like to thank my mom, who is also corporate.",
+   "delivery": "thrilled, then an aside"
+  },
+  "suffix": "bensPizzaParlor"
+ },
+ {
+  "clip": "mitch/court:goldSign.1.bensBurgerBar",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "goldSign.1",
+   "who": "mitch",
+   "moment": "court.goldSign",
+   "text": "A gold sign on {name}! I'd like to thank my mom, who is also corporate.",
+   "delivery": "thrilled, then an aside"
+  },
+  "suffix": "bensBurgerBar"
+ },
+ {
+  "clip": "mitch/court:goldSign.1.bensCafe",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "goldSign.1",
+   "who": "mitch",
+   "moment": "court.goldSign",
+   "text": "A gold sign on {name}! I'd like to thank my mom, who is also corporate.",
+   "delivery": "thrilled, then an aside"
+  },
+  "suffix": "bensCafe"
+ },
+ {
+  "clip": "mitch/court:goldSign.1.bensSushi",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "goldSign.1",
+   "who": "mitch",
+   "moment": "court.goldSign",
+   "text": "A gold sign on {name}! I'd like to thank my mom, who is also corporate.",
+   "delivery": "thrilled, then an aside"
+  },
+  "suffix": "bensSushi"
+ },
+ {
+  "clip": "mitch/court:goldSign.1.bensIceCreamEmporium",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "goldSign.1",
+   "who": "mitch",
+   "moment": "court.goldSign",
+   "text": "A gold sign on {name}! I'd like to thank my mom, who is also corporate.",
+   "delivery": "thrilled, then an aside"
+  },
+  "suffix": "bensIceCreamEmporium"
+ },
+ {
+  "clip": "mitch/pizza:event.again.2.thePizzaParty",
+  "speaker": "mitch",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "event.again.2",
+   "who": "mitch",
+   "moment": "event.again",
+   "text": "Okay. {name} fell a little flat. Like a crust. We'll run it again, and the heart's still in the oven's future.",
+   "delivery": "rueful, then upbeat"
+  },
+  "suffix": "thePizzaParty"
+ },
+ {
+  "clip": "mitch/eventAgain.1.theBurgerEatingContest",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "eventAgain.1",
+   "who": "mitch",
+   "moment": "event.again",
+   "text": "{name} fell short. In fairness, the contestants ate like they were being timed. They weren't. We'll run it again.",
+   "delivery": "rueful, then hopeful"
+  },
+  "suffix": "theBurgerEatingContest"
+ },
+ {
+  "clip": "mitch/burrito:mistake.pick.1.sauce.noSauce",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "mistake.pick.1",
+   "who": "mitch",
+   "moment": "mistake.pick",
+   "each": "wanted",
+   "text": "The ticket said {wanted}.",
+   "delivery": "flat, reading it off the ticket"
+  },
+  "suffix": "sauce.noSauce"
+ },
+ {
+  "clip": "mitch/mouldy.1",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "mouldy.1",
+   "who": "mitch",
+   "moment": "gross.mouldy",
+   "text": "Whoa, why is that cheese green? You nasty. Change that out.",
+   "delivery": "horrified, then disgusted"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/burrito:after.3.3",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "after.3.3",
+   "who": "mitch",
+   "moment": "after.3",
+   "text": "Perfect. I'll tell Corporate. Corporate is the cactus in the sombrero. He's a great listener.",
+   "delivery": "confiding, fond of the cactus"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/sushi:gross.smelly.1.salmon",
+  "speaker": "mitch",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "gross.smelly.1",
+   "who": "mitch",
+   "moment": "gross.smelly",
+   "each": "ing",
+   "text": "That {ing} smells off. Fresh fish shouldn't smell like anything. That one smells like a story. Swap it.",
+   "delivery": "a recoil, then firm"
+  },
+  "suffix": "salmon"
+ },
+ {
+  "clip": "mitch/smoothie:gross.sock.3.ice",
+  "speaker": "mitch",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "gross.sock.3",
+   "who": "mitch",
+   "moment": "gross.sock",
+   "each": "ing",
+   "text": "Sock in the {ing}! And a flip-flop on the shelf. Somebody's getting changed in here. Swap it.",
+   "delivery": "appalled, piecing it together"
+  },
+  "suffix": "ice"
+ },
+ {
+  "clip": "mitch/court:unlock.1.bensBurritos",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "unlock.1",
+   "who": "mitch",
+   "moment": "court.unlock",
+   "text": "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "delivery": "thrilled"
+  },
+  "suffix": "bensBurritos"
+ },
+ {
+  "clip": "mitch/court:unlock.1.bensSmoothieShack",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "unlock.1",
+   "who": "mitch",
+   "moment": "court.unlock",
+   "text": "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "delivery": "thrilled"
+  },
+  "suffix": "bensSmoothieShack"
+ },
+ {
+  "clip": "mitch/court:unlock.1.bensPizzaParlor",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "unlock.1",
+   "who": "mitch",
+   "moment": "court.unlock",
+   "text": "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "delivery": "thrilled"
+  },
+  "suffix": "bensPizzaParlor"
+ },
+ {
+  "clip": "mitch/court:unlock.1.bensBurgerBar",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "unlock.1",
+   "who": "mitch",
+   "moment": "court.unlock",
+   "text": "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "delivery": "thrilled"
+  },
+  "suffix": "bensBurgerBar"
+ },
+ {
+  "clip": "mitch/court:unlock.1.bensCafe",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "unlock.1",
+   "who": "mitch",
+   "moment": "court.unlock",
+   "text": "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "delivery": "thrilled"
+  },
+  "suffix": "bensCafe"
+ },
+ {
+  "clip": "mitch/court:unlock.1.bensSushi",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "unlock.1",
+   "who": "mitch",
+   "moment": "court.unlock",
+   "text": "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "delivery": "thrilled"
+  },
+  "suffix": "bensSushi"
+ },
+ {
+  "clip": "mitch/court:unlock.1.bensIceCreamEmporium",
+  "speaker": "mitch",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "unlock.1",
+   "who": "mitch",
+   "moment": "court.unlock",
+   "text": "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "delivery": "thrilled"
+  },
+  "suffix": "bensIceCreamEmporium"
+ },
+ {
+  "clip": "mitch/cafe:event.intro.2.theMorningRush",
+  "speaker": "mitch",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "event.intro.2",
+   "who": "mitch",
+   "moment": "event.intro",
+   "text": "Here we go: {name}. The office next door is coming in. The last order's the giant donut off the roof. I've never made a giant donut. I've dreamed it. Twice.",
+   "delivery": "brave, then a small confession"
+  },
+  "suffix": "theMorningRush"
+ },
+ {
+  "clip": "mitch/burrito:gross.fly.3.salsa.redSalsa",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "gross.fly.3",
+   "who": "mitch",
+   "moment": "gross.fly",
+   "each": "value",
+   "text": "That {value} salsa has a fly in it. He's not a topping. He's barely a fly. Swap it.",
+   "delivery": "resigned, muttering"
+  },
+  "suffix": "salsa.redSalsa"
+ },
+ {
+  "clip": "mitch/burrito:gross.fly.3.salsa.greenSalsa",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "gross.fly.3",
+   "who": "mitch",
+   "moment": "gross.fly",
+   "each": "value",
+   "text": "That {value} salsa has a fly in it. He's not a topping. He's barely a fly. Swap it.",
+   "delivery": "resigned, muttering"
+  },
+  "suffix": "salsa.greenSalsa"
+ },
+ {
+  "clip": "mitch/burrito:gross.fly.3.salsa.mangoSalsa",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "gross.fly.3",
+   "who": "mitch",
+   "moment": "gross.fly",
+   "each": "value",
+   "text": "That {value} salsa has a fly in it. He's not a topping. He's barely a fly. Swap it.",
+   "delivery": "resigned, muttering"
+  },
+  "suffix": "salsa.mangoSalsa"
+ },
+ {
+  "clip": "mitch/icecream:shift.end.4",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "shift.end.4",
+   "who": "mitch",
+   "moment": "shift.end",
+   "text": "That's a wrap. Walt says we're almost as good as 1955. From Walt, that's a medal.",
+   "delivery": "proud, touched"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/icecream:tutorial.review.2",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "tutorial.review.2",
+   "who": "mitch",
+   "moment": "tutorial.review",
+   "text": "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Walt's telling the stools about 1955.",
+   "delivery": "teaching, a glance at Walt"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/icecream:tutorial.serve.1",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "tutorial.serve.1",
+   "who": "mitch",
+   "moment": "tutorial.serve",
+   "text": "And that's the job. Get something wrong and the customer will tell you. Walt will tell you about 1955 first. Ready for a real shift?",
+   "delivery": "wrapping up, encouraging"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/icecream:tutorial.shake.2",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "tutorial.shake.2",
+   "who": "mitch",
+   "moment": "tutorial.shake",
+   "text": "Over to the shake machine. Mint green, built in 1955. Walt says he knew it as a boy. It was a different machine.",
+   "delivery": "teaching, then dry"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/icecream:tutorial.warn.missing.2.hotFudge",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Wait, the ticket says {ing}. Add it, or Walt will tell us about 1955.",
+   "delivery": "gentle correction, wincing"
+  },
+  "suffix": "hotFudge"
+ },
+ {
+  "clip": "mitch/icecream:tutorial.warn.missing.2.whippedCream",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Wait, the ticket says {ing}. Add it, or Walt will tell us about 1955.",
+   "delivery": "gentle correction, wincing"
+  },
+  "suffix": "whippedCream"
+ },
+ {
+  "clip": "mitch/icecream:tutorial.warn.missing.2.nuts",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Wait, the ticket says {ing}. Add it, or Walt will tell us about 1955.",
+   "delivery": "gentle correction, wincing"
+  },
+  "suffix": "nuts"
+ },
+ {
+  "clip": "mitch/icecream:tutorial.warn.missing.2.cherry",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Wait, the ticket says {ing}. Add it, or Walt will tell us about 1955.",
+   "delivery": "gentle correction, wincing"
+  },
+  "suffix": "cherry"
+ },
+ {
+  "clip": "mitch/cafe:shift.start.3",
+  "speaker": "mitch",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "shift.start.3",
+   "who": "mitch",
+   "moment": "shift.start",
+   "text": "Morning shift. Corporate says smile. Corporate is my mom. She also says drink water. I'm drinking coffee. Don't tell her.",
+   "delivery": "eager, a nervous aside at the end"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/start.3",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "start.3",
+   "who": "mitch",
+   "moment": "shift.start",
+   "text": "Big day. Corporate might visit. Corporate is my mom. Look busy."
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/pizza:shift.start.3",
+  "speaker": "mitch",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "shift.start.3",
+   "who": "mitch",
+   "moment": "shift.start",
+   "text": "Let's go. Corporate called. Corporate is my mom. She asked if we do gluten-free. We don't. Don't tell her.",
+   "delivery": "eager, a nervous aside at the end"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/sushi:shift.start.3",
+  "speaker": "mitch",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "shift.start.3",
+   "who": "mitch",
+   "moment": "shift.start",
+   "text": "Let's go. Corporate called. Corporate is my mom. She asked if sushi is just cold fish. I said yes. She's coming in.",
+   "delivery": "eager, a nervous aside at the end"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/icecream:uniform.3",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "uniform.3",
+   "who": "mitch",
+   "moment": "uniform",
+   "text": "Pink and white stripes. Corporate said I look like a candy cane. Corporate is my mom. She meant it nicely.",
+   "delivery": "proud, then a little less proud"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/pizza:uniform.1",
+  "speaker": "mitch",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "uniform.1",
+   "who": "mitch",
+   "moment": "uniform",
+   "text": "Yes, the hat is a pizza box. A real one. Corporate calls it branding. Corporate is my mom, and she has a glue gun.",
+   "delivery": "pre-empting the question, deadpan"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/sushi:uniform.1",
+  "speaker": "mitch",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "uniform.1",
+   "who": "mitch",
+   "moment": "uniform",
+   "text": "Yes, it's a real sushi chef's jacket. Corporate bought it. Corporate is my mom. She also bought the headband. The serious face is mine. I'm practicing.",
+   "delivery": "pre-empting the question, deadpan"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/end.1",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "end.1",
+   "who": "mitch",
+   "moment": "shift.end",
+   "text": "That's the shift. I'm putting mentored a legend on my resume."
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/smoothie:shift.start.3",
+  "speaker": "mitch",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "shift.start.3",
+   "who": "mitch",
+   "moment": "shift.start",
+   "text": "Let's go. Today's surf report: one tiny wave. It's a drawing. It's always the drawing.",
+   "delivery": "cheerful, pointing at the board"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/smoothie:shift.start.5",
+  "speaker": "mitch",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "shift.start.5",
+   "who": "mitch",
+   "moment": "shift.start",
+   "text": "Doors open. If the blenders get loud, that's normal. If the green one puts its earmuffs on, that's also normal.",
+   "delivery": "upbeat, matter-of-fact"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/icecream:shift.start.5",
+  "speaker": "mitch",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "shift.start.5",
+   "who": "mitch",
+   "moment": "shift.start",
+   "text": "Let's scoop. If Lulu comes in, clear your afternoon. Emotionally, I mean. She'll still order fine.",
+   "delivery": "upbeat, fond"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/cafe:tutorial.glaze.2",
+  "speaker": "mitch",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "tutorial.glaze.2",
+   "who": "mitch",
+   "moment": "tutorial.glaze",
+   "text": "Glaze first, then toppings. The ticket says strawberry, then sprinkles. Pink with sprinkles. Like the one on the roof.",
+   "delivery": "teaching, a glance upward"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/smoothie:tutorial.blender.2",
+  "speaker": "mitch",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "tutorial.blender.2",
+   "who": "mitch",
+   "moment": "tutorial.blender",
+   "text": "This is the blender. It's loud, it's fast, and it pours itself into the cup when it's done. I wish I did that.",
+   "delivery": "teaching, a little envious"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/cookFryer.2",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "cookFryer.2",
+   "who": "mitch",
+   "moment": "tutorial.cook.fryer",
+   "text": "Pick the crispiness on the ticket. With Timed cooking, you lift the basket yourself when it gets there. The basket is the only thing in here with a handle. Besides me.",
+   "delivery": "instructional, self-deprecating"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/warnPick.2",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "warnPick.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.pick",
+   "text": "Not that one. The ticket says which. It's the one thing in here that's never wrong. I've checked. Twice. About me.",
+   "delivery": "quick, then sheepish"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "mitch/burrito:nearly.2.lightlyToasted",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "nearly.2",
+   "who": "mitch",
+   "moment": "nearly",
+   "each": "want",
+   "text": "Heads up. Nearly {want}. The press is listening.",
+   "delivery": "quick, eyeing the press"
+  },
+  "suffix": "lightlyToasted"
+ },
+ {
+  "clip": "mitch/burrito:nearly.2.toasted",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "nearly.2",
+   "who": "mitch",
+   "moment": "nearly",
+   "each": "want",
+   "text": "Heads up. Nearly {want}. The press is listening.",
+   "delivery": "quick, eyeing the press"
+  },
+  "suffix": "toasted"
+ },
+ {
+  "clip": "mitch/burrito:nearly.2.extraCrispy",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "nearly.2",
+   "who": "mitch",
+   "moment": "nearly",
+   "each": "want",
+   "text": "Heads up. Nearly {want}. The press is listening.",
+   "delivery": "quick, eyeing the press"
+  },
+  "suffix": "extraCrispy"
+ },
+ {
+  "clip": "mitch/nearly.3.golden",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "nearly.3",
+   "who": "mitch",
+   "moment": "nearly",
+   "each": "want",
+   "text": "Almost {want}. Spatula's right there. I'm just the voice.",
+   "delivery": "quick, a little nervous"
+  },
+  "suffix": "golden"
+ },
+ {
+  "clip": "mitch/nearly.3.crispy",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "nearly.3",
+   "who": "mitch",
+   "moment": "nearly",
+   "each": "want",
+   "text": "Almost {want}. Spatula's right there. I'm just the voice.",
+   "delivery": "quick, a little nervous"
+  },
+  "suffix": "crispy"
+ },
+ {
+  "clip": "mitch/nearly.3.extraCrispy",
+  "speaker": "mitch",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "nearly.3",
+   "who": "mitch",
+   "moment": "nearly",
+   "each": "want",
+   "text": "Almost {want}. Spatula's right there. I'm just the voice.",
+   "delivery": "quick, a little nervous"
+  },
+  "suffix": "extraCrispy"
+ },
+ {
+  "clip": "mitch/burrito:tutorial.warn.missing.2.cheese",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "delivery": "quick, a wary glance at Rita"
+  },
+  "suffix": "cheese"
+ },
+ {
+  "clip": "mitch/burrito:tutorial.warn.missing.2.lettuce",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "delivery": "quick, a wary glance at Rita"
+  },
+  "suffix": "lettuce"
+ },
+ {
+  "clip": "mitch/burrito:tutorial.warn.missing.2.pico",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "delivery": "quick, a wary glance at Rita"
+  },
+  "suffix": "pico"
+ },
+ {
+  "clip": "mitch/burrito:tutorial.warn.missing.2.corn",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "delivery": "quick, a wary glance at Rita"
+  },
+  "suffix": "corn"
+ },
+ {
+  "clip": "mitch/burrito:tutorial.warn.missing.2.sourCream",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "delivery": "quick, a wary glance at Rita"
+  },
+  "suffix": "sourCream"
+ },
+ {
+  "clip": "mitch/burrito:tutorial.warn.missing.2.guacamole",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "delivery": "quick, a wary glance at Rita"
+  },
+  "suffix": "guacamole"
+ },
+ {
+  "clip": "mitch/burrito:tutorial.warn.missing.2.jalapenos",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "delivery": "quick, a wary glance at Rita"
+  },
+  "suffix": "jalapenos"
+ },
+ {
+  "clip": "mitch/burrito:tutorial.warn.missing.2.lime",
+  "speaker": "mitch",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "tutorial.warn.missing.2",
+   "who": "mitch",
+   "moment": "tutorial.warn.missing",
+   "each": "ing",
+   "text": "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "delivery": "quick, a wary glance at Rita"
+  },
+  "suffix": "lime"
+ },
+ {
+  "clip": "marge/burrito:customer.order.odd.hottest.1",
+  "speaker": "marge",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.hottest.1",
+   "who": "marge",
+   "moment": "order.odd.hottest",
+   "text": "Chicken burrito, hon, and your hottest sauce. I'm feeling wild. Don't tell my sister.",
+   "delivery": "warm, mischievous"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/burrito:customer.order.odd.hottest.1",
+  "speaker": "gus",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.hottest.1",
+   "who": "gus",
+   "moment": "order.odd.hottest",
+   "text": "Chicken burrito, hottest sauce you got. Delores wants to see me sweat.",
+   "delivery": "a sheepish drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/burrito:customer.order.odd.hottest.1",
+  "speaker": "bev",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.hottest.1",
+   "who": "bev",
+   "moment": "order.odd.hottest",
+   "text": "Chicken burrito! Hottest sauce you've got! I'm training my TEARS! They need DISCIPLINE!",
+   "delivery": "firm, like a coach, steely"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/burrito:customer.order.odd.hottest.1",
+  "speaker": "sal",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.hottest.1",
+   "who": "sal",
+   "moment": "order.odd.hottest",
+   "text": "Chicken burrito, hottest sauce ya got. My wife says I don't show emotion. Tonight, I show emotion.",
+   "delivery": "gruff, determined"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "inferno/burrito:customer.order.odd.hottest.1",
+  "speaker": "inferno",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.hottest.1",
+   "who": "customer",
+   "moment": "order.odd.hottest",
+   "text": "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's a choice.",
+   "delivery": "brave, voice wobbling"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "rita/burrito:customer.order.odd.hottest.1",
+  "speaker": "rita",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.hottest.1",
+   "who": "rita",
+   "moment": "order.odd.hottest",
+   "text": "Chicken burrito, the hottest sauce you've got. I've got a hard hat on. I'm protected. Mostly.",
+   "delivery": "bravado, then doubt"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "hiro/burrito:customer.order.odd.hottest.1",
+  "speaker": "hiro",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.hottest.1",
+   "who": "customer",
+   "moment": "order.odd.hottest",
+   "text": "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's a choice.",
+   "delivery": "brave, voice wobbling"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "marge",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "gus",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "bev",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "sal",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "vernon",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "oakes/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "oakes",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "reginald",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "kai",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "rita/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "rita",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "hiro/burrito:customer.order.odd.fireAlarm.1",
+  "speaker": "hiro",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "customer",
+   "moment": "order.odd.fireAlarm",
+   "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "delivery": "intense, pointing at the alarm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "marge",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "gus",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "bev",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "sal",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "vernon",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "oakes/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "oakes",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "reginald",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "kai",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "inferno/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "inferno",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "rita/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "rita",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "hiro/burrito:customer.order.odd.justTortilla.2",
+  "speaker": "hiro",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.justTortilla.2",
+   "who": "customer",
+   "moment": "order.odd.justTortilla",
+   "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "delivery": "serene"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/burrito:order.dislike.1",
+  "speaker": "sal",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.dislike.1",
+   "who": "sal",
+   "moment": "order.dislike",
+   "text": "And no lettuce. Lettuce in my lunch is a rabbit in a sleepin' bag.",
+   "delivery": "gruff, disgusted"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/cast:intro.c4",
+  "speaker": "gus",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "intro.c4",
+   "who": "gus",
+   "moment": "order.intro",
+   "text": "Truck ain't the only one that needs fuel 'round here.",
+   "delivery": "amused drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "marge",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "marge",
+   "moment": "order.odd.coffeeDonut",
+   "text": "Hon, could you put the coffee inside the donut? No? A jelly one, then. I'll dunk it. Same thing.",
+   "delivery": "warm, unbothered"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "gus",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "customer",
+   "moment": "order.odd.coffeeDonut",
+   "text": "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.",
+   "delivery": "hopeful, then practical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "bev",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "customer",
+   "moment": "order.odd.coffeeDonut",
+   "text": "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.",
+   "delivery": "hopeful, then practical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "sal",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "sal",
+   "moment": "order.odd.coffeeDonut",
+   "text": "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Jelly, then.",
+   "delivery": "gruff, practical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "vernon",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "vernon",
+   "moment": "order.odd.coffeeDonut",
+   "text": "A donut with the coffee inside. A bold concept. I'm prepared to be disappointed. I usually am.",
+   "delivery": "haughty, resigned"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "reginald",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "customer",
+   "moment": "order.odd.coffeeDonut",
+   "text": "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.",
+   "delivery": "hopeful, then practical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "kai",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "customer",
+   "moment": "order.odd.coffeeDonut",
+   "text": "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.",
+   "delivery": "hopeful, then practical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "priya/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "priya",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "priya",
+   "moment": "order.odd.coffeeDonut",
+   "text": "A donut with the coffee already inside it. Saves a step. I'm out of steps.",
+   "delivery": "dry, exhausted"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "jitters/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "jitters",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "jitters",
+   "moment": "order.odd.coffeeDonut",
+   "text": "A donut with coffee inside! Like a jelly donut, but useful! You can't? Jelly, then. Jelly's fine. Jelly's great.",
+   "delivery": "very fast, excited, then making peace"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:customer.order.odd.coffeeDonut.1",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "customer",
+   "moment": "order.odd.coffeeDonut",
+   "text": "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.",
+   "delivery": "hopeful, then practical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/cafe:order.usual.2",
+  "speaker": "marge",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.usual.2",
+   "who": "marge",
+   "moment": "order.usual",
+   "text": "The usual, hon. Cream and two sugars, since 1979. Don't change on me now.",
+   "delivery": "warm, content"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/cafe:order.odd.coffeeDonut.1",
+  "speaker": "marge",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "marge",
+   "moment": "order.odd.coffeeDonut",
+   "text": "Hon, could you put the coffee inside the donut? No? A jelly one, then. I'll dunk it. Same thing.",
+   "delivery": "warm, unbothered"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/cafe:order.twin.1",
+  "speaker": "gus",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.twin.1",
+   "who": "gus",
+   "moment": "order.twin",
+   "text": "Two of 'em. One for now, one for the road. And a dozen donuts, but those are for Delores.",
+   "delivery": "a warm drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/cafe:order.odd.coffeeDonut.1",
+  "speaker": "sal",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.1",
+   "who": "sal",
+   "moment": "order.odd.coffeeDonut",
+   "text": "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Jelly, then.",
+   "delivery": "gruff, practical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/cafe:react.2.1",
+  "speaker": "sal",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.2.1",
+   "who": "sal",
+   "moment": "react.2",
+   "text": "Eh. It's okay. My cart coffee's worse, and I don't even sell coffee.",
+   "delivery": "a gruff shrug"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/react1.3",
+  "speaker": "marge",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "react1.3",
+   "who": "marge",
+   "moment": "react.1",
+   "text": "Oh, sweetie. I've eaten at a bus depot at four in the morning. I'd go back.",
+   "delivery": "gentle, devastating"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/icecream:customer.order.odd.ketchup.1",
+  "speaker": "marge",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "marge",
+   "moment": "order.odd.ketchup",
+   "text": "Strawberry in a cup, hon, and I'll pretend it's ketchup. My grandson eats it that way. I'm trying to understand him.",
+   "delivery": "warm, bewildered"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/icecream:customer.order.odd.ketchup.1",
+  "speaker": "gus",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "gus",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, buddy. Long-haul thing. Strawberry'll pass, if you squint.",
+   "delivery": "matter-of-fact drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/icecream:customer.order.odd.ketchup.1",
+  "speaker": "bev",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "bev",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with KETCHUP! The team dared me! Strawberry counts! The ref says strawberry COUNTS!",
+   "delivery": "firm, like a coach, game for anything"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/icecream:customer.order.odd.ketchup.1",
+  "speaker": "sal",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "customer",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.",
+   "delivery": "matter-of-fact"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/icecream:customer.order.odd.ketchup.1",
+  "speaker": "vernon",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "vernon",
+   "moment": "order.odd.ketchup",
+   "text": "Strawberry, which I will refer to as ketchup. It's for a piece on misleading menus.",
+   "delivery": "precise, scheming"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/icecream:customer.order.odd.ketchup.1",
+  "speaker": "reginald",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "customer",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.",
+   "delivery": "matter-of-fact"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/icecream:customer.order.odd.ketchup.1",
+  "speaker": "kai",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "customer",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.",
+   "delivery": "matter-of-fact"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "brock/icecream:customer.order.odd.ketchup.1",
+  "speaker": "brock",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "customer",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.",
+   "delivery": "matter-of-fact"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tasha/icecream:customer.order.odd.ketchup.1",
+  "speaker": "tasha",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "tasha",
+   "moment": "order.odd.ketchup",
+   "text": "Strawberry, but I'm calling it ketchup. Don't ask. I won't explain. I can't.",
+   "delivery": "flat, mysterious"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "lulu/icecream:customer.order.odd.ketchup.1",
+  "speaker": "lulu",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "customer",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.",
+   "delivery": "matter-of-fact"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:customer.order.odd.ketchup.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "walt",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, like my brother ate it in '55. Strawberry will do. He was a strange boy.",
+   "delivery": "fond, shaking his head"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/icecream:customer.order.odd.justCherry.1",
+  "speaker": "marge",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.justCherry.1",
+   "who": "marge",
+   "moment": "order.odd.justCherry",
+   "text": "A sundae, hon, but just the cherry. My doctor said cut back. That's me cutting back.",
+   "delivery": "warm, very reasonable"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/icecream:customer.order.odd.justCherry.1",
+  "speaker": "gus",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.justCherry.1",
+   "who": "gus",
+   "moment": "order.odd.justCherry",
+   "text": "Sundae, just the cherry. Doc says no sweets. A cherry's a fruit. That's practically a salad.",
+   "delivery": "sly drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/icecream:customer.order.odd.justCherry.1",
+  "speaker": "bev",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.justCherry.1",
+   "who": "bev",
+   "moment": "order.odd.justCherry",
+   "text": "A sundae, just the CHERRY! I'm cutting sugar! The cherry is my ONE cheat!",
+   "delivery": "firm, like a coach, disciplined"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/icecream:customer.order.odd.justCherry.1",
+  "speaker": "sal",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.justCherry.1",
+   "who": "customer",
+   "moment": "order.odd.justCherry",
+   "text": "A hot fudge sundae, but just the cherry. The ice cream can stay. It's holding the cherry up.",
+   "delivery": "very precise"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/icecream:customer.order.odd.malted.1",
+  "speaker": "marge",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/icecream:customer.order.odd.malted.1",
+  "speaker": "gus",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/icecream:customer.order.odd.malted.1",
+  "speaker": "bev",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/icecream:customer.order.odd.malted.1",
+  "speaker": "sal",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/icecream:customer.order.odd.malted.1",
+  "speaker": "vernon",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/icecream:customer.order.odd.malted.1",
+  "speaker": "reginald",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/icecream:customer.order.odd.malted.1",
+  "speaker": "kai",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "brock/icecream:customer.order.odd.malted.1",
+  "speaker": "brock",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tasha/icecream:customer.order.odd.malted.1",
+  "speaker": "tasha",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "lulu/icecream:customer.order.odd.malted.1",
+  "speaker": "lulu",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "customer",
+   "moment": "order.odd.malted",
+   "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "delivery": "cheerful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/icecream:order.twin.2",
+  "speaker": "gus",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.twin.2",
+   "who": "gus",
+   "moment": "order.twin",
+   "text": "Make it two. One for me, one for Delores. Delores is home. I'll tell her all about it.",
+   "delivery": "fond drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/icecream:react.2.1",
+  "speaker": "gus",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.2.1",
+   "who": "gus",
+   "moment": "react.2",
+   "text": "Pretty good, buddy. Like a truck stop sundae, only closer to home.",
+   "delivery": "easy drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/icecream:order.odd.ketchup.1",
+  "speaker": "gus",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "gus",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, buddy. Long-haul thing. Strawberry'll pass, if you squint.",
+   "delivery": "matter-of-fact drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "marge",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "gus",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "bev",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "sal",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "vernon",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "oakes/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "oakes",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tony/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "tony",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "reginald",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "kai",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "pam/pizza:customer.order.odd.heartShaped.2",
+  "speaker": "pam",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.2",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/pizza:react.3.2",
+  "speaker": "gus",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "react.3.2",
+   "who": "gus",
+   "moment": "react.3",
+   "text": "Mm. Beautiful. Pizza like that, I'd haul it to Tulsa and never touch it. I'm touchin' it.",
+   "delivery": "reverent, then eager"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/pizza:react.gross.1",
+  "speaker": "gus",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "react.gross.1",
+   "who": "gus",
+   "moment": "react.gross",
+   "text": "Oh, no. Oh, buddy. No. I seen roadkill with better manners.",
+   "delivery": "a low groan"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/smoothie:react.gross.1",
+  "speaker": "gus",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "react.gross.1",
+   "who": "gus",
+   "moment": "react.gross",
+   "text": "Oh, no. Oh, buddy. No. I seen things on the interstate with better manners.",
+   "delivery": "a low groan"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/sushi:customer.order.odd.noFishNoRice.2",
+  "speaker": "marge",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.noFishNoRice.2",
+   "who": "customer",
+   "moment": "order.odd.noFishNoRice",
+   "text": "A roll with no fish and no rice. The outside is my favorite part, and I want to be close to it.",
+   "delivery": "calm, certain"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/sushi:customer.order.odd.noFishNoRice.2",
+  "speaker": "gus",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.noFishNoRice.2",
+   "who": "customer",
+   "moment": "order.odd.noFishNoRice",
+   "text": "A roll with no fish and no rice. The outside is my favorite part, and I want to be close to it.",
+   "delivery": "calm, certain"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/sushi:customer.order.odd.noFishNoRice.2",
+  "speaker": "bev",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.noFishNoRice.2",
+   "who": "customer",
+   "moment": "order.odd.noFishNoRice",
+   "text": "A roll with no fish and no rice. The outside is my favorite part, and I want to be close to it.",
+   "delivery": "calm, certain"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/sushi:customer.order.odd.noFishNoRice.2",
+  "speaker": "sal",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.noFishNoRice.2",
+   "who": "customer",
+   "moment": "order.odd.noFishNoRice",
+   "text": "A roll with no fish and no rice. The outside is my favorite part, and I want to be close to it.",
+   "delivery": "calm, certain"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/sushi:customer.order.odd.justGinger.1",
+  "speaker": "marge",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "marge",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger, hon. It's good for the stomach. And a little cucumber roll, so it's a meal.",
+   "delivery": "warm, practical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "gus/sushi:customer.order.odd.justGinger.1",
+  "speaker": "gus",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "customer",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+   "delivery": "calm, reasonable about it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "bev/sushi:customer.order.odd.justGinger.1",
+  "speaker": "bev",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "customer",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+   "delivery": "calm, reasonable about it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/sushi:customer.order.odd.justGinger.1",
+  "speaker": "sal",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "customer",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+   "delivery": "calm, reasonable about it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/sushi:customer.order.odd.justGinger.1",
+  "speaker": "vernon",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "customer",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+   "delivery": "calm, reasonable about it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/sushi:customer.order.odd.justGinger.1",
+  "speaker": "reginald",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "customer",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+   "delivery": "calm, reasonable about it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/sushi:customer.order.odd.justGinger.1",
+  "speaker": "kai",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "customer",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+   "delivery": "calm, reasonable about it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "hiro/sushi:customer.order.odd.justGinger.1",
+  "speaker": "hiro",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "hiro",
+   "moment": "order.odd.justGinger",
+   "text": "Only the ginger. The ginger is the best part. Do not tell the fish. Fine. A cucumber roll to rest it on.",
+   "delivery": "low, conspiratorial"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "dennis/sushi:customer.order.odd.justGinger.1",
+  "speaker": "dennis",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "dennis",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger, please. It's pink. I trust pink. And a cucumber roll, so it isn't lonely.",
+   "delivery": "nervous, kind"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "inferno/sushi:customer.order.odd.justGinger.1",
+  "speaker": "inferno",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "customer",
+   "moment": "order.odd.justGinger",
+   "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+   "delivery": "calm, reasonable about it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/sushi:order.dislike.1",
+  "speaker": "marge",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.dislike.1",
+   "who": "marge",
+   "moment": "order.dislike",
+   "text": "And nothing raw, hon. Thirty years driving a bus. I have seen enough things that were not done.",
+   "delivery": "warm, firm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/sushi:order.dislike.2",
+  "speaker": "marge",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.dislike.2",
+   "who": "marge",
+   "moment": "order.dislike",
+   "text": "Nothing raw, sweetie. My sister had raw fish on a cruise in 1994. We don't talk about the cruise.",
+   "delivery": "warm, darkly"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/sushi:order.odd.sushiBurrito.1",
+  "speaker": "sal",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.sushiBurrito.1",
+   "who": "sal",
+   "moment": "order.odd.sushiBurrito",
+   "text": "Sushi burrito. Don't cut it. I'm holdin' it like a hot dog. Nobody's stoppin' me. Not even the old guy.",
+   "delivery": "gruff, defiant"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "sal/sushi:react.1.2",
+  "speaker": "sal",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "react.1.2",
+   "who": "sal",
+   "moment": "react.1",
+   "text": "Ugh. I asked for a hot dog roll, I didn't get it, and I didn't get THIS either.",
+   "delivery": "gruff, aggrieved"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "marge/goodbye.1",
+  "speaker": "marge",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "goodbye.1",
+   "who": "marge",
+   "moment": "goodbye",
+   "text": "Bye, hon. Tell Mitch his hat's crooked. It's always crooked. It's how I know it's him.",
+   "delivery": "warm, fond"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/burrito:order.odd.noAvocado.1",
+  "speaker": "vernon",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.noAvocado.1",
+   "who": "vernon",
+   "moment": "order.odd.noAvocado",
+   "text": "A veggie bowl. Guacamole, without the avocado. Kept apart from everything, including itself.",
+   "delivery": "refined, entirely serious"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/burrito:react.2.3",
+  "speaker": "reginald",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "react.2.3",
+   "who": "reginald",
+   "moment": "react.2",
+   "text": "Fine. Three stars. Competent and unbothered, like a well-run car wash.",
+   "delivery": "theatrical, bored"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/cafe:customer.order.odd.halfDecaf.1",
+  "speaker": "kai",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.halfDecaf.1",
+   "who": "customer",
+   "moment": "order.odd.halfDecaf",
+   "text": "Half decaf, half extra caffeine. They cancel out. I want to feel nothing, on purpose.",
+   "delivery": "calm, as if this is normal"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/cafe:customer.order.odd.halfDecaf.2",
+  "speaker": "kai",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.halfDecaf.2",
+   "who": "customer",
+   "moment": "order.odd.halfDecaf",
+   "text": "Half decaf, half extra shot. I'm cutting back and catching up at the same time.",
+   "delivery": "matter-of-fact"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/cafe:customer.order.odd.sevenShots.1",
+  "speaker": "kai",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.sevenShots.1",
+   "who": "customer",
+   "moment": "order.odd.sevenShots",
+   "text": "A latte with seven extra shots. I have a big day. And a big week. It's a big year.",
+   "delivery": "wide-eyed, determined"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/cafe:customer.order.odd.sevenShots.2",
+  "speaker": "kai",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.sevenShots.2",
+   "who": "customer",
+   "moment": "order.odd.sevenShots",
+   "text": "Seven extra shots in a latte, please. I'm not tired. I'm planning ahead.",
+   "delivery": "calm, too calm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/cafe:customer.order.odd.everythingCup.1",
+  "speaker": "kai",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.everythingCup.1",
+   "who": "customer",
+   "moment": "order.odd.everythingCup",
+   "text": "A large cappuccino. Everything on the bar goes in. If it's in a bottle, it's in my cup.",
+   "delivery": "building, relishing it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/cafe:customer.order.odd.everythingCup.2",
+  "speaker": "kai",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.everythingCup.2",
+   "who": "customer",
+   "moment": "order.odd.everythingCup",
+   "text": "Everything. Shot, vanilla, caramel, whipped cream. In a large. I've earned this, and I'm about to un-earn it.",
+   "delivery": "grave, determined"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/cafe:react.2.3",
+  "speaker": "reginald",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.2.3",
+   "who": "reginald",
+   "moment": "react.2",
+   "text": "Three stars. It has a beginning and an end. The middle wandered off.",
+   "delivery": "theatrical, dry"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "oakes/dislike.2",
+  "speaker": "oakes",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "dislike.2",
+   "who": "oakes",
+   "moment": "order.dislike",
+   "text": "No onions. Thermodynamically, an onion is a cry for help with a skin on it.",
+   "delivery": "nasal, lecturing"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "oakes/dislike.5",
+  "speaker": "oakes",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "dislike.5",
+   "who": "oakes",
+   "moment": "order.dislike",
+   "text": "No onions. Statistically, every onion ring is an onion that got away with it.",
+   "delivery": "nasal, grave"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "oakes/odd.fivePatties.1",
+  "speaker": "oakes",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "odd.fivePatties.1",
+   "who": "oakes",
+   "moment": "order.odd.fivePatties",
+   "text": "The Diner Tower, five patties. I'm studying structural failure in sandwiches, and lunch is the control group.",
+   "delivery": "nasal, earnest"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "brock/icecream:greet.4",
+  "speaker": "brock",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "greet.4",
+   "who": "brock",
+   "moment": "greet",
+   "text": "What's up! I'm carb loading. For nothing. Just loading.",
+   "delivery": "cheerful, unashamed"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "brock/icecream:react.1.1",
+  "speaker": "brock",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.1.1",
+   "who": "brock",
+   "moment": "react.1",
+   "text": "Bro. That's not it. That's the rest day of desserts.",
+   "delivery": "deflated"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tony/pizza:customer.order.odd.halfAndHalf.1",
+  "speaker": "tony",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.halfAndHalf.1",
+   "who": "customer",
+   "moment": "order.odd.halfAndHalf",
+   "text": "Half pepperoni, half pineapple and anchovies. I contain multitudes.",
+   "delivery": "serene, unbothered"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/pizza:customer.order.odd.heartShaped.1",
+  "speaker": "kai",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.1",
+   "who": "customer",
+   "moment": "order.odd.heartShaped",
+   "text": "A pepperoni pizza, shaped like a heart. I'm proposing tonight. It's a long story. The pizza's the short version.",
+   "delivery": "nervous, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "pam/pizza:customer.order.odd.heartShaped.1",
+  "speaker": "pam",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "order.odd.heartShaped.1",
+   "who": "pam",
+   "moment": "order.odd.heartShaped",
+   "text": "Heart-shaped, please. The birthday girl's in a hearts phase. Last month was dinosaurs. We don't talk about dinosaurs.",
+   "delivery": "chipper, then dark"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/pizza:react.2.3",
+  "speaker": "reginald",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "react.2.3",
+   "who": "reginald",
+   "moment": "react.2",
+   "text": "Fine. Three stars. Wet, but lacking ambition. No, that's my water review. Three stars anyway.",
+   "delivery": "theatrical, catching himself"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tony/smoothie:customer.order.odd.everyFruit.1",
+  "speaker": "tony",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "order.odd.everyFruit.1",
+   "who": "customer",
+   "moment": "order.odd.everyFruit",
+   "text": "Every fruit you've got. All of them, in one cup. I'm not choosing. Choosing is for other people.",
+   "delivery": "calm, certain"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tony/smoothie:customer.order.odd.everyFruit.2",
+  "speaker": "tony",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "order.odd.everyFruit.2",
+   "who": "customer",
+   "moment": "order.odd.everyFruit",
+   "text": "One of every fruit, please. I don't want any of them to feel left out.",
+   "delivery": "sincere, as if normal"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tony/smoothie:customer.order.odd.wipeout.1",
+  "speaker": "tony",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "order.odd.wipeout.1",
+   "who": "customer",
+   "moment": "order.odd.wipeout",
+   "text": "Everything. Every fruit, every extra, the biggest cup. Blend it until it gives up.",
+   "delivery": "grave, determined"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tony/smoothie:customer.order.odd.wipeout.2",
+  "speaker": "tony",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "order.odd.wipeout.2",
+   "who": "customer",
+   "moment": "order.odd.wipeout",
+   "text": "The works. Every fruit, every extra, large, super smooth. I've cleared my afternoon.",
+   "delivery": "building, relishing it"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/smoothie:react.2.2",
+  "speaker": "vernon",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "react.2.2",
+   "who": "vernon",
+   "moment": "react.2",
+   "text": "Competent. Forgettable. Like a smoothie that has heard of me but never met me.",
+   "delivery": "haughty, bored"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/smoothie:react.2.3",
+  "speaker": "reginald",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "react.2.3",
+   "who": "reginald",
+   "moment": "react.2",
+   "text": "Fine. Three stars. It's cold, it's in a cup, and it knows it. Self-awareness is half the battle.",
+   "delivery": "theatrical, generous"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/sushi:react.3.2",
+  "speaker": "vernon",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "react.3.2",
+   "who": "vernon",
+   "moment": "react.3",
+   "text": "Regular. White. Tight. Eight. I'll write that Chef Hiro and I agree. He hasn't said so. He would.",
+   "delivery": "haughty, faintly thrilled"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "reginald/sushi:react.2.3",
+  "speaker": "reginald",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "react.2.3",
+   "who": "reginald",
+   "moment": "react.2",
+   "text": "Fine. Three stars. Cold, but lacking conviction. No, that is my review of the fountain. Three stars anyway.",
+   "delivery": "theatrical, catching himself"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "oakes/cast:mention.c1",
+  "speaker": "oakes",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "mention.c1",
+   "who": "oakes",
+   "moment": "mention",
+   "about": "burrito",
+   "text": "At {about}, I learned pico de gallo contains onion. For my own peace, I've reclassified it as salsa.",
+   "delivery": "nasal, too fast, rattled"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/cast:complain.c5",
+  "speaker": "vernon",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c5",
+   "who": "vernon",
+   "moment": "complain",
+   "text": "I could tell from across the room. It's a very good room.",
+   "delivery": "precise, wounded, a theatrical sigh"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "vernon/cast:complain.c7",
+  "speaker": "vernon",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c7",
+   "who": "vernon",
+   "moment": "complain",
+   "text": "I noticed at once. Noticing is my cardio.",
+   "delivery": "precise, wounded, a theatrical sigh"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "kai/cafe:visitor.arrive.2",
+  "speaker": "kai",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "visitor.arrive.2",
+   "who": "kai",
+   "moment": "visitor.arrive",
+   "text": "Hello. My mom's at the shoe store. She said one thing. I'm here to choose it carefully.",
+   "delivery": "bright, formal"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "brock/icecream:smalltalk.2",
+  "speaker": "brock",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "smalltalk.2",
+   "who": "brock",
+   "moment": "smalltalk",
+   "text": "My mom saw me walk in here. She texted a heart. Then another heart. Then: Brock.",
+   "delivery": "warm, then quoting his mom flatly"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tony/smoothie:smalltalk.1",
+  "speaker": "tony",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "smalltalk.1",
+   "who": "tony",
+   "moment": "smalltalk",
+   "text": "In my day, a smoothie was called a tomato. We were happy.",
+   "delivery": "nostalgic, firm"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tony/smoothie:complain.gross.mouldy.1",
+  "speaker": "tony",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "complain.gross.mouldy.1",
+   "who": "tony",
+   "moment": "complain.gross.mouldy",
+   "text": "These strawberries are wearing fur! It is not winter! This is not the opera!",
+   "delivery": "escalating horror"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "inferno/burrito:customer.order.odd.hottest.2",
+  "speaker": "inferno",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.hottest.2",
+   "who": "customer",
+   "moment": "order.odd.hottest",
+   "text": "Chicken burrito. Your hottest sauce. I've told my family I love them. I'm ready.",
+   "delivery": "grave, determined"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "inferno/burrito:order.odd.fireAlarm.1",
+  "speaker": "inferno",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "order.odd.fireAlarm.1",
+   "who": "inferno",
+   "moment": "order.odd.fireAlarm",
+   "text": "Fire Burrito. Hot enough to set off the fire alarm. The one with the little mustache. We have history.",
+   "delivery": "intense, conspiratorial"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "inferno/burrito:react.3.4",
+  "speaker": "inferno",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "react.3.4",
+   "who": "inferno",
+   "moment": "react.3",
+   "text": "That is the one. I can hear colors. Five stars. Six if the colors stop.",
+   "delivery": "dazed, ecstatic"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "priya/cafe:customer.order.odd.coffeeDonut.2",
+  "speaker": "priya",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.2",
+   "who": "customer",
+   "moment": "order.odd.coffeeDonut",
+   "text": "Can I get a donut with coffee in the middle? No? Jelly, then. I'll use my imagination.",
+   "delivery": "cheerful, unbothered"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "jitters/cafe:customer.order.odd.coffeeDonut.2",
+  "speaker": "jitters",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.2",
+   "who": "customer",
+   "moment": "order.odd.coffeeDonut",
+   "text": "Can I get a donut with coffee in the middle? No? Jelly, then. I'll use my imagination.",
+   "delivery": "cheerful, unbothered"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:customer.order.odd.coffeeDonut.2",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "order.odd.coffeeDonut.2",
+   "who": "customer",
+   "moment": "order.odd.coffeeDonut",
+   "text": "Can I get a donut with coffee in the middle? No? Jelly, then. I'll use my imagination.",
+   "delivery": "cheerful, unbothered"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:greet.2",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "greet.2",
+   "who": "walt",
+   "moment": "greet",
+   "text": "Morning! New sneakers, old jacket, same order since Eisenhower.",
+   "delivery": "proud, showing the sneakers"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:greet.3",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "greet.3",
+   "who": "walt",
+   "moment": "greet",
+   "text": "Hello! In 1955, coffee came in one size, and the size was called coffee.",
+   "delivery": "cheerful, a little slow"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:react.3.1",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.3.1",
+   "who": "walt",
+   "moment": "react.3",
+   "text": "Now that's breakfast! Just like 1955. Better. Don't tell 1955.",
+   "delivery": "delighted, conspiratorial"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:react.3.2",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.3.2",
+   "who": "walt",
+   "moment": "react.3",
+   "text": "Swell! Real swell! I haven't said swell since the fifties. It's back.",
+   "delivery": "thrilled, a little slow"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:react.3.3",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.3.3",
+   "who": "walt",
+   "moment": "react.3",
+   "text": "Perfect, sport. In '55 they'd have put you on the radio for this.",
+   "delivery": "warm, proud"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:react.2.2",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.2.2",
+   "who": "walt",
+   "moment": "react.2",
+   "text": "Not bad, not bad. In '55 we'd have called it fine and talked about the weather.",
+   "delivery": "cheerful, forgiving"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:react.1.1",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.1.1",
+   "who": "walt",
+   "moment": "react.1",
+   "text": "Oh, dear. That isn't what I ordered. Not even in 1955, and we were very relaxed.",
+   "delivery": "gently dismayed"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:react.1.2",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.1.2",
+   "who": "walt",
+   "moment": "react.1",
+   "text": "Well, I'll be. This one's a stranger. In '55 we'd have asked it its name.",
+   "delivery": "puzzled, polite"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:react.gross.1",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "react.gross.1",
+   "who": "walt",
+   "moment": "react.gross",
+   "text": "Good gravy! There's something on here that didn't exist in 1955!",
+   "delivery": "startled, leaning back"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cast:intro.c5",
+  "speaker": "walt",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "intro.c5",
+   "who": "walt",
+   "moment": "order.intro",
+   "text": "Something new today. My wife says I'm stuck in the past. Let's prove her wrong.",
+   "delivery": "cheerful, a little proud"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "dale/customer.odd.nothingGreen.1",
+  "speaker": "dale",
+  "pack": "diner",
+  "file": "packs/diner/script.js",
+  "line": {
+   "id": "odd.nothingGreen.1",
+   "who": "dale",
+   "moment": "order.odd.nothingGreen",
+   "text": "Bacon cheeseburger, everything but anything green. Green means go. I ain't goin' anywhere.",
+   "delivery": "slow drawl"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "lulu/icecream:order.gag.5",
+  "speaker": "lulu",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.gag.5",
+   "who": "lulu",
+   "moment": "order.gag",
+   "text": "Bubblegum is my favorite color. Vanilla is my favorite flavor. It's complicated.",
+   "delivery": "thoughtful, a big sigh"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:greet.2",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "greet.2",
+   "who": "walt",
+   "moment": "greet",
+   "text": "Afternoon! Jacket's from '55. Sneakers are from Tuesday. I'm a mix.",
+   "delivery": "proud, showing both"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:greet.3",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "greet.3",
+   "who": "walt",
+   "moment": "greet",
+   "text": "Hi there, sport. In '55, this is where you took your best girl.",
+   "delivery": "warm, nostalgic, tipping his boater"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:greet.5",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "greet.5",
+   "who": "walt",
+   "moment": "greet",
+   "text": "Howdy! I'll have what I had in 1955. Give or take.",
+   "delivery": "cheerful, a little slow"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:order.gag.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.gag.1",
+   "who": "walt",
+   "moment": "order.gag",
+   "text": "Just like 1955. Except in 1955 it cost a dime, and the dime was mine.",
+   "delivery": "cheerful, wistful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:order.gag.2",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.gag.2",
+   "who": "walt",
+   "moment": "order.gag",
+   "text": "See that knotted cherry stem under the glass? I tied that in '55. With my tongue. Still got it.",
+   "delivery": "proud, pointing at the dome"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:order.gag.3",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.gag.3",
+   "who": "walt",
+   "moment": "order.gag",
+   "text": "In 1955 we called that dessert. You still call it dessert. Some things you kept.",
+   "delivery": "warm, approving"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:order.gag.4",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.gag.4",
+   "who": "walt",
+   "moment": "order.gag",
+   "text": "Make it like they did in '55. They didn't do it any different. But make it like that.",
+   "delivery": "cheerful, completely serious"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:react.favourite.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.favourite.1",
+   "who": "walt",
+   "moment": "react.favourite",
+   "text": "Now that is a hot fudge sundae. That's 1955 in a cup. I might cry. I might.",
+   "delivery": "moved, voice catching, then a chuckle"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:react.favourite.2",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.favourite.2",
+   "who": "walt",
+   "moment": "react.favourite",
+   "text": "The fudge runs down the side just right. Murray would have hired you on the spot. Murray hired nobody.",
+   "delivery": "admiring, then confiding"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:react.3.3",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.3.3",
+   "who": "walt",
+   "moment": "react.3",
+   "text": "Perfect. Better than '55, and I'll deny I ever said that.",
+   "delivery": "happy, a conspiratorial wink"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:react.2.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.2.1",
+   "who": "walt",
+   "moment": "react.2",
+   "text": "Not bad, not bad. In 1955 we'd have called that pretty good. We said pretty good a lot.",
+   "delivery": "kind, nostalgic"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:react.2.3",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.2.3",
+   "who": "walt",
+   "moment": "react.2",
+   "text": "That'll do, sport. It's not 1955. Then again, nothing is.",
+   "delivery": "gentle, wistful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:react.1.2",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.1.2",
+   "who": "walt",
+   "moment": "react.1",
+   "text": "Well. In 1955 we'd have sent that back. Politely. With a note.",
+   "delivery": "dignified, a little sad"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:react.gross.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.gross.1",
+   "who": "walt",
+   "moment": "react.gross",
+   "text": "Good gravy! In 1955, the worst thing you found in a sundae was a penny. Somebody else's penny.",
+   "delivery": "shocked, then rueful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:order.odd.malted.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.malted.1",
+   "who": "walt",
+   "moment": "order.odd.malted",
+   "text": "A chocolate malted, thick, like Murray's in '55. No malt? Then a thick shake, and I'll pretend.",
+   "delivery": "cheerful, hopeful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:order.odd.tenScoop.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.tenScoop.1",
+   "who": "walt",
+   "moment": "order.odd.tenScoop",
+   "text": "Ten scoops on a cone, like the dare in '55. I lost that dare. Stack it as high as it goes.",
+   "delivery": "mischievous"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:order.odd.ketchup.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.ketchup.1",
+   "who": "walt",
+   "moment": "order.odd.ketchup",
+   "text": "Ice cream with ketchup, like my brother ate it in '55. Strawberry will do. He was a strange boy.",
+   "delivery": "fond, shaking his head"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tasha/icecream:greet.1",
+  "speaker": "tasha",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "greet.1",
+   "who": "tasha",
+   "moment": "greet",
+   "text": "Sup. I skated here. It's downhill. Ice cream is the reward for downhill.",
+   "delivery": "flat, deadpan"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tasha/icecream:react.2.3",
+  "speaker": "tasha",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "react.2.3",
+   "who": "tasha",
+   "moment": "react.2",
+   "text": "Close. I finish everything. Life is long.",
+   "delivery": "flat, philosophical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "tasha/icecream:order.odd.justCherry.1",
+  "speaker": "tasha",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "order.odd.justCherry.1",
+   "who": "tasha",
+   "moment": "order.odd.justCherry",
+   "text": "A sundae, just the cherry. I just like the cherry. It's the only thing up there that commits.",
+   "delivery": "flat, thoughtful"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "pam/pizza:react.3.3",
+  "speaker": "pam",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "react.3.3",
+   "who": "pam",
+   "moment": "react.3",
+   "text": "Yes! A pizza that matches the ticket! Today, that's my pony.",
+   "delivery": "overjoyed, slightly teary"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "breeze/pizza:react.3.1",
+  "speaker": "breeze",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "react.3.1",
+   "who": "breeze",
+   "moment": "react.3",
+   "text": "Oh, that's the wave. That's the wave right there. Pineapple, cheese, sunshine.",
+   "delivery": "blissed out"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "breeze/smoothie:react.2.3",
+  "speaker": "breeze",
+  "pack": "smoothie",
+  "file": "packs/smoothie/script.js",
+  "line": {
+   "id": "react.2.3",
+   "who": "breeze",
+   "moment": "react.2",
+   "text": "Almost, friend. Almost is like a sunset. Still pretty. Still not breakfast.",
+   "delivery": "dreamy, philosophical"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "hiro/sushi:order.odd.justGinger.1",
+  "speaker": "hiro",
+  "pack": "sushi",
+  "file": "packs/sushi/script.js",
+  "line": {
+   "id": "order.odd.justGinger.1",
+   "who": "hiro",
+   "moment": "order.odd.justGinger",
+   "text": "Only the ginger. The ginger is the best part. Do not tell the fish. Fine. A cucumber roll to rest it on.",
+   "delivery": "low, conspiratorial"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/court:cheer.1",
+  "speaker": "walt",
+  "pack": "court",
+  "file": "packs/court/script.js",
+  "line": {
+   "id": "cheer.1",
+   "who": "walt",
+   "moment": "court.cheer",
+   "text": "Just like 1955! Well, better. We didn't have gold in 1955.",
+   "delivery": "cheerful, nostalgic"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "hiro/burrito:goodbye.3",
+  "speaker": "hiro",
+  "pack": "burrito",
+  "file": "packs/burrito/script.js",
+  "line": {
+   "id": "goodbye.3",
+   "who": "hiro",
+   "moment": "goodbye",
+   "text": "I bow to the tortilla. Not to the cactus. The cactus knows what it did.",
+   "delivery": "calm, a glance at the cactus"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "inferno/cast:complain.c8",
+  "speaker": "inferno",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c8",
+   "who": "inferno",
+   "moment": "complain",
+   "text": "With dignity, I said. This has no dignity.",
+   "delivery": "intense, a slow burn"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:visitor.arrive.1",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "visitor.arrive.1",
+   "who": "walt",
+   "moment": "visitor.arrive",
+   "text": "Walt's the name. I'm told this is a coffee shop. In 1955, every shop was a coffee shop.",
+   "delivery": "cheerful, tipping his boater"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:visitor.arrive.2",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "visitor.arrive.2",
+   "who": "walt",
+   "moment": "visitor.arrive",
+   "text": "Well, look at this place. A giant donut on the roof. In my day, that was a hat.",
+   "delivery": "delighted, gazing up"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:visitor.arrive.3",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "visitor.arrive.3",
+   "who": "walt",
+   "moment": "visitor.arrive",
+   "text": "I came for a cup of coffee and a donut. Like 1955, if 1955 had had a food court.",
+   "delivery": "warm, a little slow"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:smalltalk.1",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "smalltalk.1",
+   "who": "walt",
+   "moment": "smalltalk",
+   "text": "In '55 I took a girl to the soda fountain. I'm still married to her. The soda fountain closed.",
+   "delivery": "fond, nostalgic"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:smalltalk.2",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "smalltalk.2",
+   "who": "walt",
+   "moment": "smalltalk",
+   "text": "These sneakers are brand new. Bought them for the dance. The dance was in 1957. I'm ready whenever it is.",
+   "delivery": "cheerful, patient"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:smalltalk.3",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "smalltalk.3",
+   "who": "walt",
+   "moment": "smalltalk",
+   "text": "We didn't have oat milk in 1955. We had oats. They were for the horse.",
+   "delivery": "matter-of-fact, a little slow"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:smalltalk.5",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "smalltalk.5",
+   "who": "walt",
+   "moment": "smalltalk",
+   "text": "My grandson showed me a phone with a camera in it. In 1955, the camera was in the drugstore, and you waited a week.",
+   "delivery": "amused, shaking his head"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:goodbye.1",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "goodbye.1",
+   "who": "walt",
+   "moment": "goodbye",
+   "text": "Thank you kindly! I'll be by the fountain, telling strangers about 1955.",
+   "delivery": "cheerful, tipping his boater"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cafe:goodbye.3",
+  "speaker": "walt",
+  "pack": "cafe",
+  "file": "packs/cafe/script.js",
+  "line": {
+   "id": "goodbye.3",
+   "who": "walt",
+   "moment": "goodbye",
+   "text": "Bye now! Don't work too hard. Nobody did in 1955. We were busy wearing hats.",
+   "delivery": "cheerful, a chuckle"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cast:complain.c1",
+  "speaker": "walt",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c1",
+   "who": "walt",
+   "moment": "complain",
+   "text": "In '55, if you asked for something, you got it. And a smile.",
+   "delivery": "slow, warm, a long memory"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cast:complain.c4",
+  "speaker": "walt",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c4",
+   "who": "walt",
+   "moment": "complain",
+   "text": "I enunciated, sport. We enunciated in 1955.",
+   "delivery": "slow, warm, a long memory"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/cast:complain.c9",
+  "speaker": "walt",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c9",
+   "who": "walt",
+   "moment": "complain",
+   "text": "When I say a thing, I mean it. In 1955, we meant things.",
+   "delivery": "slow, warm, a long memory"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:smalltalk.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "smalltalk.1",
+   "who": "walt",
+   "moment": "smalltalk",
+   "text": "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up.",
+   "delivery": "fond, chuckling"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:goodbye.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "goodbye.1",
+   "who": "walt",
+   "moment": "goodbye",
+   "text": "Thank you kindly! Best I've had since Eisenhower. Don't tell Eisenhower.",
+   "delivery": "cheerful, tipping his boater"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:goodbye.3",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "goodbye.3",
+   "who": "walt",
+   "moment": "goodbye",
+   "text": "Much obliged! You'd have done fine at Murray's. That's a compliment from 1955.",
+   "delivery": "warm, sincere"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:goodbye.4",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "goodbye.4",
+   "who": "walt",
+   "moment": "goodbye",
+   "text": "Toodle-oo! If anyone needs me, I'll be telling the penguin about the old days.",
+   "delivery": "cheerful, wandering off"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "walt/icecream:complain.gross.tomato.1",
+  "speaker": "walt",
+  "pack": "icecream",
+  "file": "packs/icecream/script.js",
+  "line": {
+   "id": "complain.gross.tomato.1",
+   "who": "walt",
+   "moment": "complain.gross.tomato",
+   "text": "This cherry is a tomato! I haven't been fooled like that since 1955.",
+   "delivery": "indignant, then almost impressed"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "lulu/cast:complain.c5",
+  "speaker": "lulu",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c5",
+   "who": "lulu",
+   "moment": "complain",
+   "text": "I counted on my fingers. Twice.",
+   "delivery": "bright, seven, very sure"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "lulu/cast:complain.c6",
+  "speaker": "lulu",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c6",
+   "who": "lulu",
+   "moment": "complain",
+   "text": "I don't change my mind. Only in my head.",
+   "delivery": "bright, seven, very sure"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "breeze/pizza:goodbye.2",
+  "speaker": "breeze",
+  "pack": "pizza",
+  "file": "packs/pizza/script.js",
+  "line": {
+   "id": "goodbye.2",
+   "who": "breeze",
+   "moment": "goodbye",
+   "text": "Peace. Tell the pineapple guy I said hi. Not the fan. The other one.",
+   "delivery": "easy, a slow grin"
+  },
+  "suffix": null
+ },
+ {
+  "clip": "breeze/cast:complain.c8",
+  "speaker": "breeze",
+  "pack": "cast",
+  "file": "packs/cast/script.js",
+  "line": {
+   "id": "complain.c8",
+   "who": "breeze",
+   "moment": "complain",
+   "text": "Not cool, little dude. Not cool.",
+   "delivery": "slow, mellow, disappointed"
+  },
+  "suffix": null
+ }
+]

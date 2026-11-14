@@ -1,0 +1,20 @@
+[
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot11\\vernon\\retake-s1.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight: the bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Eugh! No. No, thank you. No.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot20\\takes\\vernon\\icecream_customer.react.gross.2-qwen.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot9\\pam\\organised-s2.wav",
+  "ref_text": "Hi. Okay. Twelve kids. One cake. Two allergies. A clown who cancelled, and I have not sat down since Tuesday.",
+  "text": "A pepperoni pizza, shaped like a heart. I'm proposing tonight. It's a long story. The pizza's the short version.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot20\\takes\\pam\\pizza_customer.order.odd.heartShaped.1-qwen.wav"
+ },
+ {
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot9\\jitters\\buzzing-s4.wav",
+  "ref_text": "Hi! Hi! Hello. I've had six coffees and I can hear colors now. One more should fix it, or two. Let's say two.",
+  "text": "There's a fly in the sprinkles! He's buzzing! He's faster than me! Nobody's faster than me!",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot20\\takes\\jitters\\cafe_complain.gross.fly.1-qwen.wav"
+ }
+]

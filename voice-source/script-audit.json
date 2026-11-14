@@ -1,0 +1,3066 @@
+[
+ {
+  "text": "A gold sign on Ben's Burritos! I'd like to thank my mom, who is also corporate.",
+  "clips": [
+   "mitch/court:goldSign.1.bensBurritos",
+   "mitch/court:goldSign.1.bensSmoothieShack",
+   "mitch/court:goldSign.1.bensPizzaParlor",
+   "mitch/court:goldSign.1.bensBurgerBar",
+   "mitch/court:goldSign.1.bensCafe",
+   "mitch/court:goldSign.1.bensSushi",
+   "mitch/court:goldSign.1.bensIceCreamEmporium"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "court.goldSign",
+  "type": "nonsense",
+  "why": "\"Who is also corporate\" skips a step; developer asked for \"district manager\".",
+  "suggestion": "A gold sign on Ben's Burritos! I'd like to thank my mom, who is also the district manager.",
+  "confidence": "high",
+  "variants": 7,
+  "examples": [
+   "A gold sign on Ben's Burritos! I'd like to thank my mom, who is also corporate.",
+   "A gold sign on Ben's Smoothie Shack! I'd like to thank my mom, who is also corporate.",
+   "A gold sign on Ben's Pizza Parlor! I'd like to thank my mom, who is also corporate."
+  ]
+ },
+ {
+  "text": "Okay. The Pizza Party fell a little flat. Like a crust. We'll run it again, and the heart's still in the oven's future.",
+  "clips": [
+   "mitch/pizza:event.again.2.thePizzaParty"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "event.again",
+  "type": "nonsense",
+  "why": "\"The heart's still in the oven's future\" is garbled; listener cannot parse it.",
+  "suggestion": "Okay. The Pizza Party fell a little flat. Like a crust. We'll run it again. The heart pizza can wait.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Okay. The Pizza Party fell a little flat. Like a crust. We'll run it again, and the heart's still in the oven's future."
+  ]
+ },
+ {
+  "text": "The Burger Eating Contest fell short. In fairness, the contestants ate like they were being timed. They weren't. We'll run it again.",
+  "clips": [
+   "mitch/eventAgain.1.theBurgerEatingContest"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "event.again",
+  "type": "contradiction",
+  "why": "An eating contest is timed, and eating \"like they were being timed\" would be a success, so the joke contradicts itself.",
+  "suggestion": "The Burger Eating Contest fell short. In fairness, the contestants chewed like they had all day. We'll run it again.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "The Burger Eating Contest fell short. In fairness, the contestants ate like they were being timed. They weren't. We'll run it again."
+  ]
+ },
+ {
+  "text": "The ticket said no hot sauce.",
+  "clips": [
+   "mitch/burrito:mistake.pick.1.sauce.noSauce"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "mistake.pick",
+  "type": "other",
+  "why": "The slot is \"no sauce\", but the line says \"no hot sauce\", which wrongly implies mild or medium would be fine.",
+  "suggestion": "The ticket said no sauce.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "The ticket said no hot sauce."
+  ]
+ },
+ {
+  "text": "Whoa, why is that cheese green? You nasty. Change that out.",
+  "clips": [
+   "mitch/mouldy.1"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "gross.mouldy",
+  "type": "doesnt-fit-moment",
+  "why": "\"You nasty\" insults the player; it is off-voice for upbeat Mitch and the young audience.",
+  "suggestion": "Whoa, why is that cheese green? Nope. Swap it.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Whoa, why is that cheese green? You nasty. Change that out."
+  ]
+ },
+ {
+  "text": "Perfect. I'll tell Corporate. Corporate is the cactus in the sombrero. He's a great listener.",
+  "clips": [
+   "mitch/burrito:after.3.3"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "after.3",
+  "type": "contradiction",
+  "why": "Everywhere else Corporate is his mom, so making Corporate the cactus contradicts the running gag.",
+  "suggestion": "Perfect. I'll tell the cactus in the sombrero. He's a great listener.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Perfect. I'll tell Corporate. Corporate is the cactus in the sombrero. He's a great listener."
+  ]
+ },
+ {
+  "text": "That salmon smells off. Fresh fish shouldn't smell like anything. That one smells like a story. Swap it.",
+  "clips": [
+   "mitch/sushi:gross.smelly.1.salmon"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "gross.smelly",
+  "type": "nonsense",
+  "why": "\"Smells like a story\" is vague; the joke skips the step that would land it.",
+  "suggestion": "That salmon smells off. Fresh fish shouldn't smell like anything. That one smells like a dock. Swap it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "That salmon smells off. Fresh fish shouldn't smell like anything. That one smells like a story. Swap it."
+  ]
+ },
+ {
+  "text": "Sock in the ice! And a flip-flop on the shelf. Somebody's getting changed in here. Swap it.",
+  "clips": [
+   "mitch/smoothie:gross.sock.3.ice"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "gross.sock",
+  "type": "unseen-reference",
+  "why": "Refers to a flip-flop on the shelf that the player cannot see.",
+  "suggestion": "Sock in the ice! Somebody's been getting changed in here. Swap it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Sock in the ice! And a flip-flop on the shelf. Somebody's getting changed in here. Swap it."
+  ]
+ },
+ {
+  "text": "Ben's Burritos is open! New restaurant, new uniform. I've been practicing in the mirror.",
+  "clips": [
+   "mitch/court:unlock.1.bensBurritos",
+   "mitch/court:unlock.1.bensSmoothieShack",
+   "mitch/court:unlock.1.bensPizzaParlor",
+   "mitch/court:unlock.1.bensBurgerBar",
+   "mitch/court:unlock.1.bensCafe",
+   "mitch/court:unlock.1.bensSushi",
+   "mitch/court:unlock.1.bensIceCreamEmporium"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "court.unlock",
+  "type": "nonsense",
+  "why": "\"Practicing in the mirror\" leaves out what he is practicing, so it does not follow from \"new uniform\".",
+  "suggestion": "Ben's Burritos is open! New restaurant, new uniform. I've been posing in it in the mirror.",
+  "confidence": "medium",
+  "variants": 7,
+  "examples": [
+   "Ben's Burritos is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "Ben's Smoothie Shack is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "Ben's Pizza Parlor is open! New restaurant, new uniform. I've been practicing in the mirror."
+  ]
+ },
+ {
+  "text": "Here we go: The Morning Rush. The office next door is coming in. The last order's the giant donut off the roof. I've never made a giant donut. I've dreamed it. Twice.",
+  "clips": [
+   "mitch/cafe:event.intro.2.theMorningRush"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "event.intro",
+  "type": "unseen-reference",
+  "why": "\"The giant donut off the roof\" sounds like a literal rooftop donut; players may not know about the roof sign.",
+  "suggestion": "Here we go: The Morning Rush. The office next door is coming in. The last order's a giant donut, as big as the one on our roof. I've dreamed it. Twice.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Here we go: The Morning Rush. The office next door is coming in. The last order's the giant donut off the roof. I've never made a giant donut. I've dreamed it. Twice."
+  ]
+ },
+ {
+  "text": "That red salsa has a fly in it. He's not a topping. He's barely a fly. Swap it.",
+  "clips": [
+   "mitch/burrito:gross.fly.3.salsa.redSalsa",
+   "mitch/burrito:gross.fly.3.salsa.greenSalsa",
+   "mitch/burrito:gross.fly.3.salsa.mangoSalsa"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "gross.fly",
+  "type": "weak",
+  "why": "\"He's barely a fly\" has no clear meaning; the joke falls flat.",
+  "suggestion": "That red salsa has a fly in it. He's not a topping. He's a tourist. Swap it.",
+  "confidence": "medium",
+  "variants": 3,
+  "examples": [
+   "That red salsa has a fly in it. He's not a topping. He's barely a fly. Swap it.",
+   "That green salsa has a fly in it. He's not a topping. He's barely a fly. Swap it.",
+   "That mango salsa has a fly in it. He's not a topping. He's barely a fly. Swap it."
+  ]
+ },
+ {
+  "text": "That's a wrap. Walt says we're almost as good as 1955. From Walt, that's a medal.",
+  "clips": [
+   "mitch/icecream:shift.end.4"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.end",
+  "type": "specific-year",
+  "why": "Specific year; developer wants 'in my day' phrasing instead of dates.",
+  "suggestion": "That's a wrap. Walt says we're almost as good as the old days. From Walt, that's a medal.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "That's a wrap. Walt says we're almost as good as 1955. From Walt, that's a medal."
+  ]
+ },
+ {
+  "text": "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Walt's telling the stools about 1955.",
+  "clips": [
+   "mitch/icecream:tutorial.review.2"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.review",
+  "type": "specific-year",
+  "why": "Specific year; developer wants 'in my day' phrasing instead of dates.",
+  "suggestion": "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Walt's telling the stools about the good old days.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Walt's telling the stools about 1955."
+  ]
+ },
+ {
+  "text": "And that's the job. Get something wrong and the customer will tell you. Walt will tell you about 1955 first. Ready for a real shift?",
+  "clips": [
+   "mitch/icecream:tutorial.serve.1"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.serve",
+  "type": "specific-year",
+  "why": "Specific year; developer wants 'in my day' phrasing instead of dates.",
+  "suggestion": "And that's the job. Get something wrong and the customer will tell you. Walt will tell you about the good old days first. Ready for a real shift?",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "And that's the job. Get something wrong and the customer will tell you. Walt will tell you about 1955 first. Ready for a real shift?"
+  ]
+ },
+ {
+  "text": "Over to the shake machine. Mint green, built in 1955. Walt says he knew it as a boy. It was a different machine.",
+  "clips": [
+   "mitch/icecream:tutorial.shake.2"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.shake",
+  "type": "contradiction",
+  "why": "Specific year, and 'he knew it as a boy... it was a different machine' undercuts itself without a clear joke.",
+  "suggestion": "Over to the shake machine. Mint green, older than me. Walt says it's the only thing in here built right.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Over to the shake machine. Mint green, built in 1955. Walt says he knew it as a boy. It was a different machine."
+  ]
+ },
+ {
+  "text": "Wait, the ticket says hot fudge. Add it, or Walt will tell us about 1955.",
+  "clips": [
+   "mitch/icecream:tutorial.warn.missing.2.hotFudge",
+   "mitch/icecream:tutorial.warn.missing.2.whippedCream",
+   "mitch/icecream:tutorial.warn.missing.2.nuts",
+   "mitch/icecream:tutorial.warn.missing.2.cherry"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.warn.missing",
+  "type": "specific-year",
+  "why": "Specific year; developer wants 'in my day' phrasing instead of dates.",
+  "suggestion": "Wait, the ticket says hot fudge. Add it, or Walt will tell us how they did it in his day.",
+  "confidence": "high",
+  "variants": 4,
+  "examples": [
+   "Wait, the ticket says hot fudge. Add it, or Walt will tell us about 1955.",
+   "Wait, the ticket says whipped cream. Add it, or Walt will tell us about 1955.",
+   "Wait, the ticket says nuts. Add it, or Walt will tell us about 1955."
+  ]
+ },
+ {
+  "text": "Morning shift. Corporate says smile. Corporate is my mom. She also says drink water. I'm drinking coffee. Don't tell her.",
+  "clips": [
+   "mitch/cafe:shift.start.3"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.start",
+  "type": "other",
+  "why": "Developer asked to change Mitch's 'corporate' mom joke to 'district manager'; apply consistently.",
+  "suggestion": "Morning shift. The district manager says smile. She's my mom. She also says drink water. I'm drinking coffee. Don't tell her.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Morning shift. Corporate says smile. Corporate is my mom. She also says drink water. I'm drinking coffee. Don't tell her."
+  ]
+ },
+ {
+  "text": "Big day. Corporate might visit. Corporate is my mom. Look busy.",
+  "clips": [
+   "mitch/start.3"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.start",
+  "type": "other",
+  "why": "Developer asked to change Mitch's 'corporate' mom joke to 'district manager'; apply consistently.",
+  "suggestion": "Big day. The district manager might visit. She's my mom. Look busy.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Big day. Corporate might visit. Corporate is my mom. Look busy."
+  ]
+ },
+ {
+  "text": "Let's go. Corporate called. Corporate is my mom. She asked if we do gluten-free. We don't. Don't tell her.",
+  "clips": [
+   "mitch/pizza:shift.start.3"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.start",
+  "type": "other",
+  "why": "Developer asked to change Mitch's 'corporate' mom joke to 'district manager'; apply consistently.",
+  "suggestion": "Let's go. The district manager called. She's my mom. She asked if we do gluten-free. We don't. Don't tell her.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Let's go. Corporate called. Corporate is my mom. She asked if we do gluten-free. We don't. Don't tell her."
+  ]
+ },
+ {
+  "text": "Let's go. Corporate called. Corporate is my mom. She asked if sushi is just cold fish. I said yes. She's coming in.",
+  "clips": [
+   "mitch/sushi:shift.start.3"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.start",
+  "type": "other",
+  "why": "Developer asked to change Mitch's 'corporate' mom joke to 'district manager'; apply consistently.",
+  "suggestion": "Let's go. The district manager called. She's my mom. She asked if sushi is just cold fish. I said yes. She's coming in.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Let's go. Corporate called. Corporate is my mom. She asked if sushi is just cold fish. I said yes. She's coming in."
+  ]
+ },
+ {
+  "text": "Pink and white stripes. Corporate said I look like a candy cane. Corporate is my mom. She meant it nicely.",
+  "clips": [
+   "mitch/icecream:uniform.3"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "uniform",
+  "type": "other",
+  "why": "Developer asked to change Mitch's 'corporate' mom joke to 'district manager'; apply consistently.",
+  "suggestion": "Pink and white stripes. The district manager said I look like a candy cane. She's my mom. She meant it nicely.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Pink and white stripes. Corporate said I look like a candy cane. Corporate is my mom. She meant it nicely."
+  ]
+ },
+ {
+  "text": "Yes, the hat is a pizza box. A real one. Corporate calls it branding. Corporate is my mom, and she has a glue gun.",
+  "clips": [
+   "mitch/pizza:uniform.1"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "uniform",
+  "type": "other",
+  "why": "Developer asked to change Mitch's 'corporate' mom joke to 'district manager'; apply consistently.",
+  "suggestion": "Yes, the hat is a pizza box. A real one. The district manager calls it branding. She's my mom, and she has a glue gun.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Yes, the hat is a pizza box. A real one. Corporate calls it branding. Corporate is my mom, and she has a glue gun."
+  ]
+ },
+ {
+  "text": "Yes, it's a real sushi chef's jacket. Corporate bought it. Corporate is my mom. She also bought the headband. The serious face is mine. I'm practicing.",
+  "clips": [
+   "mitch/sushi:uniform.1"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "uniform",
+  "type": "other",
+  "why": "Developer asked to change Mitch's 'corporate' mom joke to 'district manager'; apply consistently.",
+  "suggestion": "Yes, it's a real sushi chef's jacket. The district manager bought it. She's my mom. She also bought the headband. The serious face is mine. I'm practicing.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Yes, it's a real sushi chef's jacket. Corporate bought it. Corporate is my mom. She also bought the headband. The serious face is mine. I'm practicing."
+  ]
+ },
+ {
+  "text": "That's the shift. I'm putting mentored a legend on my resume.",
+  "clips": [
+   "mitch/end.1"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.end",
+  "type": "other",
+  "why": "Unquoted 'putting mentored a legend on my resume' sounds like garbled grammar when heard.",
+  "suggestion": "That's the shift. My resume now says: mentored a legend.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "That's the shift. I'm putting mentored a legend on my resume."
+  ]
+ },
+ {
+  "text": "Let's go. Today's surf report: one tiny wave. It's a drawing. It's always the drawing.",
+  "clips": [
+   "mitch/smoothie:shift.start.3"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.start",
+  "type": "unseen-reference",
+  "why": "'It's a drawing' depends on a wall drawing the listener can't see or know about.",
+  "suggestion": "Let's go. Today's surf report: no waves. We're in a mall. There are never waves.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Let's go. Today's surf report: one tiny wave. It's a drawing. It's always the drawing."
+  ]
+ },
+ {
+  "text": "Doors open. If the blenders get loud, that's normal. If the green one puts its earmuffs on, that's also normal.",
+  "clips": [
+   "mitch/smoothie:shift.start.5"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.start",
+  "type": "nonsense",
+  "why": "A blender putting on earmuffs makes no sense; earmuffs are for people near the blender.",
+  "suggestion": "Doors open. If the blenders get loud, that's normal. That's why the earmuffs are on the hook.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Doors open. If the blenders get loud, that's normal. If the green one puts its earmuffs on, that's also normal."
+  ]
+ },
+ {
+  "text": "Let's scoop. If Lulu comes in, clear your afternoon. Emotionally, I mean. She'll still order fine.",
+  "clips": [
+   "mitch/icecream:shift.start.5"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "shift.start",
+  "type": "nonsense",
+  "why": "'Clear your afternoon. Emotionally' is muddled; doesn't convey Lulu agonising then picking vanilla.",
+  "suggestion": "Let's scoop. If Lulu comes in, get comfy. She'll sigh over every flavor. Then pick vanilla.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Let's scoop. If Lulu comes in, clear your afternoon. Emotionally, I mean. She'll still order fine."
+  ]
+ },
+ {
+  "text": "Glaze first, then toppings. The ticket says strawberry, then sprinkles. Pink with sprinkles. Like the one on the roof.",
+  "clips": [
+   "mitch/cafe:tutorial.glaze.2"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.glaze",
+  "type": "unseen-reference",
+  "why": "'The one on the roof' refers to a sign the player can't see from the counter.",
+  "suggestion": "Glaze first, then toppings. The ticket says strawberry, then sprinkles. Pink with sprinkles. A classic.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Glaze first, then toppings. The ticket says strawberry, then sprinkles. Pink with sprinkles. Like the one on the roof."
+  ]
+ },
+ {
+  "text": "This is the blender. It's loud, it's fast, and it pours itself into the cup when it's done. I wish I did that.",
+  "clips": [
+   "mitch/smoothie:tutorial.blender.2"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.blender",
+  "type": "weak",
+  "why": "Mitch wishing he could pour himself into a cup is a pointless, confusing aside.",
+  "suggestion": "This is the blender. It's loud, it's fast, and it pours itself into the cup when it's done. Show-off.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "This is the blender. It's loud, it's fast, and it pours itself into the cup when it's done. I wish I did that."
+  ]
+ },
+ {
+  "text": "Pick the crispiness on the ticket. With Timed cooking, you lift the basket yourself when it gets there. The basket is the only thing in here with a handle. Besides me.",
+  "clips": [
+   "mitch/cookFryer.2"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.cook.fryer",
+  "type": "nonsense",
+  "why": "'The only thing with a handle. Besides me' is an unclear pun (having a handle on things) that skips a step.",
+  "suggestion": "Pick the crispiness on the ticket. With Timed cooking, you lift the basket yourself when it gets there. Lift it, don't watch it burn.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Pick the crispiness on the ticket. With Timed cooking, you lift the basket yourself when it gets there. The basket is the only thing in here with a handle. Besides me."
+  ]
+ },
+ {
+  "text": "Not that one. The ticket says which. It's the one thing in here that's never wrong. I've checked. Twice. About me.",
+  "clips": [
+   "mitch/warnPick.2"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.warn.pick",
+  "type": "nonsense",
+  "why": "'I've checked. Twice. About me.' is garbled; the self-deprecating point gets lost.",
+  "suggestion": "Not that one. The ticket says which. The ticket's never wrong. Unlike me. Ask anyone.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Not that one. The ticket says which. It's the one thing in here that's never wrong. I've checked. Twice. About me."
+  ]
+ },
+ {
+  "text": "Heads up. Nearly lightly toasted. The press is listening.",
+  "clips": [
+   "mitch/burrito:nearly.2.lightlyToasted",
+   "mitch/burrito:nearly.2.toasted",
+   "mitch/burrito:nearly.2.extraCrispy"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "nearly",
+  "type": "nonsense",
+  "why": "'The press is listening' doesn't follow; the player needs to know to get ready to lift the press.",
+  "suggestion": "Heads up. Nearly lightly toasted. Get ready to lift the press.",
+  "confidence": "medium",
+  "variants": 3,
+  "examples": [
+   "Heads up. Nearly lightly toasted. The press is listening.",
+   "Heads up. Nearly toasted. The press is listening.",
+   "Heads up. Nearly extra crispy. The press is listening."
+  ]
+ },
+ {
+  "text": "Almost golden. Spatula's right there. I'm just the voice.",
+  "clips": [
+   "mitch/nearly.3.golden",
+   "mitch/nearly.3.crispy",
+   "mitch/nearly.3.extraCrispy"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "nearly",
+  "type": "wrong-logic",
+  "why": "Fryer crispiness levels, but the line points to a spatula; the fryer uses a basket.",
+  "suggestion": "Almost golden. Basket's right there. I'm just the voice.",
+  "confidence": "medium",
+  "variants": 3,
+  "examples": [
+   "Almost golden. Spatula's right there. I'm just the voice.",
+   "Almost crispy. Spatula's right there. I'm just the voice.",
+   "Almost extra crispy. Spatula's right there. I'm just the voice."
+  ]
+ },
+ {
+  "text": "Hold on. She asked for cheese. Add it, or she'll notice. She inspects things for a living.",
+  "clips": [
+   "mitch/burrito:tutorial.warn.missing.2.cheese",
+   "mitch/burrito:tutorial.warn.missing.2.lettuce",
+   "mitch/burrito:tutorial.warn.missing.2.pico",
+   "mitch/burrito:tutorial.warn.missing.2.corn",
+   "mitch/burrito:tutorial.warn.missing.2.sourCream",
+   "mitch/burrito:tutorial.warn.missing.2.guacamole",
+   "mitch/burrito:tutorial.warn.missing.2.jalapenos",
+   "mitch/burrito:tutorial.warn.missing.2.lime"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.warn.missing",
+  "type": "wrong-logic",
+  "why": "Rita is a construction worker, not an inspector; 'inspects things for a living' doesn't fit her.",
+  "suggestion": "Hold on. She asked for cheese. Add it. She wants one of everything, and she'll count.",
+  "confidence": "medium",
+  "variants": 8,
+  "examples": [
+   "Hold on. She asked for cheese. Add it, or she'll notice. She inspects things for a living.",
+   "Hold on. She asked for lettuce. Add it, or she'll notice. She inspects things for a living.",
+   "Hold on. She asked for pico. Add it, or she'll notice. She inspects things for a living."
+  ]
+ },
+ {
+  "text": "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's a choice.",
+  "clips": [
+   "marge/burrito:customer.order.odd.hottest.1",
+   "gus/burrito:customer.order.odd.hottest.1",
+   "bev/burrito:customer.order.odd.hottest.1",
+   "sal/burrito:customer.order.odd.hottest.1",
+   "inferno/burrito:customer.order.odd.hottest.1",
+   "rita/burrito:customer.order.odd.hottest.1",
+   "hiro/burrito:customer.order.odd.hottest.1"
+  ],
+  "speakers": [
+   "bev",
+   "gus",
+   "hiro",
+   "inferno",
+   "marge",
+   "rita",
+   "sal"
+  ],
+  "moment": "order.odd.hottest",
+  "type": "weak",
+  "why": "Developer said the ending is weak and asked for 'intentional'.",
+  "suggestion": "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's intentional.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's a choice."
+  ]
+ },
+ {
+  "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+  "clips": [
+   "marge/burrito:customer.order.odd.fireAlarm.1",
+   "gus/burrito:customer.order.odd.fireAlarm.1",
+   "bev/burrito:customer.order.odd.fireAlarm.1",
+   "sal/burrito:customer.order.odd.fireAlarm.1",
+   "vernon/burrito:customer.order.odd.fireAlarm.1",
+   "oakes/burrito:customer.order.odd.fireAlarm.1",
+   "reginald/burrito:customer.order.odd.fireAlarm.1",
+   "kai/burrito:customer.order.odd.fireAlarm.1",
+   "rita/burrito:customer.order.odd.fireAlarm.1",
+   "hiro/burrito:customer.order.odd.fireAlarm.1"
+  ],
+  "speakers": [
+   "bev",
+   "gus",
+   "hiro",
+   "kai",
+   "marge",
+   "oakes",
+   "reginald",
+   "rita",
+   "sal",
+   "vernon"
+  ],
+  "moment": "order.odd.fireAlarm",
+  "type": "unseen-reference",
+  "why": "The 'little mustache' only makes sense if the player can see such an alarm (developer flagged this exact line).",
+  "suggestion": "A Fire Burrito, hot enough to set off the fire alarm. I want to hear it sing.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache."
+  ]
+ },
+ {
+  "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+  "clips": [
+   "marge/burrito:customer.order.odd.justTortilla.2",
+   "gus/burrito:customer.order.odd.justTortilla.2",
+   "bev/burrito:customer.order.odd.justTortilla.2",
+   "sal/burrito:customer.order.odd.justTortilla.2",
+   "vernon/burrito:customer.order.odd.justTortilla.2",
+   "oakes/burrito:customer.order.odd.justTortilla.2",
+   "reginald/burrito:customer.order.odd.justTortilla.2",
+   "kai/burrito:customer.order.odd.justTortilla.2",
+   "inferno/burrito:customer.order.odd.justTortilla.2",
+   "rita/burrito:customer.order.odd.justTortilla.2",
+   "hiro/burrito:customer.order.odd.justTortilla.2"
+  ],
+  "speakers": [
+   "bev",
+   "gus",
+   "hiro",
+   "inferno",
+   "kai",
+   "marge",
+   "oakes",
+   "reginald",
+   "rita",
+   "sal",
+   "vernon"
+  ],
+  "moment": "order.odd.justTortilla",
+  "type": "contradiction",
+  "why": "Ordering bean and cheese with no beans or cheese is a confusing contradiction (developer flagged it).",
+  "suggestion": "A burrito with nothing inside. Just the tortilla. I'm here for the hug.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "A bean and cheese burrito. No beans, no cheese. Just the hug."
+  ]
+ },
+ {
+  "text": "And no lettuce. Lettuce in my lunch is a rabbit in a sleepin' bag.",
+  "clips": [
+   "sal/burrito:order.dislike.1"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "order.dislike",
+  "type": "mixed-metaphor",
+  "why": "'A rabbit in a sleeping bag' muddles the image: the lettuce is rabbit food, not a rabbit.",
+  "suggestion": "And no lettuce. Lettuce in a burrito is rabbit food in a sleepin' bag.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "And no lettuce. Lettuce in my lunch is a rabbit in a sleepin' bag."
+  ]
+ },
+ {
+  "text": "Delores picked today. She's got good taste.",
+  "clips": [
+   "gus/cast:intro.c4"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "order.intro",
+  "type": "unseen-reference",
+  "why": "Nothing tells the player Delores is his truck here, so 'Delores picked today' is baffling.",
+  "suggestion": "Delores picked today. That's my rig. She's got good taste.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Delores picked today. She's got good taste."
+  ]
+ },
+ {
+  "text": "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.",
+  "clips": [
+   "marge/cafe:customer.order.odd.coffeeDonut.1",
+   "gus/cafe:customer.order.odd.coffeeDonut.1",
+   "bev/cafe:customer.order.odd.coffeeDonut.1",
+   "sal/cafe:customer.order.odd.coffeeDonut.1",
+   "vernon/cafe:customer.order.odd.coffeeDonut.1",
+   "reginald/cafe:customer.order.odd.coffeeDonut.1",
+   "kai/cafe:customer.order.odd.coffeeDonut.1",
+   "priya/cafe:customer.order.odd.coffeeDonut.1",
+   "jitters/cafe:customer.order.odd.coffeeDonut.1",
+   "walt/cafe:customer.order.odd.coffeeDonut.1"
+  ],
+  "speakers": [
+   "bev",
+   "gus",
+   "jitters",
+   "kai",
+   "marge",
+   "priya",
+   "reginald",
+   "sal",
+   "vernon",
+   "walt"
+  ],
+  "moment": "order.odd.coffeeDonut",
+  "type": "nonsense",
+  "why": "Jelly standing in for coffee skips a step (developer flagged it).",
+  "suggestion": "A donut with a coffee inside it. If you can't, a coffee with a donut sunk in it. Either way, I get both.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee."
+  ]
+ },
+ {
+  "text": "The usual, hon. Cream and two sugars, since 1979. Don't change on me now.",
+  "clips": [
+   "marge/cafe:order.usual.2"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "order.usual",
+  "type": "specific-year",
+  "why": "Specific year '1979'; developer wants 'in my day' style instead of dates.",
+  "suggestion": "The usual, hon. Cream and two sugars, same since my bus days. Don't change on me now.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "The usual, hon. Cream and two sugars, since 1979. Don't change on me now."
+  ]
+ },
+ {
+  "text": "Hon, could you put the coffee inside the donut? No? A jelly one, then. I'll dunk it. Same thing.",
+  "clips": [
+   "marge/cafe:order.odd.coffeeDonut.1"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "order.odd.coffeeDonut",
+  "type": "nonsense",
+  "why": "Dunking a jelly donut implies coffee she never ordered; same jelly-for-coffee gap the developer flagged.",
+  "suggestion": "Hon, could you put the coffee inside the donut? No? Then a jelly one and a coffee. I'll dunk it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Hon, could you put the coffee inside the donut? No? A jelly one, then. I'll dunk it. Same thing."
+  ]
+ },
+ {
+  "text": "Two of 'em. One for now, one for the road. And a dozen donuts, but those are for Delores.",
+  "clips": [
+   "gus/cafe:order.twin.1"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "order.twin",
+  "type": "contradiction",
+  "why": "Donuts 'for Delores' clashes with the truck not eating (his other lines say 'Delores don't eat').",
+  "suggestion": "Two of 'em. One for now, one for the road. And a dozen donuts for the dashboard. Delores likes the company.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Two of 'em. One for now, one for the road. And a dozen donuts, but those are for Delores."
+  ]
+ },
+ {
+  "text": "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Jelly, then.",
+  "clips": [
+   "sal/cafe:order.odd.coffeeDonut.1"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "order.odd.coffeeDonut",
+  "type": "nonsense",
+  "why": "Jelly as the fallback doesn't follow from wanting coffee in the donut (same gap the developer flagged).",
+  "suggestion": "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Fine, jelly. Coffee on the side.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Jelly, then."
+  ]
+ },
+ {
+  "text": "Eh. It's okay. My cart coffee's worse, and I don't even sell coffee.",
+  "clips": [
+   "sal/cafe:react.2.1"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "react.2",
+  "type": "contradiction",
+  "why": "'My cart coffee's worse, and I don't even sell coffee' contradicts itself confusingly.",
+  "suggestion": "Eh. It's okay. The coffee I drink at my cart is worse, and I make it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Eh. It's okay. My cart coffee's worse, and I don't even sell coffee."
+  ]
+ },
+ {
+  "text": "Oh, sweetie. I've eaten at a bus depot at four in the morning. I'd go back.",
+  "clips": [
+   "marge/react1.3"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "react.1",
+  "type": "other",
+  "why": "As a one-star reaction, 'I'd go back' is ambiguous; it should be clear she'd prefer the depot.",
+  "suggestion": "Oh, sweetie. I've eaten at a bus depot at four in the morning. I'd rather go back there.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Oh, sweetie. I've eaten at a bus depot at four in the morning. I'd go back."
+  ]
+ },
+ {
+  "text": "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.",
+  "clips": [
+   "marge/icecream:customer.order.odd.ketchup.1",
+   "gus/icecream:customer.order.odd.ketchup.1",
+   "bev/icecream:customer.order.odd.ketchup.1",
+   "sal/icecream:customer.order.odd.ketchup.1",
+   "vernon/icecream:customer.order.odd.ketchup.1",
+   "reginald/icecream:customer.order.odd.ketchup.1",
+   "kai/icecream:customer.order.odd.ketchup.1",
+   "brock/icecream:customer.order.odd.ketchup.1",
+   "tasha/icecream:customer.order.odd.ketchup.1",
+   "lulu/icecream:customer.order.odd.ketchup.1",
+   "walt/icecream:customer.order.odd.ketchup.1"
+  ],
+  "speakers": [
+   "bev",
+   "brock",
+   "gus",
+   "kai",
+   "lulu",
+   "marge",
+   "reginald",
+   "sal",
+   "tasha",
+   "vernon",
+   "walt"
+  ],
+  "moment": "order.odd.ketchup",
+  "type": "nonsense",
+  "why": "'I'll squint' doesn't land; developer asked for new wording.",
+  "suggestion": "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. Red is my favorite color today.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint."
+  ]
+ },
+ {
+  "text": "A hot fudge sundae, but just the cherry. The ice cream can stay. It's holding the cherry up.",
+  "clips": [
+   "marge/icecream:customer.order.odd.justCherry.1",
+   "gus/icecream:customer.order.odd.justCherry.1",
+   "bev/icecream:customer.order.odd.justCherry.1",
+   "sal/icecream:customer.order.odd.justCherry.1"
+  ],
+  "speakers": [
+   "bev",
+   "gus",
+   "marge",
+   "sal"
+  ],
+  "moment": "order.odd.justCherry",
+  "type": "contradiction",
+  "why": "'Just the cherry' then 'the ice cream can stay' contradicts itself without making it the joke.",
+  "suggestion": "A hot fudge sundae, but I only want the cherry. The rest is just there to hold it up.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "A hot fudge sundae, but just the cherry. The ice cream can stay. It's holding the cherry up."
+  ]
+ },
+ {
+  "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+  "clips": [
+   "marge/icecream:customer.order.odd.malted.1",
+   "gus/icecream:customer.order.odd.malted.1",
+   "bev/icecream:customer.order.odd.malted.1",
+   "sal/icecream:customer.order.odd.malted.1",
+   "vernon/icecream:customer.order.odd.malted.1",
+   "reginald/icecream:customer.order.odd.malted.1",
+   "kai/icecream:customer.order.odd.malted.1",
+   "brock/icecream:customer.order.odd.malted.1",
+   "tasha/icecream:customer.order.odd.malted.1",
+   "lulu/icecream:customer.order.odd.malted.1"
+  ],
+  "speakers": [
+   "bev",
+   "brock",
+   "gus",
+   "kai",
+   "lulu",
+   "marge",
+   "reginald",
+   "sal",
+   "tasha",
+   "vernon"
+  ],
+  "moment": "order.odd.malted",
+  "type": "nonsense",
+  "why": "Asking to just 'say malt' is confusing; developer proposed new wording.",
+  "suggestion": "A malted, please. Thick, chocolate. If there's no malt, that's okay. I don't know what malt is anyway.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over."
+  ]
+ },
+ {
+  "text": "Make it two. One for me, one for Delores. Delores is home. I'll tell her all about it.",
+  "clips": [
+   "gus/icecream:order.twin.2"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "order.twin",
+  "type": "contradiction",
+  "why": "Delores is his truck, which he drove here, so 'Delores is home' contradicts the setup.",
+  "suggestion": "Make it two. One for me, one for Delores. She's out in the lot. I'll tell her all about it.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Make it two. One for me, one for Delores. Delores is home. I'll tell her all about it."
+  ]
+ },
+ {
+  "text": "Pretty good, buddy. Like a truck stop sundae, only closer to home.",
+  "clips": [
+   "gus/icecream:react.2.1"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "react.2",
+  "type": "nonsense",
+  "why": "'Like a truck stop sundae, only closer to home' doesn't say whether it's good or bad.",
+  "suggestion": "Pretty good, buddy. Like a truck stop sundae. Gets the job done.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Pretty good, buddy. Like a truck stop sundae, only closer to home."
+  ]
+ },
+ {
+  "text": "Ice cream with ketchup, buddy. Long-haul thing. Strawberry'll pass, if you squint.",
+  "clips": [
+   "gus/icecream:order.odd.ketchup.1"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "order.odd.ketchup",
+  "type": "nonsense",
+  "why": "Same 'strawberry... if you squint' wording the developer asked to replace.",
+  "suggestion": "Ice cream with ketchup, buddy. Long-haul thing. No ketchup? Strawberry. Close enough.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Ice cream with ketchup, buddy. Long-haul thing. Strawberry'll pass, if you squint."
+  ]
+ },
+ {
+  "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+  "clips": [
+   "marge/pizza:customer.order.odd.heartShaped.2",
+   "gus/pizza:customer.order.odd.heartShaped.2",
+   "bev/pizza:customer.order.odd.heartShaped.2",
+   "sal/pizza:customer.order.odd.heartShaped.2",
+   "vernon/pizza:customer.order.odd.heartShaped.2",
+   "oakes/pizza:customer.order.odd.heartShaped.2",
+   "tony/pizza:customer.order.odd.heartShaped.2",
+   "reginald/pizza:customer.order.odd.heartShaped.2",
+   "kai/pizza:customer.order.odd.heartShaped.2",
+   "pam/pizza:customer.order.odd.heartShaped.2"
+  ],
+  "speakers": [
+   "bev",
+   "gus",
+   "kai",
+   "marge",
+   "oakes",
+   "pam",
+   "reginald",
+   "sal",
+   "tony",
+   "vernon"
+  ],
+  "moment": "order.odd.heartShaped",
+  "type": "nonsense",
+  "why": "'They said yes to the pizza place' is unclear: yes to what, and who?",
+  "suggestion": "Can you make it heart-shaped? I'm proposing. If they say no, at least I've got pizza.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful."
+  ]
+ },
+ {
+  "text": "Mm. Beautiful. Pizza like that, I'd haul it to Tulsa and never touch it. I'm touchin' it.",
+  "clips": [
+   "gus/pizza:react.3.2"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "react.3",
+  "type": "nonsense",
+  "why": "'I'd haul it to Tulsa and never touch it' is a muddled way of saying it's too good to wait.",
+  "suggestion": "Mm. Beautiful. I meant to save this for Tulsa. It ain't makin' it out of the parkin' lot.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Mm. Beautiful. Pizza like that, I'd haul it to Tulsa and never touch it. I'm touchin' it."
+  ]
+ },
+ {
+  "text": "Oh, no. Oh, buddy. No. I seen roadkill with better manners.",
+  "clips": [
+   "gus/pizza:react.gross.1"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "react.gross",
+  "type": "mixed-metaphor",
+  "why": "'Roadkill with better manners' mixes metaphors; developer suggested 'more appetizing roadkill'.",
+  "suggestion": "Oh, no. Oh, buddy. No. I seen more appetizin' roadkill.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Oh, no. Oh, buddy. No. I seen roadkill with better manners."
+  ]
+ },
+ {
+  "text": "Oh, no. Oh, buddy. No. I seen things on the interstate with better manners.",
+  "clips": [
+   "gus/smoothie:react.gross.1"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "react.gross",
+  "type": "mixed-metaphor",
+  "why": "Same 'better manners' mixed metaphor the developer flagged in the pizza version.",
+  "suggestion": "Oh, no. Oh, buddy. No. I seen more appetizin' things on the interstate.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Oh, no. Oh, buddy. No. I seen things on the interstate with better manners."
+  ]
+ },
+ {
+  "text": "A roll with no fish and no rice. The outside is my favorite part, and I want to be close to it.",
+  "clips": [
+   "marge/sushi:customer.order.odd.noFishNoRice.2",
+   "gus/sushi:customer.order.odd.noFishNoRice.2",
+   "bev/sushi:customer.order.odd.noFishNoRice.2",
+   "sal/sushi:customer.order.odd.noFishNoRice.2"
+  ],
+  "speakers": [
+   "bev",
+   "gus",
+   "marge",
+   "sal"
+  ],
+  "moment": "order.odd.noFishNoRice",
+  "type": "nonsense",
+  "why": "'I want to be close to it' is a vague payoff; the listener can't tell what she's getting.",
+  "suggestion": "A roll with no fish and no rice. Just the seaweed. The outside is my favorite part.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "A roll with no fish and no rice. The outside is my favorite part, and I want to be close to it."
+  ]
+ },
+ {
+  "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+  "clips": [
+   "marge/sushi:customer.order.odd.justGinger.1",
+   "gus/sushi:customer.order.odd.justGinger.1",
+   "bev/sushi:customer.order.odd.justGinger.1",
+   "sal/sushi:customer.order.odd.justGinger.1",
+   "vernon/sushi:customer.order.odd.justGinger.1",
+   "reginald/sushi:customer.order.odd.justGinger.1",
+   "kai/sushi:customer.order.odd.justGinger.1",
+   "hiro/sushi:customer.order.odd.justGinger.1",
+   "dennis/sushi:customer.order.odd.justGinger.1",
+   "inferno/sushi:customer.order.odd.justGinger.1"
+  ],
+  "speakers": [
+   "bev",
+   "dennis",
+   "gus",
+   "hiro",
+   "inferno",
+   "kai",
+   "marge",
+   "reginald",
+   "sal",
+   "vernon"
+  ],
+  "moment": "order.odd.justGinger",
+  "type": "nonsense",
+  "why": "'The roll is a plate' skips a step (developer flagged it).",
+  "suggestion": "Just the ginger. The pink stuff. Fine, and a cucumber roll, so the ginger has somewhere to sit.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate."
+  ]
+ },
+ {
+  "text": "And nothing raw, hon. Thirty years driving a bus. I have seen enough things that were not done.",
+  "clips": [
+   "marge/sushi:order.dislike.1"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "order.dislike",
+  "type": "nonsense",
+  "why": "'Things that were not done' is a murky link between raw fish and bus driving.",
+  "suggestion": "And nothing raw, hon. Thirty years driving a bus. I like things done all the way.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "And nothing raw, hon. Thirty years driving a bus. I have seen enough things that were not done."
+  ]
+ },
+ {
+  "text": "Nothing raw, sweetie. My sister had raw fish on a cruise in 1994. We don't talk about the cruise.",
+  "clips": [
+   "marge/sushi:order.dislike.2"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "order.dislike",
+  "type": "specific-year",
+  "why": "Specific year '1994'; developer wants no dates.",
+  "suggestion": "Nothing raw, sweetie. My sister had raw fish on a cruise once. We don't talk about the cruise.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Nothing raw, sweetie. My sister had raw fish on a cruise in 1994. We don't talk about the cruise."
+  ]
+ },
+ {
+  "text": "Sushi burrito. Don't cut it. I'm holdin' it like a hot dog. Nobody's stoppin' me. Not even the old guy.",
+  "clips": [
+   "sal/sushi:order.odd.sushiBurrito.1"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "order.odd.sushiBurrito",
+  "type": "unseen-reference",
+  "why": "'The old guy' is unexplained; the listener can't tell who he means.",
+  "suggestion": "Sushi burrito. Don't cut it. I'm holdin' it like a hot dog. Nobody's stoppin' me. Not even Chef Hiro.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Sushi burrito. Don't cut it. I'm holdin' it like a hot dog. Nobody's stoppin' me. Not even the old guy."
+  ]
+ },
+ {
+  "text": "Ugh. I asked for a hot dog roll, I didn't get it, and I didn't get THIS either.",
+  "clips": [
+   "sal/sushi:react.1.2"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "react.1",
+  "type": "unseen-reference",
+  "why": "Calls back to asking for a 'hot dog roll', which only happens if his sushi greet line played.",
+  "suggestion": "Ugh. I'd rather have a hot dog. And I don't even like hot dogs.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Ugh. I asked for a hot dog roll, I didn't get it, and I didn't get THIS either."
+  ]
+ },
+ {
+  "text": "Bye, hon. Tell Mitch his hat's crooked. It's always crooked. It's how I know it's him.",
+  "clips": [
+   "marge/goodbye.1"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "goodbye",
+  "type": "unseen-reference",
+  "why": "Mitch wears a headset, not a hat, so the player can't see the crooked hat.",
+  "suggestion": "Bye, hon. Tell Mitch his headset's crooked. It's always crooked. It's how I know it's him.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Bye, hon. Tell Mitch his hat's crooked. It's always crooked. It's how I know it's him."
+  ]
+ },
+ {
+  "text": "A veggie bowl. Guacamole, without the avocado. Kept apart from everything, including itself.",
+  "clips": [
+   "vernon/burrito:order.odd.noAvocado.1"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "order.odd.noAvocado",
+  "type": "nonsense",
+  "why": "Guacamole 'kept apart from itself' is a jumbled image.",
+  "suggestion": "A veggie bowl. Guacamole, without the avocado. Nothing touching. Food needs boundaries.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "A veggie bowl. Guacamole, without the avocado. Kept apart from everything, including itself."
+  ]
+ },
+ {
+  "text": "Fine. Three stars. Competent and unbothered, like a well-run car wash.",
+  "clips": [
+   "reginald/burrito:react.2.3"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "react.2",
+  "type": "doesnt-fit-moment",
+  "why": "Said on a two-star result, so 'three stars' contradicts what the player sees.",
+  "suggestion": "Fine. Two stars. Competent and unbothered, like a well-run car wash.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Fine. Three stars. Competent and unbothered, like a well-run car wash."
+  ]
+ },
+ {
+  "text": "Half decaf, half extra caffeine. They cancel out. I want to feel nothing, on purpose.",
+  "clips": [
+   "kai/cafe:customer.order.odd.halfDecaf.1"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "order.odd.halfDecaf",
+  "type": "doesnt-fit-moment",
+  "why": "Kai says elsewhere he's ten and not allowed coffee.",
+  "suggestion": "Half decaf, half extra caffeine. It's for Reginald. He wants to feel nothing, on purpose.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Half decaf, half extra caffeine. They cancel out. I want to feel nothing, on purpose."
+  ]
+ },
+ {
+  "text": "Half decaf, half extra shot. I'm cutting back and catching up at the same time.",
+  "clips": [
+   "kai/cafe:customer.order.odd.halfDecaf.2"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "order.odd.halfDecaf",
+  "type": "doesnt-fit-moment",
+  "why": "Kai says elsewhere he's ten and not allowed coffee.",
+  "suggestion": "Half decaf, half extra shot. It's for Reginald. He's cutting back and catching up.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Half decaf, half extra shot. I'm cutting back and catching up at the same time."
+  ]
+ },
+ {
+  "text": "A latte with seven extra shots. I have a big day. And a big week. It's a big year.",
+  "clips": [
+   "kai/cafe:customer.order.odd.sevenShots.1"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "order.odd.sevenShots",
+  "type": "doesnt-fit-moment",
+  "why": "Kai says elsewhere he's ten and not allowed coffee.",
+  "suggestion": "A latte with seven extra shots. It's for Reginald. He has a big review today.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "A latte with seven extra shots. I have a big day. And a big week. It's a big year."
+  ]
+ },
+ {
+  "text": "Seven extra shots in a latte, please. I'm not tired. I'm planning ahead.",
+  "clips": [
+   "kai/cafe:customer.order.odd.sevenShots.2"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "order.odd.sevenShots",
+  "type": "doesnt-fit-moment",
+  "why": "Kai says elsewhere he's ten and not allowed coffee.",
+  "suggestion": "Seven extra shots in a latte, please. It's for Reginald. I'm just carrying it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Seven extra shots in a latte, please. I'm not tired. I'm planning ahead."
+  ]
+ },
+ {
+  "text": "A large cappuccino. Everything on the bar goes in. If it's in a bottle, it's in my cup.",
+  "clips": [
+   "kai/cafe:customer.order.odd.everythingCup.1"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "order.odd.everythingCup",
+  "type": "doesnt-fit-moment",
+  "why": "Kai says elsewhere he's ten and not allowed coffee.",
+  "suggestion": "A large cappuccino, everything on the bar. It's for Reginald. He said surprise him.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "A large cappuccino. Everything on the bar goes in. If it's in a bottle, it's in my cup."
+  ]
+ },
+ {
+  "text": "Everything. Shot, vanilla, caramel, whipped cream. In a large. I've earned this, and I'm about to un-earn it.",
+  "clips": [
+   "kai/cafe:customer.order.odd.everythingCup.2"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "order.odd.everythingCup",
+  "type": "doesnt-fit-moment",
+  "why": "Kai says elsewhere he's ten and not allowed coffee.",
+  "suggestion": "Everything. Shot, vanilla, caramel, whipped cream. In a large. It's for Reginald. I'm not allowed.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Everything. Shot, vanilla, caramel, whipped cream. In a large. I've earned this, and I'm about to un-earn it."
+  ]
+ },
+ {
+  "text": "Three stars. It has a beginning and an end. The middle wandered off.",
+  "clips": [
+   "reginald/cafe:react.2.3"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "react.2",
+  "type": "doesnt-fit-moment",
+  "why": "Said on a two-star result, so 'three stars' contradicts what the player sees.",
+  "suggestion": "Two stars. It has a beginning and an end. The middle wandered off.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Three stars. It has a beginning and an end. The middle wandered off."
+  ]
+ },
+ {
+  "text": "No onions. Thermodynamically, an onion is a cry for help with a skin on it.",
+  "clips": [
+   "oakes/dislike.2"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "order.dislike",
+  "type": "nonsense",
+  "why": "'Thermodynamically' has nothing to do with the image, and 'a cry for help with a skin' is muddled.",
+  "suggestion": "No onions. An onion is a tear factory with a skin on it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "No onions. Thermodynamically, an onion is a cry for help with a skin on it."
+  ]
+ },
+ {
+  "text": "No onions. Statistically, every onion ring is an onion that got away with it.",
+  "clips": [
+   "oakes/dislike.5"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "order.dislike",
+  "type": "nonsense",
+  "why": "Unclear what the onion 'got away with'; the joke doesn't land.",
+  "suggestion": "No onions. An onion ring is just an onion in disguise. I see through it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "No onions. Statistically, every onion ring is an onion that got away with it."
+  ]
+ },
+ {
+  "text": "The Diner Tower, five patties. I'm studying structural failure in sandwiches, and lunch is the control group.",
+  "clips": [
+   "oakes/odd.fivePatties.1"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "order.odd.fivePatties",
+  "type": "wrong-logic",
+  "why": "The tower is the experiment, not the 'control group'; the science joke points the wrong way.",
+  "suggestion": "The Diner Tower, five patties. I'm studying structural failure in sandwiches. Lunch is the experiment.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "The Diner Tower, five patties. I'm studying structural failure in sandwiches, and lunch is the control group."
+  ]
+ },
+ {
+  "text": "What's up! I'm carb loading. For nothing. Just loading.",
+  "clips": [
+   "brock/icecream:greet.4"
+  ],
+  "speakers": [
+   "brock"
+  ],
+  "moment": "greet",
+  "type": "weak",
+  "why": "Pointless punchline (developer said it 'kind of sucks').",
+  "suggestion": "What's up! I'm carb loading for a big lift. The big lift is this spoon.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "What's up! I'm carb loading. For nothing. Just loading."
+  ]
+ },
+ {
+  "text": "Bro. That's not it. That's the rest day of desserts.",
+  "clips": [
+   "brock/icecream:react.1.1"
+  ],
+  "speakers": [
+   "brock"
+  ],
+  "moment": "react.1",
+  "type": "nonsense",
+  "why": "'The rest day of desserts' doesn't clearly mean anything.",
+  "suggestion": "Bro. That's not it. That's a dessert with bad form.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Bro. That's not it. That's the rest day of desserts."
+  ]
+ },
+ {
+  "text": "Half pepperoni, half pineapple and anchovies. I contain multitudes.",
+  "clips": [
+   "tony/pizza:customer.order.odd.halfAndHalf.1"
+  ],
+  "speakers": [
+   "tony"
+  ],
+  "moment": "order.odd.halfAndHalf",
+  "type": "doesnt-fit-moment",
+  "why": "Tony is the pineapple-hater; 'I contain multitudes' makes him sound happy to order it.",
+  "suggestion": "Half pepperoni, half pineapple and anchovies. The pineapple half is not for me. I will not look at it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Half pepperoni, half pineapple and anchovies. I contain multitudes."
+  ]
+ },
+ {
+  "text": "A pepperoni pizza, shaped like a heart. I'm proposing tonight. It's a long story. The pizza's the short version.",
+  "clips": [
+   "kai/pizza:customer.order.odd.heartShaped.1",
+   "pam/pizza:customer.order.odd.heartShaped.1"
+  ],
+  "speakers": [
+   "kai",
+   "pam"
+  ],
+  "moment": "order.odd.heartShaped",
+  "type": "doesnt-fit-moment",
+  "why": "Kai is ten; a proposal line doesn't fit him.",
+  "suggestion": "A pepperoni pizza, shaped like a heart. It's for my mom. Don't tell her. It's a surprise.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "A pepperoni pizza, shaped like a heart. I'm proposing tonight. It's a long story. The pizza's the short version."
+  ]
+ },
+ {
+  "text": "Fine. Three stars. Wet, but lacking ambition. No, that's my water review. Three stars anyway.",
+  "clips": [
+   "reginald/pizza:react.2.3"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "react.2",
+  "type": "doesnt-fit-moment",
+  "why": "Said on a two-star result, so 'three stars' contradicts what the player sees.",
+  "suggestion": "Fine. Two stars. Wet, but lacking ambition. No, that's my water review. Two stars anyway.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Fine. Three stars. Wet, but lacking ambition. No, that's my water review. Three stars anyway."
+  ]
+ },
+ {
+  "text": "Every fruit you've got. All of them, in one cup. I'm not choosing. Choosing is for other people.",
+  "clips": [
+   "tony/smoothie:customer.order.odd.everyFruit.1"
+  ],
+  "speakers": [
+   "tony"
+  ],
+  "moment": "order.odd.everyFruit",
+  "type": "doesnt-fit-moment",
+  "why": "Tony ordering every fruit includes pineapple, which he hates.",
+  "suggestion": "Every fruit you've got, in one cup. Even the pineapple. I am being very brave.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Every fruit you've got. All of them, in one cup. I'm not choosing. Choosing is for other people."
+  ]
+ },
+ {
+  "text": "One of every fruit, please. I don't want any of them to feel left out.",
+  "clips": [
+   "tony/smoothie:customer.order.odd.everyFruit.2"
+  ],
+  "speakers": [
+   "tony"
+  ],
+  "moment": "order.odd.everyFruit",
+  "type": "doesnt-fit-moment",
+  "why": "Tony ordering every fruit includes pineapple, which he hates.",
+  "suggestion": "One of every fruit, please. Even the pineapple. My doctor insists.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "One of every fruit, please. I don't want any of them to feel left out."
+  ]
+ },
+ {
+  "text": "Everything. Every fruit, every extra, the biggest cup. Blend it until it gives up.",
+  "clips": [
+   "tony/smoothie:customer.order.odd.wipeout.1"
+  ],
+  "speakers": [
+   "tony"
+  ],
+  "moment": "order.odd.wipeout",
+  "type": "doesnt-fit-moment",
+  "why": "Tony ordering every fruit includes pineapple, which he hates.",
+  "suggestion": "Everything. Every fruit, every extra, the biggest cup. Even the pineapple. I will close my eyes.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Everything. Every fruit, every extra, the biggest cup. Blend it until it gives up."
+  ]
+ },
+ {
+  "text": "The works. Every fruit, every extra, large, super smooth. I've cleared my afternoon.",
+  "clips": [
+   "tony/smoothie:customer.order.odd.wipeout.2"
+  ],
+  "speakers": [
+   "tony"
+  ],
+  "moment": "order.odd.wipeout",
+  "type": "doesnt-fit-moment",
+  "why": "Tony ordering every fruit includes pineapple, which he hates.",
+  "suggestion": "The works. Every fruit, every extra, large, super smooth. Blend the pineapple until I can't find it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "The works. Every fruit, every extra, large, super smooth. I've cleared my afternoon."
+  ]
+ },
+ {
+  "text": "Competent. Forgettable. Like a smoothie that has heard of me but never met me.",
+  "clips": [
+   "vernon/smoothie:react.2.2"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "react.2",
+  "type": "nonsense",
+  "why": "A smoothie that 'heard of me but never met me' doesn't connect to a near-miss order.",
+  "suggestion": "Competent. Forgettable. Like a smoothie that read my order but only skimmed it.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Competent. Forgettable. Like a smoothie that has heard of me but never met me."
+  ]
+ },
+ {
+  "text": "Fine. Three stars. It's cold, it's in a cup, and it knows it. Self-awareness is half the battle.",
+  "clips": [
+   "reginald/smoothie:react.2.3"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "react.2",
+  "type": "doesnt-fit-moment",
+  "why": "Said on a two-star result, so 'three stars' contradicts what the player sees.",
+  "suggestion": "Fine. Two stars. It's cold, it's in a cup, and it knows it. Self-awareness is half the battle.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Fine. Three stars. It's cold, it's in a cup, and it knows it. Self-awareness is half the battle."
+  ]
+ },
+ {
+  "text": "Regular. White. Tight. Eight. I'll write that Chef Hiro and I agree. He hasn't said so. He would.",
+  "clips": [
+   "vernon/sushi:react.3.2"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "react.3",
+  "type": "other",
+  "why": "'Regular. White. Tight.' is cryptic; listeners won't know it describes his sushi order.",
+  "suggestion": "Eight pieces, rolled tight. I'll write that Chef Hiro and I agree. He hasn't said so. He would.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Regular. White. Tight. Eight. I'll write that Chef Hiro and I agree. He hasn't said so. He would."
+  ]
+ },
+ {
+  "text": "Fine. Three stars. Cold, but lacking conviction. No, that is my review of the fountain. Three stars anyway.",
+  "clips": [
+   "reginald/sushi:react.2.3"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "react.2",
+  "type": "doesnt-fit-moment",
+  "why": "Said on a two-star result, so 'three stars' contradicts what the player sees.",
+  "suggestion": "Fine. Two stars. Cold, but lacking conviction. No, that is my review of the fountain. Two stars anyway.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Fine. Three stars. Cold, but lacking conviction. No, that is my review of the fountain. Three stars anyway."
+  ]
+ },
+ {
+  "text": "At Ben's Burritos, I learned pico de gallo contains onion. For my own peace, I've reclassified it as salsa.",
+  "clips": [
+   "oakes/cast:mention.c1"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "why": "Pico de gallo already is a salsa, so 'reclassified it as salsa' does nothing, and kids won't know pico.",
+  "suggestion": "At Ben's Burritos, I learned the salsa contains onion. I've reclassified it as a warning.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "At Ben's Burritos, I learned pico de gallo contains onion. For my own peace, I've reclassified it as salsa."
+  ]
+ },
+ {
+  "text": "I could tell from across the room. It's a very good room.",
+  "clips": [
+   "vernon/cast:complain.c5"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "complain",
+  "type": "nonsense",
+  "why": "Praising the room is a non sequitur in a complaint.",
+  "suggestion": "I could tell from across the room. My eyes are calibrated.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "I could tell from across the room. It's a very good room."
+  ]
+ },
+ {
+  "text": "I noticed at once. Noticing is my cardio.",
+  "clips": [
+   "vernon/cast:complain.c7"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "complain",
+  "type": "nonsense",
+  "why": "'Noticing is my cardio' doesn't make sense (developer flagged it).",
+  "suggestion": "I noticed at once. I notice everything. It's exhausting.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "I noticed at once. Noticing is my cardio."
+  ]
+ },
+ {
+  "text": "Hello. My mom's at the shoe store. She said one thing. I'm here to choose it carefully.",
+  "clips": [
+   "kai/cafe:visitor.arrive.2"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "visitor.arrive",
+  "type": "other",
+  "why": "'She said one thing' is garbled; it means he's allowed one item.",
+  "suggestion": "Hello. My mom's at the shoe store. She said I can get one thing. I'm choosing carefully.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Hello. My mom's at the shoe store. She said one thing. I'm here to choose it carefully."
+  ]
+ },
+ {
+  "text": "My mom saw me walk in here. She texted a heart. Then another heart. Then: Brock.",
+  "clips": [
+   "brock/icecream:smalltalk.2"
+  ],
+  "speakers": [
+   "brock"
+  ],
+  "moment": "smalltalk",
+  "type": "weak",
+  "why": "No clear joke (developer said it makes no sense).",
+  "suggestion": "My mom saw me walk in here. She texted, 'Brock. It's not cheat day.' It is now.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "My mom saw me walk in here. She texted a heart. Then another heart. Then: Brock."
+  ]
+ },
+ {
+  "text": "In my day, a smoothie was called a tomato. We were happy.",
+  "clips": [
+   "tony/smoothie:smalltalk.1"
+  ],
+  "speakers": [
+   "tony"
+  ],
+  "moment": "smalltalk",
+  "type": "nonsense",
+  "why": "A smoothie isn't a tomato; the joke skips a step (developer flagged it).",
+  "suggestion": "In my day, a smoothie was called a fruit, and you chewed it. We were happy.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "In my day, a smoothie was called a tomato. We were happy."
+  ]
+ },
+ {
+  "text": "These strawberries are wearing fur! It is not winter! This is not the opera!",
+  "clips": [
+   "tony/smoothie:complain.gross.mouldy.1"
+  ],
+  "speakers": [
+   "tony"
+  ],
+  "moment": "complain.gross.mouldy",
+  "type": "nonsense",
+  "why": "'This is not the opera' relies on fur coats at the opera, which a young listener won't connect.",
+  "suggestion": "These strawberries are wearing fur coats! It is not winter! Take them away!",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "These strawberries are wearing fur! It is not winter! This is not the opera!"
+  ]
+ },
+ {
+  "text": "Chicken burrito. Your hottest sauce. I've told my family I love them. I'm ready.",
+  "clips": [
+   "inferno/burrito:customer.order.odd.hottest.2"
+  ],
+  "speakers": [
+   "inferno"
+  ],
+  "moment": "order.odd.hottest",
+  "type": "doesnt-fit-moment",
+  "why": "Inferno, the hot-sauce fanatic, saying goodbye to his family over hot sauce contradicts his whole character.",
+  "suggestion": "Chicken burrito. Your hottest sauce. Then tell me where you hide the real hot sauce.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Chicken burrito. Your hottest sauce. I've told my family I love them. I'm ready."
+  ]
+ },
+ {
+  "text": "Fire Burrito. Hot enough to set off the fire alarm. The one with the little mustache. We have history.",
+  "clips": [
+   "inferno/burrito:order.odd.fireAlarm.1"
+  ],
+  "speakers": [
+   "inferno"
+  ],
+  "moment": "order.odd.fireAlarm",
+  "type": "unseen-reference",
+  "why": "The mustached fire alarm only makes sense if the player can see it.",
+  "suggestion": "Fire Burrito. Hot enough to set off the fire alarm. We have history. It always loses.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Fire Burrito. Hot enough to set off the fire alarm. The one with the little mustache. We have history."
+  ]
+ },
+ {
+  "text": "That is the one. I can hear colors. Five stars. Six if the colors stop.",
+  "clips": [
+   "inferno/burrito:react.3.4"
+  ],
+  "speakers": [
+   "inferno"
+  ],
+  "moment": "react.3",
+  "type": "nonsense",
+  "why": "'Six if the colors stop' reverses the logic: hearing colors is the praise, so stopping it shouldn't earn more.",
+  "suggestion": "That is the one. I can hear colors. Five stars. Six if they get louder.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "That is the one. I can hear colors. Five stars. Six if the colors stop."
+  ]
+ },
+ {
+  "text": "Can I get a donut with coffee in the middle? No? Jelly, then. I'll use my imagination.",
+  "clips": [
+   "priya/cafe:customer.order.odd.coffeeDonut.2",
+   "jitters/cafe:customer.order.odd.coffeeDonut.2",
+   "walt/cafe:customer.order.odd.coffeeDonut.2"
+  ],
+  "speakers": [
+   "jitters",
+   "priya",
+   "walt"
+  ],
+  "moment": "order.odd.coffeeDonut",
+  "type": "nonsense",
+  "why": "Same jelly-as-coffee leap the developer flagged in the sibling line.",
+  "suggestion": "Can I get a donut with coffee in the middle? No? Then a donut and a coffee. I'll do the dunking.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Can I get a donut with coffee in the middle? No? Jelly, then. I'll use my imagination."
+  ]
+ },
+ {
+  "text": "Morning! New sneakers, old jacket, same order since Eisenhower.",
+  "clips": [
+   "walt/cafe:greet.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "greet",
+  "type": "specific-year",
+  "why": "'Since Eisenhower' is a dated reference a young player won't get.",
+  "suggestion": "Morning! New sneakers, old jacket, same order since forever.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Morning! New sneakers, old jacket, same order since Eisenhower."
+  ]
+ },
+ {
+  "text": "Hello! In 1955, coffee came in one size, and the size was called coffee.",
+  "clips": [
+   "walt/cafe:greet.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "greet",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Hello! In my day, coffee came in one size, and the size was called coffee.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Hello! In 1955, coffee came in one size, and the size was called coffee."
+  ]
+ },
+ {
+  "text": "Now that's breakfast! Just like 1955. Better. Don't tell 1955.",
+  "clips": [
+   "walt/cafe:react.3.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.3",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Now that's breakfast! Just like the old days. Better. Don't tell the old days.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Now that's breakfast! Just like 1955. Better. Don't tell 1955."
+  ]
+ },
+ {
+  "text": "Swell! Real swell! I haven't said swell since the fifties. It's back.",
+  "clips": [
+   "walt/cafe:react.3.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.3",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Swell! Real swell! I haven't said swell since I was a boy. It's back.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Swell! Real swell! I haven't said swell since the fifties. It's back."
+  ]
+ },
+ {
+  "text": "Perfect, sport. In '55 they'd have put you on the radio for this.",
+  "clips": [
+   "walt/cafe:react.3.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.3",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Perfect, sport. In my day they'd have put you on the radio for this.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Perfect, sport. In '55 they'd have put you on the radio for this."
+  ]
+ },
+ {
+  "text": "Not bad, not bad. In '55 we'd have called it fine and talked about the weather.",
+  "clips": [
+   "walt/cafe:react.2.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.2",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Not bad, not bad. In my day we'd have called it fine and talked about the weather.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Not bad, not bad. In '55 we'd have called it fine and talked about the weather."
+  ]
+ },
+ {
+  "text": "Oh, dear. That isn't what I ordered. Not even in 1955, and we were very relaxed.",
+  "clips": [
+   "walt/cafe:react.1.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.1",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Oh, dear. That isn't what I ordered. Not even in my day, and we were very relaxed.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Oh, dear. That isn't what I ordered. Not even in 1955, and we were very relaxed."
+  ]
+ },
+ {
+  "text": "Well, I'll be. This one's a stranger. In '55 we'd have asked it its name.",
+  "clips": [
+   "walt/cafe:react.1.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.1",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Well, I'll be. This one's a stranger. In my day we'd have asked it its name.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Well, I'll be. This one's a stranger. In '55 we'd have asked it its name."
+  ]
+ },
+ {
+  "text": "Good gravy! There's something on here that didn't exist in 1955!",
+  "clips": [
+   "walt/cafe:react.gross.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.gross",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Good gravy! There's something on here that didn't exist in my day!",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Good gravy! There's something on here that didn't exist in 1955!"
+  ]
+ },
+ {
+  "text": "Something new today. My wife says I'm stuck in 1955. Let's prove her wrong.",
+  "clips": [
+   "walt/cast:intro.c5"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "order.intro",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Something new today. My wife says I'm stuck in the old days. Let's prove her wrong.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Something new today. My wife says I'm stuck in 1955. Let's prove her wrong."
+  ]
+ },
+ {
+  "text": "Bacon cheeseburger with everything, except anything green. Green is a warning color. Nature said so.",
+  "clips": [
+   "dale/customer.odd.nothingGreen.1"
+  ],
+  "speakers": [
+   "dale"
+  ],
+  "moment": "order.odd.nothingGreen",
+  "type": "wrong-logic",
+  "why": "Green isn't a warning color (red and yellow are); green means safe, so the joke backfires.",
+  "suggestion": "Bacon cheeseburger with everything, except anything green. Green is for traffic lights. Not lunch.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Bacon cheeseburger with everything, except anything green. Green is a warning color. Nature said so."
+  ]
+ },
+ {
+  "text": "Bubblegum is my favorite color. Vanilla is my favorite flavor. It's complicated.",
+  "clips": [
+   "lulu/icecream:order.gag.5"
+  ],
+  "speakers": [
+   "lulu"
+  ],
+  "moment": "order.gag",
+  "type": "nonsense",
+  "why": "Developer flagged this: mixing favorite color and favorite flavor doesn't land, even as a gag.",
+  "suggestion": "Bubblegum is the prettiest. Chocolate is the loudest. Vanilla is the one. Don't tell the others.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Bubblegum is my favorite color. Vanilla is my favorite flavor. It's complicated."
+  ]
+ },
+ {
+  "text": "Afternoon! Jacket's from '55. Sneakers are from Tuesday. I'm a mix.",
+  "clips": [
+   "walt/icecream:greet.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "greet",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Afternoon! Jacket's from my school days. Sneakers are from Tuesday. I'm a mix.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Afternoon! Jacket's from '55. Sneakers are from Tuesday. I'm a mix."
+  ]
+ },
+ {
+  "text": "Hi there, sport. In '55, this is where you took your best girl.",
+  "clips": [
+   "walt/icecream:greet.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "greet",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Hi there, sport. In my day, this is where you took your best girl.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Hi there, sport. In '55, this is where you took your best girl."
+  ]
+ },
+ {
+  "text": "Howdy! I'll have what I had in 1955. Give or take.",
+  "clips": [
+   "walt/icecream:greet.5"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "greet",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Howdy! I'll have what I had when I was a boy. Give or take.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Howdy! I'll have what I had in 1955. Give or take."
+  ]
+ },
+ {
+  "text": "Just like 1955. Except in 1955 it cost a dime, and the dime was mine.",
+  "clips": [
+   "walt/icecream:order.gag.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "order.gag",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Just like the old days. Except back then it cost a dime, and the dime was mine.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Just like 1955. Except in 1955 it cost a dime, and the dime was mine."
+  ]
+ },
+ {
+  "text": "See that knotted cherry stem under the glass? I tied that in '55. With my tongue. Still got it.",
+  "clips": [
+   "walt/icecream:order.gag.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "order.gag",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar. The stem 'under the glass' is also likely unseen.",
+  "suggestion": "Cherry stems? I can tie one in a knot with my tongue. Learned it as a boy. Still got it.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "See that knotted cherry stem under the glass? I tied that in '55. With my tongue. Still got it."
+  ]
+ },
+ {
+  "text": "In 1955 we called that dessert. You still call it dessert. Some things you kept.",
+  "clips": [
+   "walt/icecream:order.gag.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "order.gag",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "In my day we called that dessert. You still call it dessert. Some things you kept.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "In 1955 we called that dessert. You still call it dessert. Some things you kept."
+  ]
+ },
+ {
+  "text": "Make it like they did in '55. They didn't do it any different. But make it like that.",
+  "clips": [
+   "walt/icecream:order.gag.4"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "order.gag",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Make it like they did in my day. They didn't do it any different. But make it like that.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Make it like they did in '55. They didn't do it any different. But make it like that."
+  ]
+ },
+ {
+  "text": "Now that is a hot fudge sundae. That's 1955 in a cup. I might cry. I might.",
+  "clips": [
+   "walt/icecream:react.favourite.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.favourite",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Now that is a hot fudge sundae. That's the old days in a cup. I might cry. I might.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Now that is a hot fudge sundae. That's 1955 in a cup. I might cry. I might."
+  ]
+ },
+ {
+  "text": "The fudge runs down the side just right. Murray would have hired you on the spot. Murray hired nobody.",
+  "clips": [
+   "walt/icecream:react.favourite.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.favourite",
+  "type": "unseen-reference",
+  "why": "'Murray' is never explained; the listener doesn't know who he is.",
+  "suggestion": "The fudge runs down the side just right. The old soda-fountain man would have hired you on the spot. He hired nobody.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "The fudge runs down the side just right. Murray would have hired you on the spot. Murray hired nobody."
+  ]
+ },
+ {
+  "text": "Perfect. Better than '55, and I'll deny I ever said that.",
+  "clips": [
+   "walt/icecream:react.3.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.3",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Perfect. Better than in my day, and I'll deny I ever said that.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Perfect. Better than '55, and I'll deny I ever said that."
+  ]
+ },
+ {
+  "text": "Not bad, not bad. In 1955 we'd have called that pretty good. We said pretty good a lot.",
+  "clips": [
+   "walt/icecream:react.2.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.2",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Not bad, not bad. In my day we'd have called that pretty good. We said pretty good a lot.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Not bad, not bad. In 1955 we'd have called that pretty good. We said pretty good a lot."
+  ]
+ },
+ {
+  "text": "That'll do, sport. It's not 1955. Then again, nothing is.",
+  "clips": [
+   "walt/icecream:react.2.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.2",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "That'll do, sport. It's not the old days. Then again, nothing is.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "That'll do, sport. It's not 1955. Then again, nothing is."
+  ]
+ },
+ {
+  "text": "Well. In 1955 we'd have sent that back. Politely. With a note.",
+  "clips": [
+   "walt/icecream:react.1.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.1",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Well. In my day we'd have sent that back. Politely. With a note.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Well. In 1955 we'd have sent that back. Politely. With a note."
+  ]
+ },
+ {
+  "text": "Good gravy! In 1955, the worst thing you found in a sundae was a penny. Somebody else's penny.",
+  "clips": [
+   "walt/icecream:react.gross.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "react.gross",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Good gravy! In my day, the worst thing you found in a sundae was a penny. Somebody else's penny.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Good gravy! In 1955, the worst thing you found in a sundae was a penny. Somebody else's penny."
+  ]
+ },
+ {
+  "text": "A chocolate malted, thick, like Murray's in '55. No malt? Then a thick shake, and I'll pretend.",
+  "clips": [
+   "walt/icecream:order.odd.malted.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "order.odd.malted",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar. 'Murray's' is also unexplained here.",
+  "suggestion": "A chocolate malted, thick, like the soda fountain made in my day. No malt? Then a thick shake, and I'll pretend.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "A chocolate malted, thick, like Murray's in '55. No malt? Then a thick shake, and I'll pretend."
+  ]
+ },
+ {
+  "text": "Ten scoops on a cone, like the dare in '55. I lost that dare. Stack it as high as it goes.",
+  "clips": [
+   "walt/icecream:order.odd.tenScoop.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "order.odd.tenScoop",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Ten scoops on a cone, like the dare when I was a boy. I lost that dare. Stack it as high as it goes.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Ten scoops on a cone, like the dare in '55. I lost that dare. Stack it as high as it goes."
+  ]
+ },
+ {
+  "text": "Ice cream with ketchup, like my brother ate it in '55. Strawberry will do. He was a strange boy.",
+  "clips": [
+   "walt/icecream:order.odd.ketchup.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "order.odd.ketchup",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Ice cream with ketchup, like my brother ate it when we were boys. Strawberry will do. He was a strange boy.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Ice cream with ketchup, like my brother ate it in '55. Strawberry will do. He was a strange boy."
+  ]
+ },
+ {
+  "text": "Sup. I skated here. It's downhill. Ice cream is the reward for downhill.",
+  "clips": [
+   "tasha/icecream:greet.1"
+  ],
+  "speakers": [
+   "tasha"
+  ],
+  "moment": "greet",
+  "type": "wrong-logic",
+  "why": "Downhill is the easy direction; the developer wants uphill as the effort that earns ice cream.",
+  "suggestion": "Sup. I skated here. It's uphill. Ice cream is the reward for uphill.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Sup. I skated here. It's downhill. Ice cream is the reward for downhill."
+  ]
+ },
+ {
+  "text": "Close. I finish everything. Life is long.",
+  "clips": [
+   "tasha/icecream:react.2.3"
+  ],
+  "speakers": [
+   "tasha"
+  ],
+  "moment": "react.2",
+  "type": "nonsense",
+  "why": "'Life is long' doesn't follow from finishing everything.",
+  "suggestion": "Close. I'll finish it. I finish everything. Whatever.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Close. I finish everything. Life is long."
+  ]
+ },
+ {
+  "text": "A sundae, just the cherry. I just like the cherry. It's the only thing up there that commits.",
+  "clips": [
+   "tasha/icecream:order.odd.justCherry.1"
+  ],
+  "speakers": [
+   "tasha"
+  ],
+  "moment": "order.odd.justCherry",
+  "type": "nonsense",
+  "why": "A cherry that 'commits' is unclear; the listener can't tell what it means.",
+  "suggestion": "A sundae, just the cherry. I just like the cherry. It sits on top and doesn't try. Respect.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "A sundae, just the cherry. I just like the cherry. It's the only thing up there that commits."
+  ]
+ },
+ {
+  "text": "Yes! A pizza that matches the ticket! Today, that's my pony.",
+  "clips": [
+   "pam/pizza:react.3.3"
+  ],
+  "speakers": [
+   "pam"
+  ],
+  "moment": "react.3",
+  "type": "nonsense",
+  "why": "'That's my pony' is an unclear idiom; the pony is only explained in a different line.",
+  "suggestion": "Yes! A pizza that matches the ticket! Best present anyone's getting today.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Yes! A pizza that matches the ticket! Today, that's my pony."
+  ]
+ },
+ {
+  "text": "Oh, that's the wave. That's the wave right there. Pineapple, cheese, sunshine.",
+  "clips": [
+   "breeze/pizza:react.3.1"
+  ],
+  "speakers": [
+   "breeze"
+  ],
+  "moment": "react.3",
+  "type": "doesnt-fit-moment",
+  "why": "A generic three-star line names pineapple, which may not be on the order.",
+  "suggestion": "Oh, that's the wave. That's the wave right there. Pure sunshine.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Oh, that's the wave. That's the wave right there. Pineapple, cheese, sunshine."
+  ]
+ },
+ {
+  "text": "Almost, friend. Almost is like a sunset. Still pretty. Still not breakfast.",
+  "clips": [
+   "breeze/smoothie:react.2.3"
+  ],
+  "speakers": [
+   "breeze"
+  ],
+  "moment": "react.2",
+  "type": "nonsense",
+  "why": "'Still not breakfast' doesn't follow from a sunset; the comparison skips a step.",
+  "suggestion": "Almost, friend. Almost is like a sunset. Still pretty. Just not the one I paddled out for.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Almost, friend. Almost is like a sunset. Still pretty. Still not breakfast."
+  ]
+ },
+ {
+  "text": "Only the ginger. The ginger is the best part. Do not tell the fish. Fine. A cucumber roll to rest it on.",
+  "clips": [
+   "hiro/sushi:order.odd.justGinger.1"
+  ],
+  "speakers": [
+   "hiro"
+  ],
+  "moment": "order.odd.justGinger",
+  "type": "nonsense",
+  "why": "'Fine.' answers an objection nobody made, the same step the developer flagged in the ginger line.",
+  "suggestion": "Only the ginger. The ginger is the best part. Do not tell the fish. And a cucumber roll, to rest it on.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Only the ginger. The ginger is the best part. Do not tell the fish. Fine. A cucumber roll to rest it on."
+  ]
+ },
+ {
+  "text": "Just like 1955! Well, better. We didn't have gold in 1955.",
+  "clips": [
+   "walt/court:cheer.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "court.cheer",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Just like the old days! Well, better. We didn't have gold signs in my day.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Just like 1955! Well, better. We didn't have gold in 1955."
+  ]
+ },
+ {
+  "text": "I bow to the tortilla. Not to the cactus. The cactus knows what it did.",
+  "clips": [
+   "hiro/burrito:goodbye.3"
+  ],
+  "speakers": [
+   "hiro"
+  ],
+  "moment": "goodbye",
+  "type": "unseen-reference",
+  "why": "The cactus and what it 'did' is something the player can't see or know.",
+  "suggestion": "I bow to the tortilla. It held everything together. Like a good apprentice.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "I bow to the tortilla. Not to the cactus. The cactus knows what it did."
+  ]
+ },
+ {
+  "text": "With dignity, I said. This has no dignity.",
+  "clips": [
+   "inferno/cast:complain.c8"
+  ],
+  "speakers": [
+   "inferno"
+  ],
+  "moment": "complain",
+  "type": "nonsense",
+  "why": "Inferno never asks for anything 'with dignity'; the callback has nothing to call back to.",
+  "suggestion": "Hot, I said. This isn't even warm.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "With dignity, I said. This has no dignity."
+  ]
+ },
+ {
+  "text": "Walt's the name. I'm told this is a coffee shop. In 1955, every shop was a coffee shop.",
+  "clips": [
+   "walt/cafe:visitor.arrive.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "visitor.arrive",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Walt's the name. I'm told this is a coffee shop. In my day, every shop was a coffee shop.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Walt's the name. I'm told this is a coffee shop. In 1955, every shop was a coffee shop."
+  ]
+ },
+ {
+  "text": "Well, look at this place. A giant donut on the roof. In my day, that was a hat.",
+  "clips": [
+   "walt/cafe:visitor.arrive.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "visitor.arrive",
+  "type": "nonsense",
+  "why": "'In my day, that was a hat' doesn't connect to a giant donut on a roof.",
+  "suggestion": "Well, look at this place. A giant donut on the roof. In my day, the donuts stayed on the plate.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Well, look at this place. A giant donut on the roof. In my day, that was a hat."
+  ]
+ },
+ {
+  "text": "I came for a cup of coffee and a donut. Like 1955, if 1955 had had a food court.",
+  "clips": [
+   "walt/cafe:visitor.arrive.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "visitor.arrive",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "I came for a cup of coffee and a donut. Like the old days, if the old days had a food court.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "I came for a cup of coffee and a donut. Like 1955, if 1955 had had a food court."
+  ]
+ },
+ {
+  "text": "In '55 I took a girl to the soda fountain. I'm still married to her. The soda fountain closed.",
+  "clips": [
+   "walt/cafe:smalltalk.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "smalltalk",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "In my day I took a girl to the soda fountain. I'm still married to her. The soda fountain closed.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "In '55 I took a girl to the soda fountain. I'm still married to her. The soda fountain closed."
+  ]
+ },
+ {
+  "text": "These sneakers are brand new. Bought them for the dance. The dance was in 1957. I'm ready whenever it is.",
+  "clips": [
+   "walt/cafe:smalltalk.2"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "smalltalk",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar. 'The dance was in 1957, I'm ready whenever it is' is also confusing.",
+  "suggestion": "These sneakers are brand new. Bought them for the big dance. Nobody's told me when it is. I'm ready.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "These sneakers are brand new. Bought them for the dance. The dance was in 1957. I'm ready whenever it is."
+  ]
+ },
+ {
+  "text": "We didn't have oat milk in 1955. We had oats. They were for the horse.",
+  "clips": [
+   "walt/cafe:smalltalk.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "smalltalk",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "We didn't have oat milk in my day. We had oats. They were for the horse.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "We didn't have oat milk in 1955. We had oats. They were for the horse."
+  ]
+ },
+ {
+  "text": "My grandson showed me a phone with a camera in it. In 1955, the camera was in the drugstore, and you waited a week.",
+  "clips": [
+   "walt/cafe:smalltalk.5"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "smalltalk",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "My grandson showed me a phone with a camera in it. In my day, the camera was in the drugstore, and you waited a week.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "My grandson showed me a phone with a camera in it. In 1955, the camera was in the drugstore, and you waited a week."
+  ]
+ },
+ {
+  "text": "Thank you kindly! I'll be by the fountain, telling strangers about 1955.",
+  "clips": [
+   "walt/cafe:goodbye.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "goodbye",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Thank you kindly! I'll be by the fountain, telling strangers about the old days.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Thank you kindly! I'll be by the fountain, telling strangers about 1955."
+  ]
+ },
+ {
+  "text": "Bye now! Don't work too hard. Nobody did in 1955. We were busy wearing hats.",
+  "clips": [
+   "walt/cafe:goodbye.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "goodbye",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "Bye now! Don't work too hard. Nobody did in my day. We were too busy wearing hats.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Bye now! Don't work too hard. Nobody did in 1955. We were busy wearing hats."
+  ]
+ },
+ {
+  "text": "In '55, if you asked for something, you got it. And a smile.",
+  "clips": [
+   "walt/cast:complain.c1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "complain",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "In my day, if you asked for something, you got it. And a smile.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "In '55, if you asked for something, you got it. And a smile."
+  ]
+ },
+ {
+  "text": "I enunciated, sport. We enunciated in 1955.",
+  "clips": [
+   "walt/cast:complain.c4"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "complain",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "I enunciated, sport. We enunciated in my day.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "I enunciated, sport. We enunciated in 1955."
+  ]
+ },
+ {
+  "text": "When I say a thing, I mean it. In 1955, we meant things.",
+  "clips": [
+   "walt/cast:complain.c9"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "complain",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "When I say a thing, I mean it. In my day, we meant things.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "When I say a thing, I mean it. In 1955, we meant things."
+  ]
+ },
+ {
+  "text": "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up.",
+  "clips": [
+   "walt/icecream:smalltalk.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "smalltalk",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "I proposed at a soda fountain when I was young. Down on one knee. These days I'd need a crew to get back up.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up."
+  ]
+ },
+ {
+  "text": "Thank you kindly! Best I've had since Eisenhower. Don't tell Eisenhower.",
+  "clips": [
+   "walt/icecream:goodbye.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "goodbye",
+  "type": "specific-year",
+  "why": "'Since Eisenhower' is a dated reference a young player won't get.",
+  "suggestion": "Thank you kindly! Best I've had since I was a boy. Don't tell the boy.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Thank you kindly! Best I've had since Eisenhower. Don't tell Eisenhower."
+  ]
+ },
+ {
+  "text": "Much obliged! You'd have done fine at Murray's. That's a compliment from 1955.",
+  "clips": [
+   "walt/icecream:goodbye.3"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "goodbye",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar. 'Murray's' is also unexplained.",
+  "suggestion": "Much obliged! You'd have done fine at the old soda fountain. That's a compliment from my day.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "Much obliged! You'd have done fine at Murray's. That's a compliment from 1955."
+  ]
+ },
+ {
+  "text": "Toodle-oo! If anyone needs me, I'll be telling the penguin about the old days.",
+  "clips": [
+   "walt/icecream:goodbye.4"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "goodbye",
+  "type": "unseen-reference",
+  "why": "A penguin at the ice cream counter is something the player may not see or know about.",
+  "suggestion": "Toodle-oo! If anyone needs me, I'll be telling strangers about the old days.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Toodle-oo! If anyone needs me, I'll be telling the penguin about the old days."
+  ]
+ },
+ {
+  "text": "This cherry is a tomato! I haven't been fooled like that since 1955.",
+  "clips": [
+   "walt/icecream:complain.gross.tomato.1"
+  ],
+  "speakers": [
+   "walt"
+  ],
+  "moment": "complain.gross.tomato",
+  "type": "specific-year",
+  "why": "Developer wants Walt's specific years/dates replaced with 'in my day' or similar.",
+  "suggestion": "This cherry is a tomato! I haven't been fooled like that since I was a boy.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "This cherry is a tomato! I haven't been fooled like that since 1955."
+  ]
+ },
+ {
+  "text": "I counted on my fingers. Twice.",
+  "clips": [
+   "lulu/cast:complain.c5"
+  ],
+  "speakers": [
+   "lulu"
+  ],
+  "moment": "complain",
+  "type": "nonsense",
+  "why": "As a complaint about a wrong order, counting on her fingers has nothing to count.",
+  "suggestion": "I practiced saying it. Twice.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "I counted on my fingers. Twice."
+  ]
+ },
+ {
+  "text": "I don't change my mind. Only in my head.",
+  "clips": [
+   "lulu/cast:complain.c6"
+  ],
+  "speakers": [
+   "lulu"
+  ],
+  "moment": "complain",
+  "type": "nonsense",
+  "why": "Developer flagged this: 'I don't change my mind. Only in my head' contradicts itself without a joke.",
+  "suggestion": "I changed my mind a hundred times. Then I picked. That's not what I picked.",
+  "confidence": "high",
+  "variants": 1,
+  "examples": [
+   "I don't change my mind. Only in my head."
+  ]
+ },
+ {
+  "text": "Peace. Tell the pineapple guy I said hi. Not the fan. The other one.",
+  "clips": [
+   "breeze/pizza:goodbye.2"
+  ],
+  "speakers": [
+   "breeze"
+  ],
+  "moment": "goodbye",
+  "type": "unseen-reference",
+  "why": "'The pineapple guy... not the fan, the other one' asks the listener to work out which customer is meant.",
+  "suggestion": "Peace. Tell the opera guy I said hi. He'll pretend he didn't hear me.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Peace. Tell the pineapple guy I said hi. Not the fan. The other one."
+  ]
+ },
+ {
+  "text": "Not cool, little dude. Not cool.",
+  "clips": [
+   "breeze/cast:complain.c8"
+  ],
+  "speakers": [
+   "breeze"
+  ],
+  "moment": "complain",
+  "type": "doesnt-fit-moment",
+  "why": "As a general complaint, 'little dude' has no one to point at; it only made sense with the fly.",
+  "suggestion": "Not cool, friend. Not cool.",
+  "confidence": "medium",
+  "variants": 1,
+  "examples": [
+   "Not cool, little dude. Not cool."
+  ]
+ }
+]

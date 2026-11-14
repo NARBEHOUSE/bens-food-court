@@ -1,0 +1,494 @@
+{
+ "template/court-goal": {
+  "st": "use"
+ },
+ "mitch/icecream:shift.end.4": {
+  "st": "use"
+ },
+ "mitch/icecream:tutorial.review.2": {
+  "st": "use"
+ },
+ "mitch/icecream:tutorial.serve.1": {
+  "st": "use"
+ },
+ "mitch/icecream:tutorial.warn.missing.2.hotFudge": {
+  "st": "use"
+ },
+ "marge/cafe:order.usual.2": {
+  "st": "edit",
+  "text": "The usual, hon. Cream and two sugars, same since my bus driving days. Don't change on me now."
+ },
+ "walt/cafe:greet.3": {
+  "st": "use"
+ },
+ "walt/cafe:react.3.1": {
+  "st": "use"
+ },
+ "walt/cafe:react.3.2": {
+  "st": "use"
+ },
+ "walt/cafe:react.3.3": {
+  "st": "use"
+ },
+ "walt/cafe:react.2.2": {
+  "st": "use"
+ },
+ "walt/cafe:react.1.1": {
+  "st": "use"
+ },
+ "walt/cafe:react.1.2": {
+  "st": "use"
+ },
+ "walt/cafe:react.gross.1": {
+  "st": "use"
+ },
+ "walt/cast:intro.c5": {
+  "st": "use"
+ },
+ "walt/icecream:greet.2": {
+  "st": "use"
+ },
+ "walt/icecream:greet.3": {
+  "st": "use"
+ },
+ "walt/icecream:greet.5": {
+  "st": "use"
+ },
+ "walt/icecream:order.gag.1": {
+  "st": "use"
+ },
+ "walt/icecream:order.gag.2": {
+  "st": "use"
+ },
+ "walt/icecream:order.gag.3": {
+  "st": "use"
+ },
+ "walt/icecream:order.gag.4": {
+  "st": "use"
+ },
+ "walt/icecream:react.favourite.1": {
+  "st": "use"
+ },
+ "walt/icecream:react.3.3": {
+  "st": "use"
+ },
+ "walt/icecream:react.2.1": {
+  "st": "use"
+ },
+ "walt/icecream:react.2.3": {
+  "st": "use"
+ },
+ "walt/icecream:react.1.2": {
+  "st": "use"
+ },
+ "walt/icecream:react.gross.1": {
+  "st": "use"
+ },
+ "walt/icecream:order.odd.malted.1": {
+  "st": "use"
+ },
+ "walt/icecream:order.odd.tenScoop.1": {
+  "st": "use"
+ },
+ "walt/icecream:order.odd.ketchup.1": {
+  "st": "use"
+ },
+ "walt/court:cheer.1": {
+  "st": "use"
+ },
+ "walt/cafe:visitor.arrive.1": {
+  "st": "use"
+ },
+ "walt/cafe:visitor.arrive.3": {
+  "st": "use"
+ },
+ "walt/cafe:smalltalk.1": {
+  "st": "use"
+ },
+ "walt/cafe:smalltalk.2": {
+  "st": "use"
+ },
+ "walt/cafe:smalltalk.3": {
+  "st": "use"
+ },
+ "walt/cafe:smalltalk.5": {
+  "st": "use"
+ },
+ "walt/cafe:goodbye.1": {
+  "st": "use"
+ },
+ "walt/cafe:goodbye.3": {
+  "st": "use"
+ },
+ "walt/cast:complain.c1": {
+  "st": "use"
+ },
+ "walt/cast:complain.c4": {
+  "st": "use"
+ },
+ "walt/cast:complain.c9": {
+  "st": "use"
+ },
+ "walt/icecream:smalltalk.1": {
+  "st": "use"
+ },
+ "walt/icecream:goodbye.3": {
+  "st": "use"
+ },
+ "walt/icecream:complain.gross.tomato.1": {
+  "st": "use"
+ },
+ "marge/sushi:order.dislike.2": {
+  "st": "use"
+ },
+ "walt/cafe:greet.2": {
+  "st": "use"
+ },
+ "walt/icecream:goodbye.1": {
+  "st": "edit",
+  "text": "Thank you kindly! Best I've had since I was a boy. Or at least as far back as I can remember."
+ },
+ "mitch/court:goldSign.1.bensBurritos": {
+  "st": "use"
+ },
+ "mitch/pizza:event.again.2.thePizzaParty": {
+  "st": "use"
+ },
+ "mitch/eventAgain.1.theBurgerEatingContest": {
+  "st": "use"
+ },
+ "mitch/icecream:tutorial.shake.2": {
+  "st": "use"
+ },
+ "mitch/warnPick.2": {
+  "st": "use"
+ },
+ "marge/burrito:customer.order.odd.justTortilla.2": {
+  "st": "use"
+ },
+ "marge/cafe:customer.order.odd.coffeeDonut.1": {
+  "st": "use"
+ },
+ "marge/icecream:customer.order.odd.ketchup.1": {
+  "st": "use"
+ },
+ "marge/icecream:customer.order.odd.malted.1": {
+  "st": "use"
+ },
+ "gus/icecream:order.twin.2": {
+  "st": "use"
+ },
+ "marge/pizza:customer.order.odd.heartShaped.2": {
+  "st": "use"
+ },
+ "gus/pizza:react.gross.1": {
+  "st": "use"
+ },
+ "gus/smoothie:react.gross.1": {
+  "st": "use"
+ },
+ "marge/sushi:customer.order.odd.justGinger.1": {
+  "st": "use"
+ },
+ "vernon/cast:complain.c7": {
+  "st": "use"
+ },
+ "tony/smoothie:smalltalk.1": {
+  "st": "use"
+ },
+ "lulu/icecream:order.gag.5": {
+  "st": "use"
+ },
+ "tasha/icecream:greet.1": {
+  "st": "use"
+ },
+ "lulu/cast:complain.c6": {
+  "st": "use"
+ },
+ "mitch/burrito:after.3.3": {
+  "st": "edit",
+  "note": "For all mentions of \"Corporate\" change to \"District Manager\". And we'll make different things being District Manager part of the joke.",
+  "text": "Perfect. I'll tell the district manager. The district manager is the cactus in the sombrero. He's a great listener."
+ },
+ "mitch/sushi:gross.smelly.1.salmon": {
+  "st": "use"
+ },
+ "mitch/court:unlock.1.bensBurritos": {
+  "st": "use"
+ },
+ "mitch/smoothie:shift.start.5": {
+  "st": "use"
+ },
+ "mitch/icecream:shift.start.5": {
+  "st": "use"
+ },
+ "mitch/cookFryer.2": {
+  "st": "use"
+ },
+ "mitch/burrito:nearly.2.lightlyToasted": {
+  "st": "use"
+ },
+ "mitch/nearly.3.golden": {
+  "st": "use"
+ },
+ "mitch/burrito:tutorial.warn.missing.2.cheese": {
+  "st": "use"
+ },
+ "sal/burrito:order.dislike.1": {
+  "st": "edit",
+  "text": "And no lettuce. Lettuce in a burrito is a waste of perfectly good rabbit food."
+ },
+ "marge/cafe:order.odd.coffeeDonut.1": {
+  "st": "use"
+ },
+ "gus/cafe:order.twin.1": {
+  "st": "use"
+ },
+ "sal/cafe:order.odd.coffeeDonut.1": {
+  "st": "use"
+ },
+ "sal/cafe:react.2.1": {
+  "st": "use"
+ },
+ "marge/icecream:customer.order.odd.justCherry.1": {
+  "st": "use"
+ },
+ "gus/icecream:react.2.1": {
+  "st": "use"
+ },
+ "gus/icecream:order.odd.ketchup.1": {
+  "st": "use"
+ },
+ "gus/pizza:react.3.2": {
+  "st": "use"
+ },
+ "marge/sushi:customer.order.odd.noFishNoRice.2": {
+  "st": "use"
+ },
+ "marge/sushi:order.dislike.1": {
+  "st": "use"
+ },
+ "vernon/burrito:order.odd.noAvocado.1": {
+  "st": "use"
+ },
+ "oakes/dislike.2": {
+  "st": "edit",
+  "text": "No onions. An onion is just tear gas with a skin on it."
+ },
+ "oakes/dislike.5": {
+  "st": "use"
+ },
+ "oakes/odd.fivePatties.1": {
+  "st": "use"
+ },
+ "brock/icecream:react.1.1": {
+  "st": "use"
+ },
+ "vernon/smoothie:react.2.2": {
+  "st": "use"
+ },
+ "vernon/cast:complain.c5": {
+  "st": "use"
+ },
+ "tony/smoothie:complain.gross.mouldy.1": {
+  "st": "edit",
+  "text": "These strawberries are wearing fur coats! That's against the dress code! Take them away!"
+ },
+ "inferno/burrito:react.3.4": {
+  "st": "use"
+ },
+ "priya/cafe:customer.order.odd.coffeeDonut.2": {
+  "st": "use"
+ },
+ "dale/customer.odd.nothingGreen.1": {
+  "st": "use"
+ },
+ "tasha/icecream:react.2.3": {
+  "st": "use"
+ },
+ "tasha/icecream:order.odd.justCherry.1": {
+  "st": "use"
+ },
+ "pam/pizza:react.3.3": {
+  "st": "use"
+ },
+ "breeze/smoothie:react.2.3": {
+  "st": "use"
+ },
+ "hiro/sushi:order.odd.justGinger.1": {
+  "st": "use"
+ },
+ "inferno/cast:complain.c8": {
+  "st": "use"
+ },
+ "walt/cafe:visitor.arrive.2": {
+  "st": "use"
+ },
+ "lulu/cast:complain.c5": {
+  "st": "use"
+ },
+ "mitch/mouldy.1": {
+  "st": "use"
+ },
+ "kai/pizza:customer.order.odd.heartShaped.1": {
+  "st": "use"
+ },
+ "reginald/burrito:react.2.3": {
+  "st": "use"
+ },
+ "kai/cafe:customer.order.odd.halfDecaf.1": {
+  "st": "use"
+ },
+ "kai/cafe:customer.order.odd.halfDecaf.2": {
+  "st": "use"
+ },
+ "kai/cafe:customer.order.odd.sevenShots.1": {
+  "st": "use"
+ },
+ "kai/cafe:customer.order.odd.sevenShots.2": {
+  "st": "use"
+ },
+ "kai/cafe:customer.order.odd.everythingCup.1": {
+  "st": "use"
+ },
+ "kai/cafe:customer.order.odd.everythingCup.2": {
+  "st": "use"
+ },
+ "reginald/cafe:react.2.3": {
+  "st": "use"
+ },
+ "tony/pizza:customer.order.odd.halfAndHalf.1": {
+  "st": "use",
+  "note": ""
+ },
+ "reginald/pizza:react.2.3": {
+  "st": "use"
+ },
+ "tony/smoothie:customer.order.odd.everyFruit.1": {
+  "st": "use"
+ },
+ "tony/smoothie:customer.order.odd.everyFruit.2": {
+  "st": "use"
+ },
+ "tony/smoothie:customer.order.odd.wipeout.1": {
+  "st": "use"
+ },
+ "tony/smoothie:customer.order.odd.wipeout.2": {
+  "st": "use",
+  "text": "The works. Every fruit, every extra, large, super smooth. Blend the pineapple until I can't find it."
+ },
+ "reginald/smoothie:react.2.3": {
+  "st": "use"
+ },
+ "reginald/sushi:react.2.3": {
+  "st": "use"
+ },
+ "inferno/burrito:customer.order.odd.hottest.2": {
+  "st": "use"
+ },
+ "breeze/pizza:react.3.1": {
+  "st": "use"
+ },
+ "breeze/cast:complain.c8": {
+  "st": "use"
+ },
+ "marge/burrito:customer.order.odd.fireAlarm.1": {
+  "st": "use"
+ },
+ "inferno/burrito:order.odd.fireAlarm.1": {
+  "st": "use"
+ },
+ "mitch/smoothie:gross.sock.3.ice": {
+  "st": "use"
+ },
+ "mitch/cafe:event.intro.2.theMorningRush": {
+  "st": "use"
+ },
+ "mitch/smoothie:shift.start.3": {
+  "st": "use"
+ },
+ "mitch/cafe:tutorial.glaze.2": {
+  "st": "use"
+ },
+ "gus/cast:intro.c4": {
+  "st": "use"
+ },
+ "sal/sushi:order.odd.sushiBurrito.1": {
+  "st": "use"
+ },
+ "sal/sushi:react.1.2": {
+  "st": "edit",
+  "text": "Ugh. I'd rather have a hot dog. And I'm sick of hot dogs."
+ },
+ "marge/goodbye.1": {
+  "st": "use"
+ },
+ "walt/icecream:react.favourite.2": {
+  "st": "edit",
+  "text": "The fudge runs down the side just right. You'd have made a great soda jerk. What? That's what we called them."
+ },
+ "hiro/burrito:goodbye.3": {
+  "st": "use"
+ },
+ "walt/icecream:goodbye.4": {
+  "st": "use"
+ },
+ "breeze/pizza:goodbye.2": {
+  "st": "use"
+ },
+ "mitch/burrito:mistake.pick.1.sauce.noSauce": {
+  "st": "use"
+ },
+ "mitch/cafe:shift.start.3": {
+  "st": "use"
+ },
+ "mitch/start.3": {
+  "st": "use"
+ },
+ "mitch/pizza:shift.start.3": {
+  "st": "use"
+ },
+ "mitch/sushi:shift.start.3": {
+  "st": "use"
+ },
+ "mitch/icecream:uniform.3": {
+  "st": "use"
+ },
+ "mitch/pizza:uniform.1": {
+  "st": "use"
+ },
+ "mitch/sushi:uniform.1": {
+  "st": "use"
+ },
+ "brock/icecream:greet.4": {
+  "st": "use"
+ },
+ "brock/icecream:smalltalk.2": {
+  "st": "use"
+ },
+ "mitch/burrito:gross.fly.3.salsa.redSalsa": {
+  "st": "use"
+ },
+ "mitch/end.1": {
+  "st": "use"
+ },
+ "mitch/smoothie:tutorial.blender.2": {
+  "st": "use"
+ },
+ "marge/burrito:customer.order.odd.hottest.1": {
+  "st": "use"
+ },
+ "marge/react1.3": {
+  "st": "use"
+ },
+ "vernon/sushi:react.3.2": {
+  "st": "use",
+  "text": "Eight pieces, rolled tight. I'll write that Chef Hiro and I agree. He hasn't said so. He would."
+ },
+ "oakes/cast:mention.c1": {
+  "st": "use"
+ },
+ "kai/cafe:visitor.arrive.2": {
+  "st": "use"
+ }
+}

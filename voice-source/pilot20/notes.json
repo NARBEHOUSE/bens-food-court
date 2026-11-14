@@ -1,0 +1,434 @@
+[
+ {
+  "who": "gus",
+  "clip": "gus/cafe:order.odd.everythingCup.1",
+  "moment": "order.odd.everythingCup",
+  "text": "Everything on the bar, buddy, in a large. Long haul tonight. Delores does the hard part, but still.",
+  "delivery": "a cheerful drawl",
+  "note": "Cadence of speech is a little unnatural at \"buddy, in a large.\""
+ },
+ {
+  "who": "gus",
+  "clip": "gus/burrito:customer.complain.gross.brown.2",
+  "moment": "complain.gross.brown",
+  "text": "Brown guacamole. I'm not eating anything older than my shoes.",
+  "delivery": "dry, revolted",
+  "note": "\"Brown guacamole\" should be a question."
+ },
+ {
+  "who": "gus",
+  "clip": "gus/pizza:react.gross.1",
+  "moment": "react.gross",
+  "text": "Oh, no. Oh, buddy. No. I seen roadkill with better manners.",
+  "delivery": "a low groan",
+  "note": "Road kill with better manners doesn't make sense. \"more appetizing road kill\" makes sense"
+ },
+ {
+  "who": "mitch",
+  "clip": "mitch/court:goldSign.1.bensBurritos",
+  "moment": "court.goldSign",
+  "text": "A gold sign on Ben's Burritos! I'd like to thank my mom, who is also corporate.",
+  "delivery": "thrilled, then an aside",
+  "note": "Let's change \"corporate\" to \"district manager\""
+ },
+ {
+  "who": "mitch",
+  "clip": "mitch/sushi:tutorial.warn.pick.2.roll.insideOut",
+  "moment": "tutorial.warn.pick",
+  "text": "Not that one. The ticket says inside-out roll.",
+  "delivery": "gentle correction, reading it off",
+  "note": "Delivery issue on \"inside-out roll\""
+ },
+ {
+  "who": "mitch",
+  "clip": "mitch/cafe:mistake.tooFew.1.sugar.1",
+  "moment": "mistake.tooFew",
+  "text": "The ticket said one sugar. We came up short.",
+  "delivery": "flat, reading it off the ticket",
+  "note": "too aggressive, sharp sounding"
+ },
+ {
+  "who": "mitch",
+  "clip": "mitch/cafe:gross.spoiled.3.milk.whole",
+  "moment": "gross.spoiled",
+  "text": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "delivery": "squeamish, backing away",
+  "note": "delivery is aggressive, not following the \"squeamish\" direction"
+ },
+ {
+  "who": "mitch",
+  "clip": "mitch/cafe:nearly.2.smooth",
+  "moment": "nearly",
+  "text": "Heads up: smooth is next.",
+  "delivery": "quick, a little nervous",
+  "note": "Still aggressive, no sign of \"nervous\" direction"
+ },
+ {
+  "who": "mitch",
+  "clip": "mitch/icecream:shift.start.2",
+  "moment": "shift.start",
+  "text": "Ice Cream Emporium, open for business. Emporium means big store. We are a medium store with a big word.",
+  "delivery": "cheerful, then confiding",
+  "note": "Delivery is stiff, unnatural"
+ },
+ {
+  "who": "tony",
+  "clip": "tony/pizza:customer.order.odd.halfAndHalf.2",
+  "moment": "order.odd.halfAndHalf",
+  "text": "Pepperoni on one half, pineapple and anchovies on the other. I'm sharing with someone I don't like.",
+  "delivery": "deadpan",
+  "note": "I thought we are keeping ingredients and order details out of customer lines. this is a funny line but want to confirm"
+ },
+ {
+  "who": "tony",
+  "clip": "tony/smoothie:smalltalk.1",
+  "moment": "smalltalk",
+  "text": "In my day, a smoothie was called a tomato. We were happy.",
+  "delivery": "nostalgic, firm",
+  "note": "This line makes no sense"
+ },
+ {
+  "who": "marge",
+  "clip": "marge/sushi:customer.order.odd.noFishNoRice.1",
+  "moment": "order.odd.noFishNoRice",
+  "text": "A California roll. No crab, and no rice. Just the idea of California.",
+  "delivery": "matter-of-fact, as if normal",
+  "note": "Again, this line has order details. Are we doing this?"
+ },
+ {
+  "who": "marge",
+  "clip": "marge/smoothie:customer.react.gross.1",
+  "moment": "react.gross",
+  "text": "Oh. Oh, no. Something in this cup is looking back at me.",
+  "delivery": "disgusted, a slow horror",
+  "note": "Beginning of line contains a long breath sound, not an \"Oh\" sound."
+ },
+ {
+  "who": "vernon",
+  "clip": "vernon/cast:complain.c7",
+  "moment": "complain",
+  "text": "I noticed at once. Noticing is my cardio.",
+  "delivery": "precise, wounded, a theatrical sigh",
+  "note": "Doesn't make sense"
+ },
+ {
+  "who": "vernon",
+  "clip": "vernon/icecream:customer.react.gross.2",
+  "moment": "react.gross",
+  "text": "Eugh! No. No, thank you. No.",
+  "delivery": "disgusted, recoiling",
+  "note": "\"Eugh\" pronounced as \"You\""
+ },
+ {
+  "who": "bev",
+  "clip": "bev/pizza:customer.order.odd.heartShaped.1",
+  "moment": "order.odd.heartShaped",
+  "text": "A pepperoni pizza, shaped like a heart. I'm proposing tonight. It's a long story. The pizza's the short version.",
+  "delivery": "nervous, hopeful",
+  "note": "Delivery is flat"
+ },
+ {
+  "who": "bev",
+  "clip": "bev/icecream:customer.complain.gross.hair.1",
+  "moment": "complain.gross.hair",
+  "text": "There is a hair in the sprinkles. A long one.",
+  "delivery": "disgusted",
+  "note": "Still pretty flat, no disgust"
+ },
+ {
+  "who": "bev",
+  "clip": "bev/pizza:customer.react.gross.2",
+  "moment": "react.gross",
+  "text": "No. No, no. That is not a topping.",
+  "delivery": "gagging, firm",
+  "note": "gagging doesn't come through but sounds upset"
+ },
+ {
+  "who": "kai",
+  "clip": "kai/smoothie:customer.order.odd.notGreen.2",
+  "moment": "order.odd.notGreen",
+  "text": "Green smoothie, please, without the green part. I'm easing into it.",
+  "delivery": "calm, a little sheepish",
+  "note": "Voice is too rough, got some doubling"
+ },
+ {
+  "who": "dale",
+  "clip": "dale/cast:smalltalk.c4",
+  "moment": "smalltalk",
+  "text": "Wife says I smell like motor oil. I say it's cologne. She says that's the problem.",
+  "delivery": "slow, amused",
+  "note": "Delivery cadence is off on the end. Emphasis should be on \"that's\""
+ },
+ {
+  "who": "tasha",
+  "clip": "tasha/icecream:customer.order.odd.malted.1",
+  "moment": "order.odd.malted",
+  "text": "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+  "delivery": "cheerful",
+  "note": "Line doesn't make the most sense. maybe end with \"If there's no malt, that's ok. I don't know what that is anyway\""
+ },
+ {
+  "who": "tasha",
+  "clip": "tasha/icecream:greet.1",
+  "moment": "greet",
+  "text": "Sup. I skated here. It's downhill. Ice cream is the reward for downhill.",
+  "delivery": "flat, deadpan",
+  "note": "Change to \"uphill. Ice cream is the reward for uphill\""
+ },
+ {
+  "who": "pam",
+  "clip": "pam/pizza:order.gag.3",
+  "moment": "order.gag",
+  "text": "That's for twelve seven-year-olds. One pizza. It's a party, not a buffet. They'll live. Probably.",
+  "delivery": "brisk, a shrug on probably",
+  "note": "Delivery at the end could sound more resigned."
+ },
+ {
+  "who": "jitters",
+  "clip": "jitters/cafe:complain.gross.fly.1",
+  "moment": "complain.gross.fly",
+  "text": "There's a fly in the sprinkles! He's buzzing! He's faster than me! Nobody's faster than me!",
+  "delivery": "very fast, competitive",
+  "note": "The speed and competitive sound didn't come through. Maybe make him sound strained?"
+ },
+ {
+  "who": "jitters",
+  "clip": "jitters/cafe:customer.order.odd.coffeeDonut.1",
+  "moment": "order.odd.coffeeDonut",
+  "text": "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.",
+  "delivery": "hopeful, then practical",
+  "note": "This line doesn't make the most sense. Maybe \"If you can't, coffee with a donut sunk in it. Either way, I'm getting both.\""
+ },
+ {
+  "who": "jitters",
+  "clip": "jitters/cafe:greet.1",
+  "moment": "greet",
+  "text": "Hi! Hello! Jitters! That's not my real name. It's my real name now.",
+  "delivery": "very fast, wired, beaming",
+  "note": "Some peaking or clipping. Delivery is a bit off."
+ },
+ {
+  "who": "dennis",
+  "clip": "dennis/sushi:customer.complain.gross.smelly.1",
+  "moment": "complain.gross.smelly",
+  "text": "This salmon smells off. I smelled it before it reached the counter.",
+  "delivery": "revolted, leaning back",
+  "note": "Very flat, no disgust coming through"
+ },
+ {
+  "who": "dennis",
+  "clip": "dennis/sushi:customer.order.odd.justGinger.1",
+  "moment": "order.odd.justGinger",
+  "text": "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+  "delivery": "calm, reasonable about it",
+  "note": "This line doesn't make sense"
+ },
+ {
+  "who": "dennis",
+  "clip": "dennis/sushi:greet.2",
+  "moment": "greet",
+  "text": "Hello! I'm Dennis. I've never had sushi. I'd like to change that. Gently.",
+  "delivery": "polite, bracing himself",
+  "note": "Could make this a bit more timid."
+ },
+ {
+  "who": "dennis",
+  "clip": "dennis/sushi:smalltalk.2",
+  "moment": "smalltalk",
+  "text": "Chapter three of the book is chopsticks. I skipped to chapter nine. Chapter nine is emergencies.",
+  "delivery": "nervous, tapping the book",
+  "note": "Not nervous at all"
+ },
+ {
+  "who": "inferno",
+  "clip": "inferno/burrito:customer.order.odd.justTortilla.2",
+  "moment": "order.odd.justTortilla",
+  "text": "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+  "delivery": "serene",
+  "note": "This doesn't really make sense."
+ },
+ {
+  "who": "inferno",
+  "clip": "inferno/burrito:greet.1",
+  "moment": "greet",
+  "text": "Inferno. You've heard of me. Your fire extinguisher has definitely heard of me.",
+  "delivery": "intense, proud",
+  "note": "Voice breaks when he says his name."
+ },
+ {
+  "who": "rita",
+  "clip": "rita/burrito:customer.order.odd.hottest.1",
+  "moment": "order.odd.hottest",
+  "text": "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's a choice.",
+  "delivery": "brave, voice wobbling",
+  "note": "The line ending is weak, chage to \"I want you to know it's intentional\""
+ },
+ {
+  "who": "rita",
+  "clip": "rita/burrito:order.gag.3",
+  "moment": "order.gag",
+  "text": "Oh, and one of everything. It's a big job today. Mostly the eating part.",
+  "delivery": "cheerful",
+  "note": "A slight pause between \"today\" and \"Mostly the eating part\" would help the line land better."
+ },
+ {
+  "who": "lulu",
+  "clip": "lulu/cast:complain.c6",
+  "moment": "complain",
+  "text": "I don't change my mind. Only in my head.",
+  "delivery": "bright, seven, very sure",
+  "note": "Line doesn't make much sense"
+ },
+ {
+  "who": "lulu",
+  "clip": "lulu/icecream:customer.order.odd.ketchup.1",
+  "moment": "order.odd.ketchup",
+  "text": "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.",
+  "delivery": "matter-of-fact",
+  "note": "Change from \"it's red I'll squint\" to \"red is my favorite color today\""
+ },
+ {
+  "who": "lulu",
+  "clip": "lulu/icecream:greet.3",
+  "moment": "greet",
+  "text": "Hi! I made a list of every flavor. Pros and cons. Mostly pros.",
+  "delivery": "bright, holding up a crumpled list",
+  "note": "Delivery is not natural"
+ },
+ {
+  "who": "lulu",
+  "clip": "lulu/icecream:order.gag.5",
+  "moment": "order.gag",
+  "text": "Bubblegum is my favorite color. Vanilla is my favorite flavor. It's complicated.",
+  "delivery": "thoughtful, a big sigh",
+  "note": "This line also doesn't make a lot of sense, even as a gag"
+ },
+ {
+  "who": "walt",
+  "clip": "walt/cafe:smalltalk.3",
+  "moment": "smalltalk",
+  "text": "We didn't have oat milk in 1955. We had oats. They were for the horse.",
+  "delivery": "matter-of-fact, a little slow",
+  "note": "Change references to dates/years to \"in my day\" or similar"
+ },
+ {
+  "who": "walt",
+  "clip": "walt/icecream:greet.3",
+  "moment": "greet",
+  "text": "Hi there, sport. In '55, this is where you took your best girl.",
+  "delivery": "warm, nostalgic, tipping his boater",
+  "note": "same, revise lines to remove specific years"
+ },
+ {
+  "who": "reginald",
+  "clip": "reginald/sushi:customer.order.odd.noFishNoRice.1",
+  "moment": "order.odd.noFishNoRice",
+  "text": "A California roll. No crab, and no rice. Just the idea of California.",
+  "delivery": "matter-of-fact, as if normal",
+  "note": "Reginald sounds really rough here, like through a low quality mic"
+ },
+ {
+  "who": "reginald",
+  "clip": "reginald/sushi:react.3.1",
+  "moment": "react.3",
+  "text": "Magnificent. The rice alone deserves a paragraph. The fish, a chapter. The whole, a trilogy.",
+  "delivery": "rapturous, sweeping",
+  "note": "Voice quality is a little low"
+ },
+ {
+  "who": "brock",
+  "clip": "brock/cast:complain.c8",
+  "moment": "complain",
+  "text": "I'm saving this for my cool-down.",
+  "delivery": "big, earnest gym voice",
+  "note": "Delivery isn't natural. emphasis should be on \"this\""
+ },
+ {
+  "who": "brock",
+  "clip": "brock/smoothie:customer.order.odd.notGreen.2",
+  "moment": "order.odd.notGreen",
+  "text": "Green smoothie, please, without the green part. I'm easing into it.",
+  "delivery": "calm, a little sheepish",
+  "note": "Voice is a bit rough"
+ },
+ {
+  "who": "brock",
+  "clip": "brock/icecream:greet.4",
+  "moment": "greet",
+  "text": "What's up! I'm carb loading. For nothing. Just loading.",
+  "delivery": "cheerful, unashamed",
+  "note": "Voice still rough, like a low quality mic. This line also kind of sucks"
+ },
+ {
+  "who": "brock",
+  "clip": "brock/icecream:smalltalk.2",
+  "moment": "smalltalk",
+  "text": "My mom saw me walk in here. She texted a heart. Then another heart. Then: Brock.",
+  "delivery": "warm, then quoting his mom flatly",
+  "note": "This line makes no sense to me. Same voice quality issues."
+ },
+ {
+  "who": "oakes",
+  "clip": "oakes/burrito:customer.complain.gross.brown.2",
+  "moment": "complain.gross.brown",
+  "text": "Brown guacamole. I'm not eating anything older than my shoes.",
+  "delivery": "dry, revolted",
+  "note": "Same note for making \"brown guacamole\" a question"
+ },
+ {
+  "who": "oakes",
+  "clip": "oakes/pizza:order.dislike.1",
+  "moment": "order.dislike",
+  "text": "No onions. In an oven, an onion caramelises, and I don't trust a vegetable that changes its story under heat.",
+  "delivery": "nasal, too fast, suspicious",
+  "note": "suspicion doesn't come through as much"
+ },
+ {
+  "who": "oakes",
+  "clip": "oakes/customer.reactGross.1",
+  "moment": "react.gross",
+  "text": "Oh. Oh, no. Oh, that is disgusting.",
+  "delivery": "gagging, disgusted",
+  "note": "gagging doesn't come through, might not be a functional tag. line sounds fine."
+ },
+ {
+  "who": "breeze",
+  "clip": "breeze/pizza:customer.order.odd.heartShaped.2",
+  "moment": "order.odd.heartShaped",
+  "text": "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+  "delivery": "nervous, hopeful",
+  "note": "S and T sounds are a little harsh"
+ },
+ {
+  "who": "pa",
+  "clip": "pa/court:open.2.bensBurritos",
+  "moment": "court.announce.open",
+  "text": "Good day, valued shoppers. Ben's Burritos is now open for business. Strollers, scooters and pretzels are all welcome.",
+  "delivery": "warm, over-formal",
+  "note": "Not sure if this is with the effect but it's a little buzzy"
+ },
+ {
+  "who": "hiro",
+  "clip": "hiro/sushi:customer.complain.gross.hair.2",
+  "moment": "complain.gross.hair",
+  "text": "A hair. In the rice. People will hear about this.",
+  "delivery": "disgusted, measured",
+  "note": "Voice quality is low"
+ },
+ {
+  "who": "hiro",
+  "clip": "hiro/sushi:smalltalk.4",
+  "moment": "smalltalk",
+  "text": "Rice must rest. Fish must rest. Chefs must not rest. That is the order of things.",
+  "delivery": "calm, like scripture",
+  "note": "quality is a little low"
+ },
+ {
+  "who": "sal",
+  "clip": "sal/burrito:customer.order.odd.fireAlarm.1",
+  "moment": "order.odd.fireAlarm",
+  "text": "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+  "delivery": "intense, pointing at the alarm",
+  "note": "This line only makes sense if the fire alarm is visible and seems to have a mustache"
+ }
+]

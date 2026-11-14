@@ -1,0 +1,1273 @@
+{
+ "rewritten": [
+  [
+   "packs/court/script.js",
+   "mitch",
+   "goldSign.1",
+   "A gold sign on {name}! I'd like to thank my mom, who is also corporate.",
+   "A gold sign on {name}! I'd like to thank my mom, who is also the district manager."
+  ],
+  [
+   "packs/pizza/script.js",
+   "mitch",
+   "event.again.2",
+   "Okay. {name} fell a little flat. Like a crust. We'll run it again, and the heart's still in the oven's future.",
+   "Okay. {name} fell a little flat. Like a crust. We'll run it again. The heart pizza can wait."
+  ],
+  [
+   "packs/diner/script.js",
+   "mitch",
+   "eventAgain.1",
+   "{name} fell short. In fairness, the contestants ate like they were being timed. They weren't. We'll run it again.",
+   "{name} fell short. In fairness, the contestants chewed like they had all day. We'll run it again."
+  ],
+  [
+   "packs/diner/script.js",
+   "mitch",
+   "mouldy.1",
+   "Whoa, why is that cheese green? You nasty. Change that out.",
+   "Whoa, why is that cheese green? Nope. Swap it."
+  ],
+  [
+   "packs/burrito/script.js",
+   "mitch",
+   "after.3.3",
+   "Perfect. I'll tell Corporate. Corporate is the cactus in the sombrero. He's a great listener.",
+   "Perfect. I'll tell the district manager. The district manager is the cactus in the sombrero. He's a great listener."
+  ],
+  [
+   "packs/sushi/script.js",
+   "mitch",
+   "gross.smelly.1",
+   "That {ing} smells off. Fresh fish shouldn't smell like anything. That one smells like a story. Swap it.",
+   "That {ing} smells off. Fresh fish shouldn't smell like anything. That one smells like a dock. Swap it."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "mitch",
+   "gross.sock.3",
+   "Sock in the {ing}! And a flip-flop on the shelf. Somebody's getting changed in here. Swap it.",
+   "Sock in the {ing}! Somebody's been getting changed in here. Swap it."
+  ],
+  [
+   "packs/court/script.js",
+   "mitch",
+   "unlock.1",
+   "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.",
+   "{name} is open! New restaurant, new uniform. I've been posing in it in the mirror."
+  ],
+  [
+   "packs/cafe/script.js",
+   "mitch",
+   "event.intro.2",
+   "Here we go: {name}. The office next door is coming in. The last order's the giant donut off the roof. I've never made a giant donut. I've dreamed it. Twice.",
+   "Here we go: {name}. The office next door is coming in. The last order's a giant donut, as big as the one on our roof. I've dreamed it. Twice."
+  ],
+  [
+   "packs/burrito/script.js",
+   "mitch",
+   "gross.fly.3",
+   "That {value} salsa has a fly in it. He's not a topping. He's barely a fly. Swap it.",
+   "That {value} salsa has a fly in it. He's not a topping. He's a tourist. Swap it."
+  ],
+  [
+   "packs/icecream/script.js",
+   "mitch",
+   "shift.end.4",
+   "That's a wrap. Walt says we're almost as good as 1955. From Walt, that's a medal.",
+   "That's a wrap. Walt says we're almost as good as the old days. From Walt, that's a medal."
+  ],
+  [
+   "packs/icecream/script.js",
+   "mitch",
+   "tutorial.review.2",
+   "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Walt's telling the stools about 1955.",
+   "And there it is. Have a look. Wrong? Redo it. Right? Ring it up. Walt's telling the stools about the good old days."
+  ],
+  [
+   "packs/icecream/script.js",
+   "mitch",
+   "tutorial.serve.1",
+   "And that's the job. Get something wrong and the customer will tell you. Walt will tell you about 1955 first. Ready for a real shift?",
+   "And that's the job. Get something wrong and the customer will tell you. Walt will tell you about the good old days first. Ready for a real shift?"
+  ],
+  [
+   "packs/icecream/script.js",
+   "mitch",
+   "tutorial.shake.2",
+   "Over to the shake machine. Mint green, built in 1955. Walt says he knew it as a boy. It was a different machine.",
+   "Over to the shake machine. Mint green, older than me. Walt says it's the only thing in here built right."
+  ],
+  [
+   "packs/icecream/script.js",
+   "mitch",
+   "tutorial.warn.missing.2",
+   "Wait, the ticket says {ing}. Add it, or Walt will tell us about 1955.",
+   "Wait, the ticket says {ing}. Add it, or Walt will tell us how they did it in his day."
+  ],
+  [
+   "packs/cafe/script.js",
+   "mitch",
+   "shift.start.3",
+   "Morning shift. Corporate says smile. Corporate is my mom. She also says drink water. I'm drinking coffee. Don't tell her.",
+   "Morning shift. The district manager says smile. She's my mom. She also says drink water. I'm drinking coffee. Don't tell her."
+  ],
+  [
+   "packs/diner/script.js",
+   "mitch",
+   "start.3",
+   "Big day. Corporate might visit. Corporate is my mom. Look busy.",
+   "Big day. The district manager might visit. She's my mom. Look busy."
+  ],
+  [
+   "packs/pizza/script.js",
+   "mitch",
+   "shift.start.3",
+   "Let's go. Corporate called. Corporate is my mom. She asked if we do gluten-free. We don't. Don't tell her.",
+   "Let's go. The district manager called. She's my mom. She asked if we do gluten-free. We don't. Don't tell her."
+  ],
+  [
+   "packs/sushi/script.js",
+   "mitch",
+   "shift.start.3",
+   "Let's go. Corporate called. Corporate is my mom. She asked if sushi is just cold fish. I said yes. She's coming in.",
+   "Let's go. The district manager called. She's my mom. She asked if sushi is just cold fish. I said yes. She's coming in."
+  ],
+  [
+   "packs/icecream/script.js",
+   "mitch",
+   "uniform.3",
+   "Pink and white stripes. Corporate said I look like a candy cane. Corporate is my mom. She meant it nicely.",
+   "Pink and white stripes. The district manager said I look like a candy cane. She's my mom. She meant it nicely."
+  ],
+  [
+   "packs/pizza/script.js",
+   "mitch",
+   "uniform.1",
+   "Yes, the hat is a pizza box. A real one. Corporate calls it branding. Corporate is my mom, and she has a glue gun.",
+   "Yes, the hat is a pizza box. A real one. The district manager calls it branding. She's my mom, and she has a glue gun."
+  ],
+  [
+   "packs/sushi/script.js",
+   "mitch",
+   "uniform.1",
+   "Yes, it's a real sushi chef's jacket. Corporate bought it. Corporate is my mom. She also bought the headband. The serious face is mine. I'm practicing.",
+   "Yes, it's a real sushi chef's jacket. The district manager bought it. She's my mom. She also bought the headband. The serious face is mine. I'm practicing."
+  ],
+  [
+   "packs/diner/script.js",
+   "mitch",
+   "end.1",
+   "That's the shift. I'm putting mentored a legend on my resume.",
+   "That's the shift. My resume now says: mentored a legend."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "mitch",
+   "shift.start.3",
+   "Let's go. Today's surf report: one tiny wave. It's a drawing. It's always the drawing.",
+   "Let's go. Today's surf report: no waves. We're in a mall. There are never waves."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "mitch",
+   "shift.start.5",
+   "Doors open. If the blenders get loud, that's normal. If the green one puts its earmuffs on, that's also normal.",
+   "Doors open. If the blenders get loud, that's normal. That's why the earmuffs are on the hook."
+  ],
+  [
+   "packs/icecream/script.js",
+   "mitch",
+   "shift.start.5",
+   "Let's scoop. If Lulu comes in, clear your afternoon. Emotionally, I mean. She'll still order fine.",
+   "Let's scoop. If Lulu comes in, get comfy. She'll sigh over every flavor. Then pick vanilla."
+  ],
+  [
+   "packs/cafe/script.js",
+   "mitch",
+   "tutorial.glaze.2",
+   "Glaze first, then toppings. The ticket says strawberry, then sprinkles. Pink with sprinkles. Like the one on the roof.",
+   "Glaze first, then toppings. The ticket says strawberry, then sprinkles. Pink with sprinkles. A classic."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "mitch",
+   "tutorial.blender.2",
+   "This is the blender. It's loud, it's fast, and it pours itself into the cup when it's done. I wish I did that.",
+   "This is the blender. It's loud, it's fast, and it pours itself into the cup when it's done. Show-off."
+  ],
+  [
+   "packs/diner/script.js",
+   "mitch",
+   "cookFryer.2",
+   "Pick the crispiness on the ticket. With Timed cooking, you lift the basket yourself when it gets there. The basket is the only thing in here with a handle. Besides me.",
+   "Pick the crispiness on the ticket. With Timed cooking, you lift the basket yourself when it gets there. Lift it, don't watch it burn."
+  ],
+  [
+   "packs/diner/script.js",
+   "mitch",
+   "warnPick.2",
+   "Not that one. The ticket says which. It's the one thing in here that's never wrong. I've checked. Twice. About me.",
+   "Not that one. The ticket says which. The ticket's never wrong. Unlike me. Ask anyone."
+  ],
+  [
+   "packs/burrito/script.js",
+   "mitch",
+   "nearly.2",
+   "Heads up. Nearly {want}. The press is listening.",
+   "Heads up. Nearly {want}. Get ready to lift the press."
+  ],
+  [
+   "packs/diner/script.js",
+   "mitch",
+   "nearly.3",
+   "Almost {want}. Spatula's right there. I'm just the voice.",
+   "Almost {want}. Basket's right there. I'm just the voice."
+  ],
+  [
+   "packs/burrito/script.js",
+   "mitch",
+   "tutorial.warn.missing.2",
+   "Hold on. She asked for {ing}. Add it, or she'll notice. She inspects things for a living.",
+   "Hold on. She asked for {ing}. Add it. She wants one of everything, and she'll count."
+  ],
+  [
+   "packs/burrito/script.js",
+   "marge",
+   "order.odd.hottest.1",
+   "Chicken burrito, hon, and your hottest sauce. I'm feeling wild. Don't tell my sister.",
+   "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's intentional."
+  ],
+  [
+   "packs/burrito/script.js",
+   "gus",
+   "order.odd.hottest.1",
+   "Chicken burrito, hottest sauce you got. Delores wants to see me sweat.",
+   "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's intentional."
+  ],
+  [
+   "packs/burrito/script.js",
+   "bev",
+   "order.odd.hottest.1",
+   "Chicken burrito! Hottest sauce you've got! I'm training my TEARS! They need DISCIPLINE!",
+   "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's intentional."
+  ],
+  [
+   "packs/burrito/script.js",
+   "sal",
+   "order.odd.hottest.1",
+   "Chicken burrito, hottest sauce ya got. My wife says I don't show emotion. Tonight, I show emotion.",
+   "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's intentional."
+  ],
+  [
+   "packs/burrito/script.js",
+   "customer",
+   "order.odd.hottest.1",
+   "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's a choice.",
+   "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's intentional."
+  ],
+  [
+   "packs/burrito/script.js",
+   "rita",
+   "order.odd.hottest.1",
+   "Chicken burrito, the hottest sauce you've got. I've got a hard hat on. I'm protected. Mostly.",
+   "Chicken burrito, the hottest sauce you've got. I'm going to cry, and I want you to know it's intentional."
+  ],
+  [
+   "packs/burrito/script.js",
+   "customer",
+   "order.odd.fireAlarm.1",
+   "A Fire Burrito, hot enough to set off the fire alarm. The one with the little mustache.",
+   "A Fire Burrito, hot enough to set off the fire alarm. I want to hear it sing."
+  ],
+  [
+   "packs/burrito/script.js",
+   "customer",
+   "order.odd.justTortilla.2",
+   "A bean and cheese burrito. No beans, no cheese. Just the hug.",
+   "A burrito with nothing inside. Just the tortilla. I'm here for the hug."
+  ],
+  [
+   "packs/burrito/script.js",
+   "sal",
+   "order.dislike.1",
+   "And no lettuce. Lettuce in my lunch is a rabbit in a sleepin' bag.",
+   "And no lettuce. Lettuce in a burrito is a waste of perfectly good rabbit food."
+  ],
+  [
+   "packs/cast/script.js",
+   "gus",
+   "intro.c4",
+   "Truck ain't the only one that needs fuel 'round here.",
+   "Delores picked today. That's my rig. She's got good taste."
+  ],
+  [
+   "packs/cafe/script.js",
+   "marge",
+   "order.odd.coffeeDonut.1",
+   "Hon, could you put the coffee inside the donut? No? A jelly one, then. I'll dunk it. Same thing.",
+   "A donut with a coffee inside it. If you can't, a coffee with a donut sunk in it. Either way, I get both."
+  ],
+  [
+   "packs/cafe/script.js",
+   "customer",
+   "order.odd.coffeeDonut.1",
+   "A donut with a coffee inside it. If you can't, a jelly one. I'll pretend the jelly is coffee.",
+   "A donut with a coffee inside it. If you can't, a coffee with a donut sunk in it. Either way, I get both."
+  ],
+  [
+   "packs/cafe/script.js",
+   "sal",
+   "order.odd.coffeeDonut.1",
+   "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Jelly, then.",
+   "A donut with a coffee inside it. If you can't, a coffee with a donut sunk in it. Either way, I get both."
+  ],
+  [
+   "packs/cafe/script.js",
+   "vernon",
+   "order.odd.coffeeDonut.1",
+   "A donut with the coffee inside. A bold concept. I'm prepared to be disappointed. I usually am.",
+   "A donut with a coffee inside it. If you can't, a coffee with a donut sunk in it. Either way, I get both."
+  ],
+  [
+   "packs/cafe/script.js",
+   "priya",
+   "order.odd.coffeeDonut.1",
+   "A donut with the coffee already inside it. Saves a step. I'm out of steps.",
+   "A donut with a coffee inside it. If you can't, a coffee with a donut sunk in it. Either way, I get both."
+  ],
+  [
+   "packs/cafe/script.js",
+   "jitters",
+   "order.odd.coffeeDonut.1",
+   "A donut with coffee inside! Like a jelly donut, but useful! You can't? Jelly, then. Jelly's fine. Jelly's great.",
+   "A donut with a coffee inside it. If you can't, a coffee with a donut sunk in it. Either way, I get both."
+  ],
+  [
+   "packs/cafe/script.js",
+   "marge",
+   "order.usual.2",
+   "The usual, hon. Cream and two sugars, since 1979. Don't change on me now.",
+   "The usual, hon. Cream and two sugars, same since my bus driving days. Don't change on me now."
+  ],
+  [
+   "packs/cafe/script.js",
+   "marge",
+   "order.odd.coffeeDonut.1",
+   "Hon, could you put the coffee inside the donut? No? A jelly one, then. I'll dunk it. Same thing.",
+   "Hon, could you put the coffee inside the donut? No? Then a jelly one and a coffee. I'll dunk it."
+  ],
+  [
+   "packs/cafe/script.js",
+   "gus",
+   "order.twin.1",
+   "Two of 'em. One for now, one for the road. And a dozen donuts, but those are for Delores.",
+   "Two of 'em. One for now, one for the road. And a dozen donuts for the dashboard. Delores likes the company."
+  ],
+  [
+   "packs/cafe/script.js",
+   "sal",
+   "order.odd.coffeeDonut.1",
+   "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Jelly, then.",
+   "Put the coffee in the donut. Saves a hand. I got a cart to push. No? Fine, jelly. Coffee on the side."
+  ],
+  [
+   "packs/cafe/script.js",
+   "sal",
+   "react.2.1",
+   "Eh. It's okay. My cart coffee's worse, and I don't even sell coffee.",
+   "Eh. It's okay. The coffee I drink at my cart is worse, and I make it."
+  ],
+  [
+   "packs/diner/script.js",
+   "marge",
+   "react1.3",
+   "Oh, sweetie. I've eaten at a bus depot at four in the morning. I'd go back.",
+   "Oh, sweetie. I've eaten at a bus depot at four in the morning. I'd rather go back there."
+  ],
+  [
+   "packs/icecream/script.js",
+   "marge",
+   "order.odd.ketchup.1",
+   "Strawberry in a cup, hon, and I'll pretend it's ketchup. My grandson eats it that way. I'm trying to understand him.",
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. Red is my favorite color today."
+  ],
+  [
+   "packs/icecream/script.js",
+   "gus",
+   "order.odd.ketchup.1",
+   "Ice cream with ketchup, buddy. Long-haul thing. Strawberry'll pass, if you squint.",
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. Red is my favorite color today."
+  ],
+  [
+   "packs/icecream/script.js",
+   "bev",
+   "order.odd.ketchup.1",
+   "Ice cream with KETCHUP! The team dared me! Strawberry counts! The ref says strawberry COUNTS!",
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. Red is my favorite color today."
+  ],
+  [
+   "packs/icecream/script.js",
+   "customer",
+   "order.odd.ketchup.1",
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. It's red. I'll squint.",
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. Red is my favorite color today."
+  ],
+  [
+   "packs/icecream/script.js",
+   "vernon",
+   "order.odd.ketchup.1",
+   "Strawberry, which I will refer to as ketchup. It's for a piece on misleading menus.",
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. Red is my favorite color today."
+  ],
+  [
+   "packs/icecream/script.js",
+   "tasha",
+   "order.odd.ketchup.1",
+   "Strawberry, but I'm calling it ketchup. Don't ask. I won't explain. I can't.",
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. Red is my favorite color today."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "order.odd.ketchup.1",
+   "Ice cream with ketchup, like my brother ate it in '55. Strawberry will do. He was a strange boy.",
+   "Ice cream with ketchup, please. You don't have ketchup? Then strawberry. Red is my favorite color today."
+  ],
+  [
+   "packs/icecream/script.js",
+   "marge",
+   "order.odd.justCherry.1",
+   "A sundae, hon, but just the cherry. My doctor said cut back. That's me cutting back.",
+   "A hot fudge sundae, but I only want the cherry. The rest is just there to hold it up."
+  ],
+  [
+   "packs/icecream/script.js",
+   "gus",
+   "order.odd.justCherry.1",
+   "Sundae, just the cherry. Doc says no sweets. A cherry's a fruit. That's practically a salad.",
+   "A hot fudge sundae, but I only want the cherry. The rest is just there to hold it up."
+  ],
+  [
+   "packs/icecream/script.js",
+   "bev",
+   "order.odd.justCherry.1",
+   "A sundae, just the CHERRY! I'm cutting sugar! The cherry is my ONE cheat!",
+   "A hot fudge sundae, but I only want the cherry. The rest is just there to hold it up."
+  ],
+  [
+   "packs/icecream/script.js",
+   "customer",
+   "order.odd.justCherry.1",
+   "A hot fudge sundae, but just the cherry. The ice cream can stay. It's holding the cherry up.",
+   "A hot fudge sundae, but I only want the cherry. The rest is just there to hold it up."
+  ],
+  [
+   "packs/icecream/script.js",
+   "customer",
+   "order.odd.malted.1",
+   "A malted, please. Thick, chocolate. If there's no malt, just say malt when you hand it over.",
+   "A malted, please. Thick, chocolate. If there's no malt, that's okay. I don't know what malt is anyway."
+  ],
+  [
+   "packs/icecream/script.js",
+   "gus",
+   "order.twin.2",
+   "Make it two. One for me, one for Delores. Delores is home. I'll tell her all about it.",
+   "Make it two. One for me, one for Delores. She's out in the lot. I'll tell her all about it."
+  ],
+  [
+   "packs/icecream/script.js",
+   "gus",
+   "react.2.1",
+   "Pretty good, buddy. Like a truck stop sundae, only closer to home.",
+   "Pretty good, buddy. Like a truck stop sundae. Gets the job done."
+  ],
+  [
+   "packs/icecream/script.js",
+   "gus",
+   "order.odd.ketchup.1",
+   "Ice cream with ketchup, buddy. Long-haul thing. Strawberry'll pass, if you squint.",
+   "Ice cream with ketchup, buddy. Long-haul thing. No ketchup? Strawberry. Close enough."
+  ],
+  [
+   "packs/pizza/script.js",
+   "customer",
+   "order.odd.heartShaped.2",
+   "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.",
+   "Can you make it heart-shaped? I'm proposing. If they say no, at least I've got pizza."
+  ],
+  [
+   "packs/pizza/script.js",
+   "gus",
+   "react.3.2",
+   "Mm. Beautiful. Pizza like that, I'd haul it to Tulsa and never touch it. I'm touchin' it.",
+   "Mm. Beautiful. I meant to save this for Tulsa. It ain't makin' it out of the parkin' lot."
+  ],
+  [
+   "packs/pizza/script.js",
+   "gus",
+   "react.gross.1",
+   "Oh, no. Oh, buddy. No. I seen roadkill with better manners.",
+   "Oh, no. Oh, buddy. No. I seen more appetizin' roadkill."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "gus",
+   "react.gross.1",
+   "Oh, no. Oh, buddy. No. I seen things on the interstate with better manners.",
+   "Oh, no. Oh, buddy. No. I seen more appetizin' things on the interstate."
+  ],
+  [
+   "packs/sushi/script.js",
+   "customer",
+   "order.odd.noFishNoRice.2",
+   "A roll with no fish and no rice. The outside is my favorite part, and I want to be close to it.",
+   "A roll with no fish and no rice. Just the seaweed. The outside is my favorite part."
+  ],
+  [
+   "packs/sushi/script.js",
+   "marge",
+   "order.odd.justGinger.1",
+   "Just the ginger, hon. It's good for the stomach. And a little cucumber roll, so it's a meal.",
+   "Just the ginger. The pink stuff. Fine, and a cucumber roll, so the ginger has somewhere to sit."
+  ],
+  [
+   "packs/sushi/script.js",
+   "customer",
+   "order.odd.justGinger.1",
+   "Just the ginger. The pink stuff. Fine, put it next to a cucumber roll. The roll is a plate.",
+   "Just the ginger. The pink stuff. Fine, and a cucumber roll, so the ginger has somewhere to sit."
+  ],
+  [
+   "packs/sushi/script.js",
+   "hiro",
+   "order.odd.justGinger.1",
+   "Only the ginger. The ginger is the best part. Do not tell the fish. Fine. A cucumber roll to rest it on.",
+   "Just the ginger. The pink stuff. Fine, and a cucumber roll, so the ginger has somewhere to sit."
+  ],
+  [
+   "packs/sushi/script.js",
+   "dennis",
+   "order.odd.justGinger.1",
+   "Just the ginger, please. It's pink. I trust pink. And a cucumber roll, so it isn't lonely.",
+   "Just the ginger. The pink stuff. Fine, and a cucumber roll, so the ginger has somewhere to sit."
+  ],
+  [
+   "packs/sushi/script.js",
+   "marge",
+   "order.dislike.1",
+   "And nothing raw, hon. Thirty years driving a bus. I have seen enough things that were not done.",
+   "And nothing raw, hon. Thirty years driving a bus. I like things done all the way."
+  ],
+  [
+   "packs/sushi/script.js",
+   "marge",
+   "order.dislike.2",
+   "Nothing raw, sweetie. My sister had raw fish on a cruise in 1994. We don't talk about the cruise.",
+   "Nothing raw, sweetie. My sister had raw fish on a cruise once. We don't talk about the cruise."
+  ],
+  [
+   "packs/sushi/script.js",
+   "sal",
+   "order.odd.sushiBurrito.1",
+   "Sushi burrito. Don't cut it. I'm holdin' it like a hot dog. Nobody's stoppin' me. Not even the old guy.",
+   "Sushi burrito. Don't cut it. I'm holdin' it like a hot dog. Nobody's stoppin' me. Not even Chef Hiro."
+  ],
+  [
+   "packs/sushi/script.js",
+   "sal",
+   "react.1.2",
+   "Ugh. I asked for a hot dog roll, I didn't get it, and I didn't get THIS either.",
+   "Ugh. I'd rather have a hot dog. And I'm sick of hot dogs."
+  ],
+  [
+   "packs/diner/script.js",
+   "marge",
+   "goodbye.1",
+   "Bye, hon. Tell Mitch his hat's crooked. It's always crooked. It's how I know it's him.",
+   "Bye, hon. Tell Mitch his headset's crooked. It's always crooked. It's how I know it's him."
+  ],
+  [
+   "packs/burrito/script.js",
+   "vernon",
+   "order.odd.noAvocado.1",
+   "A veggie bowl. Guacamole, without the avocado. Kept apart from everything, including itself.",
+   "A veggie bowl. Guacamole, without the avocado. Nothing touching. Food needs boundaries."
+  ],
+  [
+   "packs/burrito/script.js",
+   "reginald",
+   "react.2.3",
+   "Fine. Three stars. Competent and unbothered, like a well-run car wash.",
+   "Fine. Two stars. Competent and unbothered, like a well-run car wash."
+  ],
+  [
+   "packs/cafe/script.js",
+   "kai",
+   "order.odd.halfDecaf.2",
+   "Half decaf, half extra shot. I'm cutting back and catching up at the same time.",
+   "Half decaf, half extra shot. It's for Reginald. He's cutting back and catching up."
+  ],
+  [
+   "packs/cafe/script.js",
+   "kai",
+   "order.odd.sevenShots.2",
+   "Seven extra shots in a latte, please. I'm not tired. I'm planning ahead.",
+   "Seven extra shots in a latte, please. It's for Reginald. I'm just carrying it."
+  ],
+  [
+   "packs/cafe/script.js",
+   "kai",
+   "order.odd.everythingCup.2",
+   "Everything. Shot, vanilla, caramel, whipped cream. In a large. I've earned this, and I'm about to un-earn it.",
+   "Everything. Shot, vanilla, caramel, whipped cream. In a large. It's for Reginald. I'm not allowed."
+  ],
+  [
+   "packs/cafe/script.js",
+   "reginald",
+   "react.2.3",
+   "Three stars. It has a beginning and an end. The middle wandered off.",
+   "Two stars. It has a beginning and an end. The middle wandered off."
+  ],
+  [
+   "packs/diner/script.js",
+   "oakes",
+   "dislike.2",
+   "No onions. Thermodynamically, an onion is a cry for help with a skin on it.",
+   "No onions. An onion is just tear gas with a skin on it."
+  ],
+  [
+   "packs/diner/script.js",
+   "oakes",
+   "dislike.5",
+   "No onions. Statistically, every onion ring is an onion that got away with it.",
+   "No onions. An onion ring is just an onion in disguise. I see through it."
+  ],
+  [
+   "packs/diner/script.js",
+   "oakes",
+   "odd.fivePatties.1",
+   "The Diner Tower, five patties. I'm studying structural failure in sandwiches, and lunch is the control group.",
+   "The Diner Tower, five patties. I'm studying structural failure in sandwiches. Lunch is the experiment."
+  ],
+  [
+   "packs/icecream/script.js",
+   "brock",
+   "greet.4",
+   "What's up! I'm carb loading. For nothing. Just loading.",
+   "What's up! I'm carb loading for a big lift. The big lift is this spoon."
+  ],
+  [
+   "packs/icecream/script.js",
+   "brock",
+   "react.1.1",
+   "Bro. That's not it. That's the rest day of desserts.",
+   "Bro. That's not it. That's a dessert with bad form."
+  ],
+  [
+   "packs/pizza/script.js",
+   "pam",
+   "order.odd.heartShaped.1",
+   "Heart-shaped, please. The birthday girl's in a hearts phase. Last month was dinosaurs. We don't talk about dinosaurs.",
+   "A pepperoni pizza, shaped like a heart. It's for my mom. Don't tell her. It's a surprise."
+  ],
+  [
+   "packs/pizza/script.js",
+   "reginald",
+   "react.2.3",
+   "Fine. Three stars. Wet, but lacking ambition. No, that's my water review. Three stars anyway.",
+   "Fine. Two stars. Wet, but lacking ambition. No, that's my water review. Two stars anyway."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "tony",
+   "order.odd.everyFruit.2",
+   "One of every fruit, please. I don't want any of them to feel left out.",
+   "One of every fruit, please. Even the pineapple. My doctor insists."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "tony",
+   "order.odd.wipeout.2",
+   "The works. Every fruit, every extra, large, super smooth. I've cleared my afternoon.",
+   "The works. Every fruit, every extra, large, super smooth. Blend the pineapple until I can't find it."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "vernon",
+   "react.2.2",
+   "Competent. Forgettable. Like a smoothie that has heard of me but never met me.",
+   "Competent. Forgettable. Like a smoothie that read my order but only skimmed it."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "reginald",
+   "react.2.3",
+   "Fine. Three stars. It's cold, it's in a cup, and it knows it. Self-awareness is half the battle.",
+   "Fine. Two stars. It's cold, it's in a cup, and it knows it. Self-awareness is half the battle."
+  ],
+  [
+   "packs/sushi/script.js",
+   "vernon",
+   "react.3.2",
+   "Regular. White. Tight. Eight. I'll write that Chef Hiro and I agree. He hasn't said so. He would.",
+   "Eight pieces, rolled tight. I'll write that Chef Hiro and I agree. He hasn't said so. He would."
+  ],
+  [
+   "packs/sushi/script.js",
+   "reginald",
+   "react.2.3",
+   "Fine. Three stars. Cold, but lacking conviction. No, that is my review of the fountain. Three stars anyway.",
+   "Fine. Two stars. Cold, but lacking conviction. No, that is my review of the fountain. Two stars anyway."
+  ],
+  [
+   "packs/cast/script.js",
+   "oakes",
+   "mention.c1",
+   "At {about}, I learned pico de gallo contains onion. For my own peace, I've reclassified it as salsa.",
+   "At {about}, I learned the salsa contains onion. I've reclassified it as a warning."
+  ],
+  [
+   "packs/cast/script.js",
+   "vernon",
+   "complain.c5",
+   "I could tell from across the room. It's a very good room.",
+   "I could tell from across the room. My eyes are calibrated."
+  ],
+  [
+   "packs/cast/script.js",
+   "vernon",
+   "complain.c7",
+   "I noticed at once. Noticing is my cardio.",
+   "I noticed at once. I notice everything. It's exhausting."
+  ],
+  [
+   "packs/cafe/script.js",
+   "kai",
+   "visitor.arrive.2",
+   "Hello. My mom's at the shoe store. She said one thing. I'm here to choose it carefully.",
+   "Hello. My mom's at the shoe store. She said I can get one thing. I'm choosing carefully."
+  ],
+  [
+   "packs/icecream/script.js",
+   "brock",
+   "smalltalk.2",
+   "My mom saw me walk in here. She texted a heart. Then another heart. Then: Brock.",
+   "My mom saw me walk in here. She texted, 'Brock. It's not cheat day.' It is now."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "tony",
+   "smalltalk.1",
+   "In my day, a smoothie was called a tomato. We were happy.",
+   "In my day, a smoothie was called a fruit, and you chewed it. We were happy."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "tony",
+   "complain.gross.mouldy.1",
+   "These strawberries are wearing fur! It is not winter! This is not the opera!",
+   "These strawberries are wearing fur coats! That's against the dress code! Take them away!"
+  ],
+  [
+   "packs/burrito/script.js",
+   "inferno",
+   "order.odd.fireAlarm.1",
+   "Fire Burrito. Hot enough to set off the fire alarm. The one with the little mustache. We have history.",
+   "Fire Burrito. Hot enough to set off the fire alarm. We have history. It always loses."
+  ],
+  [
+   "packs/burrito/script.js",
+   "inferno",
+   "react.3.4",
+   "That is the one. I can hear colors. Five stars. Six if the colors stop.",
+   "That is the one. I can hear colors. Five stars. Six if they get louder."
+  ],
+  [
+   "packs/cafe/script.js",
+   "customer",
+   "order.odd.coffeeDonut.2",
+   "Can I get a donut with coffee in the middle? No? Jelly, then. I'll use my imagination.",
+   "Can I get a donut with coffee in the middle? No? Then a donut and a coffee. I'll do the dunking."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "greet.2",
+   "Morning! New sneakers, old jacket, same order since Eisenhower.",
+   "Morning! New sneakers, old jacket, same order since forever."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "greet.3",
+   "Hello! In 1955, coffee came in one size, and the size was called coffee.",
+   "Hello! In my day, coffee came in one size, and the size was called coffee."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "react.3.1",
+   "Now that's breakfast! Just like 1955. Better. Don't tell 1955.",
+   "Now that's breakfast! Just like the old days. Better. Don't tell the old days."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "react.3.2",
+   "Swell! Real swell! I haven't said swell since the fifties. It's back.",
+   "Swell! Real swell! I haven't said swell since I was a boy. It's back."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "react.3.3",
+   "Perfect, sport. In '55 they'd have put you on the radio for this.",
+   "Perfect, sport. In my day they'd have put you on the radio for this."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "react.2.2",
+   "Not bad, not bad. In '55 we'd have called it fine and talked about the weather.",
+   "Not bad, not bad. In my day we'd have called it fine and talked about the weather."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "react.1.1",
+   "Oh, dear. That isn't what I ordered. Not even in 1955, and we were very relaxed.",
+   "Oh, dear. That isn't what I ordered. Not even in my day, and we were very relaxed."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "react.1.2",
+   "Well, I'll be. This one's a stranger. In '55 we'd have asked it its name.",
+   "Well, I'll be. This one's a stranger. In my day we'd have asked it its name."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "react.gross.1",
+   "Good gravy! There's something on here that didn't exist in 1955!",
+   "Good gravy! There's something on here that didn't exist in my day!"
+  ],
+  [
+   "packs/cast/script.js",
+   "walt",
+   "intro.c5",
+   "Something new today. My wife says I'm stuck in the past. Let's prove her wrong.",
+   "Something new today. My wife says I'm stuck in the old days. Let's prove her wrong."
+  ],
+  [
+   "packs/diner/script.js",
+   "dale",
+   "odd.nothingGreen.1",
+   "Bacon cheeseburger, everything but anything green. Green means go. I ain't goin' anywhere.",
+   "Bacon cheeseburger with everything, except anything green. Green is for traffic lights. Not lunch."
+  ],
+  [
+   "packs/icecream/script.js",
+   "lulu",
+   "order.gag.5",
+   "Bubblegum is my favorite color. Vanilla is my favorite flavor. It's complicated.",
+   "Bubblegum is the prettiest. Chocolate is the loudest. Vanilla is the one. Don't tell the others."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "greet.2",
+   "Afternoon! Jacket's from '55. Sneakers are from Tuesday. I'm a mix.",
+   "Afternoon! Jacket's from my school days. Sneakers are from Tuesday. I'm a mix."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "greet.3",
+   "Hi there, sport. In '55, this is where you took your best girl.",
+   "Hi there, sport. In my day, this is where you took your best girl."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "greet.5",
+   "Howdy! I'll have what I had in 1955. Give or take.",
+   "Howdy! I'll have what I had when I was a boy. Give or take."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "order.gag.1",
+   "Just like 1955. Except in 1955 it cost a dime, and the dime was mine.",
+   "Just like the old days. Except back then it cost a dime, and the dime was mine."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "order.gag.2",
+   "See that knotted cherry stem under the glass? I tied that in '55. With my tongue. Still got it.",
+   "Cherry stems? I can tie one in a knot with my tongue. Learned it as a boy. Still got it."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "order.gag.3",
+   "In 1955 we called that dessert. You still call it dessert. Some things you kept.",
+   "In my day we called that dessert. You still call it dessert. Some things you kept."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "order.gag.4",
+   "Make it like they did in '55. They didn't do it any different. But make it like that.",
+   "Make it like they did in my day. They didn't do it any different. But make it like that."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "react.favourite.1",
+   "Now that is a hot fudge sundae. That's 1955 in a cup. I might cry. I might.",
+   "Now that is a hot fudge sundae. That's the old days in a cup. I might cry. I might."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "react.favourite.2",
+   "The fudge runs down the side just right. Murray would have hired you on the spot. Murray hired nobody.",
+   "The fudge runs down the side just right. You'd have made a great soda jerk. What? That's what we called them."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "react.3.3",
+   "Perfect. Better than '55, and I'll deny I ever said that.",
+   "Perfect. Better than in my day, and I'll deny I ever said that."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "react.2.1",
+   "Not bad, not bad. In 1955 we'd have called that pretty good. We said pretty good a lot.",
+   "Not bad, not bad. In my day we'd have called that pretty good. We said pretty good a lot."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "react.2.3",
+   "That'll do, sport. It's not 1955. Then again, nothing is.",
+   "That'll do, sport. It's not the old days. Then again, nothing is."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "react.1.2",
+   "Well. In 1955 we'd have sent that back. Politely. With a note.",
+   "Well. In my day we'd have sent that back. Politely. With a note."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "react.gross.1",
+   "Good gravy! In 1955, the worst thing you found in a sundae was a penny. Somebody else's penny.",
+   "Good gravy! In my day, the worst thing you found in a sundae was a penny. Somebody else's penny."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "order.odd.malted.1",
+   "A chocolate malted, thick, like Murray's in '55. No malt? Then a thick shake, and I'll pretend.",
+   "A chocolate malted, thick, like the soda fountain made in my day. No malt? Then a thick shake, and I'll pretend."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "order.odd.tenScoop.1",
+   "Ten scoops on a cone, like the dare in '55. I lost that dare. Stack it as high as it goes.",
+   "Ten scoops on a cone, like the dare when I was a boy. I lost that dare. Stack it as high as it goes."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "order.odd.ketchup.1",
+   "Ice cream with ketchup, like my brother ate it in '55. Strawberry will do. He was a strange boy.",
+   "Ice cream with ketchup, like my brother ate it when we were boys. Strawberry will do. He was a strange boy."
+  ],
+  [
+   "packs/icecream/script.js",
+   "tasha",
+   "greet.1",
+   "Sup. I skated here. It's downhill. Ice cream is the reward for downhill.",
+   "Sup. I skated here. It's uphill. Ice cream is the reward for uphill."
+  ],
+  [
+   "packs/icecream/script.js",
+   "tasha",
+   "react.2.3",
+   "Close. I finish everything. Life is long.",
+   "Close. I'll finish it. I finish everything. Whatever."
+  ],
+  [
+   "packs/icecream/script.js",
+   "tasha",
+   "order.odd.justCherry.1",
+   "A sundae, just the cherry. I just like the cherry. It's the only thing up there that commits.",
+   "A sundae, just the cherry. I just like the cherry. It sits on top and doesn't try. Respect."
+  ],
+  [
+   "packs/pizza/script.js",
+   "pam",
+   "react.3.3",
+   "Yes! A pizza that matches the ticket! Today, that's my pony.",
+   "Yes! A pizza that matches the ticket! Best present anyone's getting today."
+  ],
+  [
+   "packs/pizza/script.js",
+   "breeze",
+   "react.3.1",
+   "Oh, that's the wave. That's the wave right there. Pineapple, cheese, sunshine.",
+   "Oh, that's the wave. That's the wave right there. Pure sunshine."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "breeze",
+   "react.2.3",
+   "Almost, friend. Almost is like a sunset. Still pretty. Still not breakfast.",
+   "Almost, friend. Almost is like a sunset. Still pretty. Just not the one I paddled out for."
+  ],
+  [
+   "packs/sushi/script.js",
+   "hiro",
+   "order.odd.justGinger.1",
+   "Only the ginger. The ginger is the best part. Do not tell the fish. Fine. A cucumber roll to rest it on.",
+   "Only the ginger. The ginger is the best part. Do not tell the fish. And a cucumber roll, to rest it on."
+  ],
+  [
+   "packs/court/script.js",
+   "walt",
+   "cheer.1",
+   "Just like 1955! Well, better. We didn't have gold in 1955.",
+   "Just like the old days! Well, better. We didn't have gold signs in my day."
+  ],
+  [
+   "packs/burrito/script.js",
+   "hiro",
+   "goodbye.3",
+   "I bow to the tortilla. Not to the cactus. The cactus knows what it did.",
+   "I bow to the tortilla. It held everything together. Like a good apprentice."
+  ],
+  [
+   "packs/cast/script.js",
+   "inferno",
+   "complain.c8",
+   "With dignity, I said. This has no dignity.",
+   "Hot, I said. This isn't even warm."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "visitor.arrive.1",
+   "Walt's the name. I'm told this is a coffee shop. In 1955, every shop was a coffee shop.",
+   "Walt's the name. I'm told this is a coffee shop. In my day, every shop was a coffee shop."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "visitor.arrive.2",
+   "Well, look at this place. A giant donut on the roof. In my day, that was a hat.",
+   "Well, look at this place. A giant donut on the roof. In my day, the donuts stayed on the plate."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "visitor.arrive.3",
+   "I came for a cup of coffee and a donut. Like 1955, if 1955 had had a food court.",
+   "I came for a cup of coffee and a donut. Like the old days, if the old days had a food court."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "smalltalk.1",
+   "In '55 I took a girl to the soda fountain. I'm still married to her. The soda fountain closed.",
+   "In my day I took a girl to the soda fountain. I'm still married to her. The soda fountain closed."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "smalltalk.2",
+   "These sneakers are brand new. Bought them for the dance. The dance was in 1957. I'm ready whenever it is.",
+   "These sneakers are brand new. Bought them for the big dance. Nobody's told me when it is. I'm ready."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "smalltalk.3",
+   "We didn't have oat milk in 1955. We had oats. They were for the horse.",
+   "We didn't have oat milk in my day. We had oats. They were for the horse."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "smalltalk.5",
+   "My grandson showed me a phone with a camera in it. In 1955, the camera was in the drugstore, and you waited a week.",
+   "My grandson showed me a phone with a camera in it. In my day, the camera was in the drugstore, and you waited a week."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "goodbye.1",
+   "Thank you kindly! I'll be by the fountain, telling strangers about 1955.",
+   "Thank you kindly! I'll be by the fountain, telling strangers about the old days."
+  ],
+  [
+   "packs/cafe/script.js",
+   "walt",
+   "goodbye.3",
+   "Bye now! Don't work too hard. Nobody did in 1955. We were busy wearing hats.",
+   "Bye now! Don't work too hard. Nobody did in my day. We were too busy wearing hats."
+  ],
+  [
+   "packs/cast/script.js",
+   "walt",
+   "complain.c1",
+   "In '55, if you asked for something, you got it. And a smile.",
+   "In my day, if you asked for something, you got it. And a smile."
+  ],
+  [
+   "packs/cast/script.js",
+   "walt",
+   "complain.c4",
+   "I enunciated, sport. We enunciated in 1955.",
+   "I enunciated, sport. We enunciated in my day."
+  ],
+  [
+   "packs/cast/script.js",
+   "walt",
+   "complain.c9",
+   "When I say a thing, I mean it. In 1955, we meant things.",
+   "When I say a thing, I mean it. In my day, we meant things."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "smalltalk.1",
+   "I proposed at a soda fountain in '55. Down on one knee. These days I'd need a crew to get back up.",
+   "I proposed at a soda fountain when I was young. Down on one knee. These days I'd need a crew to get back up."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "goodbye.1",
+   "Thank you kindly! Best I've had since Eisenhower. Don't tell Eisenhower.",
+   "Thank you kindly! Best I've had since I was a boy. Or at least as far back as I can remember."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "goodbye.3",
+   "Much obliged! You'd have done fine at Murray's. That's a compliment from 1955.",
+   "Much obliged! You'd have done fine at the old soda fountain. That's a compliment from my day."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "goodbye.4",
+   "Toodle-oo! If anyone needs me, I'll be telling the penguin about the old days.",
+   "Toodle-oo! If anyone needs me, I'll be telling strangers about the old days."
+  ],
+  [
+   "packs/icecream/script.js",
+   "walt",
+   "complain.gross.tomato.1",
+   "This cherry is a tomato! I haven't been fooled like that since 1955.",
+   "This cherry is a tomato! I haven't been fooled like that since I was a boy."
+  ],
+  [
+   "packs/cast/script.js",
+   "lulu",
+   "complain.c5",
+   "I counted on my fingers. Twice.",
+   "I practiced saying it. Twice."
+  ],
+  [
+   "packs/cast/script.js",
+   "lulu",
+   "complain.c6",
+   "I don't change my mind. Only in my head.",
+   "I changed my mind a hundred times. Then I picked. That's not what I picked."
+  ],
+  [
+   "packs/pizza/script.js",
+   "breeze",
+   "goodbye.2",
+   "Peace. Tell the pineapple guy I said hi. Not the fan. The other one.",
+   "Peace. Tell the opera guy I said hi. He'll pretend he didn't hear me."
+  ],
+  [
+   "packs/cast/script.js",
+   "breeze",
+   "complain.c8",
+   "Not cool, little dude. Not cool.",
+   "Not cool, friend. Not cool."
+  ]
+ ],
+ "copies": [
+  [
+   "packs/cafe/script.js",
+   "kai",
+   "order.odd.halfDecaf",
+   "Half decaf, half extra caffeine. It's for Reginald. He wants to feel nothing, on purpose."
+  ],
+  [
+   "packs/cafe/script.js",
+   "kai",
+   "order.odd.sevenShots",
+   "A latte with seven extra shots. It's for Reginald. He has a big review today."
+  ],
+  [
+   "packs/cafe/script.js",
+   "kai",
+   "order.odd.everythingCup",
+   "A large cappuccino, everything on the bar. It's for Reginald. He said surprise him."
+  ],
+  [
+   "packs/pizza/script.js",
+   "tony",
+   "order.odd.halfAndHalf",
+   "Half pepperoni, half pineapple and anchovies. The pineapple half is not for me. I will not look at it."
+  ],
+  [
+   "packs/pizza/script.js",
+   "kai",
+   "order.odd.heartShaped",
+   "A pepperoni pizza, shaped like a heart. It's for my mom. Don't tell her. It's a surprise."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "tony",
+   "order.odd.everyFruit",
+   "Every fruit you've got, in one cup. Even the pineapple. I am being very brave."
+  ],
+  [
+   "packs/smoothie/script.js",
+   "tony",
+   "order.odd.wipeout",
+   "Everything. Every fruit, every extra, the biggest cup. Even the pineapple. I will close my eyes."
+  ],
+  [
+   "packs/burrito/script.js",
+   "inferno",
+   "order.odd.hottest",
+   "Chicken burrito. Your hottest sauce. Then tell me where you hide the real hot sauce."
+  ]
+ ],
+ "hand": [
+  [
+   "mitch/burrito:mistake.pick.1.sauce.noSauce",
+   "blank not found in the new wording",
+   "The ticket said {wanted}.",
+   "The ticket said no sauce."
+  ]
+ ]
+}

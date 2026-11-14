@@ -141,8 +141,8 @@ Returns `{ stage, key, goal, words, name, need, left: [ids], count, five, busy, 
 
 | stage | when | words (examples) |
 |---|---|---|
-| `unlock` | a restaurant is shut | "Get all three to three stars and the Smoothie Shack opens." · "Get the Burger Bar and the Cafe to three stars and…" · "Get three more to four stars and Ben's Burritos opens." |
-| `fiveStars` | all open, not all at 5 | "Get the Ice Cream Emporium to five stars and the whole court celebrates." |
+| `unlock` | a restaurant is shut | "Get all three to three stars to open the Smoothie Shack." · "Get the Burger Bar and the Cafe to three stars and…" · "Get three more to four stars to open Ben's Burritos." |
+| `fiveStars` | all open, not all at 5 | "Get the Ice Cream Emporium to five stars for the big court celebration." |
 | `fullyBusy` | all at 5 | "Get all seven fully busy." |
 | `complete` | all at 5 and 10 | "All seven at five stars and fully busy." (`goal` is '') |
 
