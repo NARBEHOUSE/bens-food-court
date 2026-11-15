@@ -271,8 +271,10 @@ def respell(speaker, text):
     """The words the voice model is given: the script's, with the character's respellings (tools/voices.json).
     "calm": exclamation marks become full stops and ALL-CAPS words lower case, for a voice the model would otherwise
     shout up into a high, distorted pitch (Coach Bev, 2026-11-08); captions keep the script's words."""
-    me = json.loads((GAME / 'tools' / 'voices.json').read_text(encoding='utf-8')).get(speaker) or {}
-    for pattern, said in me.get('respell', []):
+    cast = json.loads((GAME / 'tools' / 'voices.json').read_text(encoding='utf-8'))
+    me = cast.get(speaker) or {}
+    # "_everyone": respellings for every speaker (batch trial 2026-11-14: "Eugh" was heard as "you" or dropped)
+    for pattern, said in (cast.get('_everyone') or {}).get('respell', []) + me.get('respell', []):
         text = re.sub(pattern, said, text, flags=re.IGNORECASE)
     if me.get('calm'):
         text = re.sub(r'\b[A-Z]{2,}\b', lambda m: m.group(0).lower(), text.replace('!', '.'))

@@ -142,7 +142,7 @@
   { id: 'complain.1', who: 'customer', moment: 'complain', text: "That's not what I ordered.", delivery: 'mildly put out' },
   { id: 'complain.2', who: 'customer', moment: 'complain', text: "Hm. This isn't quite what I asked for.", delivery: 'polite, disappointed' },
   { id: 'complain.gross.brown.1', who: 'customer', moment: 'complain.gross.brown', text: "This guacamole is brown. Guacamole's supposed to be green. That's the whole idea.", delivery: 'disgusted' },
-  { id: 'complain.gross.brown.2', who: 'customer', moment: 'complain.gross.brown', text: "Brown guacamole. I'm not eating anything older than my shoes.", delivery: 'dry, revolted' },
+  { id: 'complain.gross.brown.2', who: 'customer', moment: 'complain.gross.brown', text: "Brown guacamole? I'm not eating anything older than my shoes.", delivery: 'dry, revolted' },
   { id: 'complain.gross.hair.1', who: 'customer', moment: 'complain.gross.hair', text: "There's a hair in the beans. I don't know whose it is, and I'd like to keep it that way.", delivery: 'disgusted, measured' },
   { id: 'complain.gross.hair.2', who: 'customer', moment: 'complain.gross.hair', text: 'A hair. In the beans. People will hear about this.', delivery: 'disgusted, quiet' },
   { id: 'complain.gross.fly.1', who: 'customer', moment: 'complain.gross.fly', text: "There's a fly in my salsa. He's having a better lunch than I am.", delivery: 'disgusted, watching it' },
@@ -251,7 +251,7 @@
   { id: 'react.favourite.2', who: 'rita', moment: 'react.favourite', text: "Everything in it, rolled up tight. That's not a burrito, that's a structure. I love a structure.", delivery: 'reverent' },
   { id: 'react.gross.1', who: 'rita', moment: 'react.gross', text: "Whoa. I've seen some things on a job site. Not in my lunch.", delivery: 'disgusted, stepping back' },
   { id: 'react.gross.2', who: 'rita', moment: 'react.gross', text: "Nope! Hard hat on. That's a hazard.", delivery: 'alarmed, pulling the hat down' },
-  { id: 'complain.gross.brown.1', who: 'rita', moment: 'complain.gross.brown', text: "Brown guacamole. That's been sitting out longer than our coffee pot.", delivery: 'disgusted' },
+  { id: 'complain.gross.brown.1', who: 'rita', moment: 'complain.gross.brown', text: "Brown guacamole? That's been sitting out longer than our coffee pot.", delivery: 'disgusted' },
   { id: 'complain.gross.hair.1', who: 'rita', moment: 'complain.gross.hair', text: "There's a hair in the beans. I wear a hard hat so this doesn't happen.", delivery: 'indignant' },
   { id: 'complain.gross.fly.1', who: 'rita', moment: 'complain.gross.fly', text: 'A fly in the salsa. On a job site, that stops work.', delivery: 'firm' },
 

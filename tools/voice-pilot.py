@@ -97,6 +97,21 @@ def model_delivery(who, delivery):
     shout, too high, and distort); the manner comes from the voice itself."""
     if delivery and SPEC[who].get('calm'):
         delivery = LOUD.sub('', delivery).strip(' ,')
+    if delivery:
+        # Delivery test (round 22, 2026-11-14, Bryan's ratings):
+        # - a two-tone note ("upbeat, then a warning") gives the model one instruction it can't follow both ways; the first
+        #   tone alone was better, except when the second part is an aside or confiding (quieter words it can carry)
+        if re.search(r'\bthen\b', delivery) and not re.search(r'\bthen\b[^,]*\b(aside|confid)', delivery):
+            parts = re.split(r',?\s*\bthen\b', delivery)
+            # "a long pause, then grudging": the first part is a beat, not a tone: the tone is what follows
+            first = parts[1] if re.fullmatch(r'\s*(a |an )?((long|short|theatrical|big|small|little) )*(pause|sigh|beat)( first)?\s*', parts[0]) else parts[0]
+            # "a touch wounded in the middle" is a change mid-line too: dropped with the rest
+            delivery = ', '.join(p.strip() for p in first.split(',') if p.strip() and 'in the middle' not in p)
+        # - "gagging" does nothing, and plain disgust words came out flat: the stronger phrasing won 5 of 5
+        if re.search(r'\b(disgust\w*|revolted|gagging|grossed out)\b', delivery, re.I):
+            rest = [p.strip() for p in delivery.split(',') if p.strip()
+                    and not re.search(r'\b(disgust\w*|revolted|gagging|grossed out|recoil\w*)\b', p, re.I)]
+            delivery = ', '.join(rest + ['grossed out and disgusted, recoiling, nose wrinkled'])
     if delivery and SPEC[who].get('no_tags'):
         # a delivery that asks for a sigh makes one anyway, long and harsh (Vernon, cloner test 2026-11-11)
         parts = [p.strip() for p in re.split(r',|\bthen\b', delivery) if p.strip() and not re.search(r'sigh|pause', p, re.I)]
@@ -1211,6 +1226,22 @@ def requal(stage):
     who_list = SPEC[f'_round{ROUND}']
     cur = picked(True)
     lines_by = {k: (t, n) for k, t, n in STRESS}
+
+    def tests_for(who):
+        """The lines a character's candidates say: REQ_LINES, or real game lines ("tests": trial clip ids, read from
+        round 20's results.json with their delivery notes)."""
+        ids = SPEC[who][f'r{ROUND}'].get('tests')
+        if not ids:
+            return REQ_LINES
+        trial = load(round_dir(20) / 'results.json', {})
+        now = {c['clip']: c for c in all_clips()}   # today's script: a line reworded since the trial is said as it is now
+        kinds = []
+        for cid in ids:
+            k = re.sub(r'[^\w.-]', '_', cid.split('/', 1)[1])
+            cur = now.get(cid) or now.get(cid.replace(':customer.', ':'))   # a shared line that became the speaker's own copy
+            lines_by[k] = (cur['text'], cur.get('delivery', '')) if cur else (trial[cid]['text'], trial[cid]['delivery'])
+            kinds.append(k)
+        return kinds
     vsrc = GAME / 'voice-source'
     w = worker()
     try:
@@ -1278,7 +1309,7 @@ def requal(stage):
                 home = rep[cand]['pitch']
                 out_dir = folder / 'lines' / cand
                 out_dir.mkdir(parents=True, exist_ok=True)
-                for kind in REQ_LINES:
+                for kind in tests_for(who):
                     key = f'{cand}/{kind}'
                     final = out_dir / f'{kind}.wav'
                     if key in lrep and final.exists():
@@ -1341,7 +1372,7 @@ def requal(stage):
             key[f'{who}/{L}'] = cand
         groups = [('sample', SPEC[who]['sample'], 'the voice as designed', lambda cand: (folder / (cand + '.wav'), rep[cand]))]
         groups += [(k, lines_by[k][0], lines_by[k][1], (lambda k: lambda cand: (folder / 'lines' / cand / f'{k}.wav', lrep.get(f'{cand}/{k}')))(k))
-                   for k in REQ_LINES if SPEC[who][f'r{ROUND}'].get('lines', True)]
+                   for k in tests_for(who) if SPEC[who][f'r{ROUND}'].get('lines', True)]
         home = rep['current']['pitch'] if 'current' in rep else round(sum(SPEC[who]['pitch']) / 2)
         v = {'who': who, 'name': SPEC[who]['name'] + (' (heard through the speaker effect)' if fx else ''), 'home': home,
              'cands': [letters[x] for x in order], 'lines': []}

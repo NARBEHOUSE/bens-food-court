@@ -54,7 +54,49 @@
     "label": "Game-show host",
     "describe": "A man in his thirties with a smooth, peppy voice like a game-show host, medium-high. Energetic and cheerful, a little cheesy, selling every sentence. Clear studio recording."
    }
-  ]
+  ],
+  "r21": {
+   "current": "pilot/mitch/eager-s4",
+   "retake_note": "friendly, relaxed and warm",
+   "retakes": 2,
+   "per_style": 1,
+   "tests": [
+    "mitch/court:goldSign.1.bensBurritos",
+    "mitch/sushi:tutorial.warn.pick.2.roll.insideOut",
+    "mitch/cafe:mistake.tooFew.1.sugar.1",
+    "mitch/cafe:gross.spoiled.3.milk.whole",
+    "mitch/cafe:nearly.2.smooth",
+    "mitch/icecream:shift.start.2"
+   ],
+   "styles": [
+    {
+     "id": "friendly",
+     "label": "Friendly eager manager",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A man in his early thirties, a cheerful, eager diner assistant manager. A clear, friendly, medium-high voice. Upbeat and chatty, a little too confident, but warm and easygoing. Clear studio recording."
+    },
+    {
+     "id": "earnest",
+     "label": "Earnest, a bit goofy",
+     "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "describe": "A man in his early thirties, a well-meaning assistant manager who tries very hard. A clear, warm, medium-high voice. Earnest, chatty and good-natured, a little goofy. Clear studio recording."
+    }
+   ]
+  }
  },
  "marge": {
   "name": "Marge",
@@ -666,6 +708,17 @@
     "pilot/kai/boy-s4",
     "pilot/kai/girl-s1"
    ]
+  },
+  "r21": {
+   "current": "pilot11/kai/calm-s1",
+   "retake_note": "polite, serious and confident",
+   "retakes": 3,
+   "tests": [
+    "kai/smoothie:customer.order.odd.notGreen.2",
+    "kai/smoothie:customer.complain.gross.brown.1",
+    "kai/smoothie:customer.react.gross.1",
+    "kai/pizza:react.3.1"
+   ]
   }
  },
  "tony": {
@@ -759,6 +812,17 @@
    "current": "pilot9/reginald/velvet-s2",
    "retake_note": "unhurried and dramatic",
    "retakes": 4
+  },
+  "r21": {
+   "current": "pilot12/reginald/retake-s5",
+   "retake_note": "unhurried and dramatic",
+   "retakes": 3,
+   "tests": [
+    "reginald/sushi:customer.order.odd.noFishNoRice.1",
+    "reginald/cast:complain.c2",
+    "reginald/cafe:customer.react.gross.2",
+    "reginald/sushi:react.3.1"
+   ]
   }
  },
  "dale": {
@@ -1266,6 +1330,17 @@
    "current": "pilot9/brock/sweet-s1",
    "retake_note": "earnest, keen and friendly",
    "retakes": 4
+  },
+  "r21": {
+   "current": "pilot12/brock/current",
+   "retake_note": "earnest, keen and friendly",
+   "retakes": 3,
+   "tests": [
+    "brock/cast:complain.c8",
+    "brock/smoothie:customer.order.odd.notGreen.2",
+    "brock/icecream:greet.4",
+    "brock/icecream:smalltalk.2"
+   ]
   }
  },
  "jitters": {
@@ -1507,6 +1582,17 @@
      ],
      "describe": "A dignified master sushi chef in his sixties. A calm, warm, steady, medium-pitched man's voice. Quiet and exacting, choosing few words, with a very dry sense of humor. Clear studio recording."
     }
+   ]
+  },
+  "r21": {
+   "current": "pilot15/hiro/old-master-s4",
+   "retake_note": "calm, dry and exacting",
+   "retakes": 3,
+   "tests": [
+    "hiro/sushi:customer.complain.gross.hair.2",
+    "hiro/sushi:customer.order.odd.noFishNoRice.1",
+    "hiro/sushi:greet.3",
+    "hiro/sushi:smalltalk.4"
    ]
   }
  },
@@ -1936,5 +2022,13 @@
  "_round19": [
   "sal"
  ],
- "_round19_about": "Round 19 (2026-11-13): Sal walked away from the person with VoxCPM's own takes (tools/voice-sal.py walk): retakes of the performance, some noted 'big, heavyset man in his sixties', keep the 2 least like the recording that are clear (>=3.3) and in range, re-record from those, 3 generations. Final voices + the control's retake-s3 (current) say the expressive lines; likeness shown."
+ "_round19_about": "Round 19 (2026-11-13): Sal walked away from the person with VoxCPM's own takes (tools/voice-sal.py walk): retakes of the performance, some noted 'big, heavyset man in his sixties', keep the 2 least like the recording that are clear (>=3.3) and in range, re-record from those, 3 generations. Final voices + the control's retake-s3 (current) say the expressive lines; likeness shown.",
+ "_round21": [
+  "mitch",
+  "brock",
+  "reginald",
+  "hiro",
+  "kai"
+ ],
+ "_round21_about": "Round 21 (2026-11-14), delivery fixes after the batch trial, tested on each character's own trial lines (today's wording). Mitch: all 5 noted lines too aggressive/stiff, gentle notes ignored; his reference design asked for 'a little strained... smug, sarcastic edge, like he has had four coffees', and a reference's manner carries into every line. Candidates: retakes of the current voice (3 with a friendly note), and new designs keeping him eager and a bit overconfident without the strain. Brock, Reginald, Hiro, Kai ('low-quality mic' / rough by ear; their references are not dull by a high-frequency measure): retakes of the current voice."
 }

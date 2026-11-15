@@ -1,0 +1,23 @@
+{
+ "mitch/A": "current",
+ "mitch/B": "earnest-s3",
+ "mitch/C": "retake-s3",
+ "mitch/D": "friendly-s3",
+ "mitch/E": "retake-s5",
+ "brock/A": "retake-s1",
+ "brock/B": "current",
+ "brock/C": "retake-s6",
+ "brock/D": "retake-s4",
+ "reginald/A": "retake-s5",
+ "reginald/B": "current",
+ "reginald/C": "retake-s2",
+ "reginald/D": "retake-s6",
+ "hiro/A": "retake-s6",
+ "hiro/B": "retake-s3",
+ "hiro/C": "current",
+ "hiro/D": "retake-s1",
+ "kai/A": "current",
+ "kai/B": "retake-s5",
+ "kai/C": "retake-s3",
+ "kai/D": "retake-s4"
+}

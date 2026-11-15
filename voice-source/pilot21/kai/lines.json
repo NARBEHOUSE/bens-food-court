@@ -1,0 +1,162 @@
+{
+ "current/smoothie_customer.order.odd.notGreen.2": {
+  "said": "Green smoothie, please without the green part. I'm easing into it.",
+  "diffs": [],
+  "pitch": 297,
+  "seconds": 5.07,
+  "rate": 2.17,
+  "clarity": 4.12,
+  "drift": false,
+  "takes": 1
+ },
+ "current/smoothie_customer.complain.gross.brown.1": {
+  "said": "That banana was brown and mushy. I could taste the brown.",
+  "diffs": [],
+  "pitch": 265,
+  "seconds": 4.36,
+  "rate": 2.52,
+  "clarity": 4.17,
+  "drift": false,
+  "takes": 2
+ },
+ "current/smoothie_customer.react.gross.1": {
+  "said": "Oh, oh no! Something in this cup is looking back at me.",
+  "diffs": [],
+  "pitch": 284,
+  "seconds": 6.02,
+  "rate": 1.99,
+  "clarity": 3.37,
+  "drift": false,
+  "takes": 2
+ },
+ "current/pizza_react.3.1": {
+  "said": "Round, hot, correct. Ten out of ten.",
+  "diffs": [],
+  "pitch": 273,
+  "seconds": 2.72,
+  "rate": 2.58,
+  "clarity": 2.11,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s5/smoothie_customer.order.odd.notGreen.2": {
+  "said": "Green smoothie, please, without the green part. I'm easing into it.",
+  "diffs": [],
+  "pitch": 277,
+  "seconds": 5.76,
+  "rate": 1.91,
+  "clarity": 2.21,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s5/smoothie_customer.complain.gross.brown.1": {
+  "said": "That banana was brown and mushy. I could taste the brown.",
+  "diffs": [],
+  "pitch": 281,
+  "seconds": 4.25,
+  "rate": 2.59,
+  "clarity": 2.4,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s5/smoothie_customer.react.gross.1": {
+  "said": "Oh, oh no! Something in this cup is looking back at me.",
+  "diffs": [],
+  "pitch": 304,
+  "seconds": 6.02,
+  "rate": 1.99,
+  "clarity": 3.9,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s5/pizza_react.3.1": {
+  "said": "Round, hot, correct. Ten out of ten.",
+  "diffs": [],
+  "pitch": 291,
+  "seconds": 3.74,
+  "rate": 1.87,
+  "clarity": 2.51,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s4/smoothie_customer.order.odd.notGreen.2": {
+  "said": "Green smoothie, please, without the green part. I'm easing into it.",
+  "diffs": [],
+  "pitch": 262,
+  "seconds": 4.36,
+  "rate": 2.52,
+  "clarity": 2.19,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s4/smoothie_customer.complain.gross.brown.1": {
+  "said": "That banana was brown and mushy. I could taste the brown.",
+  "diffs": [],
+  "pitch": 295,
+  "seconds": 4.65,
+  "rate": 2.37,
+  "clarity": 2.52,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s4/smoothie_customer.react.gross.1": {
+  "said": "Oh, oh no! Something in this cup is looking back at me.",
+  "diffs": [],
+  "pitch": 285,
+  "seconds": 4.8,
+  "rate": 2.5,
+  "clarity": 2.79,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s4/pizza_react.3.1": {
+  "said": "Round, hot, correct. Ten out of ten.",
+  "diffs": [],
+  "pitch": 260,
+  "seconds": 3.39,
+  "rate": 2.06,
+  "clarity": 1.92,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s3/smoothie_customer.order.odd.notGreen.2": {
+  "said": "Green smoothie, please without the green part. I'm easing into it.",
+  "diffs": [],
+  "pitch": 218,
+  "seconds": 3.83,
+  "rate": 2.87,
+  "clarity": 2.92,
+  "drift": true,
+  "takes": 2
+ },
+ "retake-s3/smoothie_customer.complain.gross.brown.1": {
+  "said": "That banana was brown and mushy. I could taste the brown.",
+  "diffs": [],
+  "pitch": 234,
+  "seconds": 3.67,
+  "rate": 3.0,
+  "clarity": 3.66,
+  "drift": true,
+  "takes": 2
+ },
+ "retake-s3/smoothie_customer.react.gross.1": {
+  "said": "Oh no! Something in this cup is looking back at me.",
+  "diffs": [],
+  "pitch": 253,
+  "seconds": 4.09,
+  "rate": 2.93,
+  "clarity": 2.92,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s3/pizza_react.3.1": {
+  "said": "Round, hot, correct. Ten out of ten.",
+  "diffs": [],
+  "pitch": 310,
+  "seconds": 4.03,
+  "rate": 1.74,
+  "clarity": 2.69,
+  "drift": false,
+  "takes": 2
+ }
+}
