@@ -29,6 +29,8 @@ console.log(JSON.stringify({ people, lines: lines.map(l => ({ key: l.who + '/' +
 
 
 MODE = 'intro'   # 'fixes': the script audit (voice-source/script-audit.json), decisions to script-fixes.json
+AUDIT = GAME / 'voice-source' / 'script-audit.json'   # --lines <file>: any list in that format (items may carry "options")
+TEMPLATE_ON = True
 GROUPS = [('template', "Mitch's goal announcements (one template)"), ('year', 'Specific years and dates'),
           ('sense', "Doesn't make sense"), ('fit', "Doesn't fit who says it, or when"),
           ('unseen', "Refers to something the player can't see"), ('weak', 'Weak, or other')]
@@ -45,18 +47,21 @@ TEMPLATE = {'key': 'template/court-goal', 'who': 'template', 'id': 'court-goal',
 
 def data():
     if MODE == 'fixes':
-        audit = json.loads((GAME / 'voice-source' / 'script-audit.json').read_text(encoding='utf-8'))
-        people = [{'who': g, 'name': name, 'art': None, 'role': '', 'about': '', 'voice': ''} for g, name in GROUPS]
-        lines = [TEMPLATE]
+        audit = json.loads(AUDIT.read_text(encoding='utf-8'))
+        slug = lambda g: 'g-' + re.sub(r'[^a-z0-9]+', '-', g.lower()).strip('-')   # a page id: no spaces or quotes
+        groups = GROUPS + [(slug(g), g) for g in dict.fromkeys(a['group'] for a in audit if a.get('group'))]
+        people = [{'who': g, 'name': name, 'art': None, 'role': '', 'about': '', 'voice': ''} for g, name in groups]
+        lines = [TEMPLATE] if TEMPLATE_ON else []
         for i, a in enumerate(audit):
-            lines.append({'key': f"{a['clips'][0]}", 'who': KIND.get(a['type'], 'weak'), 'id': a['clips'][0],
+            lines.append({'key': f"{a['clips'][0]}", 'who': slug(a['group']) if a.get('group') else KIND.get(a['type'], 'weak'), 'id': a['clips'][0],
                           'text': a['text'], 'delivery': '', 'why': a['why'], 'suggestion': a['suggestion'],
                           'speakers': a['speakers'], 'variants': a.get('variants', 1), 'conf': a['confidence'],
-                          'clips': len(a['clips'])})
+                          'clips': len(a['clips']), 'options': a.get('options'), 'group': a.get('group')})
         cast = subprocess.run(['node', '-e', "const c=require(require('path').join(process.argv[1],'packs/cast/cast.js'));"
                                "console.log(JSON.stringify(Object.fromEntries(Object.entries(c.people).map(([k,p])=>[k,{name:p.name,art:p.art}]))))",
                                str(GAME)], capture_output=True, text=True, encoding='utf-8', check=True)
-        order = {g: i for i, (g, _) in enumerate(GROUPS)}
+        order = {g: i for i, (g, _) in enumerate(groups)}
+        people = [p for p in people if any(l['who'] == p['who'] for l in lines)]
         lines.sort(key=lambda l: (order[l['who']], l.get('conf') != 'high'))
         return {'mode': 'fixes', 'people': people, 'lines': lines, 'cast': json.loads(cast.stdout)}
     out = subprocess.run(['node', '-e', DUMP, str(GAME)], capture_output=True, text=True, encoding='utf-8', check=True)
@@ -113,7 +118,7 @@ section.person { background:var(--card); border:2px solid var(--line); border-ra
 .who-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:4px; font-size:14px; }
 .spk { display:inline-flex; align-items:center; gap:4px; background:var(--chip); border-radius:999px; padding:1px 8px 1px 1px; }
 .spk img, .spk .noimg { width:22px; height:22px; border-radius:50%; object-fit:cover; object-position:top; background:var(--line); }
-.why { font-style:normal; } .sugg { margin-top:4px; } .small { font-size:13px; }
+.why { font-style:normal; } .sugg { margin-top:4px; } .small { font-size:13px; } .opts { margin:6px 0 0; padding-left:24px; font-weight:600; }
 label { display:block; font-size:14px; color:var(--soft); margin-top:6px; }
 textarea, input[type=text] { width:100%; font:inherit; border:2px solid var(--line); border-radius:8px; padding:6px 8px; background:var(--card); color:var(--ink); }
 .note { margin-top:6px; } .note input { font-size:15px; }
@@ -197,8 +202,9 @@ function fixEl(l) {
   const r = R[l.key] = R[l.key] || {};
   const el = document.createElement('div'); el.className = 'line'; el.dataset.key = l.key; el.dataset.st = r.st || '';
   el.innerHTML = '<div class="who-row"></div><div class="say"></div><div class="how why"></div>' +
-    '<div class="sugg"><span class="soft">Suggested:</span> <b></b></div>' +
-    '<div class="acts" role="group"><button data-a="keep" data-k="use">Use suggestion</button><button data-a="keep2" data-k="keep">Keep as is</button>' +
+    (l.options ? '<ol class="opts"></ol>' : '<div class="sugg"><span class="soft">Suggested:</span> <b></b></div>') +
+    '<div class="acts" role="group">' + (l.options ? l.options.map((o, i) => '<button data-a="keep" data-k="opt' + i + '">Use ' + (i + 1) + '</button>').join('')
+      : '<button data-a="keep" data-k="use">Use suggestion</button>') + '<button data-a="keep2" data-k="keep">Keep as is</button>' +
     '<button data-a="edit" data-k="edit">Edit</button><button class="speak" type="button">Read aloud</button></div>' +
     '<div class="editbox"><label>Your wording<textarea rows="2"></textarea></label></div>' +
     '<div class="note"><label>Note (optional)<input type="text" placeholder="Anything for Claude or Ari"></label></div>';
@@ -209,9 +215,11 @@ function fixEl(l) {
   extra.textContent = (l.variants > 1 ? ' · ' + l.variants + ' versions (one per restaurant)' : '') + (l.clips > 1 ? ' · ' + l.clips + ' recordings' : '') + (l.conf === 'medium' ? ' · less certain' : '');
   wr.append(extra);
   const say = $('.say', el), ta = $('textarea', el), nt = $('.note input', el);
-  say.textContent = l.text; $('.why', el).textContent = 'Why flagged: ' + l.why; $('.sugg b', el).textContent = l.suggestion;
+  say.textContent = l.text; $('.why', el).textContent = 'Why flagged: ' + l.why;
+  if (l.options) l.options.forEach(o => { const li = document.createElement('li'); li.textContent = o; $('.opts', el).append(li); });
+  else $('.sugg b', el).textContent = l.suggestion;
   ta.value = r.text != null ? r.text : l.suggestion; nt.value = r.note || '';
-  const paint = () => { el.dataset.st = r.st === 'use' ? 'keep' : r.st === 'keep' ? 'kept' : (r.st || '');
+  const paint = () => { el.dataset.st = r.st === 'use' || /^opt/.test(r.st || '') ? 'keep' : r.st === 'keep' ? 'kept' : (r.st || '');
     el.querySelectorAll('.acts [data-k]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === r.st))); };
   el.querySelectorAll('.acts [data-k]').forEach(b => b.onclick = () => {
     r.st = r.st === b.dataset.k ? '' : b.dataset.k;
@@ -219,7 +227,8 @@ function fixEl(l) {
     paint(); progress(); save(); });
   ta.oninput = () => { r.text = ta.value; save(); };
   nt.oninput = () => { r.note = nt.value; save(); };
-  $('.speak', el).onclick = () => speak(r.st === 'edit' ? ta.value : r.st === 'use' ? l.suggestion : l.text);
+  $('.speak', el).onclick = () => speak(r.st === 'edit' ? ta.value : r.st === 'use' ? l.suggestion
+    : /^opt/.test(r.st || '') ? l.options[+r.st.slice(3)] : l.text);
   paint();
   return el;
 }
@@ -285,6 +294,13 @@ class Handler(SimpleHTTPRequestHandler):
                                  'years, or don\'t fit who says them. Lines several characters share, or one line with a version per '
                                  'restaurant, appear once here: one decision fixes all of them. "Less certain" = the reviewer was less sure.</p>'
                                  '<p><b>Use suggestion</b>, <b>Keep as is</b>, or <b>Edit</b> (starts from the suggestion). Saves as you go.</p></details>'))
+            if MODE == 'fixes' and not TEMPLATE_ON:   # --lines: a short list of lines to rewrite
+                page = (page.replace('<h1>Script fixes: lines that may not make sense</h1>', '<h1>Lines to rewrite</h1>')
+                        .replace('<title>Script Fixes</title>', '<title>Line Rewrites</title>')
+                        .replace(re.search(r'<details class="rules" open>.*?</details>', page, re.S).group(0),
+                                 '<details class="rules" open><summary>How this works</summary><p>Each line shows why it is here and a '
+                                 'few rewrites. <b>Use</b> one, <b>Keep as is</b>, or <b>Edit</b> (starts from the first rewrite). '
+                                 'Read aloud is the browser\'s voice, only for rhythm. Saves as you go.</p></details>'))
             return self.send(page.replace('__DATA__', json.dumps(data())), 'text/html; charset=utf-8')
         if self.path == '/save':
             return self.send(STORE.read_text(encoding='utf-8') if STORE.exists() else '{}', 'application/json')
@@ -308,6 +324,11 @@ if __name__ == '__main__':
     if '--fixes' in args:   # the script audit instead of the lead-ins
         args.remove('--fixes')
         MODE, STORE = 'fixes', GAME / 'voice-source' / 'script-fixes.json'
+    if '--lines' in args:   # any list of lines to rewrite, in the audit's format: --lines voice-source/<name>.json
+        i = args.index('--lines')
+        AUDIT = (GAME / args[i + 1]).resolve()
+        del args[i:i + 2]
+        MODE, TEMPLATE_ON, STORE = 'fixes', False, AUDIT.with_name(AUDIT.stem + '-decisions.json')
     port = int(args[0]) if args else 8830
     print(f'Lead-in review: http://127.0.0.1:{port}/  (decisions: {STORE})', flush=True)
     ThreadingHTTPServer(('127.0.0.1', port), Handler).serve_forever()

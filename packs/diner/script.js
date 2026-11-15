@@ -90,13 +90,13 @@
 
   /* ── Mitch: the tutorial (Marge's bacon cheeseburger, medium, no onions; the cheese comes mouldy) ─ */
   { id: 'intro', who: 'mitch', moment: 'tutorial.intro', text: "First day, huh? Great. I'm Mitch. Assistant manager. Let's do one order together, nice and slow." },
-  { id: 'intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.", delivery: 'eager, a touch wounded in the middle, then eager again' },
+  { id: 'intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. Let's make one order together. Follow my lead.", delivery: 'eager, a touch wounded in the middle, then eager again' },
   { id: 'ticket', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. If you forget the order, pick Ticket and you'll hear it again." },
   { id: 'ticket.2', who: 'mitch', moment: 'tutorial.ticket', text: 'Every order goes up on the wheel as a ticket, and the ticket lists everything that goes on, in the order it comes. Pick Ticket any time and it reads itself again. It loves that.', delivery: 'helpful, upbeat' },
   { id: 'grill', who: 'mitch', moment: 'tutorial.grill', text: 'This is the grill. One patty for a burger, two for a double. Add one, then pick Done.' },
   { id: 'grill.2', who: 'mitch', moment: 'tutorial.grill', text: "The grill. The ticket says how many patties. Add that many, then pick Done. Resist adding more. I never resist, which is why I'm telling you.", delivery: 'upbeat, confiding' },
   { id: 'cook', who: 'mitch', moment: 'tutorial.cook.grill', text: 'Now, how done? She said medium. The grill does the flipping. I do the supervising.' },
-  { id: 'cook.2', who: 'mitch', moment: 'tutorial.cook.grill', text: "Pick how done. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.", delivery: 'upbeat, then dark' },
+  { id: 'cook.2', who: 'mitch', moment: 'tutorial.cook.grill', text: "Next, we choose how done it gets. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.", delivery: 'upbeat, then dark' },
   { id: 'board', who: 'mitch', moment: 'tutorial.board', text: "Now the toppings come down the line, one at a time. Add what's on the ticket. Skip what isn't." },
   { id: 'board.2', who: 'mitch', moment: 'tutorial.board', text: "The board. Bottom bun's on, patty's on. Now every topping comes past, one at a time: Add if it's on the ticket, Skip if it isn't. The top bun goes on by itself. It's been trained.", delivery: 'upbeat, instructional' },
   { id: 'gross', who: 'mitch', moment: 'tutorial.gross', text: 'When something comes down the line looking nasty, pick Swap It and you get a fresh one.' },

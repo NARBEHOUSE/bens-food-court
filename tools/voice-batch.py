@@ -19,6 +19,7 @@ import importlib.util
 import json
 import random
 import sys
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -284,11 +285,208 @@ def notetest(spec_path):
     print(f'delivery test page: {out / "index.html"}')
 
 
+# ── the full run (2026-11-14) ─────────────────────────────────────────────────────────────────────────────────────
+# Every clip the game needs, recorded the way the trial and the delivery test settled. Staged OUTSIDE the game in
+# voice-source/full/ (its own packs/<pack>/voice/ folders and manifests), so the game and its tests stay consistent
+# at every commit; `full install` copies the result in, adds index.html's manifest lines and turns recordings on.
+#   full prep              the clip list (node tools/voice-clips.cjs all) -> voice-source/full/clips.json
+#   full run [--speaker a,b] [--limit n]   VoxCPM: a clip that passes is exported and in the staged manifest at once;
+#                          one that never passes keeps its best take for the fallback
+#   (venv-qwen) voice-qwen.py jobs voice-source/full/qwen-jobs.json
+#   full fallback          the better of VoxCPM's best and Qwen's take is exported; still below the bar = flagged
+#   full report            counts, the flagged clips, the time per clip
+#   full install           NOT BUILT YET (a game change, when Bryan asks): staged -> packs/<pack>/voice, index.html
+#                          manifest lines (tests/voices.test.cjs), manifest.js, BBCourt.recordedVoices true
+# A clip already staged with the same words (hash) is skipped, so a run can stop and start; an edited line shows up
+# again on the next prep.
+FULL = GAME / 'voice-source' / 'full'
+
+
+def full_manifest(pack):
+    return vp.load(FULL / 'packs' / pack / 'voice' / 'manifest.json', {})
+
+
+def full_write_manifest(pack, man):
+    out = FULL / 'packs' / pack / 'voice'
+    out.mkdir(parents=True, exist_ok=True)
+    (out / 'manifest.json').write_text(json.dumps(man, indent=1, sort_keys=True), encoding='utf-8')
+
+
+def full_export(c, take, model, flag=False):
+    """A take -> the staged pack folder as the game's mp3 (the PA through her speaker effect) + its manifest entry."""
+    import voices
+    rel = voices.clip_file(c['clip'])
+    dst = FULL / 'packs' / c['pack'] / 'voice' / rel
+    fx = vp.SPEC['pa'].get('r12', {}).get('effect') if c['speaker'] == 'pa' else None
+    vp.export_fx(FULL / take['wav'], dst, fx)
+    return rel, {'file': rel, 'hash': c['hash'], 'model': model, 'seed': take.get('seed'), 'heard': take['said'],
+                 'clarity': take['clarity'], 'pitch': take['pitch'], 'flag': bool(flag)}
+
+
+def full_prep():
+    FULL.mkdir(parents=True, exist_ok=True)
+    import subprocess
+    subprocess.run(['node', str(GAME / 'tools' / 'voice-clips.cjs'), 'all', str(FULL / 'clips.json')], check=True, cwd=str(GAME))
+    clips = json.loads((FULL / 'clips.json').read_text(encoding='utf-8'))
+    mans = {}
+    todo = [c for c in clips if (mans.setdefault(c['pack'], full_manifest(c['pack'])).get(c['clip']) or {}).get('hash') != c['hash']]
+    print(f'{len(clips)} clips, {len(clips) - len(todo)} already staged with these words, {len(todo)} to record')
+
+
+def full_run(speakers=None, limit=None):
+    global ROOT
+    ROOT = FULL
+    clips = json.loads((FULL / 'clips.json').read_text(encoding='utf-8'))
+    pend = vp.load(FULL / 'pending.json', {})     # clips waiting for the fallback: {clip: {clip record, best}}
+    mans = {}
+    todo = [c for c in clips if (mans.setdefault(c['pack'], full_manifest(c['pack'])).get(c['clip']) or {}).get('hash') != c['hash']
+            and not (c['clip'] in pend and pend[c['clip']]['c']['hash'] == c['hash'])]
+    if speakers:
+        todo = [c for c in todo if c['speaker'] in speakers]
+    if limit:
+        todo = todo[:limit]
+    print(f'{len(todo)} clips to record', flush=True)
+    (FULL / 'work').mkdir(parents=True, exist_ok=True)
+    log = open(FULL / 'times.log', 'a', encoding='utf-8')
+    w = vp.worker()
+    t0, done, dirty = time.time(), 0, set()
+    try:
+        for c in todo:
+            who = c['speaker']
+            folder = FULL / 'takes' / who
+            (folder / 'work').mkdir(parents=True, exist_ok=True)
+            said = vp.model_text(who, c['text'])
+            note = vp.model_delivery(who, c.get('delivery'))
+            home, _ = home_pitch(who)
+            words = max(1, len(checks.words(c['text'])))
+            safe = vp.re.sub(r'[^\w.@-]', '_', c['clip'].replace('/', '__'))
+            takes = []
+            for seed in SEEDS:
+                wav = folder / f'{safe}-s{seed}.wav'
+                ans = w.render({'id': f"{c['clip']}-{seed}", 'text': (f'({note})' if note else '') + said, 'out': str(wav),
+                                'seed': seed, 'steps': STEPS, 'cfg': CFG, 'reference': str(ref_of(who)), 'retry': True})
+                if not ans.get('ok'):
+                    continue
+                r = vp.check(wav, said, folder / 'work')
+                r['clip'] = clipped(wav)
+                ok, sk, drift = judge(r, words, home)
+                r.update(wav=str(wav.relative_to(FULL)), seed=seed, ok=bool(ok), drift=bool(drift))
+                takes.append(r)
+                if ok:
+                    break
+            if not takes:
+                print('  NO TAKE', c['clip'], flush=True)
+                continue
+            best = sorted(takes, key=lambda r: judge(r, words, home)[1])[0]
+            if best['ok']:
+                rel, entry = full_export(c, best, 'voxcpm')
+                mans[c['pack']][c['clip']] = dict(entry, tries=len(takes))
+                dirty.add(c['pack'])
+                pend.pop(c['clip'], None)
+            else:
+                pend[c['clip']] = {'c': c, 'best': best, 'said': said, 'home': home, 'tries': len(takes)}
+                vp.save(FULL / 'pending.json', pend)
+            for t in takes:   # the mp3 is the product; keep only a fallback clip's best take
+                if t is best and not best['ok']:
+                    continue
+                for p in (FULL / t['wav'], folder / 'work' / Path(t['wav']).name):
+                    p.unlink(missing_ok=True)
+            done += 1
+            if done % 10 == 0 or done == len(todo):
+                for pack in dirty:
+                    full_write_manifest(pack, mans[pack])
+                dirty.clear()
+                per = (time.time() - t0) / done
+                msg = f'  {done}/{len(todo)} ({per:.1f} s each, about {(len(todo) - done) * per / 3600:.1f} h left; {len(pend)} waiting for the fallback)'
+                print(msg, flush=True)
+                log.write(time.strftime('%Y-%m-%d %H:%M ') + msg.strip() + '\n')
+                log.flush()
+    finally:
+        for pack in dirty:
+            full_write_manifest(pack, mans[pack])
+        w.close()
+        log.close()
+    jobs = []
+    for clip, p in pend.items():
+        out = FULL / 'takes' / p['c']['speaker'] / (vp.re.sub(r'[^\w.@-]', '_', clip.replace('/', '__')) + '-qwen.wav')
+        jobs.append({'ref': str(ref_of(p['c']['speaker'])), 'ref_text': home_pitch(p['c']['speaker'])[1], 'text': p['said'], 'out': str(out)})
+    vp.save(FULL / 'qwen-jobs.json', jobs)
+    print(f'VoxCPM pass done: {done} clips this run, {len(pend)} for the Qwen fallback', flush=True)
+
+
+def full_fallback():
+    global ROOT
+    ROOT = FULL
+    pend = vp.load(FULL / 'pending.json', {})
+    mans, flagged = {}, 0
+    for clip, p in list(pend.items()):
+        c = p['c']
+        q_wav = FULL / 'takes' / c['speaker'] / (vp.re.sub(r'[^\w.@-]', '_', clip.replace('/', '__')) + '-qwen.wav')
+        words = max(1, len(checks.words(c['text'])))
+        best, model = p['best'], 'voxcpm'
+        if q_wav.exists():
+            q = vp.check(q_wav, p['said'], FULL / 'takes' / c['speaker'] / 'work')
+            q['clip'] = clipped(q_wav)
+            ok, sk, drift = judge(q, words, p['home'])
+            q.update(wav=str(q_wav.relative_to(FULL)), ok=bool(ok), drift=bool(drift))
+            if sk < judge(best, words, p['home'])[1]:
+                best, model = q, 'qwen'
+        man = mans.setdefault(c['pack'], full_manifest(c['pack']))
+        rel, entry = full_export(c, best, model, flag=not best['ok'])
+        man[clip] = dict(entry, tries=p['tries'])
+        flagged += not best['ok']
+        for f in (FULL / p['best']['wav'], q_wav):
+            f.unlink(missing_ok=True)
+        del pend[clip]
+    for pack, man in mans.items():
+        full_write_manifest(pack, man)
+    vp.save(FULL / 'pending.json', pend)
+    print(f'fallback done: {len(mans)} packs updated, {flagged} clips still below the bar (flagged)')
+
+
+def full_report():
+    clips = json.loads((FULL / 'clips.json').read_text(encoding='utf-8'))
+    staged = flagged = 0
+    by_model = defaultdict(int)
+    flags = []
+    for pack in sorted({c['pack'] for c in clips}):
+        for clip, e in full_manifest(pack).items():
+            staged += 1
+            by_model[e.get('model', '?')] += 1
+            if e.get('flag'):
+                flagged += 1
+                flags.append(clip)
+    print(f'{staged} of {len(clips)} clips staged; by model {dict(by_model)}; {flagged} flagged; '
+          f'{len(vp.load(FULL / "pending.json", {}))} waiting for the fallback')
+    tail = (FULL / 'times.log').read_text(encoding='utf-8').strip().splitlines()[-1:] if (FULL / 'times.log').exists() else []
+    if tail:
+        print('last progress line:', tail[0])
+    vp.save(FULL / 'flagged.json', flags)
+
+
 def main():
     setup()
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
     if cmd == 'notetest':
         return notetest(sys.argv[2])
+    if cmd == 'full':
+        sub, args = (sys.argv[2] if len(sys.argv) > 2 else ''), sys.argv[3:]
+        opt = {}
+        for k in ('--speaker', '--limit'):
+            if k in args:
+                i = args.index(k)
+                opt[k[2:]] = args[i + 1]
+                del args[i:i + 2]
+        if sub == 'prep':
+            return full_prep()
+        if sub == 'run':
+            return full_run(opt.get('speaker', '').split(',') if opt.get('speaker') else None,
+                            int(opt['limit']) if opt.get('limit') else None)
+        if sub == 'fallback':
+            return full_fallback()
+        if sub == 'report':
+            return full_report()
+        sys.exit(__doc__)
     if cmd == 'trial':
         trial()
     elif cmd == 'run':

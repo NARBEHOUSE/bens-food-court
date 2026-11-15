@@ -1,0 +1,42 @@
+[
+ {
+  "text": "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+  "clips": [
+   "mitch/intro.2"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.intro",
+  "type": "other",
+  "group": "Mitch's tutorial lines",
+  "confidence": "high",
+  "why": "Bryan (delivery test): the delivery on \"I'll point at things\" isn't great; the line might need reworking. Said at the start of the diner tutorial.",
+  "options": [
+   "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. Let's do one order together. I'll show you how.",
+   "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together: you cook, I supervise. I'm great at supervising.",
+   "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. Let's make one order together. Follow my lead."
+  ],
+  "suggestion": "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. Let's do one order together. I'll show you how."
+ },
+ {
+  "text": "Pick how done. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+  "clips": [
+   "mitch/cook.2"
+  ],
+  "speakers": [
+   "mitch"
+  ],
+  "moment": "tutorial.cook.grill",
+  "type": "other",
+  "group": "Mitch's tutorial lines",
+  "confidence": "high",
+  "why": "Bryan (delivery test): every take came out aggressive; the opening \"Pick how done\" is read as a command. Said in the diner tutorial at the grill.",
+  "options": [
+   "Now, how done? The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+   "Next, we choose how done it gets. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+   "How done do they want it? The ticket says medium. The grill does the flipping. I tried once. We don't talk about it."
+  ],
+  "suggestion": "Now, how done? The ticket says medium. The grill does the flipping. I tried once. We don't talk about it."
+ }
+]
