@@ -49,13 +49,13 @@
   { id: 'goodbye.c5', who: 'marge', moment: 'goodbye', text: "Bye, sweetie. Wear a coat. I don't care what it's like out.", delivery: 'warm, motherly' },
   { id: 'goodbye.c6', who: 'marge', moment: 'goodbye', text: "I'll be back, hon. I always come back. It's the hip. I can't get far.", delivery: 'warm, laughing at herself' },
   // mentions: what she has there (the proposal's table); the diner and pizza are both "the usual, hon"
-  { id: 'mention.c1', who: 'marge', moment: 'mention', about: 'smoothie', text: "Strawberry banana at {about}. It's the only fruit pair I trust. The others look like they're up to something.", delivery: 'warm, faintly suspicious' },
-  { id: 'mention.c2', who: 'marge', moment: 'mention', about: 'burrito', text: 'Bean and cheese at {about}. The girls say live a little. I live plenty, hon. With beans.', delivery: 'warm, unbothered' },
-  { id: 'mention.c3', who: 'marge', moment: 'mention', about: 'pizza', text: "Plain cheese at {about}. My husband said I had no sense of adventure. I married him, didn't I?", delivery: 'warm, dry' },
-  { id: 'mention.c4', who: 'marge', moment: 'mention', about: 'diner', text: "At {about} I just say 'the usual' and they know. Like a good marriage, hon. Less snoring.", delivery: 'warm, fond' },
-  { id: 'mention.c5', who: 'marge', moment: 'mention', about: 'cafe', text: "Coffee, cream and two sugars at {about}. Same as the bus depot, only nobody's yelling about the heater.", delivery: 'warm, nostalgic' },
-  { id: 'mention.c6', who: 'marge', moment: 'mention', about: 'icecream', text: 'Vanilla in a cup at {about}. Cones are for people who trust gravity, hon.', delivery: 'warm, knowing' },
-  { id: 'mention.c7', who: 'marge', moment: 'mention', about: 'sushi', text: "I told them at {about}, nothing raw, hon. I raised three kids. I've had enough surprises.", delivery: 'warm, firm' },
+  { id: 'mention.c1', who: 'marge', moment: 'mention', about: 'smoothie', text: "Have you been to {about}, hon? Strawberry banana. It's the only fruit pair I trust. The others look like they're up to something.", delivery: 'warm, faintly suspicious' },
+  { id: 'mention.c2', who: 'marge', moment: 'mention', about: 'burrito', text: "I get bean and cheese over at {about}. The girls say live a little. I live plenty, hon. With beans.", delivery: 'warm, unbothered' },
+  { id: 'mention.c3', who: 'marge', moment: 'mention', about: 'pizza', text: "I always get plain cheese over at {about}. My husband said I had no sense of adventure. I married him, didn't I?", delivery: 'warm, dry' },
+  { id: 'mention.c4', who: 'marge', moment: 'mention', about: 'diner', text: "You should try {about}, hon. I just say 'the usual' and they know. Like a good marriage. Less snoring.", delivery: 'warm, fond' },
+  { id: 'mention.c5', who: 'marge', moment: 'mention', about: 'cafe', text: "Stop by {about} sometime, hon. Coffee, cream and two sugars. Like the bus depot, only nobody's yelling about the heater.", delivery: 'warm, nostalgic' },
+  { id: 'mention.c6', who: 'marge', moment: 'mention', about: 'icecream', text: "Try {about} sometime, hon. Get it in a cup. Cones are for people who trust gravity.", delivery: 'warm, knowing' },
+  { id: 'mention.c7', who: 'marge', moment: 'mention', about: 'sushi', text: "Have you been to {about}? I told them, nothing raw, hon. I raised three kids. I've had enough surprises.", delivery: 'warm, firm' },
 
   /* ── Gus: deep, friendly, a Western drawl (not slow); eleven hours of interstate behind him; Delores is his rig ── */
   { id: 'greet.c1', who: 'gus', moment: 'greet', text: 'Howdy, buddy. Parked the rig out back. Took up the whole loading dock.', delivery: 'easy, friendly drawl' },
@@ -78,13 +78,13 @@
   { id: 'goodbye.c5', who: 'gus', moment: 'goodbye', text: "Delores and I thank ya.", delivery: 'fond drawl' },
   { id: 'goodbye.c6', who: 'gus', moment: 'goodbye', text: "Big Hungry, signin' off. Ten-four, buddy.", delivery: 'playful, like a CB radio' },
   // mentions: two of everything, everywhere ("one for now, one for the road")
-  { id: 'mention.c1', who: 'gus', moment: 'mention', about: 'smoothie', text: 'Two smoothies at {about}, same deal. The second one made it as far as Tulsa.', delivery: 'fond drawl' },
-  { id: 'mention.c2', who: 'gus', moment: 'mention', about: 'burrito', text: "Two burritos at {about}. One for now, one for the road. Both of 'em were for now.", delivery: 'sheepish drawl' },
-  { id: 'mention.c3', who: 'gus', moment: 'mention', about: 'pizza', text: 'Two larges at {about}, one for the road. Had to seat-belt it in.', delivery: 'proud drawl' },
-  { id: 'mention.c4', who: 'gus', moment: 'mention', about: 'diner', text: "I always get two at {about}. One for now, one for the road. The road's never once said thank you.", delivery: 'warm drawl, amused' },
-  { id: 'mention.c5', who: 'gus', moment: 'mention', about: 'cafe', text: 'Two coffees and a dozen donuts at {about}. They asked if it was for the office. My office has eighteen wheels.', delivery: 'warm drawl, pleased' },
-  { id: 'mention.c6', who: 'gus', moment: 'mention', about: 'icecream', text: 'Two cones at {about}, one for the road. Do not take ice cream on the road, buddy. Learned that in Arizona.', delivery: 'rueful drawl' },
-  { id: 'mention.c7', who: 'gus', moment: 'mention', about: 'sushi', text: "Got two of every roll at {about}. Turns out that's a lot of rolls. Still workin' through 'em in the cab.", delivery: 'cheerful drawl' },
+  { id: 'mention.c1', who: 'gus', moment: 'mention', about: 'smoothie', text: "You been to {about}? Get two smoothies. The second one made it as far as Tulsa.", delivery: 'fond drawl' },
+  { id: 'mention.c2', who: 'gus', moment: 'mention', about: 'burrito', text: "I got two burritos over at {about}. One for now, one for the road. Both of 'em were for now.", delivery: 'sheepish drawl' },
+  { id: 'mention.c3', who: 'gus', moment: 'mention', about: 'pizza', text: "You gotta try {about}. I got two larges, one for the road. Had to seat-belt it in.", delivery: 'proud drawl' },
+  { id: 'mention.c4', who: 'gus', moment: 'mention', about: 'diner', text: "Ever eat at {about}? I always get two. One for now, one for the road. The road's never once said thank you.", delivery: 'warm drawl, amused' },
+  { id: 'mention.c5', who: 'gus', moment: 'mention', about: 'cafe', text: "Swing by {about} sometime. I got two coffees and a dozen donuts. They asked if it was for the office. My office has eighteen wheels.", delivery: 'warm drawl, pleased' },
+  { id: 'mention.c6', who: 'gus', moment: 'mention', about: 'icecream', text: "Got two cones at {about}, one for the road. Do not take ice cream on the road, buddy. Learned that in Arizona.", delivery: 'rueful drawl' },
+  { id: 'mention.c7', who: 'gus', moment: 'mention', about: 'sushi', text: "Ever tried {about}? I got two of every roll. Turns out that's a lot of rolls. Still workin' through 'em in the cab.", delivery: 'cheerful drawl' },
 
   /* ── Coach Bev: low, butch and booming; every moment is the fourth quarter (caps are her emphasis). Her delivery
         notes ask for firm, never loud (DESIGN.md's voice test: loud words made every clone shout and distort);
@@ -108,13 +108,13 @@
   { id: 'goodbye.c5', who: 'bev', moment: 'goodbye', text: '[whistle] Bev OUT!', delivery: 'one sharp whistle, then firm and commanding' },
   { id: 'goodbye.c6', who: 'bev', moment: 'goodbye', text: "I'll be back! Coaches always come back! It's in the CONTRACT!", delivery: 'firm, like a coach,cheerful' },
   // mentions: what she orders there, and the counting (pickles at the Burger Bar, jalapeños at Ben's Burritos)
-  { id: 'mention.c1', who: 'bev', moment: 'mention', about: 'smoothie', text: 'Protein shake at {about}! Three gulps! Personal best! EVERY time!', delivery: 'firm, like a coach,triumphant' },
+  { id: 'mention.c1', who: 'bev', moment: 'mention', about: 'smoothie', text: "I get a protein shake at {about}! Three gulps! Personal best! EVERY time!", delivery: 'firm, like a coach,triumphant' },
   { id: 'mention.c2', who: 'bev', moment: 'mention', about: 'burrito', text: "At {about}, I count the jalapeños OUT LOUD! The guy next to me joined in! Now it's a DRILL!", delivery: 'firm, like a coach,counting energy' },
-  { id: 'mention.c3', who: 'bev', moment: 'mention', about: 'pizza', text: "Meat lover's at {about}! The only pizza with a full ROSTER!", delivery: 'firm, like a coach,proud' },
-  { id: 'mention.c4', who: 'bev', moment: 'mention', about: 'diner', text: 'At {about}, I count the pickles OUT LOUD! Every pickle is a REP!', delivery: 'firm, like a coach,counting energy' },
-  { id: 'mention.c5', who: 'bev', moment: 'mention', about: 'cafe', text: 'Black coffee at {about}! No cream! No sugar! No EXCUSES!', delivery: 'firm, like a coach,drill-sergeant rhythm' },
-  { id: 'mention.c6', who: 'bev', moment: 'mention', about: 'icecream', text: "Sundae at {about}, for the TEAM! The team wasn't there! It was a MOTIVATIONAL sundae!", delivery: 'firm, like a coach,unashamed' },
-  { id: 'mention.c7', who: 'bev', moment: 'mention', about: 'sushi', text: 'Spicy tuna at {about}! Used the chopsticks! First try! I gave MYSELF a medal!', delivery: 'firm, like a coach,proud' },
+  { id: 'mention.c3', who: 'bev', moment: 'mention', about: 'pizza', text: "Hit {about}! Get the meat lover's! The only pizza with a full ROSTER!", delivery: 'firm, like a coach,proud' },
+  { id: 'mention.c4', who: 'bev', moment: 'mention', about: 'diner', text: "You been to {about}? I count the pickles OUT LOUD! Every pickle is a REP!", delivery: 'firm, like a coach,counting energy' },
+  { id: 'mention.c5', who: 'bev', moment: 'mention', about: 'cafe', text: "I get black coffee at {about}! No cream! No sugar! No EXCUSES!", delivery: 'firm, like a coach,drill-sergeant rhythm' },
+  { id: 'mention.c6', who: 'bev', moment: 'mention', about: 'icecream', text: "I got a sundae at {about}, for the TEAM! The team wasn't there! It was a MOTIVATIONAL sundae!", delivery: 'firm, like a coach,unashamed' },
+  { id: 'mention.c7', who: 'bev', moment: 'mention', about: 'sushi', text: "Try {about}! I used the chopsticks! First try! I gave MYSELF a medal!", delivery: 'firm, like a coach,proud' },
 
   /* ── Vernon: foppish, fussy, refined, with theatrical sighs; eleven followers hang on every word ──────────── */
   { id: 'greet.c1', who: 'vernon', moment: 'greet', text: '[sigh] Good afternoon. I come on behalf of my readers. All eleven.', delivery: 'haughty and fussy, a theatrical sigh first' },
@@ -137,11 +137,11 @@
   { id: 'goodbye.c6', who: 'vernon', moment: 'goodbye', text: '[sigh] Adieu. My readers await. Two of them, realistically.', delivery: 'a theatrical sigh, deflating' },
   // mentions: exact everywhere ("I will know"); at Ben's Sushi he judges beside Chef Hiro
   { id: 'mention.c1', who: 'vernon', moment: 'mention', about: 'smoothie', text: "My blend at {about} is very specific. It's on a laminated card, in my wallet, next to my heart.", delivery: 'fussy, proud' },
-  { id: 'mention.c2', who: 'vernon', moment: 'mention', about: 'burrito', text: 'At {about} I have a bowl, nothing touching. Food should have boundaries. So should people.', delivery: 'fussy, firm' },
-  { id: 'mention.c3', who: 'vernon', moment: 'mention', about: 'pizza', text: 'At {about}: thin crust, light, cut in eight. Not seven. Not nine. Eight. I will know.', delivery: 'precise, haughty' },
+  { id: 'mention.c2', who: 'vernon', moment: 'mention', about: 'burrito', text: "Do visit {about}. Order a bowl, nothing touching. Food should have boundaries. So should people.", delivery: 'fussy, firm' },
+  { id: 'mention.c3', who: 'vernon', moment: 'mention', about: 'pizza', text: "Do try {about}. Thin crust, cut in eight. Not seven. Not nine. Eight. I will know.", delivery: 'precise, haughty' },
   { id: 'mention.c4', who: 'vernon', moment: 'mention', about: 'diner', text: 'My blog began at {about}. When I branched out, I lost a follower. He came back. They always do.', delivery: 'refined, faintly triumphant' },
-  { id: 'mention.c5', who: 'vernon', moment: 'mention', about: 'cafe', text: 'Oat latte, extra hot, at {about}. Hot enough to have opinions. Like me.', delivery: 'haughty, pleased' },
-  { id: 'mention.c6', who: 'vernon', moment: 'mention', about: 'icecream', text: 'One scoop at {about}. Exactly one. A second scoop is how standards melt.', delivery: 'precise, grave' },
+  { id: 'mention.c5', who: 'vernon', moment: 'mention', about: 'cafe', text: "You know where I go for a proper oat latte? It's {about}. Extra hot. Hot enough to have opinions. Like me.", delivery: 'haughty, pleased' },
+  { id: 'mention.c6', who: 'vernon', moment: 'mention', about: 'icecream', text: "I allow myself one scoop at {about}. Exactly one. A second scoop is how standards melt.", delivery: 'precise, grave' },
   { id: 'mention.c7', who: 'vernon', moment: 'mention', about: 'sushi', text: "I dined at {about} beside Chef Hiro. We judged in silence. The best conversation I've had all year.", delivery: 'reverent, refined' },
 
   /* ── Sal: gruff, loud, a bit crude; sells hot dogs out front and never eats them; pigeons, doctor, brother-in-law ─ */
@@ -165,12 +165,12 @@
   { id: 'goodbye.c6', who: 'sal', moment: 'goodbye', text: 'Later. If anybody asks, I was never here.', delivery: 'gruff, sly' },
   // mentions: never lettuce, anywhere; refuses at the Smoothie Shack, then orders anyway
   { id: 'mention.c1', who: 'sal', moment: 'mention', about: 'smoothie', text: "I walked into {about}. Said I wasn't orderin' nothin'. Then I ordered somethin'. Don't tell nobody.", delivery: 'gruff, embarrassed' },
-  { id: 'mention.c2', who: 'sal', moment: 'mention', about: 'burrito', text: "Steak at {about}, no lettuce. I checked twice. Lettuce hides in a burrito. It's sneaky.", delivery: 'gruff, suspicious' },
-  { id: 'mention.c3', who: 'sal', moment: 'mention', about: 'pizza', text: 'Pepperoni at {about}. My favorite after bacon. Bacon knows. We talked.', delivery: 'gruff, sincere' },
-  { id: 'mention.c4', who: 'sal', moment: 'mention', about: 'diner', text: 'Bacon cheeseburger at {about}. No lettuce. The lettuce knows better than to show its face.', delivery: 'gruff, satisfied' },
-  { id: 'mention.c5', who: 'sal', moment: 'mention', about: 'cafe', text: "Black coffee at {about}. No foam, no little leaf. It's coffee, not a paintin'.", delivery: 'gruff, scornful' },
-  { id: 'mention.c6', who: 'sal', moment: 'mention', about: 'icecream', text: 'Chocolate at {about}. No rabbit food. Nobody ever put lettuce on ice cream. But you gotta say it.', delivery: 'gruff, principled' },
-  { id: 'mention.c7', who: 'sal', moment: 'mention', about: 'sushi', text: 'Asked at {about} if they got a hot dog roll. Chef Hiro gave me a look. I gave it right back.', delivery: 'gruff, unrepentant' },
+  { id: 'mention.c2', who: 'sal', moment: 'mention', about: 'burrito', text: "Go to {about}, get the steak, no lettuce. Check twice. Lettuce hides in a burrito. It's sneaky.", delivery: 'gruff, suspicious' },
+  { id: 'mention.c3', who: 'sal', moment: 'mention', about: 'pizza', text: "You gotta go to {about}. Pepperoni. My favorite after bacon. Bacon knows. We talked.", delivery: 'gruff, sincere' },
+  { id: 'mention.c4', who: 'sal', moment: 'mention', about: 'diner', text: "I get a bacon cheeseburger at {about}. No lettuce. The lettuce knows better than to show its face.", delivery: 'gruff, satisfied' },
+  { id: 'mention.c5', who: 'sal', moment: 'mention', about: 'cafe', text: "I get black coffee at {about}. No foam, no little leaf. It's coffee, not a paintin'.", delivery: 'gruff, scornful' },
+  { id: 'mention.c6', who: 'sal', moment: 'mention', about: 'icecream', text: "Go to {about}. Get chocolate. Say no lettuce. Nobody ever put lettuce on ice cream. But you gotta say it.", delivery: 'gruff, principled' },
+  { id: 'mention.c7', who: 'sal', moment: 'mention', about: 'sushi', text: "You been to {about}? I asked if they got a hot dog roll. Chef Hiro gave me a look. I gave it right back.", delivery: 'gruff, unrepentant' },
 
   /* ── Dale: wiry mechanic, gravelly drawl, never in a hurry; the onion-ring guy (the Burger Bar) ──────────────── */
   { id: 'greet.c1', who: 'dale', moment: 'greet', text: "Evenin'. Just pulled a transmission. Earned this.", delivery: 'slow drawl, unhurried' },
@@ -189,12 +189,12 @@
   // mentions: he comes only to the Burger Bar (spec 5.4), so his diner line waits for a second restaurant; the rest
   // are what a mechanic notices walking past (each place's machines, as drawn)
   { id: 'mention.c1', who: 'dale', moment: 'mention', about: 'smoothie', text: 'Them blenders at {about} sound like a bad alternator. I offered to take a look.', delivery: 'slow, professional' },
-  { id: 'mention.c2', who: 'dale', moment: 'mention', about: 'burrito', text: "They keep a fire extinguisher next to the hottest sauce at {about}. Smart. I'd keep two.", delivery: 'slow, approving' },
-  { id: 'mention.c3', who: 'dale', moment: 'mention', about: 'pizza', text: 'Asked at {about} if they do onion rings. Got real quiet in there.', delivery: 'slow, dry' },
-  { id: 'mention.c4', who: 'dale', moment: 'mention', about: 'diner', text: "Onion rings at {about}, extra crispy. I'd marry 'em, but they're already rings.", delivery: 'slow, fond' },
-  { id: 'mention.c5', who: 'dale', moment: 'mention', about: 'cafe', text: 'That espresso machine at {about} hisses like a busted radiator hose. Itches me to fix it.', delivery: 'slow, itching to fix it' },
+  { id: 'mention.c2', who: 'dale', moment: 'mention', about: 'burrito', text: "Go see {about}. They keep a fire extinguisher next to the hottest sauce. Smart. I'd keep two.", delivery: 'slow, approving' },
+  { id: 'mention.c3', who: 'dale', moment: 'mention', about: 'pizza', text: "Pizza's good at {about}. I asked if they do onion rings. Got real quiet in there.", delivery: 'slow, dry' },
+  { id: 'mention.c4', who: 'dale', moment: 'mention', about: 'diner', text: "Ever been to {about}? Onion rings, extra crispy. I'd marry 'em, but they're already rings.", delivery: 'slow, fond' },
+  { id: 'mention.c5', who: 'dale', moment: 'mention', about: 'cafe', text: "Coffee's good at {about}. But that espresso machine hisses like a busted radiator hose. Itches me to fix it.", delivery: 'slow, itching to fix it' },
   { id: 'mention.c6', who: 'dale', moment: 'mention', about: 'icecream', text: "Shake machine at {about} hums real sweet. Two-horse motor, I'd guess. I'd guess right.", delivery: 'slow, admiring' },
-  { id: 'mention.c7', who: 'dale', moment: 'mention', about: 'sushi', text: "Little conveyor belt at {about}. Real nice. Squeaks on the left side. I'd tighten that.", delivery: 'slow, professional' },
+  { id: 'mention.c7', who: 'dale', moment: 'mention', about: 'sushi', text: "You seen the little conveyor belt at {about}? Real nice. Squeaks on the left side. I'd tighten that.", delivery: 'slow, professional' },
 
   /* ── Priya: night-shift nurse, dry and quick, running on no sleep; the Cafe's most loyal regular ──────────── */
   { id: 'greet.c1', who: 'priya', moment: 'greet', text: "Hi. I've been awake since yesterday. Don't ask which part.", delivery: 'dry, quick, running on fumes' },
@@ -239,8 +239,8 @@
   { id: 'goodbye.c4', who: 'oakes', moment: 'goodbye', text: 'Splendid. Off to the lab. Well, the library. Well, my car.', delivery: 'nasal, deflating' },
   // mentions: a fresh reason at each menu with onions (pico doesn't count, spec 2.3), and his relief at two without
   { id: 'mention.c1', who: 'oakes', moment: 'mention', about: 'burrito', text: "At {about}, I learned the salsa contains onion. I've reclassified it as a warning.", delivery: 'nasal, too fast, rattled' },
-  { id: 'mention.c2', who: 'oakes', moment: 'mention', about: 'pizza', text: "At {about}, the onions go translucent in the oven. I don't trust food I can see through.", delivery: 'nasal, suspicious' },
-  { id: 'mention.c3', who: 'oakes', moment: 'mention', about: 'diner', text: 'At {about}, my case against onions is acoustic. They crunch in a minor key.', delivery: 'nasal, too fast, certain' },
+  { id: 'mention.c2', who: 'oakes', moment: 'mention', about: 'pizza', text: "If you go to {about}, watch the onions. They go translucent in the oven. I don't trust food I can see through.", delivery: 'nasal, suspicious' },
+  { id: 'mention.c3', who: 'oakes', moment: 'mention', about: 'diner', text: "The onion rings at {about} prove my point. Onions crunch in a minor key. My case is acoustic.", delivery: 'nasal, too fast, certain' },
   { id: 'mention.c4', who: 'oakes', moment: 'mention', about: 'cafe', text: "I inspected {about} for onions. Not a single one. I've sent them a thank-you note, with footnotes.", delivery: 'nasal, grateful' },
   { id: 'mention.c5', who: 'oakes', moment: 'mention', about: 'icecream', text: "I visited {about} purely to confirm there are no onions in ice cream. There are none. I've never felt so safe.", delivery: 'nasal, deeply relieved' },
 
@@ -259,8 +259,8 @@
   { id: 'goodbye.c3', who: 'tasha', moment: 'goodbye', text: 'Peace. Gonna go fall off something.', delivery: 'flat, almost cheerful' },
   { id: 'goodbye.c4', who: 'tasha', moment: 'goodbye', text: 'Cool. See you. I mean, probably.', delivery: 'flat, deadpan' },
   // mentions: her two (smoothies, shakes), plus two places she pretends not to go
-  { id: 'mention.c1', who: 'tasha', moment: 'mention', about: 'smoothie', text: "I go to {about} every day. Because it's on the way. Also, it's good.", delivery: 'flat, giving up the act' },
-  { id: 'mention.c2', who: 'tasha', moment: 'mention', about: 'pizza', text: "My skate crew goes to {about}. I don't sit with them. I sit near them.", delivery: 'flat, deadpan' },
+  { id: 'mention.c1', who: 'tasha', moment: 'mention', about: 'smoothie', text: "I go to {about} every day. Because it's on the way. Also, it's good. You should go. Or whatever.", delivery: 'flat, giving up the act' },
+  { id: 'mention.c2', who: 'tasha', moment: 'mention', about: 'pizza', text: "My skate crew goes to {about}. I don't sit with them. I sit near them. The pizza's fine.", delivery: 'flat, deadpan' },
   { id: 'mention.c3', who: 'tasha', moment: 'mention', about: 'diner', text: 'I used to hang out at {about}. Then I got into smoothies. Character growth.', delivery: 'flat, deadpan' },
   { id: 'mention.c4', who: 'tasha', moment: 'mention', about: 'icecream', text: "The shakes at {about} are okay. I've had like forty. For research.", delivery: 'flat, deadpan' },
 
@@ -279,11 +279,11 @@
   { id: 'goodbye.c3', who: 'reginald', moment: 'goodbye', text: 'Adieu! My scarf and I must away.', delivery: 'theatrical, a sweeping exit' },
   { id: 'goodbye.c4', who: 'reginald', moment: 'goodbye', text: 'Good night. I go now where a critic is truly alone: the parking garage.', delivery: 'theatrical, melancholy' },
   // mentions: whatever is newest, reviewed at length (the crowned coffee bean hangs in the Cafe's counter picture)
-  { id: 'mention.c1', who: 'reginald', moment: 'mention', about: 'smoothie', text: 'At {about}, the newest blend had no name. I named it. Modestly. After myself.', delivery: 'theatrical, pleased' },
+  { id: 'mention.c1', who: 'reginald', moment: 'mention', about: 'smoothie', text: "Visit {about} and ask for the newest blend. I named it. Modestly. After myself.", delivery: 'theatrical, pleased' },
   { id: 'mention.c2', who: 'reginald', moment: 'mention', about: 'burrito', text: 'At {about}, I called a burrito a novel you can hold. Kai called it big. We are both correct.', delivery: 'theatrical, magnanimous' },
-  { id: 'mention.c3', who: 'reginald', moment: 'mention', about: 'pizza', text: 'My review of {about} ran in three parts. Part two was the crust alone.', delivery: 'theatrical, grave' },
+  { id: 'mention.c3', who: 'reginald', moment: 'mention', about: 'pizza', text: "Do go to {about}. My review ran in three parts. Part two was the crust alone.", delivery: 'theatrical, grave' },
   { id: 'mention.c4', who: 'reginald', moment: 'mention', about: 'diner', text: 'At {about}, I once reviewed a single French fry. Four thousand words. The fry has since retired.', delivery: 'theatrical, reverent' },
-  { id: 'mention.c5', who: 'reginald', moment: 'mention', about: 'cafe', text: 'At {about} hangs a portrait of a crowned coffee bean. I wrote to it. It has not written back.', delivery: 'theatrical, wounded' },
+  { id: 'mention.c5', who: 'reginald', moment: 'mention', about: 'cafe', text: "Do visit {about}. There's a portrait of a crowned coffee bean. I wrote to it. It has not written back.", delivery: 'theatrical, wounded' },
   { id: 'mention.c6', who: 'reginald', moment: 'mention', about: 'icecream', text: 'At {about}, I reviewed a sundae in five courses. The cherry was dessert.', delivery: 'theatrical, satisfied' },
   { id: 'mention.c7', who: 'reginald', moment: 'mention', about: 'sushi', text: 'I sat beside Chef Hiro at {about}. He nodded once. I have been writing about that nod for a month.', delivery: 'theatrical, awed' },
 
@@ -304,9 +304,9 @@
   // mentions: Reginald's reviews, cut to the point
   { id: 'mention.c1', who: 'kai', moment: 'mention', about: 'smoothie', text: 'My review of {about}: cold, pink, brain freeze, worth it.', delivery: 'bright, very serious' },
   { id: 'mention.c2', who: 'kai', moment: 'mention', about: 'burrito', text: "At {about}, Reginald called the burrito a novel you can hold. I called it big. Mine's easier to read.", delivery: 'bright, very serious' },
-  { id: 'mention.c3', who: 'kai', moment: 'mention', about: 'pizza', text: 'My review of {about}: round, hot, ten out of ten. Reginald said it lacked mystery.', delivery: 'bright, very serious' },
+  { id: 'mention.c3', who: 'kai', moment: 'mention', about: 'pizza', text: "My review of {about}: round, hot, ten out of ten. Reginald said it lacked mystery. Go anyway.", delivery: 'bright, very serious' },
   { id: 'mention.c4', who: 'kai', moment: 'mention', about: 'diner', text: 'I reviewed {about} in two words. Big burger. Reginald said add more words. I added very.', delivery: 'bright, very serious' },
-  { id: 'mention.c5', who: 'kai', moment: 'mention', about: 'cafe', text: "I'm not allowed coffee, so at {about} I reviewed a donut. Circle. Delicious. The hole is efficient.", delivery: 'bright, very serious' },
+  { id: 'mention.c5', who: 'kai', moment: 'mention', about: 'cafe', text: "I'm not allowed coffee, so at {about} I reviewed a donut. Circle. Delicious. The hole is efficient. Go try one.", delivery: 'bright, very serious' },
   { id: 'mention.c6', who: 'kai', moment: 'mention', about: 'icecream', text: "My review of {about}: cold, correct. Reginald says that's not a review. It's a weather report.", delivery: 'bright, very serious' },
   { id: 'mention.c7', who: 'kai', moment: 'mention', about: 'sushi', text: "I tried {about}. Chef Hiro nodded at me. I wrote it down. That's my first nod.", delivery: 'bright, very proud' },
 

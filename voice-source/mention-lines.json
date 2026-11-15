@@ -1,0 +1,1325 @@
+[
+ {
+  "text": "Strawberry banana at {about}. It's the only fruit pair I trust. The others look like they're up to something.",
+  "clips": [
+   "marge/mention.c1"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Smoothie Shack\". Delivery: warm, faintly suspicious.",
+  "options": [
+   "If you ever stop by {about}, get the strawberry banana. It's the only fruit pair I trust. The others look like they're up to something.",
+   "Have you been to {about}, hon? Strawberry banana. It's the only fruit pair I trust. The others look like they're up to something."
+  ],
+  "suggestion": "If you ever stop by {about}, get the strawberry banana. It's the only fruit pair I trust. The others look like they're up to something."
+ },
+ {
+  "text": "Bean and cheese at {about}. The girls say live a little. I live plenty, hon. With beans.",
+  "clips": [
+   "marge/mention.c2"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"Ben's Burritos\". Delivery: warm, unbothered.",
+  "options": [
+   "I get bean and cheese over at {about}. The girls say live a little. I live plenty, hon. With beans.",
+   "You should try {about}, hon. I get bean and cheese. The girls say live a little. I live plenty. With beans."
+  ],
+  "suggestion": "I get bean and cheese over at {about}. The girls say live a little. I live plenty, hon. With beans."
+ },
+ {
+  "text": "Plain cheese at {about}. My husband said I had no sense of adventure. I married him, didn't I?",
+  "clips": [
+   "marge/mention.c3"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Pizza Parlor\". Delivery: warm, dry.",
+  "options": [
+   "I always get plain cheese over at {about}. My husband said I had no sense of adventure. I married him, didn't I?",
+   "Have you tried {about}? I get plain cheese. My husband said I had no sense of adventure. I married him, didn't I?"
+  ],
+  "suggestion": "I always get plain cheese over at {about}. My husband said I had no sense of adventure. I married him, didn't I?"
+ },
+ {
+  "text": "At {about} I just say 'the usual' and they know. Like a good marriage, hon. Less snoring.",
+  "clips": [
+   "marge/mention.c4"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Burger Bar\". Delivery: warm, fond.",
+  "options": [
+   "You should try {about}, hon. I just say 'the usual' and they know. Like a good marriage. Less snoring."
+  ],
+  "suggestion": "You should try {about}, hon. I just say 'the usual' and they know. Like a good marriage. Less snoring."
+ },
+ {
+  "text": "Coffee, cream and two sugars at {about}. Same as the bus depot, only nobody's yelling about the heater.",
+  "clips": [
+   "marge/mention.c5"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Cafe\". Delivery: warm, nostalgic.",
+  "options": [
+   "I get my coffee at {about}. Cream and two sugars. Same as the bus depot, only nobody's yelling about the heater.",
+   "Stop by {about} sometime, hon. Coffee, cream and two sugars. Like the bus depot, only nobody's yelling about the heater."
+  ],
+  "suggestion": "I get my coffee at {about}. Cream and two sugars. Same as the bus depot, only nobody's yelling about the heater."
+ },
+ {
+  "text": "Vanilla in a cup at {about}. Cones are for people who trust gravity, hon.",
+  "clips": [
+   "marge/mention.c6"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Ice Cream Emporium\". Delivery: warm, knowing.",
+  "options": [
+   "I get vanilla in a cup over at {about}. Cones are for people who trust gravity, hon.",
+   "Try {about} sometime, hon. Get it in a cup. Cones are for people who trust gravity."
+  ],
+  "suggestion": "I get vanilla in a cup over at {about}. Cones are for people who trust gravity, hon."
+ },
+ {
+  "text": "I told them at {about}, nothing raw, hon. I raised three kids. I've had enough surprises.",
+  "clips": [
+   "marge/mention.c7"
+  ],
+  "speakers": [
+   "marge"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Sushi\". Delivery: warm, firm.",
+  "options": [
+   "Have you been to {about}? I told them, nothing raw, hon. I raised three kids. I've had enough surprises."
+  ],
+  "suggestion": "Have you been to {about}? I told them, nothing raw, hon. I raised three kids. I've had enough surprises."
+ },
+ {
+  "text": "Two smoothies at {about}, same deal. The second one made it as far as Tulsa.",
+  "clips": [
+   "gus/mention.c1"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Smoothie Shack\". Delivery: fond drawl.",
+  "options": [
+   "I grabbed two smoothies at {about}, same deal. The second one made it as far as Tulsa.",
+   "You been to {about}? Get two smoothies. The second one made it as far as Tulsa."
+  ],
+  "suggestion": "I grabbed two smoothies at {about}, same deal. The second one made it as far as Tulsa."
+ },
+ {
+  "text": "Two burritos at {about}. One for now, one for the road. Both of 'em were for now.",
+  "clips": [
+   "gus/mention.c2"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"Ben's Burritos\". Delivery: sheepish drawl.",
+  "options": [
+   "I got two burritos over at {about}. One for now, one for the road. Both of 'em were for now.",
+   "Ever been to {about}, buddy? Get two burritos. One for now, one for the road. Both of 'em end up for now."
+  ],
+  "suggestion": "I got two burritos over at {about}. One for now, one for the road. Both of 'em were for now."
+ },
+ {
+  "text": "Two larges at {about}, one for the road. Had to seat-belt it in.",
+  "clips": [
+   "gus/mention.c3"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Pizza Parlor\". Delivery: proud drawl.",
+  "options": [
+   "Picked up two larges at {about}, one for the road. Had to seat-belt it in.",
+   "You gotta try {about}. I got two larges, one for the road. Had to seat-belt it in."
+  ],
+  "suggestion": "Picked up two larges at {about}, one for the road. Had to seat-belt it in."
+ },
+ {
+  "text": "I always get two at {about}. One for now, one for the road. The road's never once said thank you.",
+  "clips": [
+   "gus/mention.c4"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Burger Bar\". Delivery: warm drawl, amused.",
+  "options": [
+   "Ever eat at {about}? I always get two. One for now, one for the road. The road's never once said thank you."
+  ],
+  "suggestion": "Ever eat at {about}? I always get two. One for now, one for the road. The road's never once said thank you."
+ },
+ {
+  "text": "Two coffees and a dozen donuts at {about}. They asked if it was for the office. My office has eighteen wheels.",
+  "clips": [
+   "gus/mention.c5"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Cafe\". Delivery: warm drawl, pleased.",
+  "options": [
+   "I picked up two coffees and a dozen donuts at {about}. They asked if it was for the office. My office has eighteen wheels.",
+   "Swing by {about} sometime. I got two coffees and a dozen donuts. They asked if it was for the office. My office has eighteen wheels."
+  ],
+  "suggestion": "I picked up two coffees and a dozen donuts at {about}. They asked if it was for the office. My office has eighteen wheels."
+ },
+ {
+  "text": "Two cones at {about}, one for the road. Do not take ice cream on the road, buddy. Learned that in Arizona.",
+  "clips": [
+   "gus/mention.c6"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Ice Cream Emporium\". Delivery: rueful drawl.",
+  "options": [
+   "Got two cones at {about}, one for the road. Do not take ice cream on the road, buddy. Learned that in Arizona.",
+   "Try {about}, buddy. Just don't take a cone on the road. Learned that in Arizona."
+  ],
+  "suggestion": "Got two cones at {about}, one for the road. Do not take ice cream on the road, buddy. Learned that in Arizona."
+ },
+ {
+  "text": "Got two of every roll at {about}. Turns out that's a lot of rolls. Still workin' through 'em in the cab.",
+  "clips": [
+   "gus/mention.c7"
+  ],
+  "speakers": [
+   "gus"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"Ben's Sushi\". Delivery: cheerful drawl.",
+  "options": [
+   "I got two of every roll at {about}. Turns out that's a lot of rolls. Still workin' through 'em in the cab.",
+   "Ever tried {about}? I got two of every roll. Turns out that's a lot of rolls. Still workin' through 'em in the cab."
+  ],
+  "suggestion": "I got two of every roll at {about}. Turns out that's a lot of rolls. Still workin' through 'em in the cab."
+ },
+ {
+  "text": "Protein shake at {about}! Three gulps! Personal best! EVERY time!",
+  "clips": [
+   "bev/mention.c1"
+  ],
+  "speakers": [
+   "bev"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Smoothie Shack\". Delivery: firm, like a coach,triumphant.",
+  "options": [
+   "I get a protein shake at {about}! Three gulps! Personal best! EVERY time!",
+   "Get over to {about}! Protein shake! Three gulps! Personal best! EVERY time!"
+  ],
+  "suggestion": "I get a protein shake at {about}! Three gulps! Personal best! EVERY time!"
+ },
+ {
+  "text": "At {about}, I count the jalapeños OUT LOUD! The guy next to me joined in! Now it's a DRILL!",
+  "clips": [
+   "bev/mention.c2"
+  ],
+  "speakers": [
+   "bev"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Burritos\". Delivery: firm, like a coach,counting energy.",
+  "options": [
+   "You been to {about}? I count the jalapeños OUT LOUD! The guy next to me joined in! Now it's a DRILL!"
+  ],
+  "suggestion": "You been to {about}? I count the jalapeños OUT LOUD! The guy next to me joined in! Now it's a DRILL!"
+ },
+ {
+  "text": "Meat lover's at {about}! The only pizza with a full ROSTER!",
+  "clips": [
+   "bev/mention.c3"
+  ],
+  "speakers": [
+   "bev"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Pizza Parlor\". Delivery: firm, like a coach,proud.",
+  "options": [
+   "I get the meat lover's at {about}! The only pizza with a full ROSTER!",
+   "Hit {about}! Get the meat lover's! The only pizza with a full ROSTER!"
+  ],
+  "suggestion": "I get the meat lover's at {about}! The only pizza with a full ROSTER!"
+ },
+ {
+  "text": "At {about}, I count the pickles OUT LOUD! Every pickle is a REP!",
+  "clips": [
+   "bev/mention.c4"
+  ],
+  "speakers": [
+   "bev"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Burger Bar\". Delivery: firm, like a coach,counting energy.",
+  "options": [
+   "You been to {about}? I count the pickles OUT LOUD! Every pickle is a REP!"
+  ],
+  "suggestion": "You been to {about}? I count the pickles OUT LOUD! Every pickle is a REP!"
+ },
+ {
+  "text": "Black coffee at {about}! No cream! No sugar! No EXCUSES!",
+  "clips": [
+   "bev/mention.c5"
+  ],
+  "speakers": [
+   "bev"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Cafe\". Delivery: firm, like a coach,drill-sergeant rhythm.",
+  "options": [
+   "I get black coffee at {about}! No cream! No sugar! No EXCUSES!",
+   "Hit {about} before practice! Black coffee! No cream! No sugar! No EXCUSES!"
+  ],
+  "suggestion": "I get black coffee at {about}! No cream! No sugar! No EXCUSES!"
+ },
+ {
+  "text": "Sundae at {about}, for the TEAM! The team wasn't there! It was a MOTIVATIONAL sundae!",
+  "clips": [
+   "bev/mention.c6"
+  ],
+  "speakers": [
+   "bev"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Ice Cream Emporium\". Delivery: firm, like a coach,unashamed.",
+  "options": [
+   "I got a sundae at {about}, for the TEAM! The team wasn't there! It was a MOTIVATIONAL sundae!",
+   "Get to {about}! I had a sundae for the TEAM! The team wasn't there! It was a MOTIVATIONAL sundae!"
+  ],
+  "suggestion": "I got a sundae at {about}, for the TEAM! The team wasn't there! It was a MOTIVATIONAL sundae!"
+ },
+ {
+  "text": "Spicy tuna at {about}! Used the chopsticks! First try! I gave MYSELF a medal!",
+  "clips": [
+   "bev/mention.c7"
+  ],
+  "speakers": [
+   "bev"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"Ben's Sushi\". Delivery: firm, like a coach,proud.",
+  "options": [
+   "I had spicy tuna at {about}! Used the chopsticks! First try! I gave MYSELF a medal!",
+   "Try {about}! I used the chopsticks! First try! I gave MYSELF a medal!"
+  ],
+  "suggestion": "I had spicy tuna at {about}! Used the chopsticks! First try! I gave MYSELF a medal!"
+ },
+ {
+  "text": "My blend at {about} is very specific. It's on a laminated card, in my wallet, next to my heart.",
+  "clips": [
+   "vernon/mention.c1"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Smoothie Shack\". Delivery: fussy, proud.",
+  "options": [
+   "If you visit {about}, don't order my blend. It's very specific. It's on a laminated card, in my wallet, next to my heart."
+  ],
+  "suggestion": "If you visit {about}, don't order my blend. It's very specific. It's on a laminated card, in my wallet, next to my heart."
+ },
+ {
+  "text": "At {about} I have a bowl, nothing touching. Food should have boundaries. So should people.",
+  "clips": [
+   "vernon/mention.c2"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"Ben's Burritos\". Delivery: fussy, firm.",
+  "options": [
+   "I take a bowl at {about}, nothing touching. Food should have boundaries. So should people.",
+   "Do visit {about}. Order a bowl, nothing touching. Food should have boundaries. So should people."
+  ],
+  "suggestion": "I take a bowl at {about}, nothing touching. Food should have boundaries. So should people."
+ },
+ {
+  "text": "At {about}: thin crust, light, cut in eight. Not seven. Not nine. Eight. I will know.",
+  "clips": [
+   "vernon/mention.c3"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Pizza Parlor\". Delivery: precise, haughty.",
+  "options": [
+   "My order at {about}: thin crust, light, cut in eight. Not seven. Not nine. Eight. I will know.",
+   "Do try {about}. Thin crust, cut in eight. Not seven. Not nine. Eight. I will know."
+  ],
+  "suggestion": "My order at {about}: thin crust, light, cut in eight. Not seven. Not nine. Eight. I will know."
+ },
+ {
+  "text": "My blog began at {about}. When I branched out, I lost a follower. He came back. They always do.",
+  "clips": [
+   "vernon/mention.c4"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Burger Bar\". Delivery: refined, faintly triumphant.",
+  "options": [
+   "My blog began at {about}. You should start there too. When I branched out, I lost a follower. He came back. They always do."
+  ],
+  "suggestion": "My blog began at {about}. You should start there too. When I branched out, I lost a follower. He came back. They always do."
+ },
+ {
+  "text": "Oat latte, extra hot, at {about}. Hot enough to have opinions. Like me.",
+  "clips": [
+   "vernon/mention.c5"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Cafe\". Delivery: haughty, pleased.",
+  "options": [
+   "I take an oat latte at {about}. Extra hot. Hot enough to have opinions. Like me.",
+   "You know where I go for a proper oat latte? It's {about}. Extra hot. Hot enough to have opinions. Like me."
+  ],
+  "suggestion": "I take an oat latte at {about}. Extra hot. Hot enough to have opinions. Like me."
+ },
+ {
+  "text": "One scoop at {about}. Exactly one. A second scoop is how standards melt.",
+  "clips": [
+   "vernon/mention.c6"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Ice Cream Emporium\". Delivery: precise, grave.",
+  "options": [
+   "I allow myself one scoop at {about}. Exactly one. A second scoop is how standards melt.",
+   "Do visit {about}. One scoop. Exactly one. A second scoop is how standards melt."
+  ],
+  "suggestion": "I allow myself one scoop at {about}. Exactly one. A second scoop is how standards melt."
+ },
+ {
+  "text": "I dined at {about} beside Chef Hiro. We judged in silence. The best conversation I've had all year.",
+  "clips": [
+   "vernon/mention.c7"
+  ],
+  "speakers": [
+   "vernon"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Sushi\". Delivery: reverent, refined.",
+  "options": [
+   "You must dine at {about}. I sat beside Chef Hiro. We judged in silence. The best conversation I've had all year."
+  ],
+  "suggestion": "You must dine at {about}. I sat beside Chef Hiro. We judged in silence. The best conversation I've had all year."
+ },
+ {
+  "text": "I walked into {about}. Said I wasn't orderin' nothin'. Then I ordered somethin'. Don't tell nobody.",
+  "clips": [
+   "sal/mention.c1"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Smoothie Shack\". Delivery: gruff, embarrassed.",
+  "options": [
+   "You been to {about}? I said I wasn't orderin' nothin'. Then I ordered somethin'. Don't tell nobody."
+  ],
+  "suggestion": "You been to {about}? I said I wasn't orderin' nothin'. Then I ordered somethin'. Don't tell nobody."
+ },
+ {
+  "text": "Steak at {about}, no lettuce. I checked twice. Lettuce hides in a burrito. It's sneaky.",
+  "clips": [
+   "sal/mention.c2"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"Ben's Burritos\". Delivery: gruff, suspicious.",
+  "options": [
+   "I get the steak at {about}, no lettuce. I checked twice. Lettuce hides in a burrito. It's sneaky.",
+   "Go to {about}, get the steak, no lettuce. Check twice. Lettuce hides in a burrito. It's sneaky."
+  ],
+  "suggestion": "I get the steak at {about}, no lettuce. I checked twice. Lettuce hides in a burrito. It's sneaky."
+ },
+ {
+  "text": "Pepperoni at {about}. My favorite after bacon. Bacon knows. We talked.",
+  "clips": [
+   "sal/mention.c3"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Pizza Parlor\". Delivery: gruff, sincere.",
+  "options": [
+   "I get pepperoni at {about}. My favorite after bacon. Bacon knows. We talked.",
+   "You gotta go to {about}. Pepperoni. My favorite after bacon. Bacon knows. We talked."
+  ],
+  "suggestion": "I get pepperoni at {about}. My favorite after bacon. Bacon knows. We talked."
+ },
+ {
+  "text": "Bacon cheeseburger at {about}. No lettuce. The lettuce knows better than to show its face.",
+  "clips": [
+   "sal/mention.c4"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Burger Bar\". Delivery: gruff, satisfied.",
+  "options": [
+   "I get a bacon cheeseburger at {about}. No lettuce. The lettuce knows better than to show its face.",
+   "Ever been to {about}? Bacon cheeseburger, no lettuce. The lettuce knows better than to show its face."
+  ],
+  "suggestion": "I get a bacon cheeseburger at {about}. No lettuce. The lettuce knows better than to show its face."
+ },
+ {
+  "text": "Black coffee at {about}. No foam, no little leaf. It's coffee, not a paintin'.",
+  "clips": [
+   "sal/mention.c5"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Cafe\". Delivery: gruff, scornful.",
+  "options": [
+   "I get black coffee at {about}. No foam, no little leaf. It's coffee, not a paintin'.",
+   "You go to {about}, you get black coffee. No foam, no little leaf. It's coffee, not a paintin'."
+  ],
+  "suggestion": "I get black coffee at {about}. No foam, no little leaf. It's coffee, not a paintin'."
+ },
+ {
+  "text": "Chocolate at {about}. No rabbit food. Nobody ever put lettuce on ice cream. But you gotta say it.",
+  "clips": [
+   "sal/mention.c6"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Ice Cream Emporium\". Delivery: gruff, principled.",
+  "options": [
+   "I get chocolate at {about}. No rabbit food. Nobody ever put lettuce on ice cream. But you gotta say it.",
+   "Go to {about}. Get chocolate. Say no lettuce. Nobody ever put lettuce on ice cream. But you gotta say it."
+  ],
+  "suggestion": "I get chocolate at {about}. No rabbit food. Nobody ever put lettuce on ice cream. But you gotta say it."
+ },
+ {
+  "text": "Asked at {about} if they got a hot dog roll. Chef Hiro gave me a look. I gave it right back.",
+  "clips": [
+   "sal/mention.c7"
+  ],
+  "speakers": [
+   "sal"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Sushi\". Delivery: gruff, unrepentant.",
+  "options": [
+   "You been to {about}? I asked if they got a hot dog roll. Chef Hiro gave me a look. I gave it right back."
+  ],
+  "suggestion": "You been to {about}? I asked if they got a hot dog roll. Chef Hiro gave me a look. I gave it right back."
+ },
+ {
+  "text": "Them blenders at {about} sound like a bad alternator. I offered to take a look.",
+  "clips": [
+   "dale/mention.c1"
+  ],
+  "speakers": [
+   "dale"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Smoothie Shack\". Delivery: slow, professional.",
+  "options": [
+   "Go listen to the blenders at {about}. Sound like a bad alternator. I offered to take a look."
+  ],
+  "suggestion": "Go listen to the blenders at {about}. Sound like a bad alternator. I offered to take a look."
+ },
+ {
+  "text": "They keep a fire extinguisher next to the hottest sauce at {about}. Smart. I'd keep two.",
+  "clips": [
+   "dale/mention.c2"
+  ],
+  "speakers": [
+   "dale"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Burritos\". Delivery: slow, approving.",
+  "options": [
+   "Go see {about}. They keep a fire extinguisher next to the hottest sauce. Smart. I'd keep two."
+  ],
+  "suggestion": "Go see {about}. They keep a fire extinguisher next to the hottest sauce. Smart. I'd keep two."
+ },
+ {
+  "text": "Asked at {about} if they do onion rings. Got real quiet in there.",
+  "clips": [
+   "dale/mention.c3"
+  ],
+  "speakers": [
+   "dale"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Pizza Parlor\". Delivery: slow, dry.",
+  "options": [
+   "Pizza's good at {about}. I asked if they do onion rings. Got real quiet in there."
+  ],
+  "suggestion": "Pizza's good at {about}. I asked if they do onion rings. Got real quiet in there."
+ },
+ {
+  "text": "Onion rings at {about}, extra crispy. I'd marry 'em, but they're already rings.",
+  "clips": [
+   "dale/mention.c4"
+  ],
+  "speakers": [
+   "dale"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Burger Bar\". Delivery: slow, fond.",
+  "options": [
+   "Get the onion rings at {about}, extra crispy. I'd marry 'em, but they're already rings.",
+   "Ever been to {about}? Onion rings, extra crispy. I'd marry 'em, but they're already rings."
+  ],
+  "suggestion": "Get the onion rings at {about}, extra crispy. I'd marry 'em, but they're already rings."
+ },
+ {
+  "text": "That espresso machine at {about} hisses like a busted radiator hose. Itches me to fix it.",
+  "clips": [
+   "dale/mention.c5"
+  ],
+  "speakers": [
+   "dale"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Cafe\". Delivery: slow, itching to fix it.",
+  "options": [
+   "Coffee's good at {about}. But that espresso machine hisses like a busted radiator hose. Itches me to fix it."
+  ],
+  "suggestion": "Coffee's good at {about}. But that espresso machine hisses like a busted radiator hose. Itches me to fix it."
+ },
+ {
+  "text": "Shake machine at {about} hums real sweet. Two-horse motor, I'd guess. I'd guess right.",
+  "clips": [
+   "dale/mention.c6"
+  ],
+  "speakers": [
+   "dale"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Ice Cream Emporium\". Delivery: slow, admiring.",
+  "options": [
+   "Get a shake at {about}. That machine hums real sweet. Two-horse motor, I'd guess. I'd guess right."
+  ],
+  "suggestion": "Get a shake at {about}. That machine hums real sweet. Two-horse motor, I'd guess. I'd guess right."
+ },
+ {
+  "text": "Little conveyor belt at {about}. Real nice. Squeaks on the left side. I'd tighten that.",
+  "clips": [
+   "dale/mention.c7"
+  ],
+  "speakers": [
+   "dale"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Sushi\". Delivery: slow, professional.",
+  "options": [
+   "You seen the little conveyor belt at {about}? Real nice. Squeaks on the left side. I'd tighten that."
+  ],
+  "suggestion": "You seen the little conveyor belt at {about}? Real nice. Squeaks on the left side. I'd tighten that."
+ },
+ {
+  "text": "Somebody brought a green smoothie from {about} into the break room. We monitored it overnight. Stable condition.",
+  "clips": [
+   "priya/mention.c1"
+  ],
+  "speakers": [
+   "priya"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Smoothie Shack\". Delivery: dry, clinical.",
+  "options": [
+   "Try {about}. Somebody brought a green smoothie into the break room. We monitored it overnight. Stable condition."
+  ],
+  "suggestion": "Try {about}. Somebody brought a green smoothie into the break room. We monitored it overnight. Stable condition."
+ },
+ {
+  "text": "A burrito from {about} got me through a double shift. I sent it a thank-you card.",
+  "clips": [
+   "priya/mention.c2"
+  ],
+  "speakers": [
+   "priya"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Burritos\". Delivery: dry, sincere.",
+  "options": [
+   "You should try {about}. A burrito from there got me through a double shift. I sent it a thank-you card."
+  ],
+  "suggestion": "You should try {about}. A burrito from there got me through a double shift. I sent it a thank-you card."
+ },
+ {
+  "text": "I brought pizza from {about} to the night shift once. Fourteen nurses, four minutes. Nothing left but the box.",
+  "clips": [
+   "priya/mention.c3"
+  ],
+  "speakers": [
+   "priya"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Pizza Parlor\". Delivery: dry, quick.",
+  "options": [
+   "Pizza from {about}: fourteen nurses, four minutes. Nothing left but the box. Highly recommend."
+  ],
+  "suggestion": "Pizza from {about}: fourteen nurses, four minutes. Nothing left but the box. Highly recommend."
+ },
+ {
+  "text": "I have dinner at {about} at seven in the morning, and I don't want to talk about it.",
+  "clips": [
+   "priya/mention.c4"
+  ],
+  "speakers": [
+   "priya"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Burger Bar\". Delivery: dry, closing the subject.",
+  "options": [
+   "If you work nights, {about} does dinner at seven in the morning. I don't want to talk about it."
+  ],
+  "suggestion": "If you work nights, {about} does dinner at seven in the morning. I don't want to talk about it."
+ },
+ {
+  "text": "I've been to {about} more this month than I've been home. Home doesn't have a giant donut on the roof.",
+  "clips": [
+   "priya/mention.c5"
+  ],
+  "speakers": [
+   "priya"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Cafe\". Delivery: dry, quick.",
+  "options": [
+   "You should see {about}. I've been there more this month than I've been home. Home doesn't have a giant donut on the roof."
+  ],
+  "suggestion": "You should see {about}. I've been there more this month than I've been home. Home doesn't have a giant donut on the roof."
+ },
+ {
+  "text": "Tried eating ice cream from {about} on my break. Got paged twice. It's soup now. Good soup.",
+  "clips": [
+   "priya/mention.c6"
+  ],
+  "speakers": [
+   "priya"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Ice Cream Emporium\". Delivery: dry, resigned.",
+  "options": [
+   "Get ice cream at {about}. Eat it fast. I got paged twice. It's soup now. Good soup."
+  ],
+  "suggestion": "Get ice cream at {about}. Eat it fast. I got paged twice. It's soup now. Good soup."
+ },
+ {
+  "text": "Ate at {about} at three in the morning. Chef Hiro was there, judging. At three in the morning. Respect.",
+  "clips": [
+   "priya/mention.c7"
+  ],
+  "speakers": [
+   "priya"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Sushi\". Delivery: dry, impressed.",
+  "options": [
+   "Go to {about} at three in the morning. Chef Hiro will be there, judging. Respect."
+  ],
+  "suggestion": "Go to {about} at three in the morning. Chef Hiro will be there, judging. Respect."
+ },
+ {
+  "text": "At {about}, I learned the salsa contains onion. I've reclassified it as a warning.",
+  "clips": [
+   "oakes/mention.c1"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Burritos\". Delivery: nasal, too fast, rattled.",
+  "options": [
+   "Be careful at {about}. The salsa contains onion. I've reclassified it as a warning."
+  ],
+  "suggestion": "Be careful at {about}. The salsa contains onion. I've reclassified it as a warning."
+ },
+ {
+  "text": "At {about}, the onions go translucent in the oven. I don't trust food I can see through.",
+  "clips": [
+   "oakes/mention.c2"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Pizza Parlor\". Delivery: nasal, suspicious.",
+  "options": [
+   "If you go to {about}, watch the onions. They go translucent in the oven. I don't trust food I can see through."
+  ],
+  "suggestion": "If you go to {about}, watch the onions. They go translucent in the oven. I don't trust food I can see through."
+ },
+ {
+  "text": "At {about}, my case against onions is acoustic. They crunch in a minor key.",
+  "clips": [
+   "oakes/mention.c3"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "high",
+  "why": "Reads like the customer is ordering, not chatting about another restaurant. {about} = \"the Burger Bar\". Delivery: nasal, too fast, certain.",
+  "options": [
+   "Go to {about} and listen to the onion rings. They crunch in a minor key. My case against onions is acoustic.",
+   "The onion rings at {about} prove my point. Onions crunch in a minor key. My case is acoustic."
+  ],
+  "suggestion": "Go to {about} and listen to the onion rings. They crunch in a minor key. My case against onions is acoustic."
+ },
+ {
+  "text": "I inspected {about} for onions. Not a single one. I've sent them a thank-you note, with footnotes.",
+  "clips": [
+   "oakes/mention.c4"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Cafe\". Delivery: nasal, grateful.",
+  "options": [
+   "I inspected {about} for onions. Not a single one. I've sent them a thank-you note, with footnotes. Go. You'll be safe."
+  ],
+  "suggestion": "I inspected {about} for onions. Not a single one. I've sent them a thank-you note, with footnotes. Go. You'll be safe."
+ },
+ {
+  "text": "I visited {about} purely to confirm there are no onions in ice cream. There are none. I've never felt so safe.",
+  "clips": [
+   "oakes/mention.c5"
+  ],
+  "speakers": [
+   "oakes"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Ice Cream Emporium\". Delivery: nasal, deeply relieved.",
+  "options": [
+   "Go to {about}. I confirmed there are no onions in ice cream. There are none. I've never felt so safe."
+  ],
+  "suggestion": "Go to {about}. I confirmed there are no onions in ice cream. There are none. I've never felt so safe."
+ },
+ {
+  "text": "I go to {about} every day. Because it's on the way. Also, it's good.",
+  "clips": [
+   "tasha/mention.c1"
+  ],
+  "speakers": [
+   "tasha"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Smoothie Shack\". Delivery: flat, giving up the act.",
+  "options": [
+   "I go to {about} every day. Because it's on the way. Also, it's good. You should go. Or whatever."
+  ],
+  "suggestion": "I go to {about} every day. Because it's on the way. Also, it's good. You should go. Or whatever."
+ },
+ {
+  "text": "My skate crew goes to {about}. I don't sit with them. I sit near them.",
+  "clips": [
+   "tasha/mention.c2"
+  ],
+  "speakers": [
+   "tasha"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Pizza Parlor\". Delivery: flat, deadpan.",
+  "options": [
+   "My skate crew goes to {about}. I don't sit with them. I sit near them. The pizza's fine."
+  ],
+  "suggestion": "My skate crew goes to {about}. I don't sit with them. I sit near them. The pizza's fine."
+ },
+ {
+  "text": "I used to hang out at {about}. Then I got into smoothies. Character growth.",
+  "clips": [
+   "tasha/mention.c3"
+  ],
+  "speakers": [
+   "tasha"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Burger Bar\". Delivery: flat, deadpan.",
+  "options": [
+   "I used to hang out at {about}. Then I got into smoothies. Character growth. It's still good though."
+  ],
+  "suggestion": "I used to hang out at {about}. Then I got into smoothies. Character growth. It's still good though."
+ },
+ {
+  "text": "The shakes at {about} are okay. I've had like forty. For research.",
+  "clips": [
+   "tasha/mention.c4"
+  ],
+  "speakers": [
+   "tasha"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Ice Cream Emporium\". Delivery: flat, deadpan.",
+  "options": [
+   "The shakes at {about} are okay. I've had like forty. For research. You should do research."
+  ],
+  "suggestion": "The shakes at {about} are okay. I've had like forty. For research. You should do research."
+ },
+ {
+  "text": "At {about}, the newest blend had no name. I named it. Modestly. After myself.",
+  "clips": [
+   "reginald/mention.c1"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Smoothie Shack\". Delivery: theatrical, pleased.",
+  "options": [
+   "Visit {about} and ask for the newest blend. I named it. Modestly. After myself."
+  ],
+  "suggestion": "Visit {about} and ask for the newest blend. I named it. Modestly. After myself."
+ },
+ {
+  "text": "At {about}, I called a burrito a novel you can hold. Kai called it big. We are both correct.",
+  "clips": [
+   "reginald/mention.c2"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Burritos\". Delivery: theatrical, magnanimous.",
+  "options": [
+   "Do visit {about}. I called the burrito a novel you can hold. Kai called it big. We are both correct."
+  ],
+  "suggestion": "Do visit {about}. I called the burrito a novel you can hold. Kai called it big. We are both correct."
+ },
+ {
+  "text": "My review of {about} ran in three parts. Part two was the crust alone.",
+  "clips": [
+   "reginald/mention.c3"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Pizza Parlor\". Delivery: theatrical, grave.",
+  "options": [
+   "Do go to {about}. My review ran in three parts. Part two was the crust alone."
+  ],
+  "suggestion": "Do go to {about}. My review ran in three parts. Part two was the crust alone."
+ },
+ {
+  "text": "At {about}, I once reviewed a single French fry. Four thousand words. The fry has since retired.",
+  "clips": [
+   "reginald/mention.c4"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Burger Bar\". Delivery: theatrical, reverent.",
+  "options": [
+   "At {about}, I once reviewed a single French fry. Four thousand words. Go taste the sequel."
+  ],
+  "suggestion": "At {about}, I once reviewed a single French fry. Four thousand words. Go taste the sequel."
+ },
+ {
+  "text": "At {about} hangs a portrait of a crowned coffee bean. I wrote to it. It has not written back.",
+  "clips": [
+   "reginald/mention.c5"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Cafe\". Delivery: theatrical, wounded.",
+  "options": [
+   "Do visit {about}. There's a portrait of a crowned coffee bean. I wrote to it. It has not written back."
+  ],
+  "suggestion": "Do visit {about}. There's a portrait of a crowned coffee bean. I wrote to it. It has not written back."
+ },
+ {
+  "text": "At {about}, I reviewed a sundae in five courses. The cherry was dessert.",
+  "clips": [
+   "reginald/mention.c6"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Ice Cream Emporium\". Delivery: theatrical, satisfied.",
+  "options": [
+   "Go to {about} and order a sundae. I reviewed one in five courses. The cherry was dessert."
+  ],
+  "suggestion": "Go to {about} and order a sundae. I reviewed one in five courses. The cherry was dessert."
+ },
+ {
+  "text": "I sat beside Chef Hiro at {about}. He nodded once. I have been writing about that nod for a month.",
+  "clips": [
+   "reginald/mention.c7"
+  ],
+  "speakers": [
+   "reginald"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Sushi\". Delivery: theatrical, awed.",
+  "options": [
+   "Go to {about}. Sit near Chef Hiro. He nodded at me once. I have been writing about that nod for a month."
+  ],
+  "suggestion": "Go to {about}. Sit near Chef Hiro. He nodded at me once. I have been writing about that nod for a month."
+ },
+ {
+  "text": "My review of {about}: cold, pink, brain freeze, worth it.",
+  "clips": [
+   "kai/mention.c1"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Smoothie Shack\". Delivery: bright, very serious.",
+  "options": [
+   "My review of {about}: cold, pink, brain freeze, worth it. You should go."
+  ],
+  "suggestion": "My review of {about}: cold, pink, brain freeze, worth it. You should go."
+ },
+ {
+  "text": "At {about}, Reginald called the burrito a novel you can hold. I called it big. Mine's easier to read.",
+  "clips": [
+   "kai/mention.c2"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Burritos\". Delivery: bright, very serious.",
+  "options": [
+   "At {about}, Reginald called the burrito a novel you can hold. I called it big. Mine's easier to read. Go see."
+  ],
+  "suggestion": "At {about}, Reginald called the burrito a novel you can hold. I called it big. Mine's easier to read. Go see."
+ },
+ {
+  "text": "My review of {about}: round, hot, ten out of ten. Reginald said it lacked mystery.",
+  "clips": [
+   "kai/mention.c3"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Pizza Parlor\". Delivery: bright, very serious.",
+  "options": [
+   "My review of {about}: round, hot, ten out of ten. Reginald said it lacked mystery. Go anyway."
+  ],
+  "suggestion": "My review of {about}: round, hot, ten out of ten. Reginald said it lacked mystery. Go anyway."
+ },
+ {
+  "text": "I reviewed {about} in two words. Big burger. Reginald said add more words. I added very.",
+  "clips": [
+   "kai/mention.c4"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Burger Bar\". Delivery: bright, very serious.",
+  "options": [
+   "I reviewed {about} in two words. Big burger. Reginald said add more words. I added very. You should go."
+  ],
+  "suggestion": "I reviewed {about} in two words. Big burger. Reginald said add more words. I added very. You should go."
+ },
+ {
+  "text": "I'm not allowed coffee, so at {about} I reviewed a donut. Circle. Delicious. The hole is efficient.",
+  "clips": [
+   "kai/mention.c5"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Cafe\". Delivery: bright, very serious.",
+  "options": [
+   "I'm not allowed coffee, so at {about} I reviewed a donut. Circle. Delicious. The hole is efficient. Go try one."
+  ],
+  "suggestion": "I'm not allowed coffee, so at {about} I reviewed a donut. Circle. Delicious. The hole is efficient. Go try one."
+ },
+ {
+  "text": "My review of {about}: cold, correct. Reginald says that's not a review. It's a weather report.",
+  "clips": [
+   "kai/mention.c6"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"the Ice Cream Emporium\". Delivery: bright, very serious.",
+  "options": [
+   "My review of {about}: cold, correct. Reginald says that's not a review. It's a weather report. Go anyway."
+  ],
+  "suggestion": "My review of {about}: cold, correct. Reginald says that's not a review. It's a weather report. Go anyway."
+ },
+ {
+  "text": "I tried {about}. Chef Hiro nodded at me. I wrote it down. That's my first nod.",
+  "clips": [
+   "kai/mention.c7"
+  ],
+  "speakers": [
+   "kai"
+  ],
+  "moment": "mention",
+  "type": "other",
+  "group": null,
+  "confidence": "medium",
+  "why": "Reads fine as small talk; the option adds a nudge to go visit. {about} = \"Ben's Sushi\". Delivery: bright, very proud.",
+  "options": [
+   "I tried {about}. Chef Hiro nodded at me. I wrote it down. That's my first nod. You should go get one."
+  ],
+  "suggestion": "I tried {about}. Chef Hiro nodded at me. I wrote it down. That's my first nod. You should go get one."
+ }
+]
