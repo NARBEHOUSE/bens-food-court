@@ -81,6 +81,12 @@ def allowed(text):
 def model_text(who, text):
     """The words the voice model is given: tools/voices.json respellings, and the calm punctuation."""
     text = respell(who, text)
+    # Sound tags the model doesn't have (Voice Studio GUIDE: [laughing] [sigh] [Uhm] [Shh] [Question-..] [Surprise-..]
+    # [Dissatisfaction-hnn]); full run check 2026-11-15: Dale's [a slow whistle] made no sound. A gasp becomes the
+    # model's surprise sound, a pause a written pause, the rest (whistle, throat, tape, singing) is left out.
+    text = re.sub(r'\[gasp\]', '[Surprise-wa]', text, flags=re.I)
+    text = re.sub(r'[.,]?\s*\[(long )?pause\]\s*', '... ', text, flags=re.I)
+    text = re.sub(r'\s*\[(a slow whistle|whistle|clears throat|peels tape|sings)\]\s*', ' ', text, flags=re.I).strip()
     if SPEC[who].get('respell_ing'):      # dropped g's read as Southern to the model: "standin'" -> "standing"
         text = re.sub(r"\b(\w+in)'(?=\W|$)", r'\1g', text)
     if SPEC[who].get('no_tags'):          # Vernon's [sigh] came out as a long hiss

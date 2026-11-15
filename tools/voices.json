@@ -1,7 +1,8 @@
 {
   "_about": "Each character's voice for Voice Studio's 'Describe a voice' (VoxCPM2): who, how it sounds, how it speaks. pitch: the median pitch range (Hz) a candidate should fall in; rate: words per second it should roughly speak at. tools/voices.py design reads this. These were the FIRST designs: after the voice test (2026-11-08) Mitch's stands, and Marge, Gus, Coach Bev, Vernon and Sal get their voices from tools/voice-styles.json (round 2) via `voices.py use`. respell: what the voice model is given instead of the script's words, for every recorded line.",
   "_everyone": {
-    "respell": [["\\bEugh\\b", "Ugh"], ["^Oh\\.", "Ohh."]],
+    "respell": [["\\bEugh\\b", "Ugh"], ["^Oh\\.", "Ohh."], ["\\bVeggie\\b", "Vedgie"], ["\\bBro\\b", "Broh"]],
+    "_respell2": "Full run check 2026-11-15: Rita's 'Veggie' was said with a hard g; Brock's 'Bro' was heard as 'brew'.",
     "_respell": "Batch trial 2026-11-14: 'Eugh' (11 lines) was said as 'you' or dropped (Vernon's react.gross heard as 'No! No! No!'); in the delivery test 'Ugh' beat 'Ew'. A line opening 'Oh.' came out as a long breath (Marge); 'Ohh.' didn't. Captions keep the script's words."
   },
   "mitch": {

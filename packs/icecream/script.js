@@ -49,7 +49,7 @@
   /* ── the tutorial: Grandpa Walt's hot fudge sundae and a thick chocolate shake ────────────────────────────── */
   { id: 'tutorial.intro.1', who: 'mitch', moment: 'tutorial.intro', text: "First day at the Emporium? Great. I'm Mitch, assistant manager, and today, soda jerk. One order together, start to finish.", delivery: 'friendly, welcoming' },
   { id: 'tutorial.intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Welcome to the Ice Cream Emporium. I'm Mitch. Yes, it's a paper hat. We'll get to that. First, one order, together.", delivery: 'friendly, heading off the hat question' },
-  { id: 'tutorial.ticket.1', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. Walt's sundae and his shake. Forget the order, pick Ticket, and you hear it again.", delivery: 'clear, pointing up' },
+  { id: 'tutorial.ticket.1', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. Walt's sundae and his shake. Forgot the order? Pick Ticket, and you'll hear it again.", delivery: 'clear, pointing up' },
   { id: 'tutorial.ticket.2', who: 'mitch', moment: 'tutorial.ticket', text: "There's the ticket on the wheel. Everything Walt wants, in order. Pick Ticket any time and it reads itself again.", delivery: 'clear, helpful' },
   { id: 'tutorial.scoop.1', who: 'mitch', moment: 'tutorial.scoop', text: "This is the freezer case. First, what it goes in: a cone, a waffle cone or a cup. Walt's sundae goes in a cup.", delivery: 'teaching, patting the freezer' },
   { id: 'tutorial.scoop.2', who: 'mitch', moment: 'tutorial.scoop', text: "Freezer case. Cup first, then how big, then the scoops. Seven tubs. I've tried them all. For training.", delivery: 'teaching, a guilty aside' },
