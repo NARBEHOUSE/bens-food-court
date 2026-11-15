@@ -284,7 +284,7 @@
   { id: 'react3.1', who: 'dale', moment: 'react.3', text: "Well, now. That's a ring you could hang a wrench on.", delivery: 'slow, admiring' },
   { id: 'react3.2', who: 'dale', moment: 'react.3', text: "That's done right. I'd shake your hand, but you'd need a degreaser.", delivery: 'slow, warm' },
   { id: 'react3.3', who: 'dale', moment: 'react.3', text: "Mm. That's the good stuff. Beats brake dust. Most things do, but still.", delivery: 'slow, content' },
-  { id: 'favourite.1', who: 'dale', moment: 'react.favourite', text: "Extra crispy. [a slow whistle] That's the sound a ring's supposed to make.", delivery: 'slow, reverent; a low whistle in the middle' },
+  { id: 'favourite.1', who: 'dale', moment: 'react.favourite', text: "Extra crispy. Mm. That's how a ring's supposed to come out.", delivery: 'slow, reverent' },
   { id: 'favourite.2', who: 'dale', moment: 'react.favourite', text: "Now that's a ring. Crisp all the way round. Like a good gasket.", delivery: 'slow, deeply content' },
   { id: 'react2.1', who: 'dale', moment: 'react.2', text: "That'll run. Idles a little rough, though.", delivery: 'slow, dry' },
   { id: 'react2.2', who: 'dale', moment: 'react.2', text: "Close. Like a bolt that's one turn short. It'll hold. For now.", delivery: 'slow, dry' },
