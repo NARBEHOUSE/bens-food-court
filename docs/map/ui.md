@@ -141,7 +141,7 @@ In game.js, `present(q, fresh)` (213-225) runs each of `q.options` through `W.op
   - `data-text`: normal | large | xlarge. Changes `--label` and `--small` (bb.css:14-18) and the ticket width (stage.js:106).
   - `data-theme`: standard | contrast. Contrast (206-210) gives heavier borders, a dimmer backdrop and `--lit:#00e5ff`.
   - Reduced motion (213) stops every animation; the JS also skips pop, fade and spin.
-- **Existing tokens (3-16):** `--lit #ffd400`, `--lit-ink`, `--ink #1b120e`, `--paper #fffaf0`, `--enamel-add #2fa84f`, `--enamel-skip #8b8f96`, `--enamel-swap #ff8a1c`, `--chalk #f7f3e8`, `--board #23382f`, `--wood #8a5a32`, `--label`, `--small`.
+- **Existing tokens (3-16):** `--lit #ffd400`, `--lit-ink`, `--ink #1b120e`, `--paper #fffaf0`, `--enamel-add #2fa84f`, `--enamel-skip #1f6fd1`, `--enamel-swap #ff8a1c`, `--chalk #f7f3e8`, `--board #23382f`, `--wood #8a5a32`, `--label`, `--small`.
 - **Hard-coded colours that cannot be re-skinned yet:**
   - page, fade and loading background `#3a2418` (21, 194, 201)
   - backdrop fallback `#e9c99a` (26)
