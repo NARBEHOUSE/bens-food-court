@@ -412,7 +412,14 @@
         if (q.max > 1) return { label: 'Add', say: 'Add ' + (q.offer === 1 ? 'a ' + thing : ordinal(q.offer) + ' ' + thing) };
         return { label: 'Add', say: 'Add ' + thing };
       }
-      if (id === 'skip') return { label: q.max > 1 && q.have > 0 ? 'Done' : 'Skip', say: q.max > 1 && q.have > 0 ? 'Done, ' + number(q.have) + ' ' + lower(q.have === 1 ? name(pack, q.ing) : plural(pack, q.ing)) : 'Skip ' + thing };
+      if (id === 'skip') {
+        if (!(q.max > 1 && q.have > 0)) return { label: 'Skip', say: 'Skip ' + thing };
+        // Enough added: "Done", except where what was added cooks next (the grill's patties): "Cook" says what happens
+        // (Bryan, 2026-11-15: "Done" read as finishing the burger, not as putting the patty on).
+        const I = pack.ingredients && pack.ingredients[q.ing];
+        const word = I && I.stages ? 'Cook' : 'Done';
+        return { label: word, say: word + ', ' + number(q.have) + ' ' + lower(q.have === 1 ? name(pack, q.ing) : plural(pack, q.ing)) };
+      }
       if (id === 'swap') return { label: 'Swap It', say: 'Swap ' + thing + ' for a fresh one' };
     }
     if (q.kind === 'cook') {
