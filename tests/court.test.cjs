@@ -33,7 +33,7 @@ const st = (g, id) => g.restaurants[id];
 const openIds = g => R.openShops(C, g).map(r => r.pack);
 
 test('BBCourt is spec 2.1, 4.1 and 6.2, in scan order round the U', () => {
-  assert.strictEqual(C.recordedVoices, false);
+  assert.strictEqual(C.recordedVoices, true);   // the voice pass is recorded (packs/*/voice)
   assert.strictEqual(typeof C.version, 'number');
   assert.deepStrictEqual(C.restaurants.map(r => [r.pack, r.name, r.short, r.arm, r.slot, r.start, r.unlock]), [
     ['burrito', "Ben's Burritos", 'Burritos', 'left', 2, false, 2],

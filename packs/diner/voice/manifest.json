@@ -1,0 +1,1850 @@
+{
+ "bev/customer.gCharred.1": {
+  "file": "bev/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "bev/customer.gFly.1": {
+  "file": "bev/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "bev/customer.gHair.1": {
+  "file": "bev/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "bev/customer.gMouldy.1": {
+  "file": "bev/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "bev/customer.gWilted.1": {
+  "file": "bev/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "bev/customer.odd.bunInside.1": {
+  "file": "bev/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "bev/customer.odd.fivePatties.1": {
+  "file": "bev/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "bev/customer.odd.nothingGreen.1": {
+  "file": "bev/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "bev/customer.reactGross.1": {
+  "file": "bev/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "bev/customer.reactGross.2": {
+  "file": "bev/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "bev/favourite.1": {
+  "file": "bev/favourite.1.mp3",
+  "hash": "fe1d85c1"
+ },
+ "bev/favourite.2": {
+  "file": "bev/favourite.2.mp3",
+  "hash": "4676cb7b"
+ },
+ "bev/gag.1": {
+  "file": "bev/gag.1.mp3",
+  "hash": "9b376425"
+ },
+ "bev/gag.2": {
+  "file": "bev/gag.2.mp3",
+  "hash": "770405bd"
+ },
+ "bev/gag.3": {
+  "file": "bev/gag.3.mp3",
+  "hash": "b7c1f302"
+ },
+ "bev/greet.1": {
+  "file": "bev/greet.1.mp3",
+  "hash": "0f2f7ca3"
+ },
+ "bev/greet.2": {
+  "file": "bev/greet.2.mp3",
+  "hash": "343f1003"
+ },
+ "bev/greet.3": {
+  "file": "bev/greet.3.mp3",
+  "hash": "eea5ed18"
+ },
+ "bev/odd.fivePatties.1": {
+  "file": "bev/odd.fivePatties.1.mp3",
+  "hash": "84959329"
+ },
+ "bev/odd.nothingGreen.1": {
+  "file": "bev/odd.nothingGreen.1.mp3",
+  "hash": "ab95b55b"
+ },
+ "bev/react1.1": {
+  "file": "bev/react1.1.mp3",
+  "hash": "f762a6f4"
+ },
+ "bev/react1.2": {
+  "file": "bev/react1.2.mp3",
+  "hash": "ddea6d4c"
+ },
+ "bev/react1.3": {
+  "file": "bev/react1.3.mp3",
+  "hash": "3bba746c"
+ },
+ "bev/react2.1": {
+  "file": "bev/react2.1.mp3",
+  "hash": "98ef405e"
+ },
+ "bev/react2.2": {
+  "file": "bev/react2.2.mp3",
+  "hash": "041946b2"
+ },
+ "bev/react2.3": {
+  "file": "bev/react2.3.mp3",
+  "hash": "e9784159"
+ },
+ "bev/react3.1": {
+  "file": "bev/react3.1.mp3",
+  "hash": "a814b6fc"
+ },
+ "bev/react3.2": {
+  "file": "bev/react3.2.mp3",
+  "hash": "8972f118"
+ },
+ "bev/react3.3": {
+  "file": "bev/react3.3.mp3",
+  "hash": "c77ec8c2"
+ },
+ "bev/reactGross.1": {
+  "file": "bev/reactGross.1.mp3",
+  "hash": "8d212603"
+ },
+ "bev/smalltalk.1": {
+  "file": "bev/smalltalk.1.mp3",
+  "hash": "c04942ae"
+ },
+ "dale/customer.gCharred.1": {
+  "file": "dale/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "dale/customer.gFly.1": {
+  "file": "dale/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "dale/customer.gHair.1": {
+  "file": "dale/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "dale/customer.gMouldy.1": {
+  "file": "dale/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "dale/customer.gWilted.1": {
+  "file": "dale/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "dale/customer.odd.bunInside.1": {
+  "file": "dale/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "dale/customer.odd.fivePatties.1": {
+  "file": "dale/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "dale/customer.odd.nothingGreen.1": {
+  "file": "dale/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "dale/customer.reactGross.1": {
+  "file": "dale/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "dale/customer.reactGross.2": {
+  "file": "dale/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "dale/favourite.1": {
+  "file": "dale/favourite.1.mp3",
+  "hash": "b7df5cdd"
+ },
+ "dale/favourite.2": {
+  "file": "dale/favourite.2.mp3",
+  "hash": "6e90a7e7"
+ },
+ "dale/goodbye.1": {
+  "file": "dale/goodbye.1.mp3",
+  "hash": "52bea339"
+ },
+ "dale/odd.fivePatties.1": {
+  "file": "dale/odd.fivePatties.1.mp3",
+  "hash": "fd269ced"
+ },
+ "dale/odd.nothingGreen.1": {
+  "file": "dale/odd.nothingGreen.1.mp3",
+  "hash": "a6043842"
+ },
+ "dale/react1.1": {
+  "file": "dale/react1.1.mp3",
+  "hash": "62ac63b4"
+ },
+ "dale/react1.2": {
+  "file": "dale/react1.2.mp3",
+  "hash": "83d583c7"
+ },
+ "dale/react1.3": {
+  "file": "dale/react1.3.mp3",
+  "hash": "bc0bcf1c"
+ },
+ "dale/react2.1": {
+  "file": "dale/react2.1.mp3",
+  "hash": "96a3c56e"
+ },
+ "dale/react2.2": {
+  "file": "dale/react2.2.mp3",
+  "hash": "bb93cd98"
+ },
+ "dale/react2.3": {
+  "file": "dale/react2.3.mp3",
+  "hash": "bc36572c"
+ },
+ "dale/react3.1": {
+  "file": "dale/react3.1.mp3",
+  "hash": "b86218be"
+ },
+ "dale/react3.2": {
+  "file": "dale/react3.2.mp3",
+  "hash": "978c8bea"
+ },
+ "dale/react3.3": {
+  "file": "dale/react3.3.mp3",
+  "hash": "5f1e9a9e"
+ },
+ "dale/reactGross.1": {
+  "file": "dale/reactGross.1.mp3",
+  "hash": "19546d10"
+ },
+ "dale/smalltalk.1": {
+  "file": "dale/smalltalk.1.mp3",
+  "hash": "fc46e5e1"
+ },
+ "gus/customer.gCharred.1": {
+  "file": "gus/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "gus/customer.gFly.1": {
+  "file": "gus/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "gus/customer.gHair.1": {
+  "file": "gus/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "gus/customer.gMouldy.1": {
+  "file": "gus/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "gus/customer.gWilted.1": {
+  "file": "gus/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "gus/customer.odd.bunInside.1": {
+  "file": "gus/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "gus/customer.odd.fivePatties.1": {
+  "file": "gus/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "gus/customer.odd.nothingGreen.1": {
+  "file": "gus/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "gus/customer.reactGross.1": {
+  "file": "gus/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "gus/customer.reactGross.2": {
+  "file": "gus/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "gus/greet.1": {
+  "file": "gus/greet.1.mp3",
+  "hash": "0f66b368"
+ },
+ "gus/greet.2": {
+  "file": "gus/greet.2.mp3",
+  "hash": "21b2265b"
+ },
+ "gus/greet.3": {
+  "file": "gus/greet.3.mp3",
+  "hash": "cb9bb35b"
+ },
+ "gus/odd.fivePatties.1": {
+  "file": "gus/odd.fivePatties.1.mp3",
+  "hash": "3c8685bc"
+ },
+ "gus/odd.nothingGreen.1": {
+  "file": "gus/odd.nothingGreen.1.mp3",
+  "hash": "e9330968"
+ },
+ "gus/react1.1": {
+  "file": "gus/react1.1.mp3",
+  "hash": "657b5968"
+ },
+ "gus/react1.2": {
+  "file": "gus/react1.2.mp3",
+  "hash": "92df0a27"
+ },
+ "gus/react1.3": {
+  "file": "gus/react1.3.mp3",
+  "hash": "a7370c7e"
+ },
+ "gus/react2.1": {
+  "file": "gus/react2.1.mp3",
+  "hash": "41d8e8ea"
+ },
+ "gus/react2.2": {
+  "file": "gus/react2.2.mp3",
+  "hash": "b8594fbf"
+ },
+ "gus/react2.3": {
+  "file": "gus/react2.3.mp3",
+  "hash": "70e39c2a"
+ },
+ "gus/react3.1": {
+  "file": "gus/react3.1.mp3",
+  "hash": "0e5af856"
+ },
+ "gus/react3.2": {
+  "file": "gus/react3.2.mp3",
+  "hash": "6cc3cf94"
+ },
+ "gus/react3.3": {
+  "file": "gus/react3.3.mp3",
+  "hash": "73af397f"
+ },
+ "gus/reactGross.1": {
+  "file": "gus/reactGross.1.mp3",
+  "hash": "154d1899"
+ },
+ "gus/smalltalk.1": {
+  "file": "gus/smalltalk.1.mp3",
+  "hash": "42d5fdd1"
+ },
+ "gus/twin": {
+  "file": "gus/twin.mp3",
+  "hash": "455aaaec"
+ },
+ "gus/twin.2": {
+  "file": "gus/twin.2.mp3",
+  "hash": "aeba7896"
+ },
+ "kai/arrive.1": {
+  "file": "kai/arrive.1.mp3",
+  "hash": "3f260fc5"
+ },
+ "kai/arrive.2": {
+  "file": "kai/arrive.2.mp3",
+  "hash": "11ba41c5"
+ },
+ "kai/customer.gCharred.1": {
+  "file": "kai/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "kai/customer.gFly.1": {
+  "file": "kai/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "kai/customer.gHair.1": {
+  "file": "kai/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "kai/customer.gMouldy.1": {
+  "file": "kai/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "kai/customer.gWilted.1": {
+  "file": "kai/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "kai/customer.odd.bunInside.1": {
+  "file": "kai/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "kai/customer.odd.fivePatties.1": {
+  "file": "kai/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "kai/customer.odd.nothingGreen.1": {
+  "file": "kai/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "kai/customer.reactGross.1": {
+  "file": "kai/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "kai/customer.reactGross.2": {
+  "file": "kai/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "kai/goodbye.1": {
+  "file": "kai/goodbye.1.mp3",
+  "hash": "a1f2be82"
+ },
+ "kai/react1.1": {
+  "file": "kai/react1.1.mp3",
+  "hash": "baf19c24"
+ },
+ "kai/react1.2": {
+  "file": "kai/react1.2.mp3",
+  "hash": "fb1e0c04"
+ },
+ "kai/react1.3": {
+  "file": "kai/react1.3.mp3",
+  "hash": "fd340c66"
+ },
+ "kai/react2.1": {
+  "file": "kai/react2.1.mp3",
+  "hash": "7a4f9dca"
+ },
+ "kai/react2.2": {
+  "file": "kai/react2.2.mp3",
+  "hash": "4cc028c8"
+ },
+ "kai/react2.3": {
+  "file": "kai/react2.3.mp3",
+  "hash": "08d1fc5c"
+ },
+ "kai/react3.1": {
+  "file": "kai/react3.1.mp3",
+  "hash": "aa8f4ba1"
+ },
+ "kai/react3.2": {
+  "file": "kai/react3.2.mp3",
+  "hash": "788d5c6e"
+ },
+ "kai/react3.3": {
+  "file": "kai/react3.3.mp3",
+  "hash": "b2d006e4"
+ },
+ "kai/reactGross.1": {
+  "file": "kai/reactGross.1.mp3",
+  "hash": "aea66395"
+ },
+ "kai/smalltalk.1": {
+  "file": "kai/smalltalk.1.mp3",
+  "hash": "cda165ec"
+ },
+ "marge/customer.gCharred.1": {
+  "file": "marge/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "marge/customer.gFly.1": {
+  "file": "marge/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "marge/customer.gHair.1": {
+  "file": "marge/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "marge/customer.gMouldy.1": {
+  "file": "marge/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "marge/customer.gWilted.1": {
+  "file": "marge/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "marge/customer.odd.bunInside.1": {
+  "file": "marge/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "marge/customer.odd.fivePatties.1": {
+  "file": "marge/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "marge/customer.odd.nothingGreen.1": {
+  "file": "marge/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "marge/customer.reactGross.1": {
+  "file": "marge/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "marge/customer.reactGross.2": {
+  "file": "marge/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "marge/goodbye.1": {
+  "file": "marge/goodbye.1.mp3",
+  "hash": "5f3483ea"
+ },
+ "marge/greet.1": {
+  "file": "marge/greet.1.mp3",
+  "hash": "f1a645d7"
+ },
+ "marge/greet.2": {
+  "file": "marge/greet.2.mp3",
+  "hash": "d1c7d172"
+ },
+ "marge/greet.3": {
+  "file": "marge/greet.3.mp3",
+  "hash": "15d7d160"
+ },
+ "marge/odd.bunInside.1": {
+  "file": "marge/odd.bunInside.1.mp3",
+  "hash": "af1bc7c0"
+ },
+ "marge/odd.fivePatties.1": {
+  "file": "marge/odd.fivePatties.1.mp3",
+  "hash": "4765bd8b"
+ },
+ "marge/react1.1": {
+  "file": "marge/react1.1.mp3",
+  "hash": "2b5a7761"
+ },
+ "marge/react1.2": {
+  "file": "marge/react1.2.mp3",
+  "hash": "d48f0c97"
+ },
+ "marge/react1.3": {
+  "file": "marge/react1.3.mp3",
+  "hash": "d87bd0e8"
+ },
+ "marge/react2.1": {
+  "file": "marge/react2.1.mp3",
+  "hash": "731dfa7d"
+ },
+ "marge/react2.2": {
+  "file": "marge/react2.2.mp3",
+  "hash": "ba60eb99"
+ },
+ "marge/react2.3": {
+  "file": "marge/react2.3.mp3",
+  "hash": "d582b4ee"
+ },
+ "marge/react3.1": {
+  "file": "marge/react3.1.mp3",
+  "hash": "d3a8dcd0"
+ },
+ "marge/react3.2": {
+  "file": "marge/react3.2.mp3",
+  "hash": "5043236a"
+ },
+ "marge/react3.3": {
+  "file": "marge/react3.3.mp3",
+  "hash": "6f1243a2"
+ },
+ "marge/reactGross.1": {
+  "file": "marge/reactGross.1.mp3",
+  "hash": "0444f6fe"
+ },
+ "marge/smalltalk.1": {
+  "file": "marge/smalltalk.1.mp3",
+  "hash": "19f689f5"
+ },
+ "marge/usual": {
+  "file": "marge/usual.mp3",
+  "hash": "446cd4ff"
+ },
+ "marge/usual.2": {
+  "file": "marge/usual.2.mp3",
+  "hash": "d43b9e8f"
+ },
+ "mitch/after1.1": {
+  "file": "mitch/after1.1.mp3",
+  "hash": "72a00b9c"
+ },
+ "mitch/after1.2": {
+  "file": "mitch/after1.2.mp3",
+  "hash": "26c9d6bb"
+ },
+ "mitch/after1.3": {
+  "file": "mitch/after1.3.mp3",
+  "hash": "4a079c59"
+ },
+ "mitch/after3.1": {
+  "file": "mitch/after3.1.mp3",
+  "hash": "2e87b333"
+ },
+ "mitch/after3.2": {
+  "file": "mitch/after3.2.mp3",
+  "hash": "ba763301"
+ },
+ "mitch/after3.3": {
+  "file": "mitch/after3.3.mp3",
+  "hash": "d5c0af92"
+ },
+ "mitch/afterGross.1": {
+  "file": "mitch/afterGross.1.mp3",
+  "hash": "e5f23cbf"
+ },
+ "mitch/afterGross.2": {
+  "file": "mitch/afterGross.2.mp3",
+  "hash": "57f63675"
+ },
+ "mitch/afterGross.3": {
+  "file": "mitch/afterGross.3.mp3",
+  "hash": "85d2bc94"
+ },
+ "mitch/board": {
+  "file": "mitch/board.mp3",
+  "hash": "7f5b85f1"
+ },
+ "mitch/board.2": {
+  "file": "mitch/board.2.mp3",
+  "hash": "184d514b"
+ },
+ "mitch/charred.1": {
+  "file": "mitch/charred.1.mp3",
+  "hash": "d4e97fa1"
+ },
+ "mitch/charred.2": {
+  "file": "mitch/charred.2.mp3",
+  "hash": "ab624344"
+ },
+ "mitch/charred.3": {
+  "file": "mitch/charred.3.mp3",
+  "hash": "5ba31d3a"
+ },
+ "mitch/cook": {
+  "file": "mitch/cook.mp3",
+  "hash": "07d8419a"
+ },
+ "mitch/cook.2": {
+  "file": "mitch/cook.2.mp3",
+  "hash": "3bb324ff"
+ },
+ "mitch/cookFryer.1": {
+  "file": "mitch/cookFryer.1.mp3",
+  "hash": "a87daab8"
+ },
+ "mitch/cookFryer.2": {
+  "file": "mitch/cookFryer.2.mp3",
+  "hash": "0c601924"
+ },
+ "mitch/drinks.1": {
+  "file": "mitch/drinks.1.mp3",
+  "hash": "4e96d85f"
+ },
+ "mitch/drinks.2": {
+  "file": "mitch/drinks.2.mp3",
+  "hash": "7a7cbca9"
+ },
+ "mitch/end.1": {
+  "file": "mitch/end.1.mp3",
+  "hash": "f596ce58"
+ },
+ "mitch/end.2": {
+  "file": "mitch/end.2.mp3",
+  "hash": "d7c17112"
+ },
+ "mitch/end.3": {
+  "file": "mitch/end.3.mp3",
+  "hash": "5fec579f"
+ },
+ "mitch/end.4": {
+  "file": "mitch/end.4.mp3",
+  "hash": "3f608a4a"
+ },
+ "mitch/eventAgain.1.theBurgerEatingContest": {
+  "file": "mitch/eventAgain.1.theBurgerEatingContest.mp3",
+  "hash": "d0568637"
+ },
+ "mitch/eventAgain.2.theBurgerEatingContest": {
+  "file": "mitch/eventAgain.2.theBurgerEatingContest.mp3",
+  "hash": "074a5697"
+ },
+ "mitch/eventCelebrate.1.theBurgerEatingContest": {
+  "file": "mitch/eventCelebrate.1.theBurgerEatingContest.mp3",
+  "hash": "a8c09825"
+ },
+ "mitch/eventCelebrate.2.theBurgerEatingContest": {
+  "file": "mitch/eventCelebrate.2.theBurgerEatingContest.mp3",
+  "hash": "9b285eed"
+ },
+ "mitch/eventIntro.1.theBurgerEatingContest": {
+  "file": "mitch/eventIntro.1.theBurgerEatingContest.mp3",
+  "hash": "22db5f1a"
+ },
+ "mitch/eventIntro.2.theBurgerEatingContest": {
+  "file": "mitch/eventIntro.2.theBurgerEatingContest.mp3",
+  "hash": "b88491fe"
+ },
+ "mitch/fly.1.bacon": {
+  "file": "mitch/fly.1.bacon.mp3",
+  "hash": "b5775bdc"
+ },
+ "mitch/fly.1.cheese": {
+  "file": "mitch/fly.1.cheese.mp3",
+  "hash": "84aeded0"
+ },
+ "mitch/fly.1.lettuce": {
+  "file": "mitch/fly.1.lettuce.mp3",
+  "hash": "d2d69a75"
+ },
+ "mitch/fly.1.onion": {
+  "file": "mitch/fly.1.onion.mp3",
+  "hash": "64afb742"
+ },
+ "mitch/fly.1.pickles": {
+  "file": "mitch/fly.1.pickles.mp3",
+  "hash": "54719848"
+ },
+ "mitch/fly.1.tomato": {
+  "file": "mitch/fly.1.tomato.mp3",
+  "hash": "8ec6e42b"
+ },
+ "mitch/fly.2.bacon": {
+  "file": "mitch/fly.2.bacon.mp3",
+  "hash": "c637ffc2"
+ },
+ "mitch/fly.2.cheese": {
+  "file": "mitch/fly.2.cheese.mp3",
+  "hash": "0037ff3c"
+ },
+ "mitch/fly.2.lettuce": {
+  "file": "mitch/fly.2.lettuce.mp3",
+  "hash": "5b3d1085"
+ },
+ "mitch/fly.2.onion": {
+  "file": "mitch/fly.2.onion.mp3",
+  "hash": "11ee8f30"
+ },
+ "mitch/fly.2.pickles": {
+  "file": "mitch/fly.2.pickles.mp3",
+  "hash": "5dcd8b3e"
+ },
+ "mitch/fly.2.tomato": {
+  "file": "mitch/fly.2.tomato.mp3",
+  "hash": "e82d4015"
+ },
+ "mitch/fryer.1": {
+  "file": "mitch/fryer.1.mp3",
+  "hash": "34276c3c"
+ },
+ "mitch/fryer.2": {
+  "file": "mitch/fryer.2.mp3",
+  "hash": "ca42eedc"
+ },
+ "mitch/grill": {
+  "file": "mitch/grill.mp3",
+  "hash": "e31d0913"
+ },
+ "mitch/grill.2": {
+  "file": "mitch/grill.2.mp3",
+  "hash": "58d50e16"
+ },
+ "mitch/gross": {
+  "file": "mitch/gross.mp3",
+  "hash": "0fed935f"
+ },
+ "mitch/gross.2": {
+  "file": "mitch/gross.2.mp3",
+  "hash": "95e81274"
+ },
+ "mitch/hair.1.cheese": {
+  "file": "mitch/hair.1.cheese.mp3",
+  "hash": "924e477b"
+ },
+ "mitch/hair.1.lettuce": {
+  "file": "mitch/hair.1.lettuce.mp3",
+  "hash": "7c14ab72"
+ },
+ "mitch/hair.1.onion": {
+  "file": "mitch/hair.1.onion.mp3",
+  "hash": "50816af3"
+ },
+ "mitch/hair.1.pickles": {
+  "file": "mitch/hair.1.pickles.mp3",
+  "hash": "27b15c1d"
+ },
+ "mitch/hair.1.tomato": {
+  "file": "mitch/hair.1.tomato.mp3",
+  "hash": "fd670a12"
+ },
+ "mitch/hair.2.cheese": {
+  "file": "mitch/hair.2.cheese.mp3",
+  "hash": "e9ea1c08"
+ },
+ "mitch/hair.2.lettuce": {
+  "file": "mitch/hair.2.lettuce.mp3",
+  "hash": "08e870d7"
+ },
+ "mitch/hair.2.onion": {
+  "file": "mitch/hair.2.onion.mp3",
+  "hash": "ecd5b72e"
+ },
+ "mitch/hair.2.pickles": {
+  "file": "mitch/hair.2.pickles.mp3",
+  "hash": "da62c0d0"
+ },
+ "mitch/hair.2.tomato": {
+  "file": "mitch/hair.2.tomato.mp3",
+  "hash": "0c733949"
+ },
+ "mitch/intro": {
+  "file": "mitch/intro.mp3",
+  "hash": "0c8337de"
+ },
+ "mitch/intro.2": {
+  "file": "mitch/intro.2.mp3",
+  "hash": "6307126a"
+ },
+ "mitch/mistake.done.1.crispy": {
+  "file": "mitch/mistake.done.1.crispy.mp3",
+  "hash": "7d8aebdd"
+ },
+ "mitch/mistake.done.1.extraCrispy": {
+  "file": "mitch/mistake.done.1.extraCrispy.mp3",
+  "hash": "7e1320db"
+ },
+ "mitch/mistake.done.1.golden": {
+  "file": "mitch/mistake.done.1.golden.mp3",
+  "hash": "3d988364"
+ },
+ "mitch/mistake.done.1.medium": {
+  "file": "mitch/mistake.done.1.medium.mp3",
+  "hash": "b4ce376a"
+ },
+ "mitch/mistake.done.1.mediumWell": {
+  "file": "mitch/mistake.done.1.mediumWell.mp3",
+  "hash": "a2210332"
+ },
+ "mitch/mistake.done.1.rare": {
+  "file": "mitch/mistake.done.1.rare.mp3",
+  "hash": "c0307283"
+ },
+ "mitch/mistake.done.1.well": {
+  "file": "mitch/mistake.done.1.well.mp3",
+  "hash": "fadac1dd"
+ },
+ "mitch/mistake.extra.1.bacon": {
+  "file": "mitch/mistake.extra.1.bacon.mp3",
+  "hash": "4a6db903"
+ },
+ "mitch/mistake.extra.1.cheese": {
+  "file": "mitch/mistake.extra.1.cheese.mp3",
+  "hash": "49ebd355"
+ },
+ "mitch/mistake.extra.1.ice": {
+  "file": "mitch/mistake.extra.1.ice.mp3",
+  "hash": "b90000e7"
+ },
+ "mitch/mistake.extra.1.ketchup": {
+  "file": "mitch/mistake.extra.1.ketchup.mp3",
+  "hash": "8e48965c"
+ },
+ "mitch/mistake.extra.1.lettuce": {
+  "file": "mitch/mistake.extra.1.lettuce.mp3",
+  "hash": "6fffcec8"
+ },
+ "mitch/mistake.extra.1.mayo": {
+  "file": "mitch/mistake.extra.1.mayo.mp3",
+  "hash": "e3824fd8"
+ },
+ "mitch/mistake.extra.1.mustard": {
+  "file": "mitch/mistake.extra.1.mustard.mp3",
+  "hash": "4ae4ba4c"
+ },
+ "mitch/mistake.extra.1.onion": {
+  "file": "mitch/mistake.extra.1.onion.mp3",
+  "hash": "9ee57e1c"
+ },
+ "mitch/mistake.extra.1.pickles": {
+  "file": "mitch/mistake.extra.1.pickles.mp3",
+  "hash": "6215daff"
+ },
+ "mitch/mistake.extra.1.salt": {
+  "file": "mitch/mistake.extra.1.salt.mp3",
+  "hash": "7b28eeae"
+ },
+ "mitch/mistake.extra.1.tomato": {
+  "file": "mitch/mistake.extra.1.tomato.mp3",
+  "hash": "9e1780d0"
+ },
+ "mitch/mistake.missing.1.bacon": {
+  "file": "mitch/mistake.missing.1.bacon.mp3",
+  "hash": "bf80c709"
+ },
+ "mitch/mistake.missing.1.cheese": {
+  "file": "mitch/mistake.missing.1.cheese.mp3",
+  "hash": "16daa28d"
+ },
+ "mitch/mistake.missing.1.ice": {
+  "file": "mitch/mistake.missing.1.ice.mp3",
+  "hash": "f78fb0ed"
+ },
+ "mitch/mistake.missing.1.ketchup": {
+  "file": "mitch/mistake.missing.1.ketchup.mp3",
+  "hash": "4d2f69f8"
+ },
+ "mitch/mistake.missing.1.lettuce": {
+  "file": "mitch/mistake.missing.1.lettuce.mp3",
+  "hash": "65574e74"
+ },
+ "mitch/mistake.missing.1.mayo": {
+  "file": "mitch/mistake.missing.1.mayo.mp3",
+  "hash": "a7af16d6"
+ },
+ "mitch/mistake.missing.1.mustard": {
+  "file": "mitch/mistake.missing.1.mustard.mp3",
+  "hash": "8ca8dd58"
+ },
+ "mitch/mistake.missing.1.onion": {
+  "file": "mitch/mistake.missing.1.onion.mp3",
+  "hash": "577b5aef"
+ },
+ "mitch/mistake.missing.1.pickles": {
+  "file": "mitch/mistake.missing.1.pickles.mp3",
+  "hash": "92fb3745"
+ },
+ "mitch/mistake.missing.1.salt": {
+  "file": "mitch/mistake.missing.1.salt.mp3",
+  "hash": "b77515e4"
+ },
+ "mitch/mistake.missing.1.tomato": {
+  "file": "mitch/mistake.missing.1.tomato.mp3",
+  "hash": "2d91a3ea"
+ },
+ "mitch/mistake.more.1": {
+  "file": "mitch/mistake.more.1.mp3",
+  "hash": "a5ff4be0"
+ },
+ "mitch/mistake.pick.1.cola": {
+  "file": "mitch/mistake.pick.1.cola.mp3",
+  "hash": "a55a2234"
+ },
+ "mitch/mistake.pick.1.fries": {
+  "file": "mitch/mistake.pick.1.fries.mp3",
+  "hash": "9500cc80"
+ },
+ "mitch/mistake.pick.1.icedTea": {
+  "file": "mitch/mistake.pick.1.icedTea.mp3",
+  "hash": "abb2b8c2"
+ },
+ "mitch/mistake.pick.1.large": {
+  "file": "mitch/mistake.pick.1.large.mp3",
+  "hash": "38dc2acc"
+ },
+ "mitch/mistake.pick.1.lemonLime": {
+  "file": "mitch/mistake.pick.1.lemonLime.mp3",
+  "hash": "52b7e6fa"
+ },
+ "mitch/mistake.pick.1.lemonade": {
+  "file": "mitch/mistake.pick.1.lemonade.mp3",
+  "hash": "b2ac9754"
+ },
+ "mitch/mistake.pick.1.medium": {
+  "file": "mitch/mistake.pick.1.medium.mp3",
+  "hash": "b4ce376a"
+ },
+ "mitch/mistake.pick.1.orangeSoda": {
+  "file": "mitch/mistake.pick.1.orangeSoda.mp3",
+  "hash": "4e7827dc"
+ },
+ "mitch/mistake.pick.1.rings": {
+  "file": "mitch/mistake.pick.1.rings.mp3",
+  "hash": "b17e0533"
+ },
+ "mitch/mistake.pick.1.small": {
+  "file": "mitch/mistake.pick.1.small.mp3",
+  "hash": "e44aa230"
+ },
+ "mitch/mistake.tooFew.1.patty.1": {
+  "file": "mitch/mistake.tooFew.1.patty.1.mp3",
+  "hash": "0e18eaa6"
+ },
+ "mitch/mistake.tooFew.1.patty.2": {
+  "file": "mitch/mistake.tooFew.1.patty.2.mp3",
+  "hash": "523cbaa4"
+ },
+ "mitch/mistake.tooFew.1.patty.3": {
+  "file": "mitch/mistake.tooFew.1.patty.3.mp3",
+  "hash": "92007bae"
+ },
+ "mitch/mistake.tooMany.1.patty.0": {
+  "file": "mitch/mistake.tooMany.1.patty.0.mp3",
+  "hash": "78045902"
+ },
+ "mitch/mistake.tooMany.1.patty.1": {
+  "file": "mitch/mistake.tooMany.1.patty.1.mp3",
+  "hash": "e7621c29"
+ },
+ "mitch/mistake.tooMany.1.patty.2": {
+  "file": "mitch/mistake.tooMany.1.patty.2.mp3",
+  "hash": "4baa935b"
+ },
+ "mitch/mistake.unasked.1.bacon": {
+  "file": "mitch/mistake.unasked.1.bacon.mp3",
+  "hash": "3a12bd9e"
+ },
+ "mitch/mistake.unasked.1.cheese": {
+  "file": "mitch/mistake.unasked.1.cheese.mp3",
+  "hash": "8e44526e"
+ },
+ "mitch/mistake.unasked.1.ice": {
+  "file": "mitch/mistake.unasked.1.ice.mp3",
+  "hash": "ba28441e"
+ },
+ "mitch/mistake.unasked.1.ketchup": {
+  "file": "mitch/mistake.unasked.1.ketchup.mp3",
+  "hash": "f91f198d"
+ },
+ "mitch/mistake.unasked.1.lettuce": {
+  "file": "mitch/mistake.unasked.1.lettuce.mp3",
+  "hash": "1ba945c5"
+ },
+ "mitch/mistake.unasked.1.mayo": {
+  "file": "mitch/mistake.unasked.1.mayo.mp3",
+  "hash": "28d43053"
+ },
+ "mitch/mistake.unasked.1.mustard": {
+  "file": "mitch/mistake.unasked.1.mustard.mp3",
+  "hash": "3e36bab5"
+ },
+ "mitch/mistake.unasked.1.onion": {
+  "file": "mitch/mistake.unasked.1.onion.mp3",
+  "hash": "b970b307"
+ },
+ "mitch/mistake.unasked.1.pickles": {
+  "file": "mitch/mistake.unasked.1.pickles.mp3",
+  "hash": "87ff796e"
+ },
+ "mitch/mistake.unasked.1.salt": {
+  "file": "mitch/mistake.unasked.1.salt.mp3",
+  "hash": "c105ead1"
+ },
+ "mitch/mistake.unasked.1.tomato": {
+  "file": "mitch/mistake.unasked.1.tomato.mp3",
+  "hash": "69eb608b"
+ },
+ "mitch/mouldy.1": {
+  "file": "mitch/mouldy.1.mp3",
+  "hash": "4759f032"
+ },
+ "mitch/mouldy.2": {
+  "file": "mitch/mouldy.2.mp3",
+  "hash": "3ea58e83"
+ },
+ "mitch/mouldy.3": {
+  "file": "mitch/mouldy.3.mp3",
+  "hash": "da55f159"
+ },
+ "mitch/nearly.1.crispy": {
+  "file": "mitch/nearly.1.crispy.mp3",
+  "hash": "93581987"
+ },
+ "mitch/nearly.1.extraCrispy": {
+  "file": "mitch/nearly.1.extraCrispy.mp3",
+  "hash": "7065c8b1"
+ },
+ "mitch/nearly.1.golden": {
+  "file": "mitch/nearly.1.golden.mp3",
+  "hash": "3175f6a8"
+ },
+ "mitch/nearly.1.medium": {
+  "file": "mitch/nearly.1.medium.mp3",
+  "hash": "cf535476"
+ },
+ "mitch/nearly.1.mediumWell": {
+  "file": "mitch/nearly.1.mediumWell.mp3",
+  "hash": "32981a84"
+ },
+ "mitch/nearly.1.rare": {
+  "file": "mitch/nearly.1.rare.mp3",
+  "hash": "625bd29d"
+ },
+ "mitch/nearly.1.well": {
+  "file": "mitch/nearly.1.well.mp3",
+  "hash": "4a3cda25"
+ },
+ "mitch/nearly.2.crispy": {
+  "file": "mitch/nearly.2.crispy.mp3",
+  "hash": "e152cf55"
+ },
+ "mitch/nearly.2.extraCrispy": {
+  "file": "mitch/nearly.2.extraCrispy.mp3",
+  "hash": "79f485a3"
+ },
+ "mitch/nearly.2.golden": {
+  "file": "mitch/nearly.2.golden.mp3",
+  "hash": "2a6ba9cc"
+ },
+ "mitch/nearly.2.medium": {
+  "file": "mitch/nearly.2.medium.mp3",
+  "hash": "a3a46912"
+ },
+ "mitch/nearly.2.mediumWell": {
+  "file": "mitch/nearly.2.mediumWell.mp3",
+  "hash": "b977f60a"
+ },
+ "mitch/nearly.2.rare": {
+  "file": "mitch/nearly.2.rare.mp3",
+  "hash": "13e0cefb"
+ },
+ "mitch/nearly.2.well": {
+  "file": "mitch/nearly.2.well.mp3",
+  "hash": "c1bf73e5"
+ },
+ "mitch/nearly.3.crispy": {
+  "file": "mitch/nearly.3.crispy.mp3",
+  "hash": "87d4fce9"
+ },
+ "mitch/nearly.3.extraCrispy": {
+  "file": "mitch/nearly.3.extraCrispy.mp3",
+  "hash": "964998fb"
+ },
+ "mitch/nearly.3.golden": {
+  "file": "mitch/nearly.3.golden.mp3",
+  "hash": "e44da654"
+ },
+ "mitch/nearly.3.medium": {
+  "file": "mitch/nearly.3.medium.mp3",
+  "hash": "6de88aee"
+ },
+ "mitch/nearly.3.mediumWell": {
+  "file": "mitch/nearly.3.mediumWell.mp3",
+  "hash": "f999b576"
+ },
+ "mitch/nearly.3.rare": {
+  "file": "mitch/nearly.3.rare.mp3",
+  "hash": "d461d0bb"
+ },
+ "mitch/nearly.3.well": {
+  "file": "mitch/nearly.3.well.mp3",
+  "hash": "10a23495"
+ },
+ "mitch/review": {
+  "file": "mitch/review.mp3",
+  "hash": "e6a46822"
+ },
+ "mitch/review.2": {
+  "file": "mitch/review.2.mp3",
+  "hash": "bc50dffb"
+ },
+ "mitch/serve": {
+  "file": "mitch/serve.mp3",
+  "hash": "1be03a65"
+ },
+ "mitch/serve.2": {
+  "file": "mitch/serve.2.mp3",
+  "hash": "33fb3dac"
+ },
+ "mitch/start.1": {
+  "file": "mitch/start.1.mp3",
+  "hash": "303d45b2"
+ },
+ "mitch/start.2": {
+  "file": "mitch/start.2.mp3",
+  "hash": "f28b11ac"
+ },
+ "mitch/start.3": {
+  "file": "mitch/start.3.mp3",
+  "hash": "5499bde6"
+ },
+ "mitch/start.4": {
+  "file": "mitch/start.4.mp3",
+  "hash": "335ba855"
+ },
+ "mitch/start.5": {
+  "file": "mitch/start.5.mp3",
+  "hash": "3c1fa6c7"
+ },
+ "mitch/ticket": {
+  "file": "mitch/ticket.mp3",
+  "hash": "e2816068"
+ },
+ "mitch/ticket.2": {
+  "file": "mitch/ticket.2.mp3",
+  "hash": "599fa95c"
+ },
+ "mitch/uniform.1": {
+  "file": "mitch/uniform.1.mp3",
+  "hash": "3001a66c"
+ },
+ "mitch/uniform.2": {
+  "file": "mitch/uniform.2.mp3",
+  "hash": "aa692eed"
+ },
+ "mitch/uniform.3": {
+  "file": "mitch/uniform.3.mp3",
+  "hash": "12614882"
+ },
+ "mitch/warnDone.2.medium": {
+  "file": "mitch/warnDone.2.medium.mp3",
+  "hash": "899b8d43"
+ },
+ "mitch/warnDone.2.mediumWell": {
+  "file": "mitch/warnDone.2.mediumWell.mp3",
+  "hash": "e64e9c75"
+ },
+ "mitch/warnDone.2.rare": {
+  "file": "mitch/warnDone.2.rare.mp3",
+  "hash": "d93889e8"
+ },
+ "mitch/warnDone.2.well": {
+  "file": "mitch/warnDone.2.well.mp3",
+  "hash": "39a2c968"
+ },
+ "mitch/warnDone.medium": {
+  "file": "mitch/warnDone.medium.mp3",
+  "hash": "3fe46e7e"
+ },
+ "mitch/warnDone.mediumWell": {
+  "file": "mitch/warnDone.mediumWell.mp3",
+  "hash": "4e87bebe"
+ },
+ "mitch/warnDone.rare": {
+  "file": "mitch/warnDone.rare.mp3",
+  "hash": "b22029e7"
+ },
+ "mitch/warnDone.well": {
+  "file": "mitch/warnDone.well.mp3",
+  "hash": "a6153aa1"
+ },
+ "mitch/warnExtra.2.onion": {
+  "file": "mitch/warnExtra.2.onion.mp3",
+  "hash": "69a25da8"
+ },
+ "mitch/warnExtra.onion": {
+  "file": "mitch/warnExtra.onion.mp3",
+  "hash": "bf67212e"
+ },
+ "mitch/warnGross": {
+  "file": "mitch/warnGross.mp3",
+  "hash": "c6a0b4cd"
+ },
+ "mitch/warnGross.2": {
+  "file": "mitch/warnGross.2.mp3",
+  "hash": "81ee1c91"
+ },
+ "mitch/warnGrossSkip.2.cheese": {
+  "file": "mitch/warnGrossSkip.2.cheese.mp3",
+  "hash": "e2c784ec"
+ },
+ "mitch/warnGrossSkip.cheese": {
+  "file": "mitch/warnGrossSkip.cheese.mp3",
+  "hash": "d1608bb0"
+ },
+ "mitch/warnMissing.2.bacon": {
+  "file": "mitch/warnMissing.2.bacon.mp3",
+  "hash": "2c15abc1"
+ },
+ "mitch/warnMissing.2.cheese": {
+  "file": "mitch/warnMissing.2.cheese.mp3",
+  "hash": "70d9eaab"
+ },
+ "mitch/warnMissing.2.ketchup": {
+  "file": "mitch/warnMissing.2.ketchup.mp3",
+  "hash": "9bbaa22e"
+ },
+ "mitch/warnMissing.2.lettuce": {
+  "file": "mitch/warnMissing.2.lettuce.mp3",
+  "hash": "05d74316"
+ },
+ "mitch/warnMissing.2.mayo": {
+  "file": "mitch/warnMissing.2.mayo.mp3",
+  "hash": "818d053a"
+ },
+ "mitch/warnMissing.2.mustard": {
+  "file": "mitch/warnMissing.2.mustard.mp3",
+  "hash": "f11dac3e"
+ },
+ "mitch/warnMissing.2.pickles": {
+  "file": "mitch/warnMissing.2.pickles.mp3",
+  "hash": "def3e739"
+ },
+ "mitch/warnMissing.2.tomato": {
+  "file": "mitch/warnMissing.2.tomato.mp3",
+  "hash": "14000596"
+ },
+ "mitch/warnMissing.bacon": {
+  "file": "mitch/warnMissing.bacon.mp3",
+  "hash": "73500260"
+ },
+ "mitch/warnMissing.cheese": {
+  "file": "mitch/warnMissing.cheese.mp3",
+  "hash": "e718dcc4"
+ },
+ "mitch/warnMissing.ketchup": {
+  "file": "mitch/warnMissing.ketchup.mp3",
+  "hash": "36498857"
+ },
+ "mitch/warnMissing.lettuce": {
+  "file": "mitch/warnMissing.lettuce.mp3",
+  "hash": "b5ba57bb"
+ },
+ "mitch/warnMissing.mayo": {
+  "file": "mitch/warnMissing.mayo.mp3",
+  "hash": "d9457059"
+ },
+ "mitch/warnMissing.mustard": {
+  "file": "mitch/warnMissing.mustard.mp3",
+  "hash": "b6f6c6ff"
+ },
+ "mitch/warnMissing.pickles": {
+  "file": "mitch/warnMissing.pickles.mp3",
+  "hash": "fbeda58c"
+ },
+ "mitch/warnMissing.tomato": {
+  "file": "mitch/warnMissing.tomato.mp3",
+  "hash": "7bc51565"
+ },
+ "mitch/warnPick": {
+  "file": "mitch/warnPick.mp3",
+  "hash": "76d51cde"
+ },
+ "mitch/warnPick.2": {
+  "file": "mitch/warnPick.2.mp3",
+  "hash": "dc3fb240"
+ },
+ "mitch/warnTooFew": {
+  "file": "mitch/warnTooFew.mp3",
+  "hash": "e9c1d2d8"
+ },
+ "mitch/warnTooFew.2": {
+  "file": "mitch/warnTooFew.2.mp3",
+  "hash": "3aad664b"
+ },
+ "mitch/warnTooMany": {
+  "file": "mitch/warnTooMany.mp3",
+  "hash": "b71b3fc4"
+ },
+ "mitch/warnTooMany.2": {
+  "file": "mitch/warnTooMany.2.mp3",
+  "hash": "30810715"
+ },
+ "mitch/warnUnasked.2.bacon": {
+  "file": "mitch/warnUnasked.2.bacon.mp3",
+  "hash": "e4b63341"
+ },
+ "mitch/warnUnasked.2.cheese": {
+  "file": "mitch/warnUnasked.2.cheese.mp3",
+  "hash": "f6db9221"
+ },
+ "mitch/warnUnasked.2.ketchup": {
+  "file": "mitch/warnUnasked.2.ketchup.mp3",
+  "hash": "57cbcc6c"
+ },
+ "mitch/warnUnasked.2.lettuce": {
+  "file": "mitch/warnUnasked.2.lettuce.mp3",
+  "hash": "8e1f3e1c"
+ },
+ "mitch/warnUnasked.2.mayo": {
+  "file": "mitch/warnUnasked.2.mayo.mp3",
+  "hash": "5dcb0a66"
+ },
+ "mitch/warnUnasked.2.mustard": {
+  "file": "mitch/warnUnasked.2.mustard.mp3",
+  "hash": "11d0c86c"
+ },
+ "mitch/warnUnasked.2.onion": {
+  "file": "mitch/warnUnasked.2.onion.mp3",
+  "hash": "1c89e6e2"
+ },
+ "mitch/warnUnasked.2.pickles": {
+  "file": "mitch/warnUnasked.2.pickles.mp3",
+  "hash": "d4be77a1"
+ },
+ "mitch/warnUnasked.2.tomato": {
+  "file": "mitch/warnUnasked.2.tomato.mp3",
+  "hash": "609b21fe"
+ },
+ "mitch/warnUnasked.bacon": {
+  "file": "mitch/warnUnasked.bacon.mp3",
+  "hash": "f4930bcd"
+ },
+ "mitch/warnUnasked.cheese": {
+  "file": "mitch/warnUnasked.cheese.mp3",
+  "hash": "9638fb4d"
+ },
+ "mitch/warnUnasked.ketchup": {
+  "file": "mitch/warnUnasked.ketchup.mp3",
+  "hash": "7295c562"
+ },
+ "mitch/warnUnasked.lettuce": {
+  "file": "mitch/warnUnasked.lettuce.mp3",
+  "hash": "7ce8cfa2"
+ },
+ "mitch/warnUnasked.mayo": {
+  "file": "mitch/warnUnasked.mayo.mp3",
+  "hash": "be051564"
+ },
+ "mitch/warnUnasked.mustard": {
+  "file": "mitch/warnUnasked.mustard.mp3",
+  "hash": "40c82832"
+ },
+ "mitch/warnUnasked.onion": {
+  "file": "mitch/warnUnasked.onion.mp3",
+  "hash": "5d2a8010"
+ },
+ "mitch/warnUnasked.pickles": {
+  "file": "mitch/warnUnasked.pickles.mp3",
+  "hash": "a1de71dd"
+ },
+ "mitch/warnUnasked.tomato": {
+  "file": "mitch/warnUnasked.tomato.mp3",
+  "hash": "697c8f6c"
+ },
+ "mitch/wilted.1": {
+  "file": "mitch/wilted.1.mp3",
+  "hash": "450e7d5c"
+ },
+ "mitch/wilted.2": {
+  "file": "mitch/wilted.2.mp3",
+  "hash": "20d9b0ae"
+ },
+ "mitch/wilted.3": {
+  "file": "mitch/wilted.3.mp3",
+  "hash": "6ec8be6b"
+ },
+ "oakes/customer.gCharred.1": {
+  "file": "oakes/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "oakes/customer.gFly.1": {
+  "file": "oakes/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "oakes/customer.gHair.1": {
+  "file": "oakes/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "oakes/customer.gMouldy.1": {
+  "file": "oakes/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "oakes/customer.gWilted.1": {
+  "file": "oakes/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "oakes/customer.odd.bunInside.1": {
+  "file": "oakes/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "oakes/customer.odd.fivePatties.1": {
+  "file": "oakes/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "oakes/customer.odd.nothingGreen.1": {
+  "file": "oakes/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "oakes/customer.reactGross.1": {
+  "file": "oakes/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "oakes/customer.reactGross.2": {
+  "file": "oakes/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "oakes/dislike.1": {
+  "file": "oakes/dislike.1.mp3",
+  "hash": "3c93434c"
+ },
+ "oakes/dislike.2": {
+  "file": "oakes/dislike.2.mp3",
+  "hash": "9ae6b691"
+ },
+ "oakes/dislike.3": {
+  "file": "oakes/dislike.3.mp3",
+  "hash": "3de6f4e9"
+ },
+ "oakes/dislike.4": {
+  "file": "oakes/dislike.4.mp3",
+  "hash": "dcda0834"
+ },
+ "oakes/dislike.5": {
+  "file": "oakes/dislike.5.mp3",
+  "hash": "6bd6136e"
+ },
+ "oakes/goodbye.1": {
+  "file": "oakes/goodbye.1.mp3",
+  "hash": "4be959dc"
+ },
+ "oakes/odd.bunInside.1": {
+  "file": "oakes/odd.bunInside.1.mp3",
+  "hash": "8e0274a0"
+ },
+ "oakes/odd.fivePatties.1": {
+  "file": "oakes/odd.fivePatties.1.mp3",
+  "hash": "a25f8a0a"
+ },
+ "oakes/odd.nothingGreen.1": {
+  "file": "oakes/odd.nothingGreen.1.mp3",
+  "hash": "2f08cfde"
+ },
+ "oakes/react1.1": {
+  "file": "oakes/react1.1.mp3",
+  "hash": "a0eeee11"
+ },
+ "oakes/react1.2": {
+  "file": "oakes/react1.2.mp3",
+  "hash": "02ba1f22"
+ },
+ "oakes/react1.3": {
+  "file": "oakes/react1.3.mp3",
+  "hash": "4dd05814"
+ },
+ "oakes/react2.1": {
+  "file": "oakes/react2.1.mp3",
+  "hash": "5a2695aa"
+ },
+ "oakes/react2.2": {
+  "file": "oakes/react2.2.mp3",
+  "hash": "d734b7c9"
+ },
+ "oakes/react2.3": {
+  "file": "oakes/react2.3.mp3",
+  "hash": "53557250"
+ },
+ "oakes/react3.1": {
+  "file": "oakes/react3.1.mp3",
+  "hash": "c47f18dc"
+ },
+ "oakes/react3.2": {
+  "file": "oakes/react3.2.mp3",
+  "hash": "801bf7a2"
+ },
+ "oakes/react3.3": {
+  "file": "oakes/react3.3.mp3",
+  "hash": "62bab441"
+ },
+ "oakes/reactGross.1": {
+  "file": "oakes/reactGross.1.mp3",
+  "hash": "c9d6dbde"
+ },
+ "oakes/smalltalk.1": {
+  "file": "oakes/smalltalk.1.mp3",
+  "hash": "da6288de"
+ },
+ "reginald/arrive.1": {
+  "file": "reginald/arrive.1.mp3",
+  "hash": "000f98a5"
+ },
+ "reginald/arrive.2": {
+  "file": "reginald/arrive.2.mp3",
+  "hash": "e1d80486"
+ },
+ "reginald/customer.gCharred.1": {
+  "file": "reginald/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "reginald/customer.gFly.1": {
+  "file": "reginald/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "reginald/customer.gHair.1": {
+  "file": "reginald/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "reginald/customer.gMouldy.1": {
+  "file": "reginald/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "reginald/customer.gWilted.1": {
+  "file": "reginald/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "reginald/customer.odd.bunInside.1": {
+  "file": "reginald/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "reginald/customer.odd.fivePatties.1": {
+  "file": "reginald/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "reginald/customer.odd.nothingGreen.1": {
+  "file": "reginald/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "reginald/customer.reactGross.1": {
+  "file": "reginald/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "reginald/customer.reactGross.2": {
+  "file": "reginald/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "reginald/goodbye.1": {
+  "file": "reginald/goodbye.1.mp3",
+  "hash": "0bdc9029"
+ },
+ "reginald/react1.1": {
+  "file": "reginald/react1.1.mp3",
+  "hash": "56869d2a"
+ },
+ "reginald/react1.2": {
+  "file": "reginald/react1.2.mp3",
+  "hash": "a7d09b2b"
+ },
+ "reginald/react1.3": {
+  "file": "reginald/react1.3.mp3",
+  "hash": "298eaa6a"
+ },
+ "reginald/react2.1": {
+  "file": "reginald/react2.1.mp3",
+  "hash": "4d637286"
+ },
+ "reginald/react2.2": {
+  "file": "reginald/react2.2.mp3",
+  "hash": "93687f44"
+ },
+ "reginald/react2.3": {
+  "file": "reginald/react2.3.mp3",
+  "hash": "440692c5"
+ },
+ "reginald/react3.1": {
+  "file": "reginald/react3.1.mp3",
+  "hash": "4b5d8a9e"
+ },
+ "reginald/react3.2": {
+  "file": "reginald/react3.2.mp3",
+  "hash": "abbff43a"
+ },
+ "reginald/react3.3": {
+  "file": "reginald/react3.3.mp3",
+  "hash": "0ef3126a"
+ },
+ "reginald/reactGross.1": {
+  "file": "reginald/reactGross.1.mp3",
+  "hash": "a35d2140"
+ },
+ "reginald/smalltalk.1": {
+  "file": "reginald/smalltalk.1.mp3",
+  "hash": "9b648c86"
+ },
+ "sal/customer.gCharred.1": {
+  "file": "sal/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "sal/customer.gFly.1": {
+  "file": "sal/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "sal/customer.gHair.1": {
+  "file": "sal/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "sal/customer.gMouldy.1": {
+  "file": "sal/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "sal/customer.gWilted.1": {
+  "file": "sal/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "sal/customer.odd.bunInside.1": {
+  "file": "sal/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "sal/customer.odd.fivePatties.1": {
+  "file": "sal/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "sal/customer.odd.nothingGreen.1": {
+  "file": "sal/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "sal/customer.reactGross.1": {
+  "file": "sal/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "sal/customer.reactGross.2": {
+  "file": "sal/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "sal/dislike.1": {
+  "file": "sal/dislike.1.mp3",
+  "hash": "bf3793dd"
+ },
+ "sal/dislike.2": {
+  "file": "sal/dislike.2.mp3",
+  "hash": "83359a9d"
+ },
+ "sal/favourite.1": {
+  "file": "sal/favourite.1.mp3",
+  "hash": "0994c119"
+ },
+ "sal/favourite.2": {
+  "file": "sal/favourite.2.mp3",
+  "hash": "0fd4255a"
+ },
+ "sal/greet.1": {
+  "file": "sal/greet.1.mp3",
+  "hash": "f53e9792"
+ },
+ "sal/greet.2": {
+  "file": "sal/greet.2.mp3",
+  "hash": "bfb3b53d"
+ },
+ "sal/greet.3": {
+  "file": "sal/greet.3.mp3",
+  "hash": "13274d3b"
+ },
+ "sal/odd.bunInside.1": {
+  "file": "sal/odd.bunInside.1.mp3",
+  "hash": "82b99147"
+ },
+ "sal/odd.fivePatties.1": {
+  "file": "sal/odd.fivePatties.1.mp3",
+  "hash": "2c1923f0"
+ },
+ "sal/odd.nothingGreen.1": {
+  "file": "sal/odd.nothingGreen.1.mp3",
+  "hash": "283342b0"
+ },
+ "sal/react1.1": {
+  "file": "sal/react1.1.mp3",
+  "hash": "f078f2af"
+ },
+ "sal/react1.2": {
+  "file": "sal/react1.2.mp3",
+  "hash": "9300da80"
+ },
+ "sal/react1.3": {
+  "file": "sal/react1.3.mp3",
+  "hash": "865afe9b"
+ },
+ "sal/react2.1": {
+  "file": "sal/react2.1.mp3",
+  "hash": "f5461e08"
+ },
+ "sal/react2.2": {
+  "file": "sal/react2.2.mp3",
+  "hash": "666ebe7b"
+ },
+ "sal/react2.3": {
+  "file": "sal/react2.3.mp3",
+  "hash": "e64ce026"
+ },
+ "sal/react3.1": {
+  "file": "sal/react3.1.mp3",
+  "hash": "fdc4f802"
+ },
+ "sal/react3.2": {
+  "file": "sal/react3.2.mp3",
+  "hash": "95e8da9d"
+ },
+ "sal/react3.3": {
+  "file": "sal/react3.3.mp3",
+  "hash": "269005d3"
+ },
+ "sal/reactGross.1": {
+  "file": "sal/reactGross.1.mp3",
+  "hash": "9aea3ae2"
+ },
+ "sal/smalltalk.1": {
+  "file": "sal/smalltalk.1.mp3",
+  "hash": "79c99df9"
+ },
+ "vernon/customer.gCharred.1": {
+  "file": "vernon/customer.gCharred.1.mp3",
+  "hash": "57ff33ec"
+ },
+ "vernon/customer.gFly.1": {
+  "file": "vernon/customer.gFly.1.mp3",
+  "hash": "af20e568"
+ },
+ "vernon/customer.gHair.1": {
+  "file": "vernon/customer.gHair.1.mp3",
+  "hash": "b2370545"
+ },
+ "vernon/customer.gMouldy.1": {
+  "file": "vernon/customer.gMouldy.1.mp3",
+  "hash": "e27d0d6f"
+ },
+ "vernon/customer.gWilted.1": {
+  "file": "vernon/customer.gWilted.1.mp3",
+  "hash": "a4135e4a"
+ },
+ "vernon/customer.odd.bunInside.1": {
+  "file": "vernon/customer.odd.bunInside.1.mp3",
+  "hash": "dc139faa"
+ },
+ "vernon/customer.odd.fivePatties.1": {
+  "file": "vernon/customer.odd.fivePatties.1.mp3",
+  "hash": "b81b14c3"
+ },
+ "vernon/customer.odd.nothingGreen.1": {
+  "file": "vernon/customer.odd.nothingGreen.1.mp3",
+  "hash": "5238bf54"
+ },
+ "vernon/customer.reactGross.1": {
+  "file": "vernon/customer.reactGross.1.mp3",
+  "hash": "ea64f729"
+ },
+ "vernon/customer.reactGross.2": {
+  "file": "vernon/customer.reactGross.2.mp3",
+  "hash": "3079cc44"
+ },
+ "vernon/greet.1": {
+  "file": "vernon/greet.1.mp3",
+  "hash": "7bdd30a4"
+ },
+ "vernon/greet.2": {
+  "file": "vernon/greet.2.mp3",
+  "hash": "32d39861"
+ },
+ "vernon/greet.3": {
+  "file": "vernon/greet.3.mp3",
+  "hash": "5e00faf7"
+ },
+ "vernon/odd.bunInside.1": {
+  "file": "vernon/odd.bunInside.1.mp3",
+  "hash": "d5b82ead"
+ },
+ "vernon/odd.fivePatties.1": {
+  "file": "vernon/odd.fivePatties.1.mp3",
+  "hash": "b2ef6e52"
+ },
+ "vernon/odd.nothingGreen.1": {
+  "file": "vernon/odd.nothingGreen.1.mp3",
+  "hash": "c8365660"
+ },
+ "vernon/react1.1": {
+  "file": "vernon/react1.1.mp3",
+  "hash": "671860e1"
+ },
+ "vernon/react1.2": {
+  "file": "vernon/react1.2.mp3",
+  "hash": "4bf04dfe"
+ },
+ "vernon/react1.3": {
+  "file": "vernon/react1.3.mp3",
+  "hash": "5cea77fd"
+ },
+ "vernon/react2.1": {
+  "file": "vernon/react2.1.mp3",
+  "hash": "4c59781f"
+ },
+ "vernon/react2.2": {
+  "file": "vernon/react2.2.mp3",
+  "hash": "bb8a033a"
+ },
+ "vernon/react2.3": {
+  "file": "vernon/react2.3.mp3",
+  "hash": "1de46d0b"
+ },
+ "vernon/react3.1": {
+  "file": "vernon/react3.1.mp3",
+  "hash": "c1334a77"
+ },
+ "vernon/react3.2": {
+  "file": "vernon/react3.2.mp3",
+  "hash": "58397ec3"
+ },
+ "vernon/react3.3": {
+  "file": "vernon/react3.3.mp3",
+  "hash": "c45a13d2"
+ },
+ "vernon/reactGross.1": {
+  "file": "vernon/reactGross.1.mp3",
+  "hash": "10b3e0bd"
+ },
+ "vernon/smalltalk.1": {
+  "file": "vernon/smalltalk.1.mp3",
+  "hash": "d0e4d6f5"
+ }
+}
