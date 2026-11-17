@@ -276,8 +276,8 @@
     BB.stage.show('register', false); BB.stage.show('bell', false);
     await BB.stage.setScene('counter', () => { if (!stale(t)) BB.world.showCounter([]); });
     if (stale(t)) return;
-    BB.stage.customer(P.art, POSE.arrive);
-    await wait(reduced() ? 100 : 450);
+    // They speak once they can be seen: on a slow connection their picture may take a moment (never more than 3 s).
+    await Promise.all([Promise.race([BB.stage.customer(P.art, POSE.arrive), wait(3000)]), wait(reduced() ? 100 : 450)]);
     if (stale(t)) return;
     // A visitor announces themselves before the greeting (spec 4.4).
     if (o.ticket.visitor) { await talk(P.id, 'visitor.arrive', {}, POSE.order); if (stale(t)) return; }

@@ -348,7 +348,9 @@
         return b;
       },
     };
-    const clear = b => b && b.x0 >= 0 && !overlap(b, P.keep) && !overlap(b, P.head);
+    // The register (Ring It Up) stands under the column on the right: a column long enough to reach it covers its
+    // keys, and on a short, wide phone screen that left too little of it to tap (the user, 2026-11-17).
+    const clear = b => b && b.x0 >= 0 && !overlap(b, P.keep) && !overlap(b, P.head) && !overlap(b, P.register);
     const apply = (mode, b) => {
       el.classList.toggle('cols2', mode === 'two');
       el.classList.toggle('row', mode === 'row');
@@ -372,7 +374,9 @@
         apply(mode, b);
         const r = real() || b;
         r.slip = b.slip;
-        const cost = overlap(r, P.keep) * 4 + overlap(r, P.head) * 4 + (r.x0 < 0 ? -r.x0 * P.H : 0) + (t === top && tops.length > 1 ? 1 : 0);
+        // Where nothing fits, the queue (painted) and the head may be covered a little, but not the register: it is a
+        // choice the player has to reach, so covering it costs far more than covering the picture.
+        const cost = overlap(r, P.keep) * 4 + overlap(r, P.head) * 4 + overlap(r, P.register) * 60 + (r.x0 < 0 ? -r.x0 * P.H : 0) + (t === top && tops.length > 1 ? 1 : 0);
         if (!best || cost < best.cost) best = { mode, b: r, cost };
         if (clear(r)) { pick = { mode, b: r }; break; }
       }
@@ -515,19 +519,22 @@
 
   /* ── characters ─────────────────────────────────────────────────────────── */
   const shown = { customer: null, mitch: null };
+  // A new customer's picture still loading: { folder, t }. Until it is ready nobody stands at the counter.
+  let stepping = null, stepTurn = 0;
   function pop(el) {
     if (reduced()) return;
     el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
   }
   /** The customer at the counter in a pose, or nobody (folder null). A child is drawn at the cast's `scale`
-   *  from the bottom centre (bb.css --cs): the same feet line. */
+   *  from the bottom centre (bb.css --cs): the same feet line. Returns a promise that settles once they are seen
+   *  (at once, unless someone new is still waiting for their picture). */
   function customer(folder, pose) {
     const el = $('customer');
     const was = !!shown.customer;
-    if (!folder) { el.classList.remove('on'); shown.customer = null; if (was && shown.mitch) placeMitch(); return; }
+    if (!folder) { stepping = null; stepTurn++; el.classList.remove('on'); shown.customer = null; if (was && shown.mitch) placeMitch(); return; }
     const src = castSrc(folder, pose);
     const key = folder + '/' + pose;
-    if (!src) { el.classList.remove('on'); return; }
+    if (!src) { stepping = null; stepTurn++; el.classList.remove('on'); return; }
     const P = people()[folder] || Object.values(people()).find(x => x && x.art === folder);
     // At the counter a child is drawn no smaller than CHILD_MIN, so their shoulders clear the counter line (only head
     // and shoulders show): Little Lulu (cast scale 0.66) stands on a step here, and keeps her own size on the court
@@ -537,13 +544,39 @@
     if (cs !== childScale) { childScale = cs; layout(); }
     // The pop plays once, when someone new steps up; a change of pose is a plain swap (the user, 2026-11-11: the
     // customer "pops up twice" walking in, the arrive pose then the talking pose half a second later).
-    if (shown.customer !== key) {
-      const fresh = !was || !shown.customer || shown.customer.split('/')[0] !== folder;
-      el.src = src; shown.customer = key;
-      if (fresh) pop(el);
+    // Someone new steps up only once their picture is ready. Until then the last customer is gone: a browser keeps
+    // showing an <img>'s old picture while its new one loads, so the old customer used to pop up again (the pop
+    // played on their picture) before the new one came in, on a phone loading the art over the network (the user,
+    // 2026-11-17). A change of pose while the new face is still loading just changes which picture is awaited.
+    const fresh = !was || !shown.customer || shown.customer.split('/')[0] !== folder || !!(stepping && stepping.folder === folder);
+    if (shown.customer !== key || (stepping && stepping.folder === folder)) {
+      shown.customer = key;
+      if (fresh) {
+        const t = ++stepTurn;
+        stepping = { folder, t };
+        el.classList.remove('on');
+        let seen;
+        const shownYet = new Promise(res => { seen = res; });
+        const ready = () => {
+          seen();
+          if (t !== stepTurn) return;
+          stepping = null;
+          el.src = src;
+          el.classList.add('on');
+          pop(el);
+          if (shown.mitch) placeMitch();
+        };
+        const img = new Image();
+        img.src = src;
+        if (img.decode) img.decode().then(ready, ready); else ready();   // (no decode in jsdom: at once, as before)
+        if (!was && shown.mitch) placeMitch();          // Mitch makes way for the customer (stage.js placeMitch)
+        return shownYet;
+      }
+      el.src = src;
     }
     el.classList.add('on');
     if (!was && shown.mitch) placeMitch();                // Mitch makes way for the customer (stage.js placeMitch)
+    return Promise.resolve();
   }
   /** Mitch in a pose, sliding in; null slides him out. At the counter he stands where placeMitch() says. */
   function mitch(pose) {
