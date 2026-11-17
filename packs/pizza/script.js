@@ -34,7 +34,7 @@
   /* ── the shift ─────────────────────────────────────────────────────────────────────────────────────────────── */
   { id: 'shift.start.1', who: 'mitch', moment: 'shift.start', text: "Doors are open. The oven's hot, the dough's proofed, and there's flour somewhere on me I can't reach.", delivery: 'upbeat, scratching at the flour' },
   { id: 'shift.start.2', who: 'mitch', moment: 'shift.start', text: "Pizza Parlor, day shift. The customer is always right. Unless it's Tony, and then he's just loud.", delivery: 'cheerful, the Tony part confided' },
-  { id: 'shift.start.3', who: 'mitch', moment: 'shift.start', text: "Let's go. Corporate called. Corporate is my mom. She asked if we do gluten-free. We don't. Don't tell her.", delivery: 'eager, a nervous aside at the end' },
+  { id: 'shift.start.3', who: 'mitch', moment: 'shift.start', text: "Let's go. The district manager called. She's my mom. She asked if we do gluten-free. We don't. Don't tell her.", delivery: 'eager, a nervous aside at the end' },
   { id: 'shift.start.4', who: 'mitch', moment: 'shift.start', text: "Doors open! Crust, sauce, cheese, toppings, oven, cut. Six things. I can count to six. I've been practicing.", delivery: 'brisk, proud of the counting' },
   { id: 'shift.start.5', who: 'mitch', moment: 'shift.start', text: "Shift's on. If you hear singing, that's Tony. If you hear screaming, that's also Tony.", delivery: 'upbeat, matter-of-fact' },
   { id: 'shift.end.1', who: 'mitch', moment: 'shift.end', text: "That's the shift. Nobody got pineapple by accident. Tony sent a thank-you note. It was a song.", delivery: 'relieved, fond' },
@@ -43,7 +43,7 @@
   { id: 'shift.end.4', who: 'mitch', moment: 'shift.end', text: "Shift's over. I'm going home smelling like garlic. My mom will know. She always knows.", delivery: 'resigned, affectionate' },
 
   /* ── the uniform: the first shift here in a session ────────────────────────────────────────────────────────── */
-  { id: 'uniform.1', who: 'mitch', moment: 'uniform', text: 'Yes, the hat is a pizza box. A real one. Corporate calls it branding. Corporate is my mom, and she has a glue gun.', delivery: 'pre-empting the question, deadpan' },
+  { id: 'uniform.1', who: 'mitch', moment: 'uniform', text: "Yes, the hat is a pizza box. A real one. The district manager calls it branding. She's my mom, and she has a glue gun.", delivery: 'pre-empting the question, deadpan' },
   { id: 'uniform.2', who: 'mitch', moment: 'uniform', text: 'The apron was clean this morning. Then the flour found it. The flour always finds it. The flour is patient.', delivery: 'ominous, about flour' },
   { id: 'uniform.3', who: 'mitch', moment: 'uniform', text: "Pizza-box hat, flour apron, and the tie stays. The tie is who I am. The hat is who I'm becoming.", delivery: 'earnest, a little grand' },
 
@@ -83,7 +83,7 @@
   /* ── the tutorial: Tony's pepperoni pizza and garlic knots, with a fly on the pepperoni ─────────────────────── */
   { id: 'tutorial.intro.1', who: 'mitch', moment: 'tutorial.intro', text: "First day at the Pizza Parlor? Great. I'm Mitch. Assistant manager, and today, also the dough guy. One order together, nice and slow.", delivery: 'friendly, welcoming' },
   { id: 'tutorial.intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Welcome to the Pizza Parlor. I'm Mitch. Yes, the hat's a pizza box. We'll get to that. First, one pizza, together.", delivery: 'friendly, heading off the hat question' },
-  { id: 'tutorial.ticket.1', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. Tony's pepperoni pizza and garlic knots. Forget the order, pick Ticket, and you hear it again.", delivery: 'clear, pointing up' },
+  { id: 'tutorial.ticket.1', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. Tony's pepperoni pizza and garlic knots. Forgot the order? Pick Ticket, and you'll hear it again.", delivery: 'clear, pointing up' },
   { id: 'tutorial.ticket.2', who: 'mitch', moment: 'tutorial.ticket', text: "There's the ticket on the wheel. Everything Tony wants, in order. Pick Ticket any time and it reads itself again.", delivery: 'clear, helpful' },
   { id: 'tutorial.prep.1', who: 'mitch', moment: 'tutorial.prep', text: "The prep table. Pick the crust, the dough does a little show, then pick the sauce. After that the cheese and every topping come down the line, one at a time. On the ticket, Add. Not on the ticket, Skip.", delivery: 'teaching, steady' },
   { id: 'tutorial.prep.2', who: 'mitch', moment: 'tutorial.prep', text: "This is where a pizza starts. Crust first, then sauce, then the toppings come to you one by one. Add what the ticket says. Skip what it doesn't.", delivery: 'teaching, steady' },
@@ -124,7 +124,7 @@
   { id: 'event.celebrate.1', who: 'mitch', moment: 'event.celebrate', text: '{name} was a hit! The couple cried. The guests cried. I cried, but that was the onions. We have a lot of onions.', delivery: 'joyful, sniffing' },
   { id: 'event.celebrate.2', who: 'mitch', moment: 'event.celebrate', text: "That's {name} done, and the gold sign's going up. Five stars. The hat stays. The hat earned this.", delivery: 'triumphant, solemn about the hat' },
   { id: 'event.again.1', who: 'mitch', moment: 'event.again', text: "{name} didn't quite come together. The couple's still married, so, mostly fine. We can run it again.", delivery: 'consoling, hopeful' },
-  { id: 'event.again.2', who: 'mitch', moment: 'event.again', text: "Okay. {name} fell a little flat. Like a crust. We'll run it again, and the heart's still in the oven's future.", delivery: 'rueful, then upbeat' },
+  { id: 'event.again.2', who: 'mitch', moment: 'event.again', text: "Okay. {name} fell a little flat. Like a crust. We'll run it again. The heart pizza can wait.", delivery: 'rueful, then upbeat' },
 
   /* ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
      EVERY CUSTOMER: the pack's fallback for anyone with fewer than two lines of their own (neutral voice)
@@ -154,8 +154,14 @@
   { id: 'order.odd.justCrust.2', who: 'customer', moment: 'order.odd.justCrust', text: "I'll have the crust. Only the crust. The pizza part is for other people.", delivery: 'calm, certain' },
   { id: 'order.odd.halfAndHalf.1', who: 'customer', moment: 'order.odd.halfAndHalf', text: 'Half pepperoni, half pineapple and anchovies. I contain multitudes.', delivery: 'serene, unbothered' },
   { id: 'order.odd.halfAndHalf.2', who: 'customer', moment: 'order.odd.halfAndHalf', text: "Pepperoni on one half, pineapple and anchovies on the other. I'm sharing with someone I don't like.", delivery: 'deadpan' },
+  /* tony: own copies of the customer lines (script review 2026-11-14: the shared line didn't suit them) */
+  { id: 'order.odd.halfAndHalf.1', who: 'tony', moment: 'order.odd.halfAndHalf', text: 'Half pepperoni, half pineapple and anchovies. The pineapple half is not for me. I will not look at it.', delivery: 'serene, unbothered' },
+  { id: 'order.odd.halfAndHalf.2', who: 'tony', moment: 'order.odd.halfAndHalf', text: "Pepperoni on one half, pineapple and anchovies on the other. I'm sharing with someone I don't like.", delivery: 'deadpan' },
   { id: 'order.odd.heartShaped.1', who: 'customer', moment: 'order.odd.heartShaped', text: "A pepperoni pizza, shaped like a heart. I'm proposing tonight. It's a long story. The pizza's the short version.", delivery: 'nervous, hopeful' },
-  { id: 'order.odd.heartShaped.2', who: 'customer', moment: 'order.odd.heartShaped', text: "Can you make it heart-shaped? I'm proposing. They said yes to the pizza place, so I'm hopeful.", delivery: 'nervous, hopeful' },
+  { id: 'order.odd.heartShaped.2', who: 'customer', moment: 'order.odd.heartShaped', text: "Can you make it heart-shaped? I'm proposing. If they say no, at least I've got pizza.", delivery: 'nervous, hopeful' },
+  /* kai: own copies of the customer lines (script review 2026-11-14: the shared line didn't suit them) */
+  { id: 'order.odd.heartShaped.1', who: 'kai', moment: 'order.odd.heartShaped', text: "A pepperoni pizza, shaped like a heart. It's for my mom. Don't tell her. It's a surprise.", delivery: 'nervous, hopeful' },
+  { id: 'order.odd.heartShaped.2', who: 'kai', moment: 'order.odd.heartShaped', text: "Can you make it heart-shaped? I'm proposing. If they say no, at least I've got pizza.", delivery: 'nervous, hopeful' },
   { id: 'order.odd.allTheWay.1', who: 'customer', moment: 'order.odd.allTheWay', text: "Everything. All the way. Deep dish, crispy, cut in four. I've cleared my evening.", delivery: 'grave, determined' },
   { id: 'order.odd.allTheWay.2', who: 'customer', moment: 'order.odd.allTheWay', text: 'The Everything Pizza, and I mean everything. Deep dish. Crispy. Four slices. Four big ones.', delivery: 'building, relishing it' },
 
@@ -228,12 +234,12 @@
   { id: 'order.gag.3', who: 'pam', moment: 'order.gag', text: "That's for twelve seven-year-olds. One pizza. It's a party, not a buffet. They'll live. Probably.", delivery: 'brisk, a shrug on probably' },
   { id: 'order.gag.4', who: 'pam', moment: 'order.gag', text: "For twelve! Twelve kids! I'm not ordering twelve pizzas. I'm not made of pizzas. I'm made of coffee.", delivery: 'fast, a little wild' },
   { id: 'order.gag.5', who: 'pam', moment: 'order.gag', text: "That's for the whole party, by the way. One pizza, one basket. They'll share. Nobody in history has ever shared.", delivery: 'cheerful, then deadpan' },
-  { id: 'order.odd.heartShaped.1', who: 'pam', moment: 'order.odd.heartShaped', text: "Heart-shaped, please. The birthday girl's in a hearts phase. Last month was dinosaurs. We don't talk about dinosaurs.", delivery: 'chipper, then dark' },
+  { id: 'order.odd.heartShaped.1', who: 'pam', moment: 'order.odd.heartShaped', text: "A pepperoni pizza, shaped like a heart. It's for my mom. Don't tell her. It's a surprise.", delivery: 'chipper, then dark' },
   { id: 'order.odd.justCrust.1', who: 'pam', moment: 'order.odd.justCrust', text: 'Just the crust. One of the kids only eats crusts. Fine. Great. Love that for her.', delivery: 'forced cheer, through her teeth' },
   { id: 'order.odd.halfAndHalf.1', who: 'pam', moment: 'order.odd.halfAndHalf', text: "Half pepperoni, half pineapple and anchovies. Two kids, one pizza. Nobody's going to be happy. That's parenting.", delivery: 'bright, matter-of-fact' },
   { id: 'react.3.1', who: 'pam', moment: 'react.3', text: "Perfect! That's exactly it! Twelve kids might actually stop yelling for four whole minutes!", delivery: 'thrilled, counting the minutes' },
   { id: 'react.3.2', who: 'pam', moment: 'react.3', text: "Oh, that's the one. Crown off to you. Figuratively. It's stapled.", delivery: 'delighted, patting the crown' },
-  { id: 'react.3.3', who: 'pam', moment: 'react.3', text: "Yes! A pizza that matches the ticket! Today, that's my pony.", delivery: 'overjoyed, slightly teary' },
+  { id: 'react.3.3', who: 'pam', moment: 'react.3', text: "Yes! A pizza that matches the ticket! Best present anyone's getting today.", delivery: 'overjoyed, slightly teary' },
   { id: 'react.2.1', who: 'pam', moment: 'react.2', text: "Okay. It's close. The kids won't notice. I noticed. I notice everything now.", delivery: 'bright, then haunted' },
   { id: 'react.2.2', who: 'pam', moment: 'react.2', text: 'Not quite. But neither is the cake, the clown or the day.', delivery: 'a cheerful shrug' },
   { id: 'react.2.3', who: 'pam', moment: 'react.2', text: "Almost right. I'll file it under 'mostly fine.' It's a big file.", delivery: 'upbeat, the list voice' },
@@ -261,9 +267,9 @@
   { id: 'smalltalk.3', who: 'breeze', moment: 'smalltalk', text: "I don't own a watch. I own a board. The board has never once told me I'm late.", delivery: 'relaxed, content' },
   { id: 'smalltalk.4', who: 'breeze', moment: 'smalltalk', text: "That opera guy keeps looking at me. I think we're friends now. I don't think he thinks that.", delivery: 'mellow, unbothered' },
   { id: 'goodbye.1', who: 'breeze', moment: 'goodbye', text: 'Later. Gonna go sit by the fountain and think about that pizza.', delivery: 'dreamy, drifting off' },
-  { id: 'goodbye.2', who: 'breeze', moment: 'goodbye', text: 'Peace. Tell the pineapple guy I said hi. Not the fan. The other one.', delivery: 'easy, a slow grin' },
+  { id: 'goodbye.2', who: 'breeze', moment: 'goodbye', text: "Peace. Tell the opera guy I said hi. He'll pretend he didn't hear me.", delivery: 'easy, a slow grin' },
   { id: 'goodbye.3', who: 'breeze', moment: 'goodbye', text: "Thanks, friend. Tide's going out. Or in. One of those.", delivery: 'a relaxed shrug' },
-  { id: 'react.3.1', who: 'breeze', moment: 'react.3', text: "Oh, that's the wave. That's the wave right there. Pineapple, cheese, sunshine.", delivery: 'blissed out' },
+  { id: 'react.3.1', who: 'breeze', moment: 'react.3', text: "Oh, that's the wave. That's the wave right there. Pure sunshine.", delivery: 'blissed out' },
   { id: 'react.3.2', who: 'breeze', moment: 'react.3', text: 'Yeah. Yeah. This pizza gets it.', delivery: 'a slow nod, deep approval' },
   { id: 'react.3.3', who: 'breeze', moment: 'react.3', text: "Perfect. Totally perfect. I'm gonna eat this real slow and think about nothing.", delivery: 'serene' },
   { id: 'react.2.1', who: 'breeze', moment: 'react.2', text: "Close. Like a wave that's almost a wave. Still fun. Still wet.", delivery: 'easygoing, forgiving' },
@@ -302,7 +308,7 @@
   { id: 'order.twin.2', who: 'gus', moment: 'order.twin', text: "Two larges, buddy. One for me, one for Delores. She don't eat. She likes the smell.", delivery: 'a fond drawl' },
   { id: 'order.odd.heartShaped.1', who: 'gus', moment: 'order.odd.heartShaped', text: "Heart-shaped, buddy. For Delores. One year together. She's the truck. Don't make it weird.", delivery: 'a sheepish drawl' },
   { id: 'react.3.1', who: 'gus', moment: 'react.3', text: "Now that's worth the exit ramp.", delivery: 'a satisfied drawl' },
-  { id: 'react.3.2', who: 'gus', moment: 'react.3', text: "Mm. Beautiful. Pizza like that, I'd haul it to Tulsa and never touch it. I'm touchin' it.", delivery: 'reverent, then eager' },
+  { id: 'react.3.2', who: 'gus', moment: 'react.3', text: "Mm. Beautiful. I meant to save this for Tulsa. It ain't makin' it out of the parkin' lot.", delivery: 'reverent, then eager' },
   { id: 'react.3.3', who: 'gus', moment: 'react.3', text: "That's a pizza, buddy. Box goes on the dash so Delores can see.", delivery: 'a proud drawl' },
   { id: 'react.2.1', who: 'gus', moment: 'react.2', text: "It'll do, buddy. Had worse pizza at a truck stop in Nevada. Wasn't even a pizza. Was a sandwich.", delivery: 'an easygoing drawl' },
   { id: 'react.2.2', who: 'gus', moment: 'react.2', text: "Not bad. Little off. Like a rig pullin' slightly to the left.", delivery: 'an amused drawl' },
@@ -310,7 +316,7 @@
   { id: 'react.1.1', who: 'gus', moment: 'react.1', text: "Well. I once ate a pizza off a gas-station roller. This is losin' to that pizza.", delivery: 'a deadpan drawl' },
   { id: 'react.1.2', who: 'gus', moment: 'react.1', text: "I'm gonna eat it. I'm a trucker. But I'm gonna be quiet for a while.", delivery: 'a resigned drawl' },
   { id: 'react.1.3', who: 'gus', moment: 'react.1', text: "Buddy, this ain't my pizza. This is some other fella's pizza, and he's gonna be upset too.", delivery: 'slow, sorrowful' },
-  { id: 'react.gross.1', who: 'gus', moment: 'react.gross', text: 'Oh, no. Oh, buddy. No. I seen roadkill with better manners.', delivery: 'a low groan' },
+  { id: 'react.gross.1', who: 'gus', moment: 'react.gross', text: "Oh, no. Oh, buddy. No. I seen more appetizin' roadkill.", delivery: 'a low groan' },
 
   /* ── Coach Bev: booming; meat lover's is her favourite ("a full roster"); caps are her emphasis ─────────────── */
   { id: 'greet.1', who: 'bev', moment: 'greet', text: 'Coach Bev! Pizza night! The team VOTED! It was UNANIMOUS! I counted!', delivery: 'booming' },
@@ -390,7 +396,7 @@
   { id: 'react.3.3', who: 'reginald', moment: 'react.3', text: "Perfection. Kai, write this down. 'Round. Hot. Correct.' No. Longer than that. Much longer.", delivery: 'theatrical, dictating' },
   { id: 'react.2.1', who: 'reginald', moment: 'react.2', text: "Hm. A pizza of two halves. One half is excellent. The other half is a review I'll enjoy writing.", delivery: 'theatrical, relishing it' },
   { id: 'react.2.2', who: 'reginald', moment: 'react.2', text: "Nearly. Nearly is the critic's favorite word. It's where the paragraphs live.", delivery: 'grave, pleased with himself' },
-  { id: 'react.2.3', who: 'reginald', moment: 'react.2', text: "Fine. Three stars. Wet, but lacking ambition. No, that's my water review. Three stars anyway.", delivery: 'theatrical, catching himself' },
+  { id: 'react.2.3', who: 'reginald', moment: 'react.2', text: "Fine. Two stars. Wet, but lacking ambition. No, that's my water review. Two stars anyway.", delivery: 'theatrical, catching himself' },
   { id: 'react.1.1', who: 'reginald', moment: 'react.1', text: "Oh, dear. I came for a pizza, and I've been handed material.", delivery: 'a slow, delighted horror' },
   { id: 'react.1.2', who: 'reginald', moment: 'react.1', text: "This is not what I ordered. It is, however, what I'll be writing about until spring.", delivery: 'theatrical, wounded' },
   { id: 'react.1.3', who: 'reginald', moment: 'react.1', text: "A tragedy in eight slices. I'll be gentle in print. I won't. But I'll say I was.", delivery: 'grand, confiding' },

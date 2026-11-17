@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "brock/smoothie:greet.1",
+  "speaker": "brock",
+  "text": "Brock! What's up, chief! Just came from the gym. I'm always just coming from the gym.",
+  "moment": "greet",
+  "delivery": "pumped, friendly",
+  "pack": "smoothie",
+  "order": 2,
+  "hash": "3602e7c7",
+  "recorded": false
+ },
+ {
+  "clip": "brock/smoothie:smalltalk.1",
+  "speaker": "brock",
+  "text": "Today's leg day. I skipped it. I skip it every time. At this point it's a tradition.",
+  "moment": "smalltalk",
+  "delivery": "cheerful, unashamed",
+  "pack": "smoothie",
+  "order": 4,
+  "hash": "3e9dc830",
+  "recorded": false
+ },
+ {
+  "clip": "brock/smoothie:react.3.1",
+  "speaker": "brock",
+  "text": "Yes! That is the stuff! I can feel my arms getting bigger already!",
+  "moment": "react.3",
+  "delivery": "pumped, flexing",
+  "pack": "smoothie",
+  "order": 2,
+  "hash": "11ba8b65",
+  "recorded": false
+ },
+ {
+  "clip": "brock/cast:complain.c1",
+  "speaker": "brock",
+  "text": "Bro, that's not it. I said it with my whole chest.",
+  "moment": "complain",
+  "delivery": "big, earnest gym voice",
+  "pack": "cast",
+  "order": 4,
+  "hash": "99cb0252",
+  "recorded": false
+ }
+]

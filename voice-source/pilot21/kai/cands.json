@@ -1,0 +1,65 @@
+{
+ "retake-s1": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 354,
+  "seconds": 6.88,
+  "rate": 2.91,
+  "clarity": 3.16,
+  "source": "retake:"
+ },
+ "retake-s2": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 405,
+  "seconds": 7.23,
+  "rate": 2.77,
+  "clarity": 1.66,
+  "source": "retake:"
+ },
+ "retake-s3": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 304,
+  "seconds": 7.26,
+  "rate": 2.75,
+  "clarity": 3.32,
+  "source": "retake:"
+ },
+ "retake-s4": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 273,
+  "seconds": 8.08,
+  "rate": 2.48,
+  "clarity": 3.62,
+  "source": "retake:"
+ },
+ "retake-s5": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 298,
+  "seconds": 8.52,
+  "rate": 2.35,
+  "clarity": 3.81,
+  "source": "retake:"
+ },
+ "retake-s6": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 286,
+  "seconds": 9.59,
+  "rate": 2.09,
+  "clarity": 3.12,
+  "source": "retake:"
+ },
+ "current": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 265,
+  "seconds": 8.47,
+  "rate": 2.36,
+  "clarity": 3.75,
+  "source": "current"
+ }
+}

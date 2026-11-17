@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "priya/cafe:greet.1",
+  "speaker": "priya",
+  "text": "Hi. Twelve-hour shift, then here. This is the thirteenth hour. The good one.",
+  "moment": "greet",
+  "delivery": "dry, quick, relieved",
+  "pack": "cafe",
+  "order": 2,
+  "hash": "4c1665ff",
+  "recorded": false
+ },
+ {
+  "clip": "priya/cafe:smalltalk.1",
+  "speaker": "priya",
+  "text": "I've been coming here so long the machine knows me. It hisses at everyone else. At me it sighs.",
+  "moment": "smalltalk",
+  "delivery": "dry, fond",
+  "pack": "cafe",
+  "order": 4,
+  "hash": "26894c06",
+  "recorded": false
+ },
+ {
+  "clip": "priya/cafe:react.3.1",
+  "speaker": "priya",
+  "text": "Perfect. Vital signs are good. Mine and the order's.",
+  "moment": "react.3",
+  "delivery": "dry, satisfied",
+  "pack": "cafe",
+  "order": 2,
+  "hash": "c3861460",
+  "recorded": false
+ },
+ {
+  "clip": "priya/cast:complain.c1",
+  "speaker": "priya",
+  "text": "I'm tired, not wrong.",
+  "moment": "complain",
+  "delivery": "dry, quick, running on no sleep",
+  "pack": "cast",
+  "order": 4,
+  "hash": "88aee9f4",
+  "recorded": false
+ }
+]

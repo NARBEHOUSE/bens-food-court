@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "gus/cast:greet.c1",
+  "speaker": "gus",
+  "text": "Howdy, buddy. Parked the rig out back. Took up the whole loading dock.",
+  "moment": "greet",
+  "delivery": "easy, friendly drawl",
+  "pack": "cast",
+  "order": 2,
+  "hash": "16f43508",
+  "recorded": false
+ },
+ {
+  "clip": "gus/smalltalk.1",
+  "speaker": "gus",
+  "text": "Parked Delores out front. She's blockin' the hot dog cart. Fella's hollerin'. He'll be fine.",
+  "moment": "smalltalk",
+  "delivery": "easy drawl, unbothered",
+  "pack": "diner",
+  "order": 4,
+  "hash": "42d5fdd1",
+  "recorded": false
+ },
+ {
+  "clip": "gus/react3.3",
+  "speaker": "gus",
+  "text": "Ohh, buddy. That's the one I'll be thinkin' about somewhere around Tulsa.",
+  "moment": "react.3",
+  "delivery": "contented drawl",
+  "pack": "diner",
+  "order": 2,
+  "hash": "73af397f",
+  "recorded": false
+ },
+ {
+  "clip": "gus/cast:complain.c1",
+  "speaker": "gus",
+  "text": "Buddy, this ain't what I ordered. Still love ya, though.",
+  "moment": "complain",
+  "delivery": "easy drawl, unbothered",
+  "pack": "cast",
+  "order": 4,
+  "hash": "bbb421d1",
+  "recorded": false
+ }
+]

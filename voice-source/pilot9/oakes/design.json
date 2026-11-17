@@ -1,0 +1,124 @@
+{
+ "nasal-s1": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 164,
+  "seconds": 6.75,
+  "rate": 3.11,
+  "clarity": 2.22,
+  "style": "nasal",
+  "seed": 1
+ },
+ "nasal-s2": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 222,
+  "seconds": 6.52,
+  "rate": 3.22,
+  "clarity": 2.62,
+  "style": "nasal",
+  "seed": 2
+ },
+ "nasal-s3": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 127,
+  "seconds": 7.44,
+  "rate": 2.82,
+  "clarity": 3.26,
+  "style": "nasal",
+  "seed": 3
+ },
+ "nasal-s4": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 161,
+  "seconds": 8.72,
+  "rate": 2.41,
+  "clarity": 3.29,
+  "style": "nasal",
+  "seed": 4
+ },
+ "lecturer-s1": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 235,
+  "seconds": 5.93,
+  "rate": 3.54,
+  "clarity": 3.82,
+  "style": "lecturer",
+  "seed": 1
+ },
+ "lecturer-s2": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 167,
+  "seconds": 6.65,
+  "rate": 3.16,
+  "clarity": 4.14,
+  "style": "lecturer",
+  "seed": 2
+ },
+ "lecturer-s3": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 206,
+  "seconds": 7.03,
+  "rate": 2.99,
+  "clarity": 3.16,
+  "style": "lecturer",
+  "seed": 3
+ },
+ "lecturer-s4": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 146,
+  "seconds": 6.3,
+  "rate": 3.33,
+  "clarity": 3.93,
+  "style": "lecturer",
+  "seed": 4
+ },
+ "fusty-s1": {
+  "said": "Hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 129,
+  "seconds": 6.39,
+  "rate": 3.29,
+  "clarity": 2.26,
+  "style": "fusty",
+  "seed": 1
+ },
+ "fusty-s2": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 159,
+  "seconds": 7.04,
+  "rate": 2.98,
+  "clarity": 3.58,
+  "style": "fusty",
+  "seed": 2
+ },
+ "fusty-s3": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 124,
+  "seconds": 7.95,
+  "rate": 2.64,
+  "clarity": 2.84,
+  "style": "fusty",
+  "seed": 3
+ },
+ "fusty-s4": {
+  "said": "Yeah. Hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [
+   "replace: 'ah' -> 'yeah'"
+  ],
+  "pitch": 131,
+  "seconds": 7.06,
+  "rate": 2.97,
+  "clarity": 4.05,
+  "style": "fusty",
+  "seed": 4
+ }
+}

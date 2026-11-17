@@ -1,0 +1,86 @@
+[
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Doors are open. The oven's hot, the dough's proofed, and there's flour somewhere on me I can't reach.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\mitch\\0-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Another happy customer. I'll take the credit. I'll take the box, too. We reuse those.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\mitch\\1-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "The ticket said no cheese.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\mitch\\2-qwen.wav"
+ },
+ {
+  "who": "mitch",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot\\mitch\\eager-s4.wav",
+  "ref_text": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "text": "Hi. Mitch. Assistant manager. The ASST. Is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\mitch\\3-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Hi hun. I've just come from bingo, and I'm feeling lucky.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\marge\\0-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "I had my retirement party in that corner booth hun. Twelve bus drivers and one cake. The cake didn't make it.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\marge\\1-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Oh hun. That's just like the one from my first date. Different fella. Same burger.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\marge\\2-qwen.wav"
+ },
+ {
+  "who": "marge",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot3\\marge\\elderly-mw-s4.wav",
+  "ref_text": "Hi, hun. The usual, please. You know how I like it, and I know you'll get it right.",
+  "text": "Hun, this isn't what I said. I'm old, not blind.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\marge\\3-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Good evening. I will be reviewing tonight.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\vernon\\0-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "My blog began at this very counter. Post one. 'Hm.' It remains my most popular.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\vernon\\1-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "Acceptable. Don't let it go to your head.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\vernon\\2-qwen.wav"
+ },
+ {
+  "who": "vernon",
+  "ref": "D:\\Projects\\bens-food-court\\voice-source\\pilot4\\vernon\\critic-s2.wav",
+  "ref_text": "Good evening. I'll be reviewing tonight. The bun, the patty, the presentation. My readers expect nothing less.",
+  "text": "I will be writing about this. At length.",
+  "out": "D:\\Projects\\bens-food-court\\voice-source\\pilot5\\clone\\vernon\\3-qwen.wav"
+ }
+]

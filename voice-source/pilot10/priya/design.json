@@ -1,0 +1,162 @@
+{
+ "dry-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 202,
+  "seconds": 7.25,
+  "rate": 3.03,
+  "clarity": 4.15,
+  "style": "dry",
+  "seed": 1
+ },
+ "dry-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 8.38,
+  "rate": 2.62,
+  "clarity": 3.89,
+  "style": "dry",
+  "seed": 2
+ },
+ "dry-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 191,
+  "seconds": 8.79,
+  "rate": 2.5,
+  "clarity": 3.83,
+  "style": "dry",
+  "seed": 3
+ },
+ "dry-s4": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 225,
+  "seconds": 7.46,
+  "rate": 2.95,
+  "clarity": 4.09,
+  "style": "dry",
+  "seed": 4
+ },
+ "wry-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 234,
+  "seconds": 8.49,
+  "rate": 2.59,
+  "clarity": 4.03,
+  "style": "wry",
+  "seed": 1
+ },
+ "wry-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 209,
+  "seconds": 7.32,
+  "rate": 3.0,
+  "clarity": 4.13,
+  "style": "wry",
+  "seed": 2
+ },
+ "wry-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 7.92,
+  "rate": 2.78,
+  "clarity": 4.1,
+  "style": "wry",
+  "seed": 3
+ },
+ "wry-s4": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 190,
+  "seconds": 7.21,
+  "rate": 3.05,
+  "clarity": 4.17,
+  "style": "wry",
+  "seed": 4
+ },
+ "brisk-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 272,
+  "seconds": 7.04,
+  "rate": 3.13,
+  "clarity": 4.23,
+  "style": "brisk",
+  "seed": 1
+ },
+ "brisk-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 234,
+  "seconds": 7.42,
+  "rate": 2.96,
+  "clarity": 4.1,
+  "style": "brisk",
+  "seed": 2
+ },
+ "brisk-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 200,
+  "seconds": 7.11,
+  "rate": 3.1,
+  "clarity": 4.27,
+  "style": "brisk",
+  "seed": 3
+ },
+ "brisk-s4": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 6.97,
+  "rate": 3.16,
+  "clarity": 4.23,
+  "style": "brisk",
+  "seed": 4
+ },
+ "indian-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 199,
+  "seconds": 7.27,
+  "rate": 3.03,
+  "clarity": 4.19,
+  "style": "indian",
+  "seed": 1
+ },
+ "indian-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 164,
+  "seconds": 7.93,
+  "rate": 2.77,
+  "clarity": 3.89,
+  "style": "indian",
+  "seed": 2
+ },
+ "indian-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 234,
+  "seconds": 7.33,
+  "rate": 3.0,
+  "clarity": 3.97,
+  "style": "indian",
+  "seed": 3
+ },
+ "indian-s4": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 217,
+  "seconds": 7.76,
+  "rate": 2.83,
+  "clarity": 3.87,
+  "style": "indian",
+  "seed": 4
+ }
+}

@@ -34,10 +34,10 @@
   /* ── Mitch: the shift ───────────────────────────────────────────────────── */
   { id: 'start.1', who: 'mitch', moment: 'shift.start', text: 'Doors are open. Try not to set anything on fire.' },
   { id: 'start.2', who: 'mitch', moment: 'shift.start', text: "Morning, team. And by team, I mean you. I'll be supervising." },
-  { id: 'start.3', who: 'mitch', moment: 'shift.start', text: 'Big day. Corporate might visit. Corporate is my mom. Look busy.' },
+  { id: 'start.3', who: 'mitch', moment: 'shift.start', text: "Big day. The district manager might visit. She's my mom. Look busy." },
   { id: 'start.4', who: 'mitch', moment: 'shift.start', text: "Remember, the customer is always right. Unless it's Vernon." },
   { id: 'start.5', who: 'mitch', moment: 'shift.start', text: "Grill's hot, buns are soft, and I've had four coffees. Let's go." },
-  { id: 'end.1', who: 'mitch', moment: 'shift.end', text: "That's the shift. I'm putting mentored a legend on my resume." },
+  { id: 'end.1', who: 'mitch', moment: 'shift.end', text: "That's the shift. My resume now says: mentored a legend." },
   { id: 'end.2', who: 'mitch', moment: 'shift.end', text: 'Doors are locked. Nobody got food poisoning. Huge win.' },
   { id: 'end.3', who: 'mitch', moment: 'shift.end', text: 'Great shift. I did a lot of pointing. You did everything else.' },
   { id: 'end.4', who: 'mitch', moment: 'shift.end', text: "Doors locked, grill off, hat still on. I'll take it off at home. Maybe.", delivery: 'tired, pleased with himself' },
@@ -48,7 +48,7 @@
   { id: 'uniform.3', who: 'mitch', moment: 'uniform', text: "Don't touch the hat. It's paper. It's been through a lot. We both have.", delivery: 'quick, protective' },
 
   /* ── Mitch: gross-outs, said as the bad ingredient comes down the line ──── */
-  { id: 'mouldy.1', who: 'mitch', moment: 'gross.mouldy', text: 'Whoa, why is that cheese green? You nasty. Change that out.', delivery: 'horrified, then disgusted' },
+  { id: 'mouldy.1', who: 'mitch', moment: 'gross.mouldy', text: 'Whoa, why is that cheese green? Nope. Swap it.', delivery: 'horrified, then disgusted' },
   { id: 'mouldy.2', who: 'mitch', moment: 'gross.mouldy', text: 'That cheese has a pulse. Swap it.' },
   { id: 'mouldy.3', who: 'mitch', moment: 'gross.mouldy', text: 'Is that cheese fuzzy? Nope. Nope. Get a fresh slice.' },
   { id: 'wilted.1', who: 'mitch', moment: 'gross.wilted', text: "That lettuce is brown. Lettuce isn't supposed to be brown. Swap it." },
@@ -65,7 +65,7 @@
   /* ── Mitch: Timed cooking heads-up, one stage before the ticket's ───────── */
   { id: 'nearly.1', who: 'mitch', moment: 'nearly', each: 'want', text: 'Nearly {want}. Just saying.', delivery: 'quick, a little nervous' },
   { id: 'nearly.2', who: 'mitch', moment: 'nearly', each: 'want', text: 'Heads up. Almost {want}.', delivery: 'quick, a little nervous' },
-  { id: 'nearly.3', who: 'mitch', moment: 'nearly', each: 'want', text: "Almost {want}. Spatula's right there. I'm just the voice.", delivery: 'quick, a little nervous' },
+  { id: 'nearly.3', who: 'mitch', moment: 'nearly', each: 'want', text: "Almost {want}. Basket's right there. I'm just the voice.", delivery: 'quick, a little nervous' },
 
   /* ── Mitch: the mistake, read after the customer's complaint (voicecut, 2026-11-10): one line per value, his voice only ── */
   { id: 'mistake.extra.1', who: 'mitch', moment: 'mistake.extra', each: 'ings', text: 'The ticket said no {ings}.', delivery: 'flat, reading it off the ticket' },
@@ -86,17 +86,17 @@
   { id: 'after1.3', who: 'mitch', moment: 'after.1', text: "I'm writing that up as a team-building exercise.", delivery: 'brisk, covering' },
   { id: 'afterGross.1', who: 'mitch', moment: 'after.gross', text: 'In fairness, I did point at it.' },
   { id: 'afterGross.2', who: 'mitch', moment: 'after.gross', text: "That one's going on a review site." },
-  { id: 'afterGross.3', who: 'mitch', moment: 'after.gross', text: 'Corporate will hear about this. Corporate will laugh. Corporate is my mom.', delivery: 'resigned' },
+  { id: 'afterGross.3', who: 'mitch', moment: 'after.gross', text: 'The district manager will hear about this. She will laugh. The district manager is my mom.', delivery: 'resigned' },
 
   /* ── Mitch: the tutorial (Marge's bacon cheeseburger, medium, no onions; the cheese comes mouldy) ─ */
   { id: 'intro', who: 'mitch', moment: 'tutorial.intro', text: "First day, huh? Great. I'm Mitch. Assistant manager. Let's do one order together, nice and slow." },
-  { id: 'intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.", delivery: 'eager, a touch wounded in the middle, then eager again' },
+  { id: 'intro.2', who: 'mitch', moment: 'tutorial.intro', text: "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. Let's make one order together. Follow my lead.", delivery: 'eager, a touch wounded in the middle, then eager again' },
   { id: 'ticket', who: 'mitch', moment: 'tutorial.ticket', text: "That's the ticket, up on the wheel. If you forget the order, pick Ticket and you'll hear it again." },
   { id: 'ticket.2', who: 'mitch', moment: 'tutorial.ticket', text: 'Every order goes up on the wheel as a ticket, and the ticket lists everything that goes on, in the order it comes. Pick Ticket any time and it reads itself again. It loves that.', delivery: 'helpful, upbeat' },
-  { id: 'grill', who: 'mitch', moment: 'tutorial.grill', text: 'This is the grill. One patty for a burger, two for a double. Add one, then pick Done.' },
-  { id: 'grill.2', who: 'mitch', moment: 'tutorial.grill', text: "The grill. The ticket says how many patties. Add that many, then pick Done. Resist adding more. I never resist, which is why I'm telling you.", delivery: 'upbeat, confiding' },
+  { id: 'grill', who: 'mitch', moment: 'tutorial.grill', text: 'This is the grill. One patty for a burger, two for a double. Add one, then pick Cook.' },
+  { id: 'grill.2', who: 'mitch', moment: 'tutorial.grill', text: "The grill. The ticket says how many patties. Add that many, then pick Cook. Resist adding more. I never resist, which is why I'm telling you.", delivery: 'upbeat, confiding' },
   { id: 'cook', who: 'mitch', moment: 'tutorial.cook.grill', text: 'Now, how done? She said medium. The grill does the flipping. I do the supervising.' },
-  { id: 'cook.2', who: 'mitch', moment: 'tutorial.cook.grill', text: "Pick how done. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.", delivery: 'upbeat, then dark' },
+  { id: 'cook.2', who: 'mitch', moment: 'tutorial.cook.grill', text: "Next, we choose how done it gets. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.", delivery: 'upbeat, then dark' },
   { id: 'board', who: 'mitch', moment: 'tutorial.board', text: "Now the toppings come down the line, one at a time. Add what's on the ticket. Skip what isn't." },
   { id: 'board.2', who: 'mitch', moment: 'tutorial.board', text: "The board. Bottom bun's on, patty's on. Now every topping comes past, one at a time: Add if it's on the ticket, Skip if it isn't. The top bun goes on by itself. It's been trained.", delivery: 'upbeat, instructional' },
   { id: 'gross', who: 'mitch', moment: 'tutorial.gross', text: 'When something comes down the line looking nasty, pick Swap It and you get a fresh one.' },
@@ -109,7 +109,7 @@
   { id: 'fryer.1', who: 'mitch', moment: 'tutorial.fryer', text: 'The fryer. Pick fries or onion rings, whichever the ticket says. Then how crispy. Then salt, or no salt. The basket does the dunking.', delivery: 'upbeat, instructional' },
   { id: 'fryer.2', who: 'mitch', moment: 'tutorial.fryer', text: "Fryer. Three questions: which one, how crispy, salt or not. Then the basket comes up and you've got a side. Mind the oil. It minds you back.", delivery: 'upbeat, then wary' },
   { id: 'cookFryer.1', who: 'mitch', moment: 'tutorial.cook.fryer', text: 'How crispy? Golden, crispy or extra crispy. The ticket says which. Dale says extra crispy about everything, including the weather.', delivery: 'instructional, amused' },
-  { id: 'cookFryer.2', who: 'mitch', moment: 'tutorial.cook.fryer', text: 'Pick the crispiness on the ticket. With Timed cooking, you lift the basket yourself when it gets there. The basket is the only thing in here with a handle. Besides me.', delivery: 'instructional, self-deprecating' },
+  { id: 'cookFryer.2', who: 'mitch', moment: 'tutorial.cook.fryer', text: "Pick the crispiness on the ticket. With Timed cooking, you lift the basket yourself when it gets there. Lift it, don't watch it burn.", delivery: 'instructional, self-deprecating' },
   { id: 'drinks.1', who: 'mitch', moment: 'tutorial.drinks', text: "The drinks station. Cup size first, then ice or no ice, then which drink. The cup fills itself. It's the one job I was never trusted with.", delivery: 'upbeat, a touch wounded' },
   { id: 'drinks.2', who: 'mitch', moment: 'tutorial.drinks', text: 'Drinks. Pick the size, add ice or skip it, pick the drink. The fountain does the pouring. Try not to stare at it. It gets shy.', delivery: 'instructional, deadpan' },
   { id: 'warnExtra', who: 'mitch', moment: 'tutorial.warn.extra', each: 'ing', text: "Hold on, she said no {ings}. That's not the right one." },
@@ -129,14 +129,14 @@
   { id: 'warnGrossSkip', who: 'mitch', moment: 'tutorial.warn.grossSkip', each: 'ing', text: 'She wants {ing}. Just not that {ing}. Swap it.' },
   { id: 'warnGrossSkip.2', who: 'mitch', moment: 'tutorial.warn.grossSkip', each: 'ing', text: "Don't skip it. She wants {ing}. Just not that {ing}. Pick Swap It and a fresh one comes down.", delivery: 'quick, patient' },
   { id: 'warnPick', who: 'mitch', moment: 'tutorial.warn.pick', text: 'Not that one. Check the ticket.' },
-  { id: 'warnPick.2', who: 'mitch', moment: 'tutorial.warn.pick', text: "Not that one. The ticket says which. It's the one thing in here that's never wrong. I've checked. Twice. About me.", delivery: 'quick, then sheepish' },
+  { id: 'warnPick.2', who: 'mitch', moment: 'tutorial.warn.pick', text: "Not that one. The ticket says which. The ticket's never wrong. Unlike me. Ask anyone.", delivery: 'quick, then sheepish' },
 
   /* ── Mitch: the five-star event, The Burger Eating Contest ({name} is the event's name) ── */
   { id: 'eventIntro.1', who: 'mitch', moment: 'event.intro', text: "It's {name}. Six contestants, then Coach Bev orders for her whole team. The grill's ready, the buns are ready, and I've had six coffees, so I'm ready too. Probably.", delivery: 'big, eager, a little wired' },
-  { id: 'eventIntro.2', who: 'mitch', moment: 'event.intro', text: 'Big day. {name}. The contestants are lined up, Coach Bev has a clipboard, and corporate sent a banner. Corporate is my mom. She made the banner.', delivery: 'proud, then confiding' },
+  { id: 'eventIntro.2', who: 'mitch', moment: 'event.intro', text: 'Big day. {name}. The contestants are lined up, Coach Bev has a clipboard, and the district manager sent a banner. The district manager is my mom. She made the banner.', delivery: 'proud, then confiding' },
   { id: 'eventCelebrate.1', who: 'mitch', moment: 'event.celebrate', text: "{name}, done! Five stars! The gold sign goes up, and I'm the assistant manager of a gold-sign restaurant. The tape stays on, but it's gold tape now. In my heart.", delivery: 'overjoyed, then quietly moved' },
   { id: 'eventCelebrate.2', who: 'mitch', moment: 'event.celebrate', text: "That's {name} in the books! Five stars! Coach Bev is crying. She says it's sweat. It's not sweat.", delivery: 'triumphant, whispering the end' },
-  { id: 'eventAgain.1', who: 'mitch', moment: 'event.again', text: "{name} fell short. In fairness, the contestants ate like they were being timed. They weren't. We'll run it again.", delivery: 'rueful, then hopeful' },
+  { id: 'eventAgain.1', who: 'mitch', moment: 'event.again', text: "{name} fell short. In fairness, the contestants chewed like they had all day. We'll run it again.", delivery: 'rueful, then hopeful' },
   { id: 'eventAgain.2', who: 'mitch', moment: 'event.again', text: "No gold sign today. {name} is a marathon, not a sprint. I said that into the headset. It's not connected to anything. We go again.", delivery: 'brave face' },
 
   /* ── every customer, unless they have lines of their own ────────────────── */
@@ -187,10 +187,10 @@
   { id: 'react2.3', who: 'marge', moment: 'react.2', text: "It's alright, hon. My husband never got my order right either, and I kept him forty years.", delivery: 'warm, forgiving' },
   { id: 'react1.1', who: 'marge', moment: 'react.1', text: 'Oh, hon. Oh, no.' },
   { id: 'react1.2', who: 'marge', moment: 'react.1', text: 'I drove a school bus for thirty years. I have never been this disappointed.' },
-  { id: 'react1.3', who: 'marge', moment: 'react.1', text: "Oh, sweetie. I've eaten at a bus depot at four in the morning. I'd go back.", delivery: 'gentle, devastating' },
+  { id: 'react1.3', who: 'marge', moment: 'react.1', text: "Oh, sweetie. I've eaten at a bus depot at four in the morning. I'd rather go back there.", delivery: 'gentle, devastating' },
   { id: 'reactGross.1', who: 'marge', moment: 'react.gross', text: "Oh, my stars. I'm going to need a minute." },
   { id: 'smalltalk.1', who: 'marge', moment: 'smalltalk', text: "I had my retirement party in that corner booth, hon. Twelve bus drivers and one cake. The cake didn't make it.", delivery: 'warm, nostalgic' },
-  { id: 'goodbye.1', who: 'marge', moment: 'goodbye', text: "Bye, hon. Tell Mitch his hat's crooked. It's always crooked. It's how I know it's him.", delivery: 'warm, fond' },
+  { id: 'goodbye.1', who: 'marge', moment: 'goodbye', text: "Bye, hon. Tell Mitch his headset's crooked. It's always crooked. It's how I know it's him.", delivery: 'warm, fond' },
 
   /* ── Gus: low, friendly, eleven hours of interstate behind him ──────────── */
   { id: 'greet.1', who: 'gus', moment: 'greet', text: 'Howdy.' },
@@ -284,7 +284,7 @@
   { id: 'react3.1', who: 'dale', moment: 'react.3', text: "Well, now. That's a ring you could hang a wrench on.", delivery: 'slow, admiring' },
   { id: 'react3.2', who: 'dale', moment: 'react.3', text: "That's done right. I'd shake your hand, but you'd need a degreaser.", delivery: 'slow, warm' },
   { id: 'react3.3', who: 'dale', moment: 'react.3', text: "Mm. That's the good stuff. Beats brake dust. Most things do, but still.", delivery: 'slow, content' },
-  { id: 'favourite.1', who: 'dale', moment: 'react.favourite', text: "Extra crispy. [a slow whistle] That's the sound a ring's supposed to make.", delivery: 'slow, reverent; a low whistle in the middle' },
+  { id: 'favourite.1', who: 'dale', moment: 'react.favourite', text: "Extra crispy. Mm. That's how a ring's supposed to come out.", delivery: 'slow, reverent' },
   { id: 'favourite.2', who: 'dale', moment: 'react.favourite', text: "Now that's a ring. Crisp all the way round. Like a good gasket.", delivery: 'slow, deeply content' },
   { id: 'react2.1', who: 'dale', moment: 'react.2', text: "That'll run. Idles a little rough, though.", delivery: 'slow, dry' },
   { id: 'react2.2', who: 'dale', moment: 'react.2', text: "Close. Like a bolt that's one turn short. It'll hold. For now.", delivery: 'slow, dry' },
@@ -294,17 +294,17 @@
   { id: 'react1.3', who: 'dale', moment: 'react.1', text: "That's a tow job. Whole order. Hook it up.", delivery: 'slow, final' },
   { id: 'reactGross.1', who: 'dale', moment: 'react.gross', text: "Nope. I've pulled things out of engines that looked better than that.", delivery: 'slow, unbothered disgust' },
   { id: 'odd.fivePatties.1', who: 'dale', moment: 'order.odd.fivePatties', text: "Gimme the Tower, five patties. Been under a bus all day. Figure I earned somethin' the size of one.", delivery: 'slow drawl, serious' },
-  { id: 'odd.nothingGreen.1', who: 'dale', moment: 'order.odd.nothingGreen', text: "Bacon cheeseburger, everything but anything green. Green means go. I ain't goin' anywhere.", delivery: 'slow drawl' },
+  { id: 'odd.nothingGreen.1', who: 'dale', moment: 'order.odd.nothingGreen', text: 'Bacon cheeseburger with everything, except anything green. Green is for traffic lights. Not lunch.', delivery: 'slow drawl' },
   { id: 'smalltalk.1', who: 'dale', moment: 'smalltalk', text: "That fryer's got a nice hum to it. Sixty cycles. Could set a clock by it. I have.", delivery: 'slow, admiring' },
   { id: 'goodbye.1', who: 'dale', moment: 'goodbye', text: "Alright. Back under the bus. Tell them rings I'll be thinkin' of 'em.", delivery: 'slow, fond' },
 
   /* ── Professor Oakes: food science, tweed and a bow tie; nasal, nerdy, too fast; a new reason to hate
         onions every visit (pack.js dislikes: onion, rings) ───────────────────────────────────────── */
   { id: 'dislike.1', who: 'oakes', moment: 'order.dislike', text: "No onions. An onion makes you cry before it's done anything to you. That's not a vegetable, that's a threat.", delivery: 'nasal, too fast, certain' },
-  { id: 'dislike.2', who: 'oakes', moment: 'order.dislike', text: 'No onions. Thermodynamically, an onion is a cry for help with a skin on it.', delivery: 'nasal, lecturing' },
+  { id: 'dislike.2', who: 'oakes', moment: 'order.dislike', text: 'No onions. An onion is just tear gas with a skin on it.', delivery: 'nasal, lecturing' },
   { id: 'dislike.3', who: 'oakes', moment: 'order.dislike', text: "No onions, please. An onion keeps growing after it's picked. I don't eat anything that's still making plans.", delivery: 'nasal, wary' },
   { id: 'dislike.4', who: 'oakes', moment: 'order.dislike', text: 'No onions. An onion is ninety percent water and ten percent regret. I have the charts.', delivery: 'nasal, brisk' },
-  { id: 'dislike.5', who: 'oakes', moment: 'order.dislike', text: 'No onions. Statistically, every onion ring is an onion that got away with it.', delivery: 'nasal, grave' },
+  { id: 'dislike.5', who: 'oakes', moment: 'order.dislike', text: 'No onions. An onion ring is just an onion in disguise. I see through it.', delivery: 'nasal, grave' },
   { id: 'react3.1', who: 'oakes', moment: 'react.3', text: 'Remarkable! The Maillard reaction, exactly as the textbook promised. I wrote the textbook. Chapter four.', delivery: 'nasal, delighted, too fast' },
   { id: 'react3.2', who: 'oakes', moment: 'react.3', text: "Flawless. I'm going to need a moment, and possibly a footnote.", delivery: 'nasal, moved' },
   { id: 'react3.3', who: 'oakes', moment: 'react.3', text: "Textbook! I'd grade this an A. I don't give A's. I'm giving one.", delivery: 'nasal, thrilled' },
@@ -315,7 +315,7 @@
   { id: 'react1.2', who: 'oakes', moment: 'react.1', text: "Fascinating. Horrible, but fascinating. I'm taking notes with the emergency pen.", delivery: 'nasal, too fast, appalled' },
   { id: 'react1.3', who: 'oakes', moment: 'react.1', text: "Oh dear. If I served this to my students, they'd finally come to office hours. To complain.", delivery: 'nasal, rueful' },
   { id: 'reactGross.1', who: 'oakes', moment: 'react.gross', text: "Oh, no. I know exactly what that is. That's the problem. I know exactly what that is.", delivery: 'nasal, mounting horror' },
-  { id: 'odd.fivePatties.1', who: 'oakes', moment: 'order.odd.fivePatties', text: "The Diner Tower, five patties. I'm studying structural failure in sandwiches, and lunch is the control group.", delivery: 'nasal, earnest' },
+  { id: 'odd.fivePatties.1', who: 'oakes', moment: 'order.odd.fivePatties', text: "The Diner Tower, five patties. I'm studying structural failure in sandwiches. Lunch is the experiment.", delivery: 'nasal, earnest' },
   { id: 'odd.nothingGreen.1', who: 'oakes', moment: 'order.odd.nothingGreen', text: 'Bacon cheeseburger, everything on it, except anything green. Chlorophyll and I are not speaking.', delivery: 'nasal, wounded' },
   { id: 'odd.bunInside.1', who: 'oakes', moment: 'order.odd.bunInside', text: "A cheeseburger with the bun on the inside. Topologically, it's the same sandwich. Emotionally, it's a breakthrough.", delivery: 'nasal, thrilled' },
   { id: 'smalltalk.1', who: 'oakes', moment: 'smalltalk', text: "Fun fact: this diner's lemonade is the most-cited beverage in my department. Cited by me. Repeatedly.", delivery: 'nasal, proud' },

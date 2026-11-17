@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "bev/greet.1",
+  "speaker": "bev",
+  "text": "Let's GO! I'm STARVING!",
+  "moment": "greet",
+  "delivery": "firm and commanding, like a coach",
+  "pack": "diner",
+  "order": 2,
+  "hash": "0f2f7ca3",
+  "recorded": false
+ },
+ {
+  "clip": "bev/smalltalk.1",
+  "speaker": "bev",
+  "text": "My team's outside doing wind sprints around the hot dog cart! The hot dog guy is NOT happy!",
+  "moment": "smalltalk",
+  "delivery": "firm, proud",
+  "pack": "diner",
+  "order": 4,
+  "hash": "c04942ae",
+  "recorded": false
+ },
+ {
+  "clip": "bev/react3.1",
+  "speaker": "bev",
+  "text": "THAT is what I call a TEAM EFFORT!",
+  "moment": "react.3",
+  "delivery": "triumphant",
+  "pack": "diner",
+  "order": 2,
+  "hash": "a814b6fc",
+  "recorded": false
+ },
+ {
+  "clip": "bev/cast:complain.c1",
+  "speaker": "bev",
+  "text": "That is NOT the play!",
+  "moment": "complain",
+  "delivery": "booming, the fourth quarter",
+  "pack": "cast",
+  "order": 4,
+  "hash": "0a595083",
+  "recorded": false
+ }
+]

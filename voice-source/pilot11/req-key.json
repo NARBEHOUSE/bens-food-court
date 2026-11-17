@@ -1,0 +1,20 @@
+{
+ "vernon/A": "retake-s3",
+ "vernon/B": "current",
+ "vernon/C": "retake-s1",
+ "vernon/D": "retake-s5",
+ "vernon/E": "retake-s4",
+ "bev/A": "coach-s2",
+ "bev/B": "current",
+ "bev/C": "retake-s5",
+ "bev/D": "retake-s4",
+ "bev/E": "brisk-s12",
+ "bev/F": "old-brisk-s4",
+ "kai/A": "keen-s12",
+ "kai/B": "retake-s1",
+ "kai/C": "calm-s1",
+ "kai/D": "old-boy-s4",
+ "kai/E": "old-girl-s1",
+ "kai/F": "retake-s6",
+ "kai/G": "current"
+}

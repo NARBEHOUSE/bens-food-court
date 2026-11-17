@@ -1,0 +1,122 @@
+{
+ "surfer-s1": {
+  "said": "Hey friend, the waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 209,
+  "seconds": 9.73,
+  "rate": 1.95,
+  "clarity": 3.93,
+  "style": "surfer",
+  "seed": 1
+ },
+ "surfer-s2": {
+  "said": "Hey, friend. The waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 207,
+  "seconds": 7.61,
+  "rate": 2.5,
+  "clarity": 3.95,
+  "style": "surfer",
+  "seed": 2
+ },
+ "surfer-s3": {
+  "said": "Hey friend, the waves were talking this morning, mostly about lunch. So here I am listening to the waves.",
+  "diffs": [],
+  "pitch": 144,
+  "seconds": 8.36,
+  "rate": 2.27,
+  "clarity": 3.85,
+  "style": "surfer",
+  "seed": 3
+ },
+ "surfer-s4": {
+  "said": "Hey, friend. The waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 202,
+  "seconds": 7.14,
+  "rate": 2.66,
+  "clarity": 3.85,
+  "style": "surfer",
+  "seed": 4
+ },
+ "mellow-s1": {
+  "said": "Hey, friend. The waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 144,
+  "seconds": 7.37,
+  "rate": 2.58,
+  "clarity": 4.09,
+  "style": "mellow",
+  "seed": 1
+ },
+ "mellow-s2": {
+  "said": "Hey friend, the waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 114,
+  "seconds": 8.18,
+  "rate": 2.32,
+  "clarity": 3.76,
+  "style": "mellow",
+  "seed": 2
+ },
+ "mellow-s3": {
+  "said": "Hey, friend. The waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 114,
+  "seconds": 9.36,
+  "rate": 2.03,
+  "clarity": 4.29,
+  "style": "mellow",
+  "seed": 3
+ },
+ "mellow-s4": {
+  "said": "Hey, friend. The waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 171,
+  "seconds": 8.15,
+  "rate": 2.33,
+  "clarity": 4.12,
+  "style": "mellow",
+  "seed": 4
+ },
+ "sunny-s1": {
+  "said": "Hey, friend. The waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 257,
+  "seconds": 6.46,
+  "rate": 2.94,
+  "clarity": 4.08,
+  "style": "sunny",
+  "seed": 1
+ },
+ "sunny-s2": {
+  "said": "Hey, friend. The waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 140,
+  "seconds": 7.88,
+  "rate": 2.41,
+  "clarity": 3.98,
+  "style": "sunny",
+  "seed": 2
+ },
+ "sunny-s3": {
+  "said": "Hey, friend. The waves were talking this morning, mostly about lunch. So here I am, listening to the waves.",
+  "diffs": [],
+  "pitch": 176,
+  "seconds": 6.76,
+  "rate": 2.81,
+  "clarity": 4.27,
+  "style": "sunny",
+  "seed": 3
+ },
+ "sunny-s4": {
+  "said": "Hey friend, the waves were talking this morning, mostly about lunch. So here I am listening to the waves.",
+  "diffs": [],
+  "pitch": 206,
+  "seconds": 6.86,
+  "rate": 2.77,
+  "clarity": 4.06,
+  "style": "sunny",
+  "seed": 4
+ }
+}

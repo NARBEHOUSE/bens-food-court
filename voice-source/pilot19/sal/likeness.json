@@ -1,0 +1,50 @@
+{
+ "old-g3-p1-n2-s3.wav": [
+  1794631291.8456686,
+  0.759
+ ],
+ "current.wav": [
+  1794631282.577996,
+  0.926
+ ],
+ "lines/old-g3-p1-n2-s3/delighted.wav": [
+  1794631433.0469315,
+  0.785
+ ],
+ "lines/current/delighted.wav": [
+  1794631332.3052328,
+  0.884
+ ],
+ "lines/old-g3-p1-n2-s3/grumpy.wav": [
+  1794631457.2147224,
+  0.747
+ ],
+ "lines/current/grumpy.wav": [
+  1794631344.49284,
+  0.86
+ ],
+ "lines/old-g3-p1-n2-s3/sad.wav": [
+  1794631472.243132,
+  0.727
+ ],
+ "lines/current/sad.wav": [
+  1794631355.7938392,
+  0.787
+ ],
+ "lines/old-g3-p1-n2-s3/sarcasm.wav": [
+  1794631517.0839238,
+  0.749
+ ],
+ "lines/current/sarcasm.wav": [
+  1794631385.1159189,
+  0.871
+ ],
+ "lines/old-g3-p1-n2-s3/thanks.wav": [
+  1794631527.8774881,
+  0.707
+ ],
+ "lines/current/thanks.wav": [
+  1794631405.6265688,
+  0.853
+ ]
+}

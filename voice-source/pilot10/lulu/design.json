@@ -1,0 +1,122 @@
+{
+ "dramatic-s1": {
+  "said": "Hmm. Chocolate. No. Strawberry. No. This is the hardest day of my whole life. Okay. I know. Vanilla.",
+  "diffs": [],
+  "pitch": 320,
+  "seconds": 10.2,
+  "rate": 1.76,
+  "clarity": 4.05,
+  "style": "dramatic",
+  "seed": 1
+ },
+ "dramatic-s2": {
+  "said": "Hmm. Chocolate. No. Strawberry. No. This is the hardest day of my whole life. Okay. I know. Vanilla.",
+  "diffs": [],
+  "pitch": 326,
+  "seconds": 11.11,
+  "rate": 1.62,
+  "clarity": 3.59,
+  "style": "dramatic",
+  "seed": 2
+ },
+ "dramatic-s3": {
+  "said": "Huh? Chocolate? No. Strawberry? No. This is the hardest day of my whole life. Okay, I know. Vanilla.",
+  "diffs": [],
+  "pitch": 296,
+  "seconds": 12.44,
+  "rate": 1.45,
+  "clarity": 3.15,
+  "style": "dramatic",
+  "seed": 3
+ },
+ "dramatic-s4": {
+  "said": "Hmm, chocolate, no. Strawberry, no. This is the hardest day of my whole life. Okay, I know. Vanilla.",
+  "diffs": [],
+  "pitch": 387,
+  "seconds": 14.52,
+  "rate": 1.24,
+  "clarity": 3.27,
+  "style": "dramatic",
+  "seed": 4
+ },
+ "bossy-s1": {
+  "said": "Hmm. Chocolate, no. Strawberry, no. This is the hardest day of my whole life. Okay, I know vanilla.",
+  "diffs": [],
+  "pitch": 402,
+  "seconds": 11.21,
+  "rate": 1.61,
+  "clarity": 3.38,
+  "style": "bossy",
+  "seed": 1
+ },
+ "bossy-s2": {
+  "said": "Hmm. Chocolate? No. Strawberry? No. This is the hardest day of my whole life. Okay, I know. Vanilla.",
+  "diffs": [],
+  "pitch": 400,
+  "seconds": 8.57,
+  "rate": 2.1,
+  "clarity": 2.89,
+  "style": "bossy",
+  "seed": 2
+ },
+ "bossy-s3": {
+  "said": "Hmm. Chocolate. No. Strawberry. No. This is the hardest day of my whole life. Okay. I know. Vanilla.",
+  "diffs": [],
+  "pitch": 325,
+  "seconds": 9.21,
+  "rate": 1.95,
+  "clarity": 3.18,
+  "style": "bossy",
+  "seed": 3
+ },
+ "bossy-s4": {
+  "said": "Hmm. Chocolate? No. Strawberry? No. This is the hardest day of my whole life. Okay, I know. Vanilla.",
+  "diffs": [],
+  "pitch": 355,
+  "seconds": 12.2,
+  "rate": 1.48,
+  "clarity": 3.6,
+  "style": "bossy",
+  "seed": 4
+ },
+ "sweet-s1": {
+  "said": "Hmm. Chocolate, no. Strawberry, no. This is the hardest day of my whole life. Okay, I know. Vanilla.",
+  "diffs": [],
+  "pitch": 292,
+  "seconds": 11.95,
+  "rate": 1.51,
+  "clarity": 3.67,
+  "style": "sweet",
+  "seed": 1
+ },
+ "sweet-s2": {
+  "said": "Hmm. Chocolate. No. Strawberry. No. This is the hardest day of my whole life. Okay. I know. Vanilla.",
+  "diffs": [],
+  "pitch": 341,
+  "seconds": 13.29,
+  "rate": 1.35,
+  "clarity": 3.83,
+  "style": "sweet",
+  "seed": 2
+ },
+ "sweet-s3": {
+  "said": "Huh? Chocolate? No. Strawberry? No. This is the hardest day of my whole life. Okay, I know. Vanilla.",
+  "diffs": [],
+  "pitch": 359,
+  "seconds": 13.61,
+  "rate": 1.32,
+  "clarity": 3.88,
+  "style": "sweet",
+  "seed": 3
+ },
+ "sweet-s4": {
+  "said": "Hmm, chocolate? No, strawberry? No. This is the hardest day of my whole life. Okay, I know. Vanilla.",
+  "diffs": [],
+  "pitch": 405,
+  "seconds": 13.26,
+  "rate": 1.36,
+  "clarity": 3.6,
+  "style": "sweet",
+  "seed": 4
+ }
+}

@@ -35,7 +35,7 @@
   version: 1,
   // Recorded clips stay off until the final voice pass (spec 6.6): every line is text to
   // speech. The voice pass flips this one flag.
-  recordedVoices: false,
+  recordedVoices: true,
 
   arms: [
     { id: 'left', name: 'Left' },

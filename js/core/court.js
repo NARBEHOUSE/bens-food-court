@@ -494,12 +494,12 @@
     if (next) {
       stage = 'unlock'; needs = next.u.stars; name = next.r.name;
       left = open.filter(r => st(r).stars < needs);
-      goal = left.length ? 'get ' + who(left, open) + ' to ' + starWords(needs) + ' and ' + next.r.said + ' opens'
+      goal = left.length ? 'get ' + who(left, open) + ' to ' + starWords(needs) + ' to open ' + next.r.said
         : next.r.said + ' opens next';
     } else if (atFive < total) {
       stage = 'fiveStars'; needs = five;
       left = all.filter(r => st(r).stars < five);
-      goal = 'get ' + who(left, all) + ' to ' + starWords(five) + ' and the whole court celebrates';
+      goal = 'get ' + who(left, all) + ' to ' + starWords(five) + ' for the big court celebration';
     } else if (busy < total) {
       stage = 'fullyBusy'; needs = max;
       left = all.filter(r => st(r).popularity < max);

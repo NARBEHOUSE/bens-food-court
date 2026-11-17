@@ -1,0 +1,704 @@
+[
+ {
+  "a": "gus/country-s3 (picked)",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.813,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.786,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.773,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "sal/bronx-s6",
+  "alike": 0.762,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "sal/cabbie-s1",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.744,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.743,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.742,
+  "pitch_gap": 0.41
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "sal/cabbie-s1",
+  "alike": 0.741,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "sal/brooklyn-s5",
+  "alike": 0.733,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.724,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "mitch/eager-s4 (picked)",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.716,
+  "pitch_gap": 0.06
+ },
+ {
+  "a": "sal/bronx-s6",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.714,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.704,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.702,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "vernon/fop-man-s4",
+  "alike": 0.701,
+  "pitch_gap": 0.71
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "sal/brooklyn-s5",
+  "alike": 0.7,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "sal/brooklyn-s5",
+  "alike": 0.699,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.698,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "sal/bronx-s6",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.698,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.697,
+  "pitch_gap": 0.29
+ },
+ {
+  "a": "sal/bronx-s6",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.688,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "mitch/eager-s4 (picked)",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.686,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "sal/bronx-s6",
+  "alike": 0.685,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "sal/brooklyn-s5",
+  "alike": 0.683,
+  "pitch_gap": 0.06
+ },
+ {
+  "a": "sal/brooklyn-s5",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.683,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "sal/brooklyn-s5",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.682,
+  "pitch_gap": 0.36
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "vernon/fop-man-s4",
+  "alike": 0.681,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "sal/cabbie-s1",
+  "alike": 0.68,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.68,
+  "pitch_gap": 0.5
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "vernon/camp-s2",
+  "alike": 0.677,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "gus/country-s3 (picked)",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.676,
+  "pitch_gap": 0.64
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "vernon/camp-s2",
+  "alike": 0.672,
+  "pitch_gap": 0.49
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "vernon/camp-s2",
+  "alike": 0.672,
+  "pitch_gap": 0.45
+ },
+ {
+  "a": "mitch/eager-s4 (picked)",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.671,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "sal/bronx-s6",
+  "alike": 0.67,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "vernon/fop-man-s4",
+  "alike": 0.669,
+  "pitch_gap": 0.67
+ },
+ {
+  "a": "gus/country-s3 (picked)",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.667,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "vernon/fop-man-s4",
+  "alike": 0.665,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "bev/brisk-s6 (picked)",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.665,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "vernon/critic-s2",
+  "alike": 0.662,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "sal/cabbie-s1",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.659,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.658,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "kai/keen-s1 (picked)",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.657,
+  "pitch_gap": 0.11
+ },
+ {
+  "a": "sal/cabbie-s1",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.656,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "tony/grand-s3 (picked)",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.654,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "vernon/dandy-s5",
+  "alike": 0.651,
+  "pitch_gap": 0.51
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "sal/bronx-s6",
+  "alike": 0.651,
+  "pitch_gap": 0.27
+ },
+ {
+  "a": "mitch/eager-s4 (picked)",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.651,
+  "pitch_gap": 0.38
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.65,
+  "pitch_gap": 0.16
+ },
+ {
+  "a": "sal/bronx-s6",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.65,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "vernon/dandy-s5",
+  "alike": 0.649,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "vernon/dandy-s5",
+  "alike": 0.648,
+  "pitch_gap": 0.47
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "sal/bronx-s6",
+  "alike": 0.648,
+  "pitch_gap": 0.16
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "vernon/camp-s2",
+  "alike": 0.645,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "sal/brooklyn-s5",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.644,
+  "pitch_gap": 0.87
+ },
+ {
+  "a": "sal/cabbie-s1",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.644,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "mitch/eager-s4 (picked)",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.642,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "vernon/critic-s2",
+  "alike": 0.641,
+  "pitch_gap": 0.16
+ },
+ {
+  "a": "sal/brooklyn-s5",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.641,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "vernon/critic-s2",
+  "alike": 0.64,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "sal/brooklyn-s5",
+  "alike": 0.638,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "sal/cabbie-s1",
+  "alike": 0.635,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.631,
+  "pitch_gap": 0.39
+ },
+ {
+  "a": "sal/bronx-s6",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.627,
+  "pitch_gap": 0.71
+ },
+ {
+  "a": "tony/grand-s3 (picked)",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.626,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.623,
+  "pitch_gap": 0.62
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.619,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.615,
+  "pitch_gap": 0.44
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.615,
+  "pitch_gap": 0.75
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.612,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.612,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.609,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "sal/cabbie-s1",
+  "alike": 0.608,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.607,
+  "pitch_gap": 0.72
+ },
+ {
+  "a": "gus/country-s3 (picked)",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.607,
+  "pitch_gap": 0.82
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.605,
+  "pitch_gap": 1.02
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.605,
+  "pitch_gap": 0.52
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.604,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.604,
+  "pitch_gap": 0.21
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.604,
+  "pitch_gap": 0.36
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.603,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "sal/cabbie-s1",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.603,
+  "pitch_gap": 0.7
+ },
+ {
+  "a": "kai/keen-s1 (picked)",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.603,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "sal/cabbie-s1",
+  "alike": 0.6,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.599,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "sal/cabbie-s1",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.599,
+  "pitch_gap": 0.53
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.598,
+  "pitch_gap": 0.36
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "sal/bronx-s6",
+  "alike": 0.594,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "marge/busdriver-s2",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.592,
+  "pitch_gap": 0.21
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.589,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "sal/brooklyn-s5",
+  "b": "marge/elderly-mw-s4 (picked)",
+  "alike": 0.588,
+  "pitch_gap": 0.44
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "vernon/dandy-s5",
+  "alike": 0.587,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "vernon/critic-s2",
+  "alike": 0.58,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.576,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "sal/brooklyn-s5",
+  "alike": 0.574,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.574,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.574,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "vernon/camp-s2",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.574,
+  "pitch_gap": 0.95
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.572,
+  "pitch_gap": 0.21
+ },
+ {
+  "a": "vernon/critic-s2",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.572,
+  "pitch_gap": 0.51
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.57,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.563,
+  "pitch_gap": 0.44
+ },
+ {
+  "a": "sal/brooklyn-s5",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.558,
+  "pitch_gap": 0.69
+ },
+ {
+  "a": "sal/bronx-s6",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.556,
+  "pitch_gap": 0.54
+ },
+ {
+  "a": "kai/keen-s1 (picked)",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.552,
+  "pitch_gap": 0.74
+ },
+ {
+  "a": "vernon/fop-man-s4",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.55,
+  "pitch_gap": 1.24
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "sal/bronx-s6",
+  "alike": 0.54,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.538,
+  "pitch_gap": 0.98
+ },
+ {
+  "a": "vernon/dandy-s5",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.535,
+  "pitch_gap": 0.78
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.525,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "sal/bronx-s6",
+  "alike": 0.524,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "marge/elderly-mw-s3",
+  "b": "sal/cabbie-s1",
+  "alike": 0.519,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "sal/brooklyn-s5",
+  "alike": 0.519,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "sal/brooklyn-s5",
+  "alike": 0.515,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "bev/brisk-s6 (picked)",
+  "alike": 0.505,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "marge/elderly-s5",
+  "b": "sal/cabbie-s1",
+  "alike": 0.501,
+  "pitch_gap": 0.3
+ },
+ {
+  "a": "marge/nana-s4",
+  "b": "sal/cabbie-s1",
+  "alike": 0.452,
+  "pitch_gap": 0.18
+ }
+]

@@ -1,0 +1,38 @@
+{
+ "mitch-0": {
+  "pick": "A"
+ },
+ "mitch-1": {
+  "pick": "A"
+ },
+ "mitch-2": {
+  "pick": "A"
+ },
+ "mitch-3": {
+  "pick": "A"
+ },
+ "marge-0": {
+  "pick": "A"
+ },
+ "marge-1": {
+  "pick": "B"
+ },
+ "marge-2": {
+  "pick": "A"
+ },
+ "marge-3": {
+  "pick": "C"
+ },
+ "vernon-0": {
+  "pick": "C"
+ },
+ "vernon-1": {
+  "pick": "C"
+ },
+ "vernon-2": {
+  "pick": "A"
+ },
+ "vernon-3": {
+  "pick": "same"
+ }
+}

@@ -1,3 +1,13 @@
 node_modules/
 Thumbs.db
 desktop.ini
+tools/voice-local.json
+voice-source/**/work/
+voice-source/takes/
+__pycache__/
+# voice pass test audio and listening pages: kept on disk, not in git (picks and reports are small JSON, kept)
+voice-source/**/*.wav
+voice-source/**/*.mp3
+voice-source/**/page/
+voice-source/**/*.log
+voice-source/**/clips-*.json

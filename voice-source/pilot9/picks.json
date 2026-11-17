@@ -1,0 +1,104 @@
+{
+ "reginald": {
+  "best": "velvet-s2",
+  "also": [],
+  "notes": {
+   "velvet-s2": "Voice deviates a bit from line to line. Might just need more takes."
+  },
+  "note": ""
+ },
+ "dale": {
+  "best": "laconic-s4",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "priya": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "Clarity is bad on several, I like the idea of an Indian accent so let's see if we can focus on that."
+ },
+ "oakes": {
+  "best": "lecturer-s2",
+  "also": [],
+  "notes": {
+   "lecturer-s2": "Good voice, clarity could be improved"
+  },
+  "note": ""
+ },
+ "tasha": {
+  "best": "mumble-s2",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "pam": {
+  "best": "organised-s2",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "breeze": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "Mellow and dreamy are a good start but the others aren't a good comparison due to clarity. Try some more laid back, SoCal style voices or hippie voices."
+ },
+ "brock": {
+  "best": "sweet-s1",
+  "also": [],
+  "notes": {
+   "sweet-s1": "I like this voice but delivery and clarity are inconsistent."
+  },
+  "note": ""
+ },
+ "jitters": {
+  "best": "buzzing-s4",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "hiro": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "Since this is a sushi chef with a Japanese name, let's try for a Japanese/Asian accent."
+ },
+ "dennis": {
+  "best": "nervous-s4",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "inferno": {
+  "best": "boastful-s4",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "rita": {
+  "best": "hearty-s2",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "lulu": {
+  "best": "dramatic-s2",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "walt": {
+  "best": "jolly-s4",
+  "also": [],
+  "notes": {},
+  "note": ""
+ },
+ "pa": {
+  "best": "none",
+  "also": [],
+  "notes": {},
+  "note": "Let's try variations on the Bright (woman) voice and add in a bit of PA/Megaphone effect so it sounds like it's coming over speakers."
+ }
+}

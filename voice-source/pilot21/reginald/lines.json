@@ -1,0 +1,162 @@
+{
+ "current/sushi_customer.order.odd.noFishNoRice.1": {
+  "said": "A California roll, no crab and no rice, just the idea of California.",
+  "diffs": [],
+  "pitch": 120,
+  "seconds": 6.34,
+  "rate": 2.05,
+  "clarity": 3.8,
+  "drift": false,
+  "takes": 1
+ },
+ "current/cast_complain.c2": {
+  "said": "Uninvited, like a critic at a wedding, I would know.",
+  "diffs": [],
+  "pitch": 101,
+  "seconds": 4.17,
+  "rate": 2.4,
+  "clarity": 3.88,
+  "drift": false,
+  "takes": 1
+ },
+ "current/cafe_customer.react.gross.2": {
+  "said": "No, no, no! That's not breakfast. That's a science project.",
+  "diffs": [],
+  "pitch": 107,
+  "seconds": 5.33,
+  "rate": 1.88,
+  "clarity": 3.32,
+  "drift": false,
+  "takes": 1
+ },
+ "current/sushi_react.3.1": {
+  "said": "Magnificent! The rice alone deserves a paragraph. The fish, a chapter. The whole, a trilogy.",
+  "diffs": [],
+  "pitch": 116,
+  "seconds": 7.21,
+  "rate": 2.08,
+  "clarity": 3.84,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s5/sushi_customer.order.odd.noFishNoRice.1": {
+  "said": "A California roll, no crab and no rice, just the idea of California.",
+  "diffs": [],
+  "pitch": 88,
+  "seconds": 5.73,
+  "rate": 2.27,
+  "clarity": 3.06,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s5/cast_complain.c2": {
+  "said": "Uninvited, like a critic at a wedding, I would know.",
+  "diffs": [],
+  "pitch": 86,
+  "seconds": 3.73,
+  "rate": 2.68,
+  "clarity": 3.0,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s5/cafe_customer.react.gross.2": {
+  "said": "No, no, no! That's not breakfast. That's a science project.",
+  "diffs": [],
+  "pitch": 90,
+  "seconds": 4.26,
+  "rate": 2.35,
+  "clarity": 3.43,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s5/sushi_react.3.1": {
+  "said": "Magnificent! The rice alone deserves a paragraph. The fish, a chapter. The whole, a trilogy.",
+  "diffs": [],
+  "pitch": 115,
+  "seconds": 6.03,
+  "rate": 2.49,
+  "clarity": 3.5,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s2/sushi_customer.order.odd.noFishNoRice.1": {
+  "said": "A California roll, no crab and no rice. Just the idea of California.",
+  "diffs": [],
+  "pitch": 119,
+  "seconds": 6.39,
+  "rate": 2.03,
+  "clarity": 3.76,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s2/cast_complain.c2": {
+  "said": "Uninvited, like a critic at a wedding, I would know.",
+  "diffs": [],
+  "pitch": 138,
+  "seconds": 3.15,
+  "rate": 3.17,
+  "clarity": 3.26,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s2/cafe_customer.react.gross.2": {
+  "said": "No, no, no! That's not breakfast. That's a science project.",
+  "diffs": [],
+  "pitch": 117,
+  "seconds": 5.24,
+  "rate": 1.91,
+  "clarity": 3.46,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s2/sushi_react.3.1": {
+  "said": "Magnificent! The rice alone deserves a paragraph. The fish, a chapter. The whole, a trilogy.",
+  "diffs": [],
+  "pitch": 108,
+  "seconds": 7.05,
+  "rate": 2.13,
+  "clarity": 3.45,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s6/sushi_customer.order.odd.noFishNoRice.1": {
+  "said": "A California roll, no crab and no rice, just the idea of California.",
+  "diffs": [],
+  "pitch": 88,
+  "seconds": 7.48,
+  "rate": 1.74,
+  "clarity": 3.81,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/cast_complain.c2": {
+  "said": "Uninvited, like a critic at a wedding, I would know.",
+  "diffs": [],
+  "pitch": 108,
+  "seconds": 3.6,
+  "rate": 2.78,
+  "clarity": 3.75,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/cafe_customer.react.gross.2": {
+  "said": "No, no, no! That's not breakfast. That's a science project.",
+  "diffs": [],
+  "pitch": 102,
+  "seconds": 4.37,
+  "rate": 2.29,
+  "clarity": 3.07,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/sushi_react.3.1": {
+  "said": "Magnificent! The rice alone deserves a paragraph. The fish, a chapter. The whole, a trilogy.",
+  "diffs": [],
+  "pitch": 95,
+  "seconds": 7.93,
+  "rate": 1.89,
+  "clarity": 3.88,
+  "drift": false,
+  "takes": 1
+ }
+}

@@ -1,0 +1,1156 @@
+{
+ "mitch/court:goldSign.1.bensBurritos#0": {
+  "row": "mitch/court:goldSign.1.bensBurritos",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "A gold sign on Ben's Burritos! I'd like to thank my mom, who is also the district manager.",
+  "note": "thrilled, then an aside",
+  "take": {
+   "said": "A gold sign on Ben's burritos. I'd like to thank my mom, who is also the district manager.",
+   "diffs": [],
+   "pitch": 186,
+   "seconds": 5.4,
+   "rate": 3.33,
+   "clarity": 3.42,
+   "wav": "takes\\mitch\\court_goldSign.1.bensBurritos-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.42
+   ]
+  }
+ },
+ "mitch/court:goldSign.1.bensBurritos#1": {
+  "row": "mitch/court:goldSign.1.bensBurritos",
+  "who": "mitch",
+  "label": "first tone only",
+  "text": "A gold sign on Ben's Burritos! I'd like to thank my mom, who is also the district manager.",
+  "note": "thrilled",
+  "take": {
+   "said": "A gold sign on Ben's burritos. I'd like to thank my mom, who is also the district manager.",
+   "diffs": [],
+   "pitch": 180,
+   "seconds": 5.6,
+   "rate": 3.22,
+   "clarity": 3.48,
+   "wav": "takes\\mitch\\court_goldSign.1.bensBurritos-v1-s2.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.48
+   ]
+  }
+ },
+ "mitch/court:goldSign.1.bensBurritos#2": {
+  "row": "mitch/court:goldSign.1.bensBurritos",
+  "who": "mitch",
+  "label": "no note",
+  "text": "A gold sign on Ben's Burritos! I'd like to thank my mom, who is also the district manager.",
+  "note": "",
+  "take": {
+   "said": "A gold sign on Ben's burritos. I'd like to thank my mom, who is also the district manager.",
+   "diffs": [],
+   "pitch": 175,
+   "seconds": 5.27,
+   "rate": 3.42,
+   "clarity": 3.7,
+   "wav": "takes\\mitch\\court_goldSign.1.bensBurritos-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.7
+   ]
+  }
+ },
+ "mitch/sushi:tutorial.warn.pick.2.roll.insideOut#0": {
+  "row": "mitch/sushi:tutorial.warn.pick.2.roll.insideOut",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "Not that one. The ticket says inside-out roll.",
+  "note": "gentle correction, reading it off",
+  "take": {
+   "said": "Not that one. The ticket says \"Inside Out.\" Roll.",
+   "diffs": [],
+   "pitch": 188,
+   "seconds": 2.49,
+   "rate": 3.62,
+   "clarity": 3.35,
+   "wav": "takes\\mitch\\sushi_tutorial.warn.pick.2.roll.insideOut-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.35
+   ]
+  }
+ },
+ "mitch/sushi:tutorial.warn.pick.2.roll.insideOut#1": {
+  "row": "mitch/sushi:tutorial.warn.pick.2.roll.insideOut",
+  "who": "mitch",
+  "label": "no note",
+  "text": "Not that one. The ticket says inside-out roll.",
+  "note": "",
+  "take": {
+   "said": "Not that one. The ticket says \"Inside Out.\" Roll.",
+   "diffs": [],
+   "pitch": 184,
+   "seconds": 2.59,
+   "rate": 3.48,
+   "clarity": 3.57,
+   "wav": "takes\\mitch\\sushi_tutorial.warn.pick.2.roll.insideOut-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.57
+   ]
+  }
+ },
+ "mitch/cafe:mistake.tooFew.1.sugar.1#0": {
+  "row": "mitch/cafe:mistake.tooFew.1.sugar.1",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "The ticket said one sugar. We came up short.",
+  "note": "flat, reading it off the ticket",
+  "take": {
+   "said": "The ticket said one sugar. We came up short.",
+   "diffs": [],
+   "pitch": 180,
+   "seconds": 2.49,
+   "rate": 3.61,
+   "clarity": 3.32,
+   "wav": "takes\\mitch\\cafe_mistake.tooFew.1.sugar.1-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.32
+   ]
+  }
+ },
+ "mitch/cafe:mistake.tooFew.1.sugar.1#1": {
+  "row": "mitch/cafe:mistake.tooFew.1.sugar.1",
+  "who": "mitch",
+  "label": "no note",
+  "text": "The ticket said one sugar. We came up short.",
+  "note": "",
+  "take": {
+   "said": "The ticket said one sugar. We came up short.",
+   "diffs": [],
+   "pitch": 172,
+   "seconds": 2.22,
+   "rate": 4.05,
+   "clarity": 3.79,
+   "wav": "takes\\mitch\\cafe_mistake.tooFew.1.sugar.1-v1-s2.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.79
+   ]
+  }
+ },
+ "mitch/cafe:gross.spoiled.3.milk.whole#0": {
+  "row": "mitch/cafe:gross.spoiled.3.milk.whole",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "note": "squeamish, backing away",
+  "take": {
+   "said": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+   "diffs": [],
+   "pitch": 173,
+   "seconds": 4.2,
+   "rate": 2.86,
+   "clarity": 3.23,
+   "wav": "takes\\mitch\\cafe_gross.spoiled.3.milk.whole-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.23
+   ]
+  }
+ },
+ "mitch/cafe:gross.spoiled.3.milk.whole#1": {
+  "row": "mitch/cafe:gross.spoiled.3.milk.whole",
+  "who": "mitch",
+  "label": "no note",
+  "text": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "note": "",
+  "take": {
+   "said": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+   "diffs": [],
+   "pitch": 173,
+   "seconds": 3.58,
+   "rate": 3.35,
+   "clarity": 3.79,
+   "wav": "takes\\mitch\\cafe_gross.spoiled.3.milk.whole-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.79
+   ]
+  }
+ },
+ "mitch/cafe:nearly.2.smooth#0": {
+  "row": "mitch/cafe:nearly.2.smooth",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "Heads up: smooth is next.",
+  "note": "quick, a little nervous",
+  "take": {
+   "said": "Heads up! Smooth is next.",
+   "diffs": [],
+   "pitch": 179,
+   "seconds": 1.54,
+   "rate": 3.25,
+   "clarity": 3.31,
+   "wav": "takes\\mitch\\cafe_nearly.2.smooth-v0-s2.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.31
+   ]
+  }
+ },
+ "mitch/cafe:nearly.2.smooth#1": {
+  "row": "mitch/cafe:nearly.2.smooth",
+  "who": "mitch",
+  "label": "no note",
+  "text": "Heads up: smooth is next.",
+  "note": "",
+  "take": {
+   "said": "Heads up! Smooth is next.",
+   "diffs": [],
+   "pitch": 183,
+   "seconds": 1.39,
+   "rate": 3.59,
+   "clarity": 3.88,
+   "wav": "takes\\mitch\\cafe_nearly.2.smooth-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.88
+   ]
+  }
+ },
+ "mitch/icecream:shift.start.2#0": {
+  "row": "mitch/icecream:shift.start.2",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "Ice Cream Emporium, open for business. Emporium means big store. We are a medium store with a big word.",
+  "note": "cheerful, then confiding",
+  "take": {
+   "said": "Ice Cream Emporium open for business. Emporium means big store. We are a medium store with a big word.",
+   "diffs": [],
+   "pitch": 173,
+   "seconds": 6.14,
+   "rate": 3.1,
+   "clarity": 3.27,
+   "wav": "takes\\mitch\\icecream_shift.start.2-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.27
+   ]
+  }
+ },
+ "mitch/icecream:shift.start.2#1": {
+  "row": "mitch/icecream:shift.start.2",
+  "who": "mitch",
+  "label": "first tone only",
+  "text": "Ice Cream Emporium, open for business. Emporium means big store. We are a medium store with a big word.",
+  "note": "cheerful",
+  "take": {
+   "said": "Ice cream emporium open for business. Emporium means big store. We are a medium store with a big word.",
+   "diffs": [],
+   "pitch": 174,
+   "seconds": 5.95,
+   "rate": 3.19,
+   "clarity": 3.83,
+   "wav": "takes\\mitch\\icecream_shift.start.2-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.83
+   ]
+  }
+ },
+ "mitch/icecream:shift.start.2#2": {
+  "row": "mitch/icecream:shift.start.2",
+  "who": "mitch",
+  "label": "no note",
+  "text": "Ice Cream Emporium, open for business. Emporium means big store. We are a medium store with a big word.",
+  "note": "",
+  "take": {
+   "said": "Ice Cream Emporium open for business. Emporium means big store. We are a medium store with a big word.",
+   "diffs": [],
+   "pitch": 181,
+   "seconds": 5.82,
+   "rate": 3.26,
+   "clarity": 3.31,
+   "wav": "takes\\mitch\\icecream_shift.start.2-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.31
+   ]
+  }
+ },
+ "mitch/intro.2#0": {
+  "row": "mitch/intro.2",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+  "note": "eager, a touch wounded in the middle, then eager again",
+  "take": {
+   "said": "Hi, Mitch, Assistant Manager. The ASST is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+   "diffs": [],
+   "pitch": 155,
+   "seconds": 8.84,
+   "rate": 2.72,
+   "clarity": 3.65,
+   "wav": "takes\\mitch\\intro.2-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.65
+   ]
+  }
+ },
+ "mitch/intro.2#1": {
+  "row": "mitch/intro.2",
+  "who": "mitch",
+  "label": "first tone only",
+  "text": "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+  "note": "eager, a touch wounded",
+  "take": {
+   "said": "Hi, Mitch, Assistant Manager. The ASST is tape, and the tape is temporary\u2014four years temporary. One order together, and I'll point at things.",
+   "diffs": [],
+   "pitch": 192,
+   "seconds": 8.85,
+   "rate": 2.71,
+   "clarity": 3.27,
+   "wav": "takes\\mitch\\intro.2-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.27
+   ]
+  }
+ },
+ "mitch/intro.2#2": {
+  "row": "mitch/intro.2",
+  "who": "mitch",
+  "label": "no note",
+  "text": "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+  "note": "",
+  "take": {
+   "said": "Hi, Mitch, assistant manager. The assist is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+   "diffs": [],
+   "pitch": 152,
+   "seconds": 9.46,
+   "rate": 2.54,
+   "clarity": 3.34,
+   "wav": "takes\\mitch\\intro.2-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.34
+   ]
+  }
+ },
+ "mitch/cook.2#0": {
+  "row": "mitch/cook.2",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "Pick how done. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+  "note": "upbeat, then dark",
+  "take": {
+   "said": "Pick. How done? The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+   "diffs": [],
+   "pitch": 150,
+   "seconds": 6.89,
+   "rate": 2.9,
+   "clarity": 3.3,
+   "wav": "takes\\mitch\\cook.2-v0-s2.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.3
+   ]
+  }
+ },
+ "mitch/cook.2#1": {
+  "row": "mitch/cook.2",
+  "who": "mitch",
+  "label": "first tone only",
+  "text": "Pick how done. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+  "note": "upbeat",
+  "take": {
+   "said": "Pick, how done? The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+   "diffs": [],
+   "pitch": 154,
+   "seconds": 7.67,
+   "rate": 2.61,
+   "clarity": 3.26,
+   "wav": "takes\\mitch\\cook.2-v1-s2.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.26
+   ]
+  }
+ },
+ "mitch/cook.2#2": {
+  "row": "mitch/cook.2",
+  "who": "mitch",
+  "label": "no note",
+  "text": "Pick how done. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+  "note": "",
+  "take": {
+   "said": "Pick how done. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+   "diffs": [],
+   "pitch": 176,
+   "seconds": 5.4,
+   "rate": 3.71,
+   "clarity": 3.09,
+   "wav": "takes\\mitch\\cook.2-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.09
+   ]
+  }
+ },
+ "mitch/gross.2#0": {
+  "row": "mitch/gross.2",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "Sometimes an ingredient shows up looking like it's been through something. Pick Swap It and a fresh one comes down. The bad one goes in the bin. The bin and I have an understanding.",
+  "note": "wary, then matter-of-fact",
+  "take": {
+   "said": "Sometimes an ingredient shows up looking like it's been through something. Pick swap it, and a fresh one comes down. The bad one goes in the bin. The bin and I have an understanding.",
+   "diffs": [],
+   "pitch": 162,
+   "seconds": 8.78,
+   "rate": 3.87,
+   "clarity": 3.32,
+   "wav": "takes\\mitch\\gross.2-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.32
+   ]
+  }
+ },
+ "mitch/gross.2#1": {
+  "row": "mitch/gross.2",
+  "who": "mitch",
+  "label": "first tone only",
+  "text": "Sometimes an ingredient shows up looking like it's been through something. Pick Swap It and a fresh one comes down. The bad one goes in the bin. The bin and I have an understanding.",
+  "note": "wary",
+  "take": {
+   "said": "Sometimes an ingredient shows up looking like it's been through something. Pick swap it, and a fresh one comes down. The bad one goes in the bin. The bin and I have an understanding.",
+   "diffs": [],
+   "pitch": 159,
+   "seconds": 8.62,
+   "rate": 3.94,
+   "clarity": 3.87,
+   "wav": "takes\\mitch\\gross.2-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.87
+   ]
+  }
+ },
+ "mitch/gross.2#2": {
+  "row": "mitch/gross.2",
+  "who": "mitch",
+  "label": "no note",
+  "text": "Sometimes an ingredient shows up looking like it's been through something. Pick Swap It and a fresh one comes down. The bad one goes in the bin. The bin and I have an understanding.",
+  "note": "",
+  "take": {
+   "said": "Sometimes an ingredient shows up looking like it's been through something. Pick swap it, and a fresh one comes down. The bad one goes in the bin. The bin and I have an understanding.",
+   "diffs": [],
+   "pitch": 196,
+   "seconds": 8.39,
+   "rate": 4.05,
+   "clarity": 3.36,
+   "wav": "takes\\mitch\\gross.2-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.36
+   ]
+  }
+ },
+ "mitch/serve.2#0": {
+  "row": "mitch/serve.2",
+  "who": "mitch",
+  "label": "note as written",
+  "text": "That's one order, start to finish. The customer tells you what they think. Some of them tell everyone. Vernon has a blog. Ready for a real shift?",
+  "note": "proud, then a warning",
+  "take": {
+   "said": "That's one order, start to finish. The customer tells you what they think. Some of them tell everyone. Vernon has a blog. Ready for a real shift?",
+   "diffs": [],
+   "pitch": 213,
+   "seconds": 7.72,
+   "rate": 3.5,
+   "clarity": 3.27,
+   "wav": "takes\\mitch\\serve.2-v0-s1.wav",
+   "ok": false,
+   "drift": true,
+   "sk": [
+    0,
+    false,
+    true,
+    -3.27
+   ]
+  }
+ },
+ "mitch/serve.2#1": {
+  "row": "mitch/serve.2",
+  "who": "mitch",
+  "label": "first tone only",
+  "text": "That's one order, start to finish. The customer tells you what they think. Some of them tell everyone. Vernon has a blog. Ready for a real shift?",
+  "note": "proud",
+  "take": {
+   "said": "That's one order, start to finish. The customer tells you what they think. Some of them tell everyone. Vernon has a blog. Ready for a real shift?",
+   "diffs": [],
+   "pitch": 175,
+   "seconds": 6.98,
+   "rate": 3.87,
+   "clarity": 3.6,
+   "wav": "takes\\mitch\\serve.2-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.6
+   ]
+  }
+ },
+ "mitch/serve.2#2": {
+  "row": "mitch/serve.2",
+  "who": "mitch",
+  "label": "no note",
+  "text": "That's one order, start to finish. The customer tells you what they think. Some of them tell everyone. Vernon has a blog. Ready for a real shift?",
+  "note": "",
+  "take": {
+   "said": "That's one order, start to finish. The customer tells you what they think. Some of them tell everyone. Vernon has a blog ready for a real shift.",
+   "diffs": [],
+   "pitch": 167,
+   "seconds": 7.63,
+   "rate": 3.54,
+   "clarity": 3.45,
+   "wav": "takes\\mitch\\serve.2-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.45
+   ]
+  }
+ },
+ "bev/icecream:customer.complain.gross.hair.1#0": {
+  "row": "bev/icecream:customer.complain.gross.hair.1",
+  "who": "bev",
+  "label": "note as written",
+  "text": "There is a hair in the sprinkles. A long one.",
+  "note": "disgusted",
+  "take": {
+   "said": "There is a hair in the sprinkles\u2014a long one.",
+   "diffs": [],
+   "pitch": 206,
+   "seconds": 2.56,
+   "rate": 3.9,
+   "clarity": 3.53,
+   "wav": "takes\\bev\\icecream_customer.complain.gross.hair.1-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.53
+   ]
+  }
+ },
+ "bev/icecream:customer.complain.gross.hair.1#1": {
+  "row": "bev/icecream:customer.complain.gross.hair.1",
+  "who": "bev",
+  "label": "stronger disgust",
+  "text": "There is a hair in the sprinkles. A long one.",
+  "note": "grossed out and disgusted, recoiling, nose wrinkled",
+  "take": {
+   "said": "There is a hair in the sprinkles, a long one.",
+   "diffs": [],
+   "pitch": 264,
+   "seconds": 2.96,
+   "rate": 3.38,
+   "clarity": 3.37,
+   "wav": "takes\\bev\\icecream_customer.complain.gross.hair.1-v1-s2.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.37
+   ]
+  }
+ },
+ "bev/icecream:customer.complain.gross.hair.1#2": {
+  "row": "bev/icecream:customer.complain.gross.hair.1",
+  "who": "bev",
+  "label": "no gagging asked",
+  "text": "There is a hair in the sprinkles. A long one.",
+  "note": "disgusted",
+  "take": {
+   "said": "There is a hair in the sprinkles\u2014a long one.",
+   "diffs": [],
+   "pitch": 206,
+   "seconds": 2.56,
+   "rate": 3.9,
+   "clarity": 3.53,
+   "wav": "takes\\bev\\icecream_customer.complain.gross.hair.1-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.53
+   ]
+  }
+ },
+ "bev/pizza:customer.react.gross.2#0": {
+  "row": "bev/pizza:customer.react.gross.2",
+  "who": "bev",
+  "label": "note as written",
+  "text": "No. No, no. That is not a topping.",
+  "note": "gagging, firm",
+  "take": {
+   "said": "No, no, no! That is not a topping.",
+   "diffs": [],
+   "pitch": 306,
+   "seconds": 2.84,
+   "rate": 2.82,
+   "clarity": 3.8,
+   "wav": "takes\\bev\\pizza_customer.react.gross.2-v0-s2.wav",
+   "ok": false,
+   "drift": true,
+   "sk": [
+    0,
+    false,
+    true,
+    -3.8
+   ]
+  }
+ },
+ "bev/pizza:customer.react.gross.2#1": {
+  "row": "bev/pizza:customer.react.gross.2",
+  "who": "bev",
+  "label": "stronger disgust",
+  "text": "No. No, no. That is not a topping.",
+  "note": "grossed out and disgusted, recoiling, nose wrinkled",
+  "take": {
+   "said": "No, no, no! That is not a topping.",
+   "diffs": [],
+   "pitch": 208,
+   "seconds": 3.1,
+   "rate": 2.58,
+   "clarity": 2.61,
+   "wav": "takes\\bev\\pizza_customer.react.gross.2-v1-s2.wav",
+   "ok": false,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -2.61
+   ]
+  }
+ },
+ "bev/pizza:customer.react.gross.2#2": {
+  "row": "bev/pizza:customer.react.gross.2",
+  "who": "bev",
+  "label": "no gagging asked",
+  "text": "No. No, no. That is not a topping.",
+  "note": "firm",
+  "take": {
+   "said": "No, no, no! That is not a topping.",
+   "diffs": [],
+   "pitch": 237,
+   "seconds": 3.29,
+   "rate": 2.43,
+   "clarity": 3.14,
+   "wav": "takes\\bev\\pizza_customer.react.gross.2-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.14
+   ]
+  }
+ },
+ "dennis/sushi:customer.complain.gross.smelly.1#0": {
+  "row": "dennis/sushi:customer.complain.gross.smelly.1",
+  "who": "dennis",
+  "label": "note as written",
+  "text": "This salmon smells off. I smelled it before it reached the counter.",
+  "note": "revolted, leaning back",
+  "take": {
+   "said": "This salmon smells off. I smelled it before it reached the counter.",
+   "diffs": [],
+   "pitch": 140,
+   "seconds": 3.24,
+   "rate": 3.7,
+   "clarity": 3.52,
+   "wav": "takes\\dennis\\sushi_customer.complain.gross.smelly.1-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.52
+   ]
+  }
+ },
+ "dennis/sushi:customer.complain.gross.smelly.1#1": {
+  "row": "dennis/sushi:customer.complain.gross.smelly.1",
+  "who": "dennis",
+  "label": "stronger disgust",
+  "text": "This salmon smells off. I smelled it before it reached the counter.",
+  "note": "grossed out and disgusted, recoiling, nose wrinkled",
+  "take": {
+   "said": "This salmon smells off. I smelled it before it reached the counter.",
+   "diffs": [],
+   "pitch": 210,
+   "seconds": 3.27,
+   "rate": 3.67,
+   "clarity": 3.6,
+   "wav": "takes\\dennis\\sushi_customer.complain.gross.smelly.1-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.6
+   ]
+  }
+ },
+ "dennis/sushi:customer.complain.gross.smelly.1#2": {
+  "row": "dennis/sushi:customer.complain.gross.smelly.1",
+  "who": "dennis",
+  "label": "no gagging asked",
+  "text": "This salmon smells off. I smelled it before it reached the counter.",
+  "note": "revolted, leaning back",
+  "take": {
+   "said": "This salmon smells off. I smelled it before it reached the counter.",
+   "diffs": [],
+   "pitch": 140,
+   "seconds": 3.24,
+   "rate": 3.7,
+   "clarity": 3.52,
+   "wav": "takes\\dennis\\sushi_customer.complain.gross.smelly.1-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.52
+   ]
+  }
+ },
+ "oakes/burrito:customer.complain.gross.brown.2#0": {
+  "row": "oakes/burrito:customer.complain.gross.brown.2",
+  "who": "oakes",
+  "label": "note as written",
+  "text": "Brown guacamole? I'm not eating anything older than my shoes.",
+  "note": "dry, revolted",
+  "take": {
+   "said": "Brown guacamole? I'm not eating anything older than my shoes.",
+   "diffs": [],
+   "pitch": 174,
+   "seconds": 3.53,
+   "rate": 2.84,
+   "clarity": 4.17,
+   "wav": "takes\\oakes\\burrito_customer.complain.gross.brown.2-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -4.17
+   ]
+  }
+ },
+ "oakes/burrito:customer.complain.gross.brown.2#1": {
+  "row": "oakes/burrito:customer.complain.gross.brown.2",
+  "who": "oakes",
+  "label": "stronger disgust",
+  "text": "Brown guacamole? I'm not eating anything older than my shoes.",
+  "note": "grossed out and disgusted, recoiling, nose wrinkled",
+  "take": {
+   "said": "Brown guacamole. I'm not eating anything older than my shoes.",
+   "diffs": [],
+   "pitch": 210,
+   "seconds": 3.77,
+   "rate": 2.65,
+   "clarity": 4.16,
+   "wav": "takes\\oakes\\burrito_customer.complain.gross.brown.2-v1-s1.wav",
+   "ok": false,
+   "drift": true,
+   "sk": [
+    0,
+    false,
+    true,
+    -4.16
+   ]
+  }
+ },
+ "oakes/burrito:customer.complain.gross.brown.2#2": {
+  "row": "oakes/burrito:customer.complain.gross.brown.2",
+  "who": "oakes",
+  "label": "no gagging asked",
+  "text": "Brown guacamole? I'm not eating anything older than my shoes.",
+  "note": "dry, revolted",
+  "take": {
+   "said": "Brown guacamole? I'm not eating anything older than my shoes.",
+   "diffs": [],
+   "pitch": 174,
+   "seconds": 3.53,
+   "rate": 2.84,
+   "clarity": 4.17,
+   "wav": "takes\\oakes\\burrito_customer.complain.gross.brown.2-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -4.17
+   ]
+  }
+ },
+ "oakes/customer.reactGross.1#0": {
+  "row": "oakes/customer.reactGross.1",
+  "who": "oakes",
+  "label": "note as written",
+  "text": "Oh. Oh, no. Oh, that is disgusting.",
+  "note": "gagging, disgusted",
+  "take": {
+   "said": "Oh, oh no! Oh, that is disgusting.",
+   "diffs": [],
+   "pitch": 152,
+   "seconds": 3.01,
+   "rate": 2.32,
+   "clarity": 3.87,
+   "wav": "takes\\oakes\\customer.reactGross.1-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.87
+   ]
+  }
+ },
+ "oakes/customer.reactGross.1#1": {
+  "row": "oakes/customer.reactGross.1",
+  "who": "oakes",
+  "label": "stronger disgust",
+  "text": "Oh. Oh, no. Oh, that is disgusting.",
+  "note": "grossed out and disgusted, recoiling, nose wrinkled",
+  "take": {
+   "said": "Oh, oh no! Oh, that is disgusting.",
+   "diffs": [],
+   "pitch": 137,
+   "seconds": 3.53,
+   "rate": 1.98,
+   "clarity": 4.16,
+   "wav": "takes\\oakes\\customer.reactGross.1-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -4.16
+   ]
+  }
+ },
+ "oakes/customer.reactGross.1#2": {
+  "row": "oakes/customer.reactGross.1",
+  "who": "oakes",
+  "label": "no gagging asked",
+  "text": "Oh. Oh, no. Oh, that is disgusting.",
+  "note": "disgusted",
+  "take": {
+   "said": "Oh! Oh no! Oh, that is disgusting.",
+   "diffs": [],
+   "pitch": 160,
+   "seconds": 3.2,
+   "rate": 2.19,
+   "clarity": 4.03,
+   "wav": "takes\\oakes\\customer.reactGross.1-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -4.03
+   ]
+  }
+ },
+ "vernon/icecream:customer.react.gross.2#0": {
+  "row": "vernon/icecream:customer.react.gross.2",
+  "who": "vernon",
+  "label": "Eugh sent as \"Ew\"",
+  "text": "Eugh! No. No, thank you. No.",
+  "note": "disgusted, recoiling",
+  "take": {
+   "said": "Ew! No, no, thank you, no.",
+   "diffs": [],
+   "pitch": 150,
+   "seconds": 4.51,
+   "rate": 1.33,
+   "clarity": 3.77,
+   "wav": "takes\\vernon\\icecream_customer.react.gross.2-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.77
+   ]
+  }
+ },
+ "vernon/icecream:customer.react.gross.2#1": {
+  "row": "vernon/icecream:customer.react.gross.2",
+  "who": "vernon",
+  "label": "\"Ugh\" instead",
+  "text": "Ugh! No. No, thank you. No.",
+  "note": "disgusted, recoiling",
+  "take": {
+   "said": "No, no, thank you, no.",
+   "diffs": [],
+   "pitch": 153,
+   "seconds": 3.6,
+   "rate": 1.67,
+   "clarity": 3.75,
+   "wav": "takes\\vernon\\icecream_customer.react.gross.2-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.75
+   ]
+  }
+ },
+ "marge/smoothie:customer.react.gross.1#0": {
+  "row": "marge/smoothie:customer.react.gross.1",
+  "who": "marge",
+  "label": "as written",
+  "text": "Oh. Oh, no. Something in this cup is looking back at me.",
+  "note": "disgusted, a slow horror",
+  "take": {
+   "said": "Oh no! Something in this cup is looking back at me.",
+   "diffs": [],
+   "pitch": 185,
+   "seconds": 6.62,
+   "rate": 1.81,
+   "clarity": 3.39,
+   "wav": "takes\\marge\\smoothie_customer.react.gross.1-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.39
+   ]
+  }
+ },
+ "marge/smoothie:customer.react.gross.1#1": {
+  "row": "marge/smoothie:customer.react.gross.1",
+  "who": "marge",
+  "label": "\"Ohh.\" opening",
+  "text": "Ohh. Oh, no. Something in this cup is looking back at me.",
+  "note": "disgusted, a slow horror",
+  "take": {
+   "said": "Oh no! Something in this cup is looking back at me.",
+   "diffs": [
+    "delete: 'ohh' -> ''"
+   ],
+   "pitch": 189,
+   "seconds": 5.07,
+   "rate": 2.37,
+   "clarity": 4.03,
+   "wav": "takes\\marge\\smoothie_customer.react.gross.1-v1-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    1,
+    false,
+    false,
+    -4.03
+   ]
+  }
+ },
+ "marge/smoothie:customer.react.gross.1#2": {
+  "row": "marge/smoothie:customer.react.gross.1",
+  "who": "marge",
+  "label": "\"Oh, oh no.\" opening",
+  "text": "Oh, oh no. Something in this cup is looking back at me.",
+  "note": "disgusted, a slow horror",
+  "take": {
+   "said": "Oh no! Something in this cup is looking back at me.",
+   "diffs": [],
+   "pitch": 219,
+   "seconds": 4.87,
+   "rate": 2.46,
+   "clarity": 3.54,
+   "wav": "takes\\marge\\smoothie_customer.react.gross.1-v2-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.54
+   ]
+  }
+ },
+ "marge/burrito:greet.1#0": {
+  "row": "marge/burrito:greet.1",
+  "who": "marge",
+  "label": "hon (sent as \"hun\")",
+  "text": "Hi, hon. Smells like lunch and lime in here. My two favorite smells.",
+  "note": "warm, breathing it in",
+  "take": {
+   "said": "Hi, hun. Smells like lunch and lime in here\u2014my two favorite smells.",
+   "diffs": [],
+   "pitch": 195,
+   "seconds": 3.78,
+   "rate": 3.44,
+   "clarity": 4.08,
+   "wav": "takes\\marge\\burrito_greet.1-v0-s1.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -4.08
+   ]
+  }
+ },
+ "marge/burrito:order.usual.1#0": {
+  "row": "marge/burrito:order.usual.1",
+  "who": "marge",
+  "label": "hon (sent as \"hun\")",
+  "text": "The usual, hon.",
+  "note": "warm, expecting it to be known",
+  "take": {
+   "said": "The usual hun.",
+   "diffs": [],
+   "pitch": 213,
+   "seconds": 1.1,
+   "rate": 2.72,
+   "clarity": 3.85,
+   "wav": "takes\\marge\\burrito_order.usual.1-v0-s2.wav",
+   "ok": true,
+   "drift": false,
+   "sk": [
+    0,
+    false,
+    false,
+    -3.85
+   ]
+  }
+ }
+}

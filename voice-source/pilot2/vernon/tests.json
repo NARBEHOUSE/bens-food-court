@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "vernon/greet.1",
+  "speaker": "vernon",
+  "text": "[sigh] Good evening. I will be reviewing tonight.",
+  "moment": "greet",
+  "delivery": "haughty and fussy",
+  "pack": "diner",
+  "order": 2,
+  "hash": "7bdd30a4",
+  "recorded": false
+ },
+ {
+  "clip": "vernon/smalltalk.1",
+  "speaker": "vernon",
+  "text": "[sigh] My blog began at this very counter. Post one. 'Hm.' It remains my most popular.",
+  "moment": "smalltalk",
+  "delivery": "a theatrical sigh, wistful",
+  "pack": "diner",
+  "order": 4,
+  "hash": "d0e4d6f5",
+  "recorded": false
+ },
+ {
+  "clip": "vernon/react3.1",
+  "speaker": "vernon",
+  "text": "Acceptable. Don't let it go to your head.",
+  "moment": "react.3",
+  "delivery": "a long pause first, then grudging",
+  "pack": "diner",
+  "order": 2,
+  "hash": "c1334a77",
+  "recorded": false
+ },
+ {
+  "clip": "vernon/cast:complain.c1",
+  "speaker": "vernon",
+  "text": "I will be writing about this. At length.",
+  "moment": "complain",
+  "delivery": "precise, wounded, a theatrical sigh",
+  "pack": "cast",
+  "order": 4,
+  "hash": "0dfad651",
+  "recorded": false
+ }
+]

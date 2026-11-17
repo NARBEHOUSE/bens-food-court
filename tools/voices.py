@@ -1,6 +1,11 @@
 """Ben's Burger Bar - the cast's voices, made with Voice Studio (DESIGN.md "Voices and the script").
 
-Runs in Voice Studio's own Python, which has the voice model, the speech check, pyworld and ffmpeg:
+Runs in Voice Studio's own Python (its server_python), which has the speech check, pyworld and ffmpeg; the voice
+model runs in Voice Studio's worker. Voice Studio's folder on this PC: the VOICE_STUDIO_DIR environment variable, or
+"voice_studio" in tools/voice-local.json (not committed); the default is the PC the game is built on. Each clip is
+saved in its own pack's folder, packs/<pack>/voice/ (a restaurant, cast or court), each with its own manifest; a
+colon in a clip id is two underscores in the file name, and the manifest's `file` says the real name.
+Shown below with the building PC's Python:
   C:/VoiceStudio/venv/Scripts/python.exe tools/voices.py design [characters...]
       Designs each character's voice from tools/voices.json: several candidates each, every one checked by
       speech-to-text and by pitch and pace. The best is saved into Voice Studio's library as
@@ -34,7 +39,23 @@ import time
 from pathlib import Path
 
 GAME = Path(__file__).resolve().parent.parent
-VS = Path('F:/PROJECT FILES/TOOLS/voice-studio-main')
+
+
+def studio_folder():
+    """Where Voice Studio is on this PC: the VOICE_STUDIO_DIR environment variable, or "voice_studio" in
+    tools/voice-local.json (never committed: it holds one PC's path), or the PC the game is built on."""
+    if os.environ.get('VOICE_STUDIO_DIR'):
+        return Path(os.environ['VOICE_STUDIO_DIR'])
+    try:
+        return Path(json.loads((GAME / 'tools' / 'voice-local.json').read_text(encoding='utf-8'))['voice_studio'])
+    except (FileNotFoundError, KeyError):
+        return Path('F:/PROJECT FILES/TOOLS/voice-studio-main')
+
+
+VS = studio_folder()
+if not (VS / 'studio_worker.py').exists():
+    sys.exit(f'Voice Studio is not at {VS}. Set VOICE_STUDIO_DIR, or put {{"voice_studio": "<folder>"}} in '
+             'tools/voice-local.json.')
 sys.path.insert(0, str(VS))
 import config  # noqa: E402  (reads voice-studio.config.json, sets the model caches)
 import checks  # noqa: E402  (Qwen3-ASR speech check, ffmpeg)
@@ -43,7 +64,31 @@ CONFIG = config.CONFIG
 VOICES = Path(CONFIG['data']) / 'voices'
 DESIGN_DIR = GAME / 'voice-source' / 'design'
 TAKES_DIR = GAME / 'voice-source' / 'takes'
-OUT = GAME / 'packs' / 'diner' / 'voice'
+
+
+def out_dir(pack):
+    """A pack's recordings: packs/<pack>/voice/ (js/audio.js looks in the pack in use, then cast, then court)."""
+    return GAME / 'packs' / pack / 'voice'
+
+
+def clip_file(clip):
+    """A clip's file inside its pack's voice folder. A cast or court clip id has a colon (gus/cast:greet.c1), which
+    Windows cannot have in a file name: it becomes two underscores. The manifest's `file` says the real name."""
+    return clip.replace(':', '__') + '.mp3'
+
+
+def read_manifest(pack):
+    try:
+        return json.loads((out_dir(pack) / 'manifest.json').read_text(encoding='utf-8'))
+    except FileNotFoundError:
+        return None
+
+
+def voice_packs():
+    """Every pack folder that has a voice manifest today."""
+    return sorted(p.parent.parent.name for p in (GAME / 'packs').glob('*/voice/manifest.json'))
+
+
 DESIGN_SEEDS = [1, 2, 3, 4, 5, 6]
 STEPS, CFG = 24, 2.0          # Voice Studio's defaults
 
@@ -184,18 +229,23 @@ def export(src, dst):
     """Trim the silence at both ends, level the loudness, save a small mono mp3."""
     dst.parent.mkdir(parents=True, exist_ok=True)
     trim = 'silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.06'
-    af = f'{trim},areverse,{trim},areverse,loudnorm=I=-17:TP=-1.5:LRA=11'
+    # Clean-up (voice pass clarity test, 2026-11-11): the model's lines are slightly rough inside the speech (not a hiss
+    # between words, and not the mp3). Cutting rumble and the top end, a light de-noise and a de-esser took 6 of 8 test
+    # lines from "a little rough" to clean by ear; the encoder's bitrate made no difference.
+    clean = 'highpass=f=70,lowpass=f=11000,afftdn=nf=-40:nr=8,deesser=i=0.4'
+    af = f'{clean},{trim},areverse,{trim},areverse,loudnorm=I=-17:TP=-1.5:LRA=11'
     subprocess.run([checks.ffmpeg(), '-v', 'error', '-y', '-i', str(src), '-af', af, '-ac', '1', '-ar', '44100',
                     '-b:a', '64k', str(dst)], check=True)
 
 
-def write_manifest(manifest):
+def write_manifest(pack, manifest):
+    OUT = out_dir(pack)
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=1, sort_keys=True), encoding='utf-8')
     js = ('/** Built by tools/voices.py: every recorded line, with the hash of the words it was recorded from. */\n'
           '(function (root, data) {\n'
           "  if (typeof module === 'object' && module.exports) module.exports = data;\n"
-          '  else ((root.BBVoice = root.BBVoice || {}).diner = data);\n'
+          '  else ((root.BBVoice = root.BBVoice || {})[' + json.dumps(pack) + '] = data);\n'
           "})(typeof window === 'undefined' ? globalThis : window, " + json.dumps(manifest, sort_keys=True) + ');\n')
     (OUT / 'manifest.js').write_text(js, encoding='utf-8')
 
@@ -221,8 +271,10 @@ def respell(speaker, text):
     """The words the voice model is given: the script's, with the character's respellings (tools/voices.json).
     "calm": exclamation marks become full stops and ALL-CAPS words lower case, for a voice the model would otherwise
     shout up into a high, distorted pitch (Coach Bev, 2026-11-08); captions keep the script's words."""
-    me = json.loads((GAME / 'tools' / 'voices.json').read_text(encoding='utf-8')).get(speaker) or {}
-    for pattern, said in me.get('respell', []):
+    cast = json.loads((GAME / 'tools' / 'voices.json').read_text(encoding='utf-8'))
+    me = cast.get(speaker) or {}
+    # "_everyone": respellings for every speaker (batch trial 2026-11-14: "Eugh" was heard as "you" or dropped)
+    for pattern, said in (cast.get('_everyone') or {}).get('respell', []) + me.get('respell', []):
         text = re.sub(pattern, said, text, flags=re.IGNORECASE)
     if me.get('calm'):
         text = re.sub(r'\b[A-Z]{2,}\b', lambda m: m.group(0).lower(), text.replace('!', '.'))
@@ -253,26 +305,26 @@ def use(name, cand):
              'ref_text': spec['sample'], 'style': '', 'created': time.strftime('%Y-%m-%d %H:%M:%S'),
              'source': 'designed', 'cleaned': False, 'settings': {}, 'facts': {}}
     (vdir / 'voice.json').write_text(json.dumps(voice, indent=1), encoding='utf-8')
-    try:
-        manifest = json.loads((OUT / 'manifest.json').read_text(encoding='utf-8'))
-    except FileNotFoundError:
-        manifest = None   # nothing recorded yet (the old diner takes were moved out 2026-11-10): nothing to take out
-    gone = [k for k in (manifest or {}) if k.startswith(name + '/')]
-    for k in gone:
-        del manifest[k]
-    if manifest is not None:
-        write_manifest(manifest)
+    gone = []   # with nothing recorded yet there is no manifest and nothing to take out
+    for pack in voice_packs():
+        manifest = read_manifest(pack)
+        mine = [k for k in manifest if k.startswith(name + '/')]
+        for k in mine:
+            del manifest[k]
+        if mine:
+            write_manifest(pack, manifest)
+        gone += mine
     print(f'{name}: Voice Studio voice {vid} is now {cand}; {len(gone)} old recordings taken out of the manifest '
           f'(they play as text to speech until recorded again)')
 
 
 def record(clips_file, speaker=None, limit=None):
     clips = json.loads(Path(clips_file).read_text(encoding='utf-8'))
-    try:
-        manifest = json.loads((OUT / 'manifest.json').read_text(encoding='utf-8'))
-    except FileNotFoundError:
-        manifest = {}
-    todo = [c for c in clips if not (manifest.get(c['clip']) or {}).get('hash') == c['hash']]
+    for c in clips:
+        c.setdefault('pack', 'diner')
+    manifests = {pack: read_manifest(pack) or {} for pack in sorted({c['pack'] for c in clips})}
+    changed = set()
+    todo = [c for c in clips if not (manifests[c['pack']].get(c['clip']) or {}).get('hash') == c['hash']]
     if speaker:
         todo = [c for c in todo if c['speaker'] in speaker.split(',')]
     if limit:
@@ -324,9 +376,10 @@ def record(clips_file, speaker=None, limit=None):
             # nearest, when every take drifted); then the clearest.
             best = sorted(takes, key=lambda t: (len(t['diffs']), t['rate'] > 4.6, t['drift'],
                                                 abs(t['pitch'] - home) if t['drift'] else 0, -t['clarity']))[0]
-            rel = c['clip'] + '.mp3'
-            export(best['wav'], OUT / rel)
-            manifest[c['clip']] = {'file': rel, 'hash': c['hash'], 'seed': best['seed'], 'heard': best['said'],
+            rel = clip_file(c['clip'])
+            export(best['wav'], out_dir(c['pack']) / rel)
+            changed.add(c['pack'])
+            manifests[c['pack']][c['clip']] = {'file': rel, 'hash': c['hash'], 'seed': best['seed'], 'heard': best['said'],
                                    'flag': bool(best['diffs']), 'pitch': best['pitch'], 'clarity': best['clarity']}
             # The mp3 is the product; the takes are re-made by recording again, so they do not pile up in OneDrive.
             for t in takes:
@@ -337,13 +390,16 @@ def record(clips_file, speaker=None, limit=None):
                         pass
             done += 1
             if done % 10 == 0 or done == len(todo):
-                write_manifest(manifest)
+                for pack in changed:
+                    write_manifest(pack, manifests[pack])
+                changed.clear()
                 rate = (time.time() - t0) / done
                 print(f'  {done}/{len(todo)} recorded ({rate:.1f} s each, about {(len(todo) - done) * rate / 60:.0f} min left)', flush=True)
             if best['diffs']:
                 print(f"  check by ear: {c['clip']}: heard '{best['said']}' ({'; '.join(best['diffs'][:2])})", flush=True)
     finally:
-        write_manifest(manifest)
+        for pack in changed:
+            write_manifest(pack, manifests[pack])
         w.close()
 
 

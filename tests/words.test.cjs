@@ -125,7 +125,10 @@ for (const p of [pack, P]) {
 test('labels for the grill and a bad ingredient', () => {
   const q = { kind: 'add', ing: 'patty', max: 3, have: 1, offer: 2, options: [] };
   assert.strictEqual(W.option(pack, q, { id: 'add' }).say, 'Add a second patty');
-  assert.deepStrictEqual(W.option(pack, q, { id: 'skip' }), { label: 'Done', say: 'Done, one patty' });
+  // the patty cooks next, so enough patties is "Cook" (2026-11-15); something that doesn't cook stays "Done"
+  assert.deepStrictEqual(W.option(pack, q, { id: 'skip' }), { label: 'Cook', say: 'Cook, one patty' });
+  const toppings = { kind: 'add', ing: 'pickles', max: 3, have: 2, offer: 3, options: [] };
+  if (pack.ingredients.pickles) assert.strictEqual(W.option(pack, toppings, { id: 'skip' }).label, 'Done');
   const g = { kind: 'add', ing: 'tomato', max: 1, have: 0, offer: 1, gross: { event: 'hair' }, options: [] };
   assert.strictEqual(W.option(pack, g, { id: 'add' }).say, 'Add tomato with a hair on it');
   assert.strictEqual(W.option(pack, g, { id: 'swap' }).label, 'Swap It');

@@ -1,0 +1,2162 @@
+{
+ "bev/cast:complain.c1": {
+  "file": "bev/cast__complain.c1.mp3",
+  "hash": "0a595083"
+ },
+ "bev/cast:complain.c2": {
+  "file": "bev/cast__complain.c2.mp3",
+  "hash": "39b782dd"
+ },
+ "bev/cast:complain.c3": {
+  "file": "bev/cast__complain.c3.mp3",
+  "hash": "27304747"
+ },
+ "bev/cast:complain.c4": {
+  "file": "bev/cast__complain.c4.mp3",
+  "hash": "64265a01"
+ },
+ "bev/cast:complain.c5": {
+  "file": "bev/cast__complain.c5.mp3",
+  "hash": "c1091cc5"
+ },
+ "bev/cast:complain.c6": {
+  "file": "bev/cast__complain.c6.mp3",
+  "hash": "9602c95b"
+ },
+ "bev/cast:complain.c7": {
+  "file": "bev/cast__complain.c7.mp3",
+  "hash": "eec693d2"
+ },
+ "bev/cast:complain.c8": {
+  "file": "bev/cast__complain.c8.mp3",
+  "hash": "e544a2e1"
+ },
+ "bev/cast:complain.c9": {
+  "file": "bev/cast__complain.c9.mp3",
+  "hash": "6d0636d1"
+ },
+ "bev/cast:goodbye.c1": {
+  "file": "bev/cast__goodbye.c1.mp3",
+  "hash": "c8d121d9"
+ },
+ "bev/cast:goodbye.c2": {
+  "file": "bev/cast__goodbye.c2.mp3",
+  "hash": "73521394"
+ },
+ "bev/cast:goodbye.c3": {
+  "file": "bev/cast__goodbye.c3.mp3",
+  "hash": "9987dbe7"
+ },
+ "bev/cast:goodbye.c4": {
+  "file": "bev/cast__goodbye.c4.mp3",
+  "hash": "2082a2a7"
+ },
+ "bev/cast:goodbye.c5": {
+  "file": "bev/cast__goodbye.c5.mp3",
+  "hash": "87caacc1"
+ },
+ "bev/cast:goodbye.c6": {
+  "file": "bev/cast__goodbye.c6.mp3",
+  "hash": "56913163"
+ },
+ "bev/cast:greet.c1": {
+  "file": "bev/cast__greet.c1.mp3",
+  "hash": "c2bdd840"
+ },
+ "bev/cast:greet.c2": {
+  "file": "bev/cast__greet.c2.mp3",
+  "hash": "9981f420"
+ },
+ "bev/cast:greet.c3": {
+  "file": "bev/cast__greet.c3.mp3",
+  "hash": "71a3c274"
+ },
+ "bev/cast:greet.c4": {
+  "file": "bev/cast__greet.c4.mp3",
+  "hash": "0d4aa4fd"
+ },
+ "bev/cast:greet.c5": {
+  "file": "bev/cast__greet.c5.mp3",
+  "hash": "87068717"
+ },
+ "bev/cast:greet.c6": {
+  "file": "bev/cast__greet.c6.mp3",
+  "hash": "40b2b456"
+ },
+ "bev/cast:intro.c1": {
+  "file": "bev/cast__intro.c1.mp3",
+  "hash": "9967c4f8"
+ },
+ "bev/cast:intro.c2": {
+  "file": "bev/cast__intro.c2.mp3",
+  "hash": "ab7bbd57"
+ },
+ "bev/cast:intro.c3": {
+  "file": "bev/cast__intro.c3.mp3",
+  "hash": "c60462c8"
+ },
+ "bev/cast:intro.c4": {
+  "file": "bev/cast__intro.c4.mp3",
+  "hash": "58532632"
+ },
+ "bev/cast:intro.c5": {
+  "file": "bev/cast__intro.c5.mp3",
+  "hash": "22673d2a"
+ },
+ "bev/cast:mention.c1": {
+  "file": "bev/cast__mention.c1.mp3",
+  "hash": "d16fcb15"
+ },
+ "bev/cast:mention.c2": {
+  "file": "bev/cast__mention.c2.mp3",
+  "hash": "5e772d64"
+ },
+ "bev/cast:mention.c3": {
+  "file": "bev/cast__mention.c3.mp3",
+  "hash": "32fba0d8"
+ },
+ "bev/cast:mention.c4": {
+  "file": "bev/cast__mention.c4.mp3",
+  "hash": "e126effe"
+ },
+ "bev/cast:mention.c5": {
+  "file": "bev/cast__mention.c5.mp3",
+  "hash": "b5904699"
+ },
+ "bev/cast:mention.c6": {
+  "file": "bev/cast__mention.c6.mp3",
+  "hash": "3f3b312a"
+ },
+ "bev/cast:mention.c7": {
+  "file": "bev/cast__mention.c7.mp3",
+  "hash": "86a9f3a4"
+ },
+ "bev/cast:smalltalk.c1": {
+  "file": "bev/cast__smalltalk.c1.mp3",
+  "hash": "cee29fb3"
+ },
+ "bev/cast:smalltalk.c2": {
+  "file": "bev/cast__smalltalk.c2.mp3",
+  "hash": "2a24a359"
+ },
+ "bev/cast:smalltalk.c3": {
+  "file": "bev/cast__smalltalk.c3.mp3",
+  "hash": "9d1d84f4"
+ },
+ "bev/cast:smalltalk.c4": {
+  "file": "bev/cast__smalltalk.c4.mp3",
+  "hash": "64c34c1c"
+ },
+ "bev/cast:smalltalk.c5": {
+  "file": "bev/cast__smalltalk.c5.mp3",
+  "hash": "9a58f379"
+ },
+ "bev/cast:smalltalk.c6": {
+  "file": "bev/cast__smalltalk.c6.mp3",
+  "hash": "6b622624"
+ },
+ "breeze/cast:complain.c1": {
+  "file": "breeze/cast__complain.c1.mp3",
+  "hash": "d7fa81c5"
+ },
+ "breeze/cast:complain.c2": {
+  "file": "breeze/cast__complain.c2.mp3",
+  "hash": "16beba5c"
+ },
+ "breeze/cast:complain.c3": {
+  "file": "breeze/cast__complain.c3.mp3",
+  "hash": "14bd2f91"
+ },
+ "breeze/cast:complain.c4": {
+  "file": "breeze/cast__complain.c4.mp3",
+  "hash": "280aa71f"
+ },
+ "breeze/cast:complain.c5": {
+  "file": "breeze/cast__complain.c5.mp3",
+  "hash": "44c3a343"
+ },
+ "breeze/cast:complain.c6": {
+  "file": "breeze/cast__complain.c6.mp3",
+  "hash": "7fba036d"
+ },
+ "breeze/cast:complain.c7": {
+  "file": "breeze/cast__complain.c7.mp3",
+  "hash": "11ad08f5"
+ },
+ "breeze/cast:complain.c8": {
+  "file": "breeze/cast__complain.c8.mp3",
+  "hash": "c9b3d2af"
+ },
+ "breeze/cast:intro.c1": {
+  "file": "breeze/cast__intro.c1.mp3",
+  "hash": "91d402b4"
+ },
+ "breeze/cast:intro.c2": {
+  "file": "breeze/cast__intro.c2.mp3",
+  "hash": "944c21b5"
+ },
+ "breeze/cast:intro.c3": {
+  "file": "breeze/cast__intro.c3.mp3",
+  "hash": "25816096"
+ },
+ "breeze/cast:intro.c4": {
+  "file": "breeze/cast__intro.c4.mp3",
+  "hash": "a822444e"
+ },
+ "breeze/cast:intro.c5": {
+  "file": "breeze/cast__intro.c5.mp3",
+  "hash": "a9a66bc4"
+ },
+ "brock/cast:complain.c1": {
+  "file": "brock/cast__complain.c1.mp3",
+  "hash": "99cb0252"
+ },
+ "brock/cast:complain.c2": {
+  "file": "brock/cast__complain.c2.mp3",
+  "hash": "43309f40"
+ },
+ "brock/cast:complain.c3": {
+  "file": "brock/cast__complain.c3.mp3",
+  "hash": "56c1d34d"
+ },
+ "brock/cast:complain.c4": {
+  "file": "brock/cast__complain.c4.mp3",
+  "hash": "9853aef8"
+ },
+ "brock/cast:complain.c5": {
+  "file": "brock/cast__complain.c5.mp3",
+  "hash": "169fe888"
+ },
+ "brock/cast:complain.c6": {
+  "file": "brock/cast__complain.c6.mp3",
+  "hash": "1be6ee24"
+ },
+ "brock/cast:complain.c7": {
+  "file": "brock/cast__complain.c7.mp3",
+  "hash": "41215d03"
+ },
+ "brock/cast:complain.c8": {
+  "file": "brock/cast__complain.c8.mp3",
+  "hash": "f4402b75"
+ },
+ "brock/cast:intro.c1": {
+  "file": "brock/cast__intro.c1.mp3",
+  "hash": "44ddd496"
+ },
+ "brock/cast:intro.c2": {
+  "file": "brock/cast__intro.c2.mp3",
+  "hash": "023deac0"
+ },
+ "brock/cast:intro.c3": {
+  "file": "brock/cast__intro.c3.mp3",
+  "hash": "3eeea37f"
+ },
+ "brock/cast:intro.c4": {
+  "file": "brock/cast__intro.c4.mp3",
+  "hash": "3562d2c0"
+ },
+ "brock/cast:intro.c5": {
+  "file": "brock/cast__intro.c5.mp3",
+  "hash": "e65eef48"
+ },
+ "dale/cast:complain.c1": {
+  "file": "dale/cast__complain.c1.mp3",
+  "hash": "f53c1d91"
+ },
+ "dale/cast:complain.c2": {
+  "file": "dale/cast__complain.c2.mp3",
+  "hash": "642cff6e"
+ },
+ "dale/cast:complain.c3": {
+  "file": "dale/cast__complain.c3.mp3",
+  "hash": "a4632275"
+ },
+ "dale/cast:complain.c4": {
+  "file": "dale/cast__complain.c4.mp3",
+  "hash": "00dbb241"
+ },
+ "dale/cast:complain.c5": {
+  "file": "dale/cast__complain.c5.mp3",
+  "hash": "6f97c6a4"
+ },
+ "dale/cast:complain.c6": {
+  "file": "dale/cast__complain.c6.mp3",
+  "hash": "64f6b4b4"
+ },
+ "dale/cast:complain.c7": {
+  "file": "dale/cast__complain.c7.mp3",
+  "hash": "36c4179a"
+ },
+ "dale/cast:complain.c8": {
+  "file": "dale/cast__complain.c8.mp3",
+  "hash": "d9f90dbd"
+ },
+ "dale/cast:goodbye.c1": {
+  "file": "dale/cast__goodbye.c1.mp3",
+  "hash": "bc12e947"
+ },
+ "dale/cast:goodbye.c2": {
+  "file": "dale/cast__goodbye.c2.mp3",
+  "hash": "15fa65f4"
+ },
+ "dale/cast:goodbye.c3": {
+  "file": "dale/cast__goodbye.c3.mp3",
+  "hash": "bde0ff95"
+ },
+ "dale/cast:goodbye.c4": {
+  "file": "dale/cast__goodbye.c4.mp3",
+  "hash": "7b02e8af"
+ },
+ "dale/cast:greet.c1": {
+  "file": "dale/cast__greet.c1.mp3",
+  "hash": "318e7ecb"
+ },
+ "dale/cast:greet.c2": {
+  "file": "dale/cast__greet.c2.mp3",
+  "hash": "262f0993"
+ },
+ "dale/cast:greet.c3": {
+  "file": "dale/cast__greet.c3.mp3",
+  "hash": "535b3f77"
+ },
+ "dale/cast:greet.c4": {
+  "file": "dale/cast__greet.c4.mp3",
+  "hash": "7cc7b00d"
+ },
+ "dale/cast:intro.c1": {
+  "file": "dale/cast__intro.c1.mp3",
+  "hash": "d58095a2"
+ },
+ "dale/cast:intro.c2": {
+  "file": "dale/cast__intro.c2.mp3",
+  "hash": "40495b85"
+ },
+ "dale/cast:intro.c3": {
+  "file": "dale/cast__intro.c3.mp3",
+  "hash": "0a799416"
+ },
+ "dale/cast:intro.c4": {
+  "file": "dale/cast__intro.c4.mp3",
+  "hash": "5f617171"
+ },
+ "dale/cast:intro.c5": {
+  "file": "dale/cast__intro.c5.mp3",
+  "hash": "248e5ab8"
+ },
+ "dale/cast:mention.c1": {
+  "file": "dale/cast__mention.c1.mp3",
+  "hash": "caa3b484"
+ },
+ "dale/cast:mention.c2": {
+  "file": "dale/cast__mention.c2.mp3",
+  "hash": "92c3d5d5"
+ },
+ "dale/cast:mention.c3": {
+  "file": "dale/cast__mention.c3.mp3",
+  "hash": "a57fa500"
+ },
+ "dale/cast:mention.c4": {
+  "file": "dale/cast__mention.c4.mp3",
+  "hash": "18935152"
+ },
+ "dale/cast:mention.c5": {
+  "file": "dale/cast__mention.c5.mp3",
+  "hash": "3d34fd26"
+ },
+ "dale/cast:mention.c6": {
+  "file": "dale/cast__mention.c6.mp3",
+  "hash": "ae17c48f"
+ },
+ "dale/cast:mention.c7": {
+  "file": "dale/cast__mention.c7.mp3",
+  "hash": "ad98e395"
+ },
+ "dale/cast:smalltalk.c1": {
+  "file": "dale/cast__smalltalk.c1.mp3",
+  "hash": "cb1ee726"
+ },
+ "dale/cast:smalltalk.c2": {
+  "file": "dale/cast__smalltalk.c2.mp3",
+  "hash": "b1a5ff9a"
+ },
+ "dale/cast:smalltalk.c3": {
+  "file": "dale/cast__smalltalk.c3.mp3",
+  "hash": "0224e3f2"
+ },
+ "dale/cast:smalltalk.c4": {
+  "file": "dale/cast__smalltalk.c4.mp3",
+  "hash": "c82a3e6d"
+ },
+ "dale/cast:smalltalk.c5": {
+  "file": "dale/cast__smalltalk.c5.mp3",
+  "hash": "a85eb771"
+ },
+ "dennis/cast:complain.c1": {
+  "file": "dennis/cast__complain.c1.mp3",
+  "hash": "db0f88fa"
+ },
+ "dennis/cast:complain.c2": {
+  "file": "dennis/cast__complain.c2.mp3",
+  "hash": "c80597ab"
+ },
+ "dennis/cast:complain.c3": {
+  "file": "dennis/cast__complain.c3.mp3",
+  "hash": "323df74e"
+ },
+ "dennis/cast:complain.c4": {
+  "file": "dennis/cast__complain.c4.mp3",
+  "hash": "83f448d7"
+ },
+ "dennis/cast:complain.c5": {
+  "file": "dennis/cast__complain.c5.mp3",
+  "hash": "e0741ed5"
+ },
+ "dennis/cast:complain.c6": {
+  "file": "dennis/cast__complain.c6.mp3",
+  "hash": "39e2f619"
+ },
+ "dennis/cast:complain.c7": {
+  "file": "dennis/cast__complain.c7.mp3",
+  "hash": "6e23faff"
+ },
+ "dennis/cast:complain.c8": {
+  "file": "dennis/cast__complain.c8.mp3",
+  "hash": "92e94a80"
+ },
+ "dennis/cast:intro.c1": {
+  "file": "dennis/cast__intro.c1.mp3",
+  "hash": "ac900c1e"
+ },
+ "dennis/cast:intro.c2": {
+  "file": "dennis/cast__intro.c2.mp3",
+  "hash": "dad5f910"
+ },
+ "dennis/cast:intro.c3": {
+  "file": "dennis/cast__intro.c3.mp3",
+  "hash": "69ea36ca"
+ },
+ "dennis/cast:intro.c4": {
+  "file": "dennis/cast__intro.c4.mp3",
+  "hash": "b1d75bb3"
+ },
+ "dennis/cast:intro.c5": {
+  "file": "dennis/cast__intro.c5.mp3",
+  "hash": "fe800e29"
+ },
+ "gus/cast:complain.c1": {
+  "file": "gus/cast__complain.c1.mp3",
+  "hash": "bbb421d1"
+ },
+ "gus/cast:complain.c2": {
+  "file": "gus/cast__complain.c2.mp3",
+  "hash": "f8a69dc9"
+ },
+ "gus/cast:complain.c3": {
+  "file": "gus/cast__complain.c3.mp3",
+  "hash": "720b6a90"
+ },
+ "gus/cast:complain.c4": {
+  "file": "gus/cast__complain.c4.mp3",
+  "hash": "f311e3ed"
+ },
+ "gus/cast:complain.c5": {
+  "file": "gus/cast__complain.c5.mp3",
+  "hash": "48cf8a89"
+ },
+ "gus/cast:complain.c6": {
+  "file": "gus/cast__complain.c6.mp3",
+  "hash": "406b88a6"
+ },
+ "gus/cast:complain.c7": {
+  "file": "gus/cast__complain.c7.mp3",
+  "hash": "114f69f5"
+ },
+ "gus/cast:complain.c8": {
+  "file": "gus/cast__complain.c8.mp3",
+  "hash": "2a74da4d"
+ },
+ "gus/cast:complain.c9": {
+  "file": "gus/cast__complain.c9.mp3",
+  "hash": "d09c5f80"
+ },
+ "gus/cast:goodbye.c1": {
+  "file": "gus/cast__goodbye.c1.mp3",
+  "hash": "d7d418dd"
+ },
+ "gus/cast:goodbye.c2": {
+  "file": "gus/cast__goodbye.c2.mp3",
+  "hash": "7533719d"
+ },
+ "gus/cast:goodbye.c3": {
+  "file": "gus/cast__goodbye.c3.mp3",
+  "hash": "0a629acf"
+ },
+ "gus/cast:goodbye.c4": {
+  "file": "gus/cast__goodbye.c4.mp3",
+  "hash": "3136ec44"
+ },
+ "gus/cast:goodbye.c5": {
+  "file": "gus/cast__goodbye.c5.mp3",
+  "hash": "55ba3625"
+ },
+ "gus/cast:goodbye.c6": {
+  "file": "gus/cast__goodbye.c6.mp3",
+  "hash": "8a9dc12a"
+ },
+ "gus/cast:greet.c1": {
+  "file": "gus/cast__greet.c1.mp3",
+  "hash": "16f43508"
+ },
+ "gus/cast:greet.c2": {
+  "file": "gus/cast__greet.c2.mp3",
+  "hash": "ceb1bb46"
+ },
+ "gus/cast:greet.c3": {
+  "file": "gus/cast__greet.c3.mp3",
+  "hash": "fadf0503"
+ },
+ "gus/cast:greet.c4": {
+  "file": "gus/cast__greet.c4.mp3",
+  "hash": "16109a16"
+ },
+ "gus/cast:greet.c5": {
+  "file": "gus/cast__greet.c5.mp3",
+  "hash": "72b41cbc"
+ },
+ "gus/cast:greet.c6": {
+  "file": "gus/cast__greet.c6.mp3",
+  "hash": "2373cfd5"
+ },
+ "gus/cast:intro.c1": {
+  "file": "gus/cast__intro.c1.mp3",
+  "hash": "9acdb303"
+ },
+ "gus/cast:intro.c2": {
+  "file": "gus/cast__intro.c2.mp3",
+  "hash": "9783dab8"
+ },
+ "gus/cast:intro.c3": {
+  "file": "gus/cast__intro.c3.mp3",
+  "hash": "bc84e377"
+ },
+ "gus/cast:intro.c4": {
+  "file": "gus/cast__intro.c4.mp3",
+  "hash": "c711f195"
+ },
+ "gus/cast:intro.c5": {
+  "file": "gus/cast__intro.c5.mp3",
+  "hash": "aad95d61"
+ },
+ "gus/cast:mention.c1": {
+  "file": "gus/cast__mention.c1.mp3",
+  "hash": "3aedb265"
+ },
+ "gus/cast:mention.c2": {
+  "file": "gus/cast__mention.c2.mp3",
+  "hash": "0e554e74"
+ },
+ "gus/cast:mention.c3": {
+  "file": "gus/cast__mention.c3.mp3",
+  "hash": "55fdeba3"
+ },
+ "gus/cast:mention.c4": {
+  "file": "gus/cast__mention.c4.mp3",
+  "hash": "46a95b27"
+ },
+ "gus/cast:mention.c5": {
+  "file": "gus/cast__mention.c5.mp3",
+  "hash": "883eb2aa"
+ },
+ "gus/cast:mention.c6": {
+  "file": "gus/cast__mention.c6.mp3",
+  "hash": "96a1a3d5"
+ },
+ "gus/cast:mention.c7": {
+  "file": "gus/cast__mention.c7.mp3",
+  "hash": "ca960850"
+ },
+ "gus/cast:smalltalk.c1": {
+  "file": "gus/cast__smalltalk.c1.mp3",
+  "hash": "f19e4e8e"
+ },
+ "gus/cast:smalltalk.c2": {
+  "file": "gus/cast__smalltalk.c2.mp3",
+  "hash": "6ac2c0de"
+ },
+ "gus/cast:smalltalk.c3": {
+  "file": "gus/cast__smalltalk.c3.mp3",
+  "hash": "dff6113e"
+ },
+ "gus/cast:smalltalk.c4": {
+  "file": "gus/cast__smalltalk.c4.mp3",
+  "hash": "57cbc7bd"
+ },
+ "gus/cast:smalltalk.c5": {
+  "file": "gus/cast__smalltalk.c5.mp3",
+  "hash": "f75a1efd"
+ },
+ "gus/cast:smalltalk.c6": {
+  "file": "gus/cast__smalltalk.c6.mp3",
+  "hash": "59e676fb"
+ },
+ "gus/cast:smalltalk.c7": {
+  "file": "gus/cast__smalltalk.c7.mp3",
+  "hash": "2c579eee"
+ },
+ "hiro/cast:complain.c1": {
+  "file": "hiro/cast__complain.c1.mp3",
+  "hash": "b230289f"
+ },
+ "hiro/cast:complain.c2": {
+  "file": "hiro/cast__complain.c2.mp3",
+  "hash": "19099ba3"
+ },
+ "hiro/cast:complain.c3": {
+  "file": "hiro/cast__complain.c3.mp3",
+  "hash": "8d08b6e4"
+ },
+ "hiro/cast:complain.c4": {
+  "file": "hiro/cast__complain.c4.mp3",
+  "hash": "c15e39ac"
+ },
+ "hiro/cast:complain.c5": {
+  "file": "hiro/cast__complain.c5.mp3",
+  "hash": "ad2bc912"
+ },
+ "hiro/cast:complain.c6": {
+  "file": "hiro/cast__complain.c6.mp3",
+  "hash": "8c927caa"
+ },
+ "hiro/cast:complain.c7": {
+  "file": "hiro/cast__complain.c7.mp3",
+  "hash": "b05c14b1"
+ },
+ "hiro/cast:complain.c8": {
+  "file": "hiro/cast__complain.c8.mp3",
+  "hash": "c8ef9147"
+ },
+ "hiro/cast:intro.c1": {
+  "file": "hiro/cast__intro.c1.mp3",
+  "hash": "af48186a"
+ },
+ "hiro/cast:intro.c2": {
+  "file": "hiro/cast__intro.c2.mp3",
+  "hash": "5245f08f"
+ },
+ "hiro/cast:intro.c3": {
+  "file": "hiro/cast__intro.c3.mp3",
+  "hash": "88ee8041"
+ },
+ "hiro/cast:intro.c4": {
+  "file": "hiro/cast__intro.c4.mp3",
+  "hash": "2901fbc0"
+ },
+ "hiro/cast:intro.c5": {
+  "file": "hiro/cast__intro.c5.mp3",
+  "hash": "dc894af8"
+ },
+ "inferno/cast:complain.c1": {
+  "file": "inferno/cast__complain.c1.mp3",
+  "hash": "9407679b"
+ },
+ "inferno/cast:complain.c2": {
+  "file": "inferno/cast__complain.c2.mp3",
+  "hash": "1322d208"
+ },
+ "inferno/cast:complain.c3": {
+  "file": "inferno/cast__complain.c3.mp3",
+  "hash": "de04d8b0"
+ },
+ "inferno/cast:complain.c4": {
+  "file": "inferno/cast__complain.c4.mp3",
+  "hash": "bb5298bd"
+ },
+ "inferno/cast:complain.c5": {
+  "file": "inferno/cast__complain.c5.mp3",
+  "hash": "e1d01277"
+ },
+ "inferno/cast:complain.c6": {
+  "file": "inferno/cast__complain.c6.mp3",
+  "hash": "a2a0b510"
+ },
+ "inferno/cast:complain.c7": {
+  "file": "inferno/cast__complain.c7.mp3",
+  "hash": "fe6500bd"
+ },
+ "inferno/cast:complain.c8": {
+  "file": "inferno/cast__complain.c8.mp3",
+  "hash": "61749954"
+ },
+ "inferno/cast:intro.c1": {
+  "file": "inferno/cast__intro.c1.mp3",
+  "hash": "56db4671"
+ },
+ "inferno/cast:intro.c2": {
+  "file": "inferno/cast__intro.c2.mp3",
+  "hash": "b04f3185"
+ },
+ "inferno/cast:intro.c3": {
+  "file": "inferno/cast__intro.c3.mp3",
+  "hash": "e0f58144"
+ },
+ "inferno/cast:intro.c4": {
+  "file": "inferno/cast__intro.c4.mp3",
+  "hash": "859ba9f0"
+ },
+ "inferno/cast:intro.c5": {
+  "file": "inferno/cast__intro.c5.mp3",
+  "hash": "a841f3a1"
+ },
+ "jitters/cast:complain.c1": {
+  "file": "jitters/cast__complain.c1.mp3",
+  "hash": "4cfc0fad"
+ },
+ "jitters/cast:complain.c2": {
+  "file": "jitters/cast__complain.c2.mp3",
+  "hash": "3e81912b"
+ },
+ "jitters/cast:complain.c3": {
+  "file": "jitters/cast__complain.c3.mp3",
+  "hash": "7a8db947"
+ },
+ "jitters/cast:complain.c4": {
+  "file": "jitters/cast__complain.c4.mp3",
+  "hash": "0fc60d6d"
+ },
+ "jitters/cast:complain.c5": {
+  "file": "jitters/cast__complain.c5.mp3",
+  "hash": "0665b2f4"
+ },
+ "jitters/cast:complain.c6": {
+  "file": "jitters/cast__complain.c6.mp3",
+  "hash": "cb16e4e7"
+ },
+ "jitters/cast:complain.c7": {
+  "file": "jitters/cast__complain.c7.mp3",
+  "hash": "27791d4f"
+ },
+ "jitters/cast:complain.c8": {
+  "file": "jitters/cast__complain.c8.mp3",
+  "hash": "ad120500"
+ },
+ "jitters/cast:intro.c1": {
+  "file": "jitters/cast__intro.c1.mp3",
+  "hash": "9f6c3962"
+ },
+ "jitters/cast:intro.c2": {
+  "file": "jitters/cast__intro.c2.mp3",
+  "hash": "d64c83ca"
+ },
+ "jitters/cast:intro.c3": {
+  "file": "jitters/cast__intro.c3.mp3",
+  "hash": "0ec274fe"
+ },
+ "jitters/cast:intro.c4": {
+  "file": "jitters/cast__intro.c4.mp3",
+  "hash": "d5bac644"
+ },
+ "jitters/cast:intro.c5": {
+  "file": "jitters/cast__intro.c5.mp3",
+  "hash": "44c67fa0"
+ },
+ "kai/cast:complain.c1": {
+  "file": "kai/cast__complain.c1.mp3",
+  "hash": "92a2b3d5"
+ },
+ "kai/cast:complain.c2": {
+  "file": "kai/cast__complain.c2.mp3",
+  "hash": "e06a18f0"
+ },
+ "kai/cast:complain.c3": {
+  "file": "kai/cast__complain.c3.mp3",
+  "hash": "3eed0274"
+ },
+ "kai/cast:complain.c4": {
+  "file": "kai/cast__complain.c4.mp3",
+  "hash": "fbcecf04"
+ },
+ "kai/cast:complain.c5": {
+  "file": "kai/cast__complain.c5.mp3",
+  "hash": "7425d7e6"
+ },
+ "kai/cast:complain.c6": {
+  "file": "kai/cast__complain.c6.mp3",
+  "hash": "9cec0975"
+ },
+ "kai/cast:complain.c7": {
+  "file": "kai/cast__complain.c7.mp3",
+  "hash": "57ad2080"
+ },
+ "kai/cast:complain.c8": {
+  "file": "kai/cast__complain.c8.mp3",
+  "hash": "11cd2877"
+ },
+ "kai/cast:complain.c9": {
+  "file": "kai/cast__complain.c9.mp3",
+  "hash": "f108a84e"
+ },
+ "kai/cast:goodbye.c1": {
+  "file": "kai/cast__goodbye.c1.mp3",
+  "hash": "c149b357"
+ },
+ "kai/cast:goodbye.c2": {
+  "file": "kai/cast__goodbye.c2.mp3",
+  "hash": "d87fb98d"
+ },
+ "kai/cast:goodbye.c3": {
+  "file": "kai/cast__goodbye.c3.mp3",
+  "hash": "0ad37a1e"
+ },
+ "kai/cast:goodbye.c4": {
+  "file": "kai/cast__goodbye.c4.mp3",
+  "hash": "0b52b96a"
+ },
+ "kai/cast:greet.c1": {
+  "file": "kai/cast__greet.c1.mp3",
+  "hash": "a6e293c1"
+ },
+ "kai/cast:greet.c2": {
+  "file": "kai/cast__greet.c2.mp3",
+  "hash": "c54c68fb"
+ },
+ "kai/cast:greet.c3": {
+  "file": "kai/cast__greet.c3.mp3",
+  "hash": "b0416b32"
+ },
+ "kai/cast:greet.c4": {
+  "file": "kai/cast__greet.c4.mp3",
+  "hash": "75a4e502"
+ },
+ "kai/cast:intro.c1": {
+  "file": "kai/cast__intro.c1.mp3",
+  "hash": "b66af4a5"
+ },
+ "kai/cast:intro.c2": {
+  "file": "kai/cast__intro.c2.mp3",
+  "hash": "a17cfedb"
+ },
+ "kai/cast:intro.c3": {
+  "file": "kai/cast__intro.c3.mp3",
+  "hash": "ff775723"
+ },
+ "kai/cast:intro.c4": {
+  "file": "kai/cast__intro.c4.mp3",
+  "hash": "ab7d67be"
+ },
+ "kai/cast:intro.c5": {
+  "file": "kai/cast__intro.c5.mp3",
+  "hash": "b3feb970"
+ },
+ "kai/cast:mention.c1": {
+  "file": "kai/cast__mention.c1.mp3",
+  "hash": "4fe89365"
+ },
+ "kai/cast:mention.c2": {
+  "file": "kai/cast__mention.c2.mp3",
+  "hash": "76e41a93"
+ },
+ "kai/cast:mention.c3": {
+  "file": "kai/cast__mention.c3.mp3",
+  "hash": "a380ed29"
+ },
+ "kai/cast:mention.c4": {
+  "file": "kai/cast__mention.c4.mp3",
+  "hash": "04e08714"
+ },
+ "kai/cast:mention.c5": {
+  "file": "kai/cast__mention.c5.mp3",
+  "hash": "584e232f"
+ },
+ "kai/cast:mention.c6": {
+  "file": "kai/cast__mention.c6.mp3",
+  "hash": "4511d7c5"
+ },
+ "kai/cast:mention.c7": {
+  "file": "kai/cast__mention.c7.mp3",
+  "hash": "0e3ba273"
+ },
+ "kai/cast:smalltalk.c1": {
+  "file": "kai/cast__smalltalk.c1.mp3",
+  "hash": "19dcb9f8"
+ },
+ "kai/cast:smalltalk.c2": {
+  "file": "kai/cast__smalltalk.c2.mp3",
+  "hash": "2715d393"
+ },
+ "kai/cast:smalltalk.c3": {
+  "file": "kai/cast__smalltalk.c3.mp3",
+  "hash": "c7c12489"
+ },
+ "kai/cast:smalltalk.c4": {
+  "file": "kai/cast__smalltalk.c4.mp3",
+  "hash": "c3fb2054"
+ },
+ "kai/cast:smalltalk.c5": {
+  "file": "kai/cast__smalltalk.c5.mp3",
+  "hash": "fbd595d9"
+ },
+ "lulu/cast:complain.c1": {
+  "file": "lulu/cast__complain.c1.mp3",
+  "hash": "8d5585a6"
+ },
+ "lulu/cast:complain.c2": {
+  "file": "lulu/cast__complain.c2.mp3",
+  "hash": "e9b55b20"
+ },
+ "lulu/cast:complain.c3": {
+  "file": "lulu/cast__complain.c3.mp3",
+  "hash": "76fb6766"
+ },
+ "lulu/cast:complain.c4": {
+  "file": "lulu/cast__complain.c4.mp3",
+  "hash": "520d9085"
+ },
+ "lulu/cast:complain.c5": {
+  "file": "lulu/cast__complain.c5.mp3",
+  "hash": "01828c05"
+ },
+ "lulu/cast:complain.c6": {
+  "file": "lulu/cast__complain.c6.mp3",
+  "hash": "f9ea0972"
+ },
+ "lulu/cast:complain.c7": {
+  "file": "lulu/cast__complain.c7.mp3",
+  "hash": "f8d9e3ec"
+ },
+ "lulu/cast:complain.c8": {
+  "file": "lulu/cast__complain.c8.mp3",
+  "hash": "f635a1fb"
+ },
+ "lulu/cast:intro.c1": {
+  "file": "lulu/cast__intro.c1.mp3",
+  "hash": "7d1e7687"
+ },
+ "lulu/cast:intro.c2": {
+  "file": "lulu/cast__intro.c2.mp3",
+  "hash": "e458f75d"
+ },
+ "lulu/cast:intro.c3": {
+  "file": "lulu/cast__intro.c3.mp3",
+  "hash": "671504a7"
+ },
+ "lulu/cast:intro.c4": {
+  "file": "lulu/cast__intro.c4.mp3",
+  "hash": "9525cd04"
+ },
+ "lulu/cast:intro.c5": {
+  "file": "lulu/cast__intro.c5.mp3",
+  "hash": "2fd0a790"
+ },
+ "marge/cast:complain.c1": {
+  "file": "marge/cast__complain.c1.mp3",
+  "hash": "3a2f4913"
+ },
+ "marge/cast:complain.c2": {
+  "file": "marge/cast__complain.c2.mp3",
+  "hash": "015128fa"
+ },
+ "marge/cast:complain.c3": {
+  "file": "marge/cast__complain.c3.mp3",
+  "hash": "b2be5be7"
+ },
+ "marge/cast:complain.c4": {
+  "file": "marge/cast__complain.c4.mp3",
+  "hash": "845b421f"
+ },
+ "marge/cast:complain.c5": {
+  "file": "marge/cast__complain.c5.mp3",
+  "hash": "57925b6a"
+ },
+ "marge/cast:complain.c6": {
+  "file": "marge/cast__complain.c6.mp3",
+  "hash": "b4964b76"
+ },
+ "marge/cast:complain.c7": {
+  "file": "marge/cast__complain.c7.mp3",
+  "hash": "58fd9d98"
+ },
+ "marge/cast:complain.c8": {
+  "file": "marge/cast__complain.c8.mp3",
+  "hash": "2a389b30"
+ },
+ "marge/cast:complain.c9": {
+  "file": "marge/cast__complain.c9.mp3",
+  "hash": "7d1657a1"
+ },
+ "marge/cast:goodbye.c1": {
+  "file": "marge/cast__goodbye.c1.mp3",
+  "hash": "3868ebf6"
+ },
+ "marge/cast:goodbye.c2": {
+  "file": "marge/cast__goodbye.c2.mp3",
+  "hash": "8171f4e9"
+ },
+ "marge/cast:goodbye.c3": {
+  "file": "marge/cast__goodbye.c3.mp3",
+  "hash": "638a873e"
+ },
+ "marge/cast:goodbye.c4": {
+  "file": "marge/cast__goodbye.c4.mp3",
+  "hash": "94533d7a"
+ },
+ "marge/cast:goodbye.c5": {
+  "file": "marge/cast__goodbye.c5.mp3",
+  "hash": "5b13414e"
+ },
+ "marge/cast:goodbye.c6": {
+  "file": "marge/cast__goodbye.c6.mp3",
+  "hash": "dabcaed5"
+ },
+ "marge/cast:greet.c1": {
+  "file": "marge/cast__greet.c1.mp3",
+  "hash": "76f721b5"
+ },
+ "marge/cast:greet.c2": {
+  "file": "marge/cast__greet.c2.mp3",
+  "hash": "f160883d"
+ },
+ "marge/cast:greet.c3": {
+  "file": "marge/cast__greet.c3.mp3",
+  "hash": "1b1524d0"
+ },
+ "marge/cast:greet.c4": {
+  "file": "marge/cast__greet.c4.mp3",
+  "hash": "28a26505"
+ },
+ "marge/cast:greet.c5": {
+  "file": "marge/cast__greet.c5.mp3",
+  "hash": "c8afd030"
+ },
+ "marge/cast:greet.c6": {
+  "file": "marge/cast__greet.c6.mp3",
+  "hash": "213eb994"
+ },
+ "marge/cast:intro.c1": {
+  "file": "marge/cast__intro.c1.mp3",
+  "hash": "ccf983b7"
+ },
+ "marge/cast:intro.c2": {
+  "file": "marge/cast__intro.c2.mp3",
+  "hash": "ad46a5e4"
+ },
+ "marge/cast:intro.c3": {
+  "file": "marge/cast__intro.c3.mp3",
+  "hash": "20ed392a"
+ },
+ "marge/cast:intro.c4": {
+  "file": "marge/cast__intro.c4.mp3",
+  "hash": "f2219008"
+ },
+ "marge/cast:intro.c5": {
+  "file": "marge/cast__intro.c5.mp3",
+  "hash": "ba9ac3ab"
+ },
+ "marge/cast:mention.c1": {
+  "file": "marge/cast__mention.c1.mp3",
+  "hash": "0756bc1d"
+ },
+ "marge/cast:mention.c2": {
+  "file": "marge/cast__mention.c2.mp3",
+  "hash": "6afb3e2d"
+ },
+ "marge/cast:mention.c3": {
+  "file": "marge/cast__mention.c3.mp3",
+  "hash": "a4b7facf"
+ },
+ "marge/cast:mention.c4": {
+  "file": "marge/cast__mention.c4.mp3",
+  "hash": "5ad65127"
+ },
+ "marge/cast:mention.c5": {
+  "file": "marge/cast__mention.c5.mp3",
+  "hash": "f60d5696"
+ },
+ "marge/cast:mention.c6": {
+  "file": "marge/cast__mention.c6.mp3",
+  "hash": "d2343ae1"
+ },
+ "marge/cast:mention.c7": {
+  "file": "marge/cast__mention.c7.mp3",
+  "hash": "5ce72037"
+ },
+ "marge/cast:smalltalk.c1": {
+  "file": "marge/cast__smalltalk.c1.mp3",
+  "hash": "613153d5"
+ },
+ "marge/cast:smalltalk.c2": {
+  "file": "marge/cast__smalltalk.c2.mp3",
+  "hash": "fe0a81bb"
+ },
+ "marge/cast:smalltalk.c3": {
+  "file": "marge/cast__smalltalk.c3.mp3",
+  "hash": "f272d28d"
+ },
+ "marge/cast:smalltalk.c4": {
+  "file": "marge/cast__smalltalk.c4.mp3",
+  "hash": "4175c18b"
+ },
+ "marge/cast:smalltalk.c5": {
+  "file": "marge/cast__smalltalk.c5.mp3",
+  "hash": "c6fa9a92"
+ },
+ "marge/cast:smalltalk.c6": {
+  "file": "marge/cast__smalltalk.c6.mp3",
+  "hash": "03d035d7"
+ },
+ "marge/cast:smalltalk.c7": {
+  "file": "marge/cast__smalltalk.c7.mp3",
+  "hash": "a792a378"
+ },
+ "oakes/cast:complain.c1": {
+  "file": "oakes/cast__complain.c1.mp3",
+  "hash": "260916d1"
+ },
+ "oakes/cast:complain.c2": {
+  "file": "oakes/cast__complain.c2.mp3",
+  "hash": "8a38631a"
+ },
+ "oakes/cast:complain.c3": {
+  "file": "oakes/cast__complain.c3.mp3",
+  "hash": "7c197e7b"
+ },
+ "oakes/cast:complain.c4": {
+  "file": "oakes/cast__complain.c4.mp3",
+  "hash": "533220ce"
+ },
+ "oakes/cast:complain.c5": {
+  "file": "oakes/cast__complain.c5.mp3",
+  "hash": "41969ae1"
+ },
+ "oakes/cast:complain.c6": {
+  "file": "oakes/cast__complain.c6.mp3",
+  "hash": "13ca3289"
+ },
+ "oakes/cast:complain.c7": {
+  "file": "oakes/cast__complain.c7.mp3",
+  "hash": "4abec5db"
+ },
+ "oakes/cast:complain.c8": {
+  "file": "oakes/cast__complain.c8.mp3",
+  "hash": "cf5cdc15"
+ },
+ "oakes/cast:complain.c9": {
+  "file": "oakes/cast__complain.c9.mp3",
+  "hash": "962b5132"
+ },
+ "oakes/cast:goodbye.c1": {
+  "file": "oakes/cast__goodbye.c1.mp3",
+  "hash": "c9272f0e"
+ },
+ "oakes/cast:goodbye.c2": {
+  "file": "oakes/cast__goodbye.c2.mp3",
+  "hash": "5297b500"
+ },
+ "oakes/cast:goodbye.c3": {
+  "file": "oakes/cast__goodbye.c3.mp3",
+  "hash": "a0e10720"
+ },
+ "oakes/cast:goodbye.c4": {
+  "file": "oakes/cast__goodbye.c4.mp3",
+  "hash": "008a1000"
+ },
+ "oakes/cast:greet.c1": {
+  "file": "oakes/cast__greet.c1.mp3",
+  "hash": "5428944a"
+ },
+ "oakes/cast:greet.c2": {
+  "file": "oakes/cast__greet.c2.mp3",
+  "hash": "b6db0dfa"
+ },
+ "oakes/cast:greet.c3": {
+  "file": "oakes/cast__greet.c3.mp3",
+  "hash": "06ac6466"
+ },
+ "oakes/cast:greet.c4": {
+  "file": "oakes/cast__greet.c4.mp3",
+  "hash": "4002ddb5"
+ },
+ "oakes/cast:intro.c1": {
+  "file": "oakes/cast__intro.c1.mp3",
+  "hash": "ccc91ec1"
+ },
+ "oakes/cast:intro.c2": {
+  "file": "oakes/cast__intro.c2.mp3",
+  "hash": "ca590258"
+ },
+ "oakes/cast:intro.c3": {
+  "file": "oakes/cast__intro.c3.mp3",
+  "hash": "bd6bd139"
+ },
+ "oakes/cast:intro.c4": {
+  "file": "oakes/cast__intro.c4.mp3",
+  "hash": "ac696dfb"
+ },
+ "oakes/cast:intro.c5": {
+  "file": "oakes/cast__intro.c5.mp3",
+  "hash": "5f57f545"
+ },
+ "oakes/cast:mention.c1": {
+  "file": "oakes/cast__mention.c1.mp3",
+  "hash": "5cf46d11"
+ },
+ "oakes/cast:mention.c2": {
+  "file": "oakes/cast__mention.c2.mp3",
+  "hash": "c65857f8"
+ },
+ "oakes/cast:mention.c3": {
+  "file": "oakes/cast__mention.c3.mp3",
+  "hash": "c7c67840"
+ },
+ "oakes/cast:mention.c4": {
+  "file": "oakes/cast__mention.c4.mp3",
+  "hash": "96b73721"
+ },
+ "oakes/cast:mention.c5": {
+  "file": "oakes/cast__mention.c5.mp3",
+  "hash": "caffd1d0"
+ },
+ "oakes/cast:smalltalk.c1": {
+  "file": "oakes/cast__smalltalk.c1.mp3",
+  "hash": "2de3136b"
+ },
+ "oakes/cast:smalltalk.c2": {
+  "file": "oakes/cast__smalltalk.c2.mp3",
+  "hash": "4ccbfdbf"
+ },
+ "oakes/cast:smalltalk.c3": {
+  "file": "oakes/cast__smalltalk.c3.mp3",
+  "hash": "2fc794db"
+ },
+ "oakes/cast:smalltalk.c4": {
+  "file": "oakes/cast__smalltalk.c4.mp3",
+  "hash": "17e6ad98"
+ },
+ "oakes/cast:smalltalk.c5": {
+  "file": "oakes/cast__smalltalk.c5.mp3",
+  "hash": "592a7fe2"
+ },
+ "pam/cast:complain.c1": {
+  "file": "pam/cast__complain.c1.mp3",
+  "hash": "521822ae"
+ },
+ "pam/cast:complain.c2": {
+  "file": "pam/cast__complain.c2.mp3",
+  "hash": "0e3ca5ac"
+ },
+ "pam/cast:complain.c3": {
+  "file": "pam/cast__complain.c3.mp3",
+  "hash": "a0f9d98d"
+ },
+ "pam/cast:complain.c4": {
+  "file": "pam/cast__complain.c4.mp3",
+  "hash": "fa76f77b"
+ },
+ "pam/cast:complain.c5": {
+  "file": "pam/cast__complain.c5.mp3",
+  "hash": "3b7bfbc4"
+ },
+ "pam/cast:complain.c6": {
+  "file": "pam/cast__complain.c6.mp3",
+  "hash": "c50970f2"
+ },
+ "pam/cast:complain.c7": {
+  "file": "pam/cast__complain.c7.mp3",
+  "hash": "ffdf46ac"
+ },
+ "pam/cast:complain.c8": {
+  "file": "pam/cast__complain.c8.mp3",
+  "hash": "00698486"
+ },
+ "pam/cast:intro.c1": {
+  "file": "pam/cast__intro.c1.mp3",
+  "hash": "f49991e3"
+ },
+ "pam/cast:intro.c2": {
+  "file": "pam/cast__intro.c2.mp3",
+  "hash": "876d7b07"
+ },
+ "pam/cast:intro.c3": {
+  "file": "pam/cast__intro.c3.mp3",
+  "hash": "4fdc5c71"
+ },
+ "pam/cast:intro.c4": {
+  "file": "pam/cast__intro.c4.mp3",
+  "hash": "f6bd101e"
+ },
+ "pam/cast:intro.c5": {
+  "file": "pam/cast__intro.c5.mp3",
+  "hash": "2f8b76e2"
+ },
+ "priya/cast:complain.c1": {
+  "file": "priya/cast__complain.c1.mp3",
+  "hash": "88aee9f4"
+ },
+ "priya/cast:complain.c2": {
+  "file": "priya/cast__complain.c2.mp3",
+  "hash": "fa45a7a4"
+ },
+ "priya/cast:complain.c3": {
+  "file": "priya/cast__complain.c3.mp3",
+  "hash": "06a5c611"
+ },
+ "priya/cast:complain.c4": {
+  "file": "priya/cast__complain.c4.mp3",
+  "hash": "bd00b300"
+ },
+ "priya/cast:complain.c5": {
+  "file": "priya/cast__complain.c5.mp3",
+  "hash": "ceb192df"
+ },
+ "priya/cast:complain.c6": {
+  "file": "priya/cast__complain.c6.mp3",
+  "hash": "777e95e3"
+ },
+ "priya/cast:complain.c7": {
+  "file": "priya/cast__complain.c7.mp3",
+  "hash": "e4789299"
+ },
+ "priya/cast:complain.c8": {
+  "file": "priya/cast__complain.c8.mp3",
+  "hash": "4e97abe8"
+ },
+ "priya/cast:goodbye.c1": {
+  "file": "priya/cast__goodbye.c1.mp3",
+  "hash": "54d22df4"
+ },
+ "priya/cast:goodbye.c2": {
+  "file": "priya/cast__goodbye.c2.mp3",
+  "hash": "7baae1ed"
+ },
+ "priya/cast:goodbye.c3": {
+  "file": "priya/cast__goodbye.c3.mp3",
+  "hash": "d6e59409"
+ },
+ "priya/cast:goodbye.c4": {
+  "file": "priya/cast__goodbye.c4.mp3",
+  "hash": "ecfd5f6e"
+ },
+ "priya/cast:greet.c1": {
+  "file": "priya/cast__greet.c1.mp3",
+  "hash": "ae0d8ffd"
+ },
+ "priya/cast:greet.c2": {
+  "file": "priya/cast__greet.c2.mp3",
+  "hash": "02adb3ef"
+ },
+ "priya/cast:greet.c3": {
+  "file": "priya/cast__greet.c3.mp3",
+  "hash": "27c7ec44"
+ },
+ "priya/cast:greet.c4": {
+  "file": "priya/cast__greet.c4.mp3",
+  "hash": "185be1d2"
+ },
+ "priya/cast:greet.c5": {
+  "file": "priya/cast__greet.c5.mp3",
+  "hash": "0848b8d0"
+ },
+ "priya/cast:intro.c1": {
+  "file": "priya/cast__intro.c1.mp3",
+  "hash": "3da8b8f0"
+ },
+ "priya/cast:intro.c2": {
+  "file": "priya/cast__intro.c2.mp3",
+  "hash": "32fa92f3"
+ },
+ "priya/cast:intro.c3": {
+  "file": "priya/cast__intro.c3.mp3",
+  "hash": "d37f6b72"
+ },
+ "priya/cast:intro.c4": {
+  "file": "priya/cast__intro.c4.mp3",
+  "hash": "0825ac29"
+ },
+ "priya/cast:intro.c5": {
+  "file": "priya/cast__intro.c5.mp3",
+  "hash": "b358ada6"
+ },
+ "priya/cast:mention.c1": {
+  "file": "priya/cast__mention.c1.mp3",
+  "hash": "7f974330"
+ },
+ "priya/cast:mention.c2": {
+  "file": "priya/cast__mention.c2.mp3",
+  "hash": "72f78400"
+ },
+ "priya/cast:mention.c3": {
+  "file": "priya/cast__mention.c3.mp3",
+  "hash": "2173e5c7"
+ },
+ "priya/cast:mention.c4": {
+  "file": "priya/cast__mention.c4.mp3",
+  "hash": "7ed1e68f"
+ },
+ "priya/cast:mention.c5": {
+  "file": "priya/cast__mention.c5.mp3",
+  "hash": "74378664"
+ },
+ "priya/cast:mention.c6": {
+  "file": "priya/cast__mention.c6.mp3",
+  "hash": "d91c018d"
+ },
+ "priya/cast:mention.c7": {
+  "file": "priya/cast__mention.c7.mp3",
+  "hash": "2a81c77c"
+ },
+ "priya/cast:smalltalk.c1": {
+  "file": "priya/cast__smalltalk.c1.mp3",
+  "hash": "3138abdb"
+ },
+ "priya/cast:smalltalk.c2": {
+  "file": "priya/cast__smalltalk.c2.mp3",
+  "hash": "3290a1cc"
+ },
+ "priya/cast:smalltalk.c3": {
+  "file": "priya/cast__smalltalk.c3.mp3",
+  "hash": "81e859af"
+ },
+ "priya/cast:smalltalk.c4": {
+  "file": "priya/cast__smalltalk.c4.mp3",
+  "hash": "7a4918f1"
+ },
+ "priya/cast:smalltalk.c5": {
+  "file": "priya/cast__smalltalk.c5.mp3",
+  "hash": "8b8b165c"
+ },
+ "reginald/cast:complain.c1": {
+  "file": "reginald/cast__complain.c1.mp3",
+  "hash": "f44bcbf4"
+ },
+ "reginald/cast:complain.c2": {
+  "file": "reginald/cast__complain.c2.mp3",
+  "hash": "fff9d152"
+ },
+ "reginald/cast:complain.c3": {
+  "file": "reginald/cast__complain.c3.mp3",
+  "hash": "8dd16d79"
+ },
+ "reginald/cast:complain.c4": {
+  "file": "reginald/cast__complain.c4.mp3",
+  "hash": "971a4e42"
+ },
+ "reginald/cast:complain.c5": {
+  "file": "reginald/cast__complain.c5.mp3",
+  "hash": "bf253bce"
+ },
+ "reginald/cast:complain.c6": {
+  "file": "reginald/cast__complain.c6.mp3",
+  "hash": "6c34599e"
+ },
+ "reginald/cast:complain.c7": {
+  "file": "reginald/cast__complain.c7.mp3",
+  "hash": "423a4d99"
+ },
+ "reginald/cast:complain.c8": {
+  "file": "reginald/cast__complain.c8.mp3",
+  "hash": "a0e727fa"
+ },
+ "reginald/cast:complain.c9": {
+  "file": "reginald/cast__complain.c9.mp3",
+  "hash": "f775e535"
+ },
+ "reginald/cast:goodbye.c1": {
+  "file": "reginald/cast__goodbye.c1.mp3",
+  "hash": "4522ebde"
+ },
+ "reginald/cast:goodbye.c2": {
+  "file": "reginald/cast__goodbye.c2.mp3",
+  "hash": "604060d9"
+ },
+ "reginald/cast:goodbye.c3": {
+  "file": "reginald/cast__goodbye.c3.mp3",
+  "hash": "509e9ffe"
+ },
+ "reginald/cast:goodbye.c4": {
+  "file": "reginald/cast__goodbye.c4.mp3",
+  "hash": "1fb9bc46"
+ },
+ "reginald/cast:greet.c1": {
+  "file": "reginald/cast__greet.c1.mp3",
+  "hash": "3680eb07"
+ },
+ "reginald/cast:greet.c2": {
+  "file": "reginald/cast__greet.c2.mp3",
+  "hash": "cbf09a58"
+ },
+ "reginald/cast:greet.c3": {
+  "file": "reginald/cast__greet.c3.mp3",
+  "hash": "4a44e167"
+ },
+ "reginald/cast:greet.c4": {
+  "file": "reginald/cast__greet.c4.mp3",
+  "hash": "2ee44693"
+ },
+ "reginald/cast:intro.c1": {
+  "file": "reginald/cast__intro.c1.mp3",
+  "hash": "1e46038a"
+ },
+ "reginald/cast:intro.c2": {
+  "file": "reginald/cast__intro.c2.mp3",
+  "hash": "d20c4ace"
+ },
+ "reginald/cast:intro.c3": {
+  "file": "reginald/cast__intro.c3.mp3",
+  "hash": "0e16bb44"
+ },
+ "reginald/cast:intro.c4": {
+  "file": "reginald/cast__intro.c4.mp3",
+  "hash": "dd9af6a2"
+ },
+ "reginald/cast:intro.c5": {
+  "file": "reginald/cast__intro.c5.mp3",
+  "hash": "89eec865"
+ },
+ "reginald/cast:mention.c1": {
+  "file": "reginald/cast__mention.c1.mp3",
+  "hash": "12a6d20c"
+ },
+ "reginald/cast:mention.c2": {
+  "file": "reginald/cast__mention.c2.mp3",
+  "hash": "64046fd2"
+ },
+ "reginald/cast:mention.c3": {
+  "file": "reginald/cast__mention.c3.mp3",
+  "hash": "4a18094b"
+ },
+ "reginald/cast:mention.c4": {
+  "file": "reginald/cast__mention.c4.mp3",
+  "hash": "27a37056"
+ },
+ "reginald/cast:mention.c5": {
+  "file": "reginald/cast__mention.c5.mp3",
+  "hash": "0b880483"
+ },
+ "reginald/cast:mention.c6": {
+  "file": "reginald/cast__mention.c6.mp3",
+  "hash": "43dad169"
+ },
+ "reginald/cast:mention.c7": {
+  "file": "reginald/cast__mention.c7.mp3",
+  "hash": "bb6332f4"
+ },
+ "reginald/cast:smalltalk.c1": {
+  "file": "reginald/cast__smalltalk.c1.mp3",
+  "hash": "b403da23"
+ },
+ "reginald/cast:smalltalk.c2": {
+  "file": "reginald/cast__smalltalk.c2.mp3",
+  "hash": "f7d1f38b"
+ },
+ "reginald/cast:smalltalk.c3": {
+  "file": "reginald/cast__smalltalk.c3.mp3",
+  "hash": "70d88b17"
+ },
+ "reginald/cast:smalltalk.c4": {
+  "file": "reginald/cast__smalltalk.c4.mp3",
+  "hash": "955c3f23"
+ },
+ "reginald/cast:smalltalk.c5": {
+  "file": "reginald/cast__smalltalk.c5.mp3",
+  "hash": "c79dfab9"
+ },
+ "rita/cast:complain.c1": {
+  "file": "rita/cast__complain.c1.mp3",
+  "hash": "39ea2cd8"
+ },
+ "rita/cast:complain.c2": {
+  "file": "rita/cast__complain.c2.mp3",
+  "hash": "8048ce18"
+ },
+ "rita/cast:complain.c3": {
+  "file": "rita/cast__complain.c3.mp3",
+  "hash": "8577df49"
+ },
+ "rita/cast:complain.c4": {
+  "file": "rita/cast__complain.c4.mp3",
+  "hash": "1b3e237f"
+ },
+ "rita/cast:complain.c5": {
+  "file": "rita/cast__complain.c5.mp3",
+  "hash": "dfa7fec4"
+ },
+ "rita/cast:complain.c6": {
+  "file": "rita/cast__complain.c6.mp3",
+  "hash": "6e115a57"
+ },
+ "rita/cast:complain.c7": {
+  "file": "rita/cast__complain.c7.mp3",
+  "hash": "cbc1075b"
+ },
+ "rita/cast:complain.c8": {
+  "file": "rita/cast__complain.c8.mp3",
+  "hash": "ce986bb8"
+ },
+ "rita/cast:intro.c1": {
+  "file": "rita/cast__intro.c1.mp3",
+  "hash": "f43d7486"
+ },
+ "rita/cast:intro.c2": {
+  "file": "rita/cast__intro.c2.mp3",
+  "hash": "05d89de6"
+ },
+ "rita/cast:intro.c3": {
+  "file": "rita/cast__intro.c3.mp3",
+  "hash": "fe62548d"
+ },
+ "rita/cast:intro.c4": {
+  "file": "rita/cast__intro.c4.mp3",
+  "hash": "19d95e9f"
+ },
+ "rita/cast:intro.c5": {
+  "file": "rita/cast__intro.c5.mp3",
+  "hash": "fbe3863a"
+ },
+ "sal/cast:complain.c1": {
+  "file": "sal/cast__complain.c1.mp3",
+  "hash": "062a2952"
+ },
+ "sal/cast:complain.c2": {
+  "file": "sal/cast__complain.c2.mp3",
+  "hash": "7d6fdcb1"
+ },
+ "sal/cast:complain.c3": {
+  "file": "sal/cast__complain.c3.mp3",
+  "hash": "939e4237"
+ },
+ "sal/cast:complain.c4": {
+  "file": "sal/cast__complain.c4.mp3",
+  "hash": "38c3b589"
+ },
+ "sal/cast:complain.c5": {
+  "file": "sal/cast__complain.c5.mp3",
+  "hash": "10016063"
+ },
+ "sal/cast:complain.c6": {
+  "file": "sal/cast__complain.c6.mp3",
+  "hash": "6255d8cd"
+ },
+ "sal/cast:complain.c7": {
+  "file": "sal/cast__complain.c7.mp3",
+  "hash": "7f23fed7"
+ },
+ "sal/cast:complain.c8": {
+  "file": "sal/cast__complain.c8.mp3",
+  "hash": "61ba9073"
+ },
+ "sal/cast:complain.c9": {
+  "file": "sal/cast__complain.c9.mp3",
+  "hash": "be99570f"
+ },
+ "sal/cast:goodbye.c1": {
+  "file": "sal/cast__goodbye.c1.mp3",
+  "hash": "74036491"
+ },
+ "sal/cast:goodbye.c2": {
+  "file": "sal/cast__goodbye.c2.mp3",
+  "hash": "e35946e1"
+ },
+ "sal/cast:goodbye.c3": {
+  "file": "sal/cast__goodbye.c3.mp3",
+  "hash": "dd3fe6df"
+ },
+ "sal/cast:goodbye.c4": {
+  "file": "sal/cast__goodbye.c4.mp3",
+  "hash": "3d8f27b7"
+ },
+ "sal/cast:goodbye.c5": {
+  "file": "sal/cast__goodbye.c5.mp3",
+  "hash": "ce2ab417"
+ },
+ "sal/cast:goodbye.c6": {
+  "file": "sal/cast__goodbye.c6.mp3",
+  "hash": "0a8541b0"
+ },
+ "sal/cast:greet.c1": {
+  "file": "sal/cast__greet.c1.mp3",
+  "hash": "d790852a"
+ },
+ "sal/cast:greet.c2": {
+  "file": "sal/cast__greet.c2.mp3",
+  "hash": "1ff1759b"
+ },
+ "sal/cast:greet.c3": {
+  "file": "sal/cast__greet.c3.mp3",
+  "hash": "8faac031"
+ },
+ "sal/cast:greet.c4": {
+  "file": "sal/cast__greet.c4.mp3",
+  "hash": "aa7b0b4c"
+ },
+ "sal/cast:greet.c5": {
+  "file": "sal/cast__greet.c5.mp3",
+  "hash": "35c5fa89"
+ },
+ "sal/cast:greet.c6": {
+  "file": "sal/cast__greet.c6.mp3",
+  "hash": "c20c702e"
+ },
+ "sal/cast:intro.c1": {
+  "file": "sal/cast__intro.c1.mp3",
+  "hash": "0f9988d9"
+ },
+ "sal/cast:intro.c2": {
+  "file": "sal/cast__intro.c2.mp3",
+  "hash": "ac729ba5"
+ },
+ "sal/cast:intro.c3": {
+  "file": "sal/cast__intro.c3.mp3",
+  "hash": "0a903ec0"
+ },
+ "sal/cast:intro.c4": {
+  "file": "sal/cast__intro.c4.mp3",
+  "hash": "e050aee4"
+ },
+ "sal/cast:intro.c5": {
+  "file": "sal/cast__intro.c5.mp3",
+  "hash": "a28070db"
+ },
+ "sal/cast:mention.c1": {
+  "file": "sal/cast__mention.c1.mp3",
+  "hash": "5eb6e737"
+ },
+ "sal/cast:mention.c2": {
+  "file": "sal/cast__mention.c2.mp3",
+  "hash": "e2236a89"
+ },
+ "sal/cast:mention.c3": {
+  "file": "sal/cast__mention.c3.mp3",
+  "hash": "12b31aea"
+ },
+ "sal/cast:mention.c4": {
+  "file": "sal/cast__mention.c4.mp3",
+  "hash": "b34e07f0"
+ },
+ "sal/cast:mention.c5": {
+  "file": "sal/cast__mention.c5.mp3",
+  "hash": "5ec6ff8e"
+ },
+ "sal/cast:mention.c6": {
+  "file": "sal/cast__mention.c6.mp3",
+  "hash": "88f46229"
+ },
+ "sal/cast:mention.c7": {
+  "file": "sal/cast__mention.c7.mp3",
+  "hash": "71594a7d"
+ },
+ "sal/cast:smalltalk.c1": {
+  "file": "sal/cast__smalltalk.c1.mp3",
+  "hash": "4b5ffe14"
+ },
+ "sal/cast:smalltalk.c2": {
+  "file": "sal/cast__smalltalk.c2.mp3",
+  "hash": "208bc397"
+ },
+ "sal/cast:smalltalk.c3": {
+  "file": "sal/cast__smalltalk.c3.mp3",
+  "hash": "5144748b"
+ },
+ "sal/cast:smalltalk.c4": {
+  "file": "sal/cast__smalltalk.c4.mp3",
+  "hash": "2498d9a5"
+ },
+ "sal/cast:smalltalk.c5": {
+  "file": "sal/cast__smalltalk.c5.mp3",
+  "hash": "58aefa9f"
+ },
+ "sal/cast:smalltalk.c6": {
+  "file": "sal/cast__smalltalk.c6.mp3",
+  "hash": "5c03e105"
+ },
+ "tasha/cast:complain.c1": {
+  "file": "tasha/cast__complain.c1.mp3",
+  "hash": "907b3b24"
+ },
+ "tasha/cast:complain.c2": {
+  "file": "tasha/cast__complain.c2.mp3",
+  "hash": "7bc13009"
+ },
+ "tasha/cast:complain.c3": {
+  "file": "tasha/cast__complain.c3.mp3",
+  "hash": "11d0bc4a"
+ },
+ "tasha/cast:complain.c4": {
+  "file": "tasha/cast__complain.c4.mp3",
+  "hash": "5ed93427"
+ },
+ "tasha/cast:complain.c5": {
+  "file": "tasha/cast__complain.c5.mp3",
+  "hash": "e620a94f"
+ },
+ "tasha/cast:complain.c6": {
+  "file": "tasha/cast__complain.c6.mp3",
+  "hash": "dc0299cc"
+ },
+ "tasha/cast:complain.c7": {
+  "file": "tasha/cast__complain.c7.mp3",
+  "hash": "d5b2be74"
+ },
+ "tasha/cast:complain.c8": {
+  "file": "tasha/cast__complain.c8.mp3",
+  "hash": "9141044c"
+ },
+ "tasha/cast:goodbye.c1": {
+  "file": "tasha/cast__goodbye.c1.mp3",
+  "hash": "6ff9ff0a"
+ },
+ "tasha/cast:goodbye.c2": {
+  "file": "tasha/cast__goodbye.c2.mp3",
+  "hash": "35fed322"
+ },
+ "tasha/cast:goodbye.c3": {
+  "file": "tasha/cast__goodbye.c3.mp3",
+  "hash": "e4065400"
+ },
+ "tasha/cast:goodbye.c4": {
+  "file": "tasha/cast__goodbye.c4.mp3",
+  "hash": "d68715a3"
+ },
+ "tasha/cast:greet.c1": {
+  "file": "tasha/cast__greet.c1.mp3",
+  "hash": "67628d2c"
+ },
+ "tasha/cast:greet.c2": {
+  "file": "tasha/cast__greet.c2.mp3",
+  "hash": "6c0fbf06"
+ },
+ "tasha/cast:greet.c3": {
+  "file": "tasha/cast__greet.c3.mp3",
+  "hash": "12527427"
+ },
+ "tasha/cast:greet.c4": {
+  "file": "tasha/cast__greet.c4.mp3",
+  "hash": "26d8caf1"
+ },
+ "tasha/cast:intro.c1": {
+  "file": "tasha/cast__intro.c1.mp3",
+  "hash": "b70abe39"
+ },
+ "tasha/cast:intro.c2": {
+  "file": "tasha/cast__intro.c2.mp3",
+  "hash": "deda8e49"
+ },
+ "tasha/cast:intro.c3": {
+  "file": "tasha/cast__intro.c3.mp3",
+  "hash": "881520f0"
+ },
+ "tasha/cast:intro.c4": {
+  "file": "tasha/cast__intro.c4.mp3",
+  "hash": "ca94f373"
+ },
+ "tasha/cast:intro.c5": {
+  "file": "tasha/cast__intro.c5.mp3",
+  "hash": "16bf12d9"
+ },
+ "tasha/cast:mention.c1": {
+  "file": "tasha/cast__mention.c1.mp3",
+  "hash": "2148d1b9"
+ },
+ "tasha/cast:mention.c2": {
+  "file": "tasha/cast__mention.c2.mp3",
+  "hash": "03746ac5"
+ },
+ "tasha/cast:mention.c3": {
+  "file": "tasha/cast__mention.c3.mp3",
+  "hash": "aed8963f"
+ },
+ "tasha/cast:mention.c4": {
+  "file": "tasha/cast__mention.c4.mp3",
+  "hash": "00236abf"
+ },
+ "tasha/cast:smalltalk.c1": {
+  "file": "tasha/cast__smalltalk.c1.mp3",
+  "hash": "9f99f48f"
+ },
+ "tasha/cast:smalltalk.c2": {
+  "file": "tasha/cast__smalltalk.c2.mp3",
+  "hash": "b2bde74f"
+ },
+ "tasha/cast:smalltalk.c3": {
+  "file": "tasha/cast__smalltalk.c3.mp3",
+  "hash": "7e7eb056"
+ },
+ "tasha/cast:smalltalk.c4": {
+  "file": "tasha/cast__smalltalk.c4.mp3",
+  "hash": "09719414"
+ },
+ "tasha/cast:smalltalk.c5": {
+  "file": "tasha/cast__smalltalk.c5.mp3",
+  "hash": "b3f7287f"
+ },
+ "tony/cast:complain.c1": {
+  "file": "tony/cast__complain.c1.mp3",
+  "hash": "376e911b"
+ },
+ "tony/cast:complain.c2": {
+  "file": "tony/cast__complain.c2.mp3",
+  "hash": "43b3d064"
+ },
+ "tony/cast:complain.c3": {
+  "file": "tony/cast__complain.c3.mp3",
+  "hash": "708df9c1"
+ },
+ "tony/cast:complain.c4": {
+  "file": "tony/cast__complain.c4.mp3",
+  "hash": "c5863761"
+ },
+ "tony/cast:complain.c5": {
+  "file": "tony/cast__complain.c5.mp3",
+  "hash": "24cad023"
+ },
+ "tony/cast:complain.c6": {
+  "file": "tony/cast__complain.c6.mp3",
+  "hash": "29c53892"
+ },
+ "tony/cast:complain.c7": {
+  "file": "tony/cast__complain.c7.mp3",
+  "hash": "1d1138ad"
+ },
+ "tony/cast:complain.c8": {
+  "file": "tony/cast__complain.c8.mp3",
+  "hash": "30eea28d"
+ },
+ "tony/cast:complain.c9": {
+  "file": "tony/cast__complain.c9.mp3",
+  "hash": "6ea4c280"
+ },
+ "tony/cast:intro.c1": {
+  "file": "tony/cast__intro.c1.mp3",
+  "hash": "73322e9d"
+ },
+ "tony/cast:intro.c2": {
+  "file": "tony/cast__intro.c2.mp3",
+  "hash": "75a15923"
+ },
+ "tony/cast:intro.c3": {
+  "file": "tony/cast__intro.c3.mp3",
+  "hash": "6391653e"
+ },
+ "tony/cast:intro.c4": {
+  "file": "tony/cast__intro.c4.mp3",
+  "hash": "8a45ee99"
+ },
+ "tony/cast:intro.c5": {
+  "file": "tony/cast__intro.c5.mp3",
+  "hash": "71cecb8b"
+ },
+ "vernon/cast:complain.c1": {
+  "file": "vernon/cast__complain.c1.mp3",
+  "hash": "0dfad651"
+ },
+ "vernon/cast:complain.c10": {
+  "file": "vernon/cast__complain.c10.mp3",
+  "hash": "b1224ee1"
+ },
+ "vernon/cast:complain.c2": {
+  "file": "vernon/cast__complain.c2.mp3",
+  "hash": "5203ad0c"
+ },
+ "vernon/cast:complain.c3": {
+  "file": "vernon/cast__complain.c3.mp3",
+  "hash": "e6646e62"
+ },
+ "vernon/cast:complain.c4": {
+  "file": "vernon/cast__complain.c4.mp3",
+  "hash": "4885051f"
+ },
+ "vernon/cast:complain.c5": {
+  "file": "vernon/cast__complain.c5.mp3",
+  "hash": "735e8240"
+ },
+ "vernon/cast:complain.c6": {
+  "file": "vernon/cast__complain.c6.mp3",
+  "hash": "c1a83080"
+ },
+ "vernon/cast:complain.c7": {
+  "file": "vernon/cast__complain.c7.mp3",
+  "hash": "613106f3"
+ },
+ "vernon/cast:complain.c8": {
+  "file": "vernon/cast__complain.c8.mp3",
+  "hash": "4d114141"
+ },
+ "vernon/cast:complain.c9": {
+  "file": "vernon/cast__complain.c9.mp3",
+  "hash": "7d9551c4"
+ },
+ "vernon/cast:goodbye.c1": {
+  "file": "vernon/cast__goodbye.c1.mp3",
+  "hash": "afd294c4"
+ },
+ "vernon/cast:goodbye.c2": {
+  "file": "vernon/cast__goodbye.c2.mp3",
+  "hash": "c70a56af"
+ },
+ "vernon/cast:goodbye.c3": {
+  "file": "vernon/cast__goodbye.c3.mp3",
+  "hash": "87d05bce"
+ },
+ "vernon/cast:goodbye.c4": {
+  "file": "vernon/cast__goodbye.c4.mp3",
+  "hash": "b760df42"
+ },
+ "vernon/cast:goodbye.c5": {
+  "file": "vernon/cast__goodbye.c5.mp3",
+  "hash": "8dc84518"
+ },
+ "vernon/cast:goodbye.c6": {
+  "file": "vernon/cast__goodbye.c6.mp3",
+  "hash": "25dd84ed"
+ },
+ "vernon/cast:greet.c1": {
+  "file": "vernon/cast__greet.c1.mp3",
+  "hash": "78224e7c"
+ },
+ "vernon/cast:greet.c2": {
+  "file": "vernon/cast__greet.c2.mp3",
+  "hash": "496a1f59"
+ },
+ "vernon/cast:greet.c3": {
+  "file": "vernon/cast__greet.c3.mp3",
+  "hash": "34760da7"
+ },
+ "vernon/cast:greet.c4": {
+  "file": "vernon/cast__greet.c4.mp3",
+  "hash": "39b622d3"
+ },
+ "vernon/cast:greet.c5": {
+  "file": "vernon/cast__greet.c5.mp3",
+  "hash": "503d3729"
+ },
+ "vernon/cast:greet.c6": {
+  "file": "vernon/cast__greet.c6.mp3",
+  "hash": "00e0ef82"
+ },
+ "vernon/cast:intro.c1": {
+  "file": "vernon/cast__intro.c1.mp3",
+  "hash": "806d1a00"
+ },
+ "vernon/cast:intro.c2": {
+  "file": "vernon/cast__intro.c2.mp3",
+  "hash": "fbba7ceb"
+ },
+ "vernon/cast:intro.c3": {
+  "file": "vernon/cast__intro.c3.mp3",
+  "hash": "6ee2ec20"
+ },
+ "vernon/cast:intro.c4": {
+  "file": "vernon/cast__intro.c4.mp3",
+  "hash": "d507f703"
+ },
+ "vernon/cast:intro.c5": {
+  "file": "vernon/cast__intro.c5.mp3",
+  "hash": "5fc0e60c"
+ },
+ "vernon/cast:mention.c1": {
+  "file": "vernon/cast__mention.c1.mp3",
+  "hash": "78cba3ca"
+ },
+ "vernon/cast:mention.c2": {
+  "file": "vernon/cast__mention.c2.mp3",
+  "hash": "86e774e0"
+ },
+ "vernon/cast:mention.c3": {
+  "file": "vernon/cast__mention.c3.mp3",
+  "hash": "02dee772"
+ },
+ "vernon/cast:mention.c4": {
+  "file": "vernon/cast__mention.c4.mp3",
+  "hash": "e39a3152"
+ },
+ "vernon/cast:mention.c5": {
+  "file": "vernon/cast__mention.c5.mp3",
+  "hash": "393afcfe"
+ },
+ "vernon/cast:mention.c6": {
+  "file": "vernon/cast__mention.c6.mp3",
+  "hash": "055d974d"
+ },
+ "vernon/cast:mention.c7": {
+  "file": "vernon/cast__mention.c7.mp3",
+  "hash": "03266073"
+ },
+ "vernon/cast:smalltalk.c1": {
+  "file": "vernon/cast__smalltalk.c1.mp3",
+  "hash": "53b4639d"
+ },
+ "vernon/cast:smalltalk.c2": {
+  "file": "vernon/cast__smalltalk.c2.mp3",
+  "hash": "6e984d1c"
+ },
+ "vernon/cast:smalltalk.c3": {
+  "file": "vernon/cast__smalltalk.c3.mp3",
+  "hash": "b46d7066"
+ },
+ "vernon/cast:smalltalk.c4": {
+  "file": "vernon/cast__smalltalk.c4.mp3",
+  "hash": "1eb183e5"
+ },
+ "vernon/cast:smalltalk.c5": {
+  "file": "vernon/cast__smalltalk.c5.mp3",
+  "hash": "af11aa1f"
+ },
+ "vernon/cast:smalltalk.c6": {
+  "file": "vernon/cast__smalltalk.c6.mp3",
+  "hash": "2574c023"
+ },
+ "walt/cast:complain.c1": {
+  "file": "walt/cast__complain.c1.mp3",
+  "hash": "0ea8424d"
+ },
+ "walt/cast:complain.c2": {
+  "file": "walt/cast__complain.c2.mp3",
+  "hash": "a389866d"
+ },
+ "walt/cast:complain.c3": {
+  "file": "walt/cast__complain.c3.mp3",
+  "hash": "c55ef754"
+ },
+ "walt/cast:complain.c4": {
+  "file": "walt/cast__complain.c4.mp3",
+  "hash": "6c8c9c59"
+ },
+ "walt/cast:complain.c5": {
+  "file": "walt/cast__complain.c5.mp3",
+  "hash": "c90f4629"
+ },
+ "walt/cast:complain.c6": {
+  "file": "walt/cast__complain.c6.mp3",
+  "hash": "b78540d7"
+ },
+ "walt/cast:complain.c7": {
+  "file": "walt/cast__complain.c7.mp3",
+  "hash": "19be8762"
+ },
+ "walt/cast:complain.c8": {
+  "file": "walt/cast__complain.c8.mp3",
+  "hash": "f2f53d0c"
+ },
+ "walt/cast:complain.c9": {
+  "file": "walt/cast__complain.c9.mp3",
+  "hash": "da352554"
+ },
+ "walt/cast:intro.c1": {
+  "file": "walt/cast__intro.c1.mp3",
+  "hash": "03bb356d"
+ },
+ "walt/cast:intro.c2": {
+  "file": "walt/cast__intro.c2.mp3",
+  "hash": "3242740a"
+ },
+ "walt/cast:intro.c3": {
+  "file": "walt/cast__intro.c3.mp3",
+  "hash": "2757577a"
+ },
+ "walt/cast:intro.c4": {
+  "file": "walt/cast__intro.c4.mp3",
+  "hash": "8d218db7"
+ },
+ "walt/cast:intro.c5": {
+  "file": "walt/cast__intro.c5.mp3",
+  "hash": "bfd7facd"
+ }
+}

@@ -1,0 +1,122 @@
+{
+ "laconic-s1": {
+  "said": "Well, I heard your fryer from the parking lot. Bearings going, not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 96,
+  "seconds": 8.49,
+  "rate": 2.24,
+  "clarity": 4.15,
+  "style": "laconic",
+  "seed": 1
+ },
+ "laconic-s2": {
+  "said": "Well, I heard your fryer from the parking lot. Bearings going, not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 84,
+  "seconds": 10.47,
+  "rate": 1.82,
+  "clarity": 3.97,
+  "style": "laconic",
+  "seed": 2
+ },
+ "laconic-s3": {
+  "said": "Well, I heard your fryer from the parking lot. Bearings going. Not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 95,
+  "seconds": 9.52,
+  "rate": 2.0,
+  "clarity": 4.0,
+  "style": "laconic",
+  "seed": 3
+ },
+ "laconic-s4": {
+  "said": "Well, I heard your fryer from the parking lot bearings going. Not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 92,
+  "seconds": 11.25,
+  "rate": 1.69,
+  "clarity": 4.35,
+  "style": "laconic",
+  "seed": 4
+ },
+ "mountain-s1": {
+  "said": "Well, I heard your fryer from the parking lot. Bearings going, not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 85,
+  "seconds": 10.29,
+  "rate": 1.85,
+  "clarity": 4.22,
+  "style": "mountain",
+  "seed": 1
+ },
+ "mountain-s2": {
+  "said": "Well, I heard your fryer from the parking lot. Bearings going, not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 111,
+  "seconds": 8.18,
+  "rate": 2.32,
+  "clarity": 4.06,
+  "style": "mountain",
+  "seed": 2
+ },
+ "mountain-s3": {
+  "said": "Well, I heard your fryer from the parking lot. Bearings going, not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 89,
+  "seconds": 9.41,
+  "rate": 2.02,
+  "clarity": 4.27,
+  "style": "mountain",
+  "seed": 3
+ },
+ "mountain-s4": {
+  "said": "Well, I heard your fryer from the parking lot. Bearings going, not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 94,
+  "seconds": 9.22,
+  "rate": 2.06,
+  "clarity": 4.17,
+  "style": "mountain",
+  "seed": 4
+ },
+ "deadpan-s1": {
+  "said": "Well, I heard your fryer from the parking lot bearings going. Not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 78,
+  "seconds": 9.45,
+  "rate": 2.01,
+  "clarity": 4.07,
+  "style": "deadpan",
+  "seed": 1
+ },
+ "deadpan-s2": {
+  "said": "Well, I heard your fryer from the parking lot bearings going. Not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 121,
+  "seconds": 8.67,
+  "rate": 2.19,
+  "clarity": 4.11,
+  "style": "deadpan",
+  "seed": 2
+ },
+ "deadpan-s3": {
+  "said": "Well, I heard your fryer from the parking lot bearings going. Not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 81,
+  "seconds": 9.43,
+  "rate": 2.01,
+  "clarity": 3.89,
+  "style": "deadpan",
+  "seed": 3
+ },
+ "deadpan-s4": {
+  "said": "Well, I heard your fryer from the parking lot bearings going. Not today, but it's going. Onion rings, please.",
+  "diffs": [],
+  "pitch": 93,
+  "seconds": 8.36,
+  "rate": 2.27,
+  "clarity": 4.28,
+  "style": "deadpan",
+  "seed": 4
+ }
+}

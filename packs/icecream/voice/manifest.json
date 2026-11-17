@@ -1,0 +1,2270 @@
+{
+ "bev/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "bev/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "bev/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "bev/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "bev/icecream:customer.complain.gross.hair.1": {
+  "file": "bev/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "bev/icecream:customer.complain.gross.hair.2": {
+  "file": "bev/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "bev/icecream:customer.complain.gross.tomato.1": {
+  "file": "bev/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "bev/icecream:customer.complain.gross.tomato.2": {
+  "file": "bev/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "bev/icecream:customer.order.odd.justCherry.1": {
+  "file": "bev/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "bev/icecream:customer.order.odd.justCherry.2": {
+  "file": "bev/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "bev/icecream:customer.order.odd.ketchup.1": {
+  "file": "bev/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "bev/icecream:customer.order.odd.ketchup.2": {
+  "file": "bev/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "bev/icecream:customer.order.odd.malted.1": {
+  "file": "bev/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "bev/icecream:customer.order.odd.malted.2": {
+  "file": "bev/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "bev/icecream:customer.order.odd.tenScoop.1": {
+  "file": "bev/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "bev/icecream:customer.order.odd.tenScoop.2": {
+  "file": "bev/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "bev/icecream:customer.react.gross.1": {
+  "file": "bev/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "bev/icecream:customer.react.gross.2": {
+  "file": "bev/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "bev/icecream:greet.1": {
+  "file": "bev/icecream__greet.1.mp3",
+  "hash": "c2f5e0bf"
+ },
+ "bev/icecream:order.gag.1": {
+  "file": "bev/icecream__order.gag.1.mp3",
+  "hash": "2c328f26"
+ },
+ "bev/icecream:order.gag.2": {
+  "file": "bev/icecream__order.gag.2.mp3",
+  "hash": "1e28fc90"
+ },
+ "bev/icecream:order.odd.justCherry.1": {
+  "file": "bev/icecream__order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "bev/icecream:order.odd.ketchup.1": {
+  "file": "bev/icecream__order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "bev/icecream:order.odd.tenScoop.1": {
+  "file": "bev/icecream__order.odd.tenScoop.1.mp3",
+  "hash": "f9be6af5"
+ },
+ "bev/icecream:react.1.1": {
+  "file": "bev/icecream__react.1.1.mp3",
+  "hash": "ab7d85a7"
+ },
+ "bev/icecream:react.1.2": {
+  "file": "bev/icecream__react.1.2.mp3",
+  "hash": "c2d6e89a"
+ },
+ "bev/icecream:react.1.3": {
+  "file": "bev/icecream__react.1.3.mp3",
+  "hash": "66e551b4"
+ },
+ "bev/icecream:react.2.1": {
+  "file": "bev/icecream__react.2.1.mp3",
+  "hash": "14c6bc80"
+ },
+ "bev/icecream:react.2.2": {
+  "file": "bev/icecream__react.2.2.mp3",
+  "hash": "d7682562"
+ },
+ "bev/icecream:react.2.3": {
+  "file": "bev/icecream__react.2.3.mp3",
+  "hash": "18f85fec"
+ },
+ "bev/icecream:react.3.1": {
+  "file": "bev/icecream__react.3.1.mp3",
+  "hash": "eff1b534"
+ },
+ "bev/icecream:react.3.2": {
+  "file": "bev/icecream__react.3.2.mp3",
+  "hash": "714801ee"
+ },
+ "bev/icecream:react.3.3": {
+  "file": "bev/icecream__react.3.3.mp3",
+  "hash": "93a8b339"
+ },
+ "bev/icecream:react.favourite.1": {
+  "file": "bev/icecream__react.favourite.1.mp3",
+  "hash": "b9133f5f"
+ },
+ "bev/icecream:react.favourite.2": {
+  "file": "bev/icecream__react.favourite.2.mp3",
+  "hash": "b2319d64"
+ },
+ "bev/icecream:react.gross.1": {
+  "file": "bev/icecream__react.gross.1.mp3",
+  "hash": "79dfdbf7"
+ },
+ "brock/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "brock/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "brock/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "brock/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "brock/icecream:customer.complain.gross.hair.1": {
+  "file": "brock/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "brock/icecream:customer.complain.gross.hair.2": {
+  "file": "brock/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "brock/icecream:customer.complain.gross.tomato.1": {
+  "file": "brock/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "brock/icecream:customer.complain.gross.tomato.2": {
+  "file": "brock/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "brock/icecream:customer.order.odd.justCherry.1": {
+  "file": "brock/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "brock/icecream:customer.order.odd.justCherry.2": {
+  "file": "brock/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "brock/icecream:customer.order.odd.ketchup.1": {
+  "file": "brock/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "brock/icecream:customer.order.odd.ketchup.2": {
+  "file": "brock/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "brock/icecream:customer.order.odd.malted.1": {
+  "file": "brock/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "brock/icecream:customer.order.odd.malted.2": {
+  "file": "brock/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "brock/icecream:customer.order.odd.tenScoop.1": {
+  "file": "brock/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "brock/icecream:customer.order.odd.tenScoop.2": {
+  "file": "brock/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "brock/icecream:customer.react.gross.1": {
+  "file": "brock/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "brock/icecream:customer.react.gross.2": {
+  "file": "brock/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "brock/icecream:goodbye.1": {
+  "file": "brock/icecream__goodbye.1.mp3",
+  "hash": "5faab7d2"
+ },
+ "brock/icecream:goodbye.2": {
+  "file": "brock/icecream__goodbye.2.mp3",
+  "hash": "d233b983"
+ },
+ "brock/icecream:goodbye.3": {
+  "file": "brock/icecream__goodbye.3.mp3",
+  "hash": "29ed82eb"
+ },
+ "brock/icecream:greet.1": {
+  "file": "brock/icecream__greet.1.mp3",
+  "hash": "88b6998e"
+ },
+ "brock/icecream:greet.2": {
+  "file": "brock/icecream__greet.2.mp3",
+  "hash": "74e9b515"
+ },
+ "brock/icecream:greet.3": {
+  "file": "brock/icecream__greet.3.mp3",
+  "hash": "3ee7297c"
+ },
+ "brock/icecream:greet.4": {
+  "file": "brock/icecream__greet.4.mp3",
+  "hash": "2b550f12"
+ },
+ "brock/icecream:react.1.1": {
+  "file": "brock/icecream__react.1.1.mp3",
+  "hash": "c7671eea"
+ },
+ "brock/icecream:react.1.2": {
+  "file": "brock/icecream__react.1.2.mp3",
+  "hash": "684b002c"
+ },
+ "brock/icecream:react.1.3": {
+  "file": "brock/icecream__react.1.3.mp3",
+  "hash": "ee5b7362"
+ },
+ "brock/icecream:react.2.1": {
+  "file": "brock/icecream__react.2.1.mp3",
+  "hash": "3a6af335"
+ },
+ "brock/icecream:react.2.2": {
+  "file": "brock/icecream__react.2.2.mp3",
+  "hash": "068e6b1f"
+ },
+ "brock/icecream:react.2.3": {
+  "file": "brock/icecream__react.2.3.mp3",
+  "hash": "65d7a164"
+ },
+ "brock/icecream:react.3.1": {
+  "file": "brock/icecream__react.3.1.mp3",
+  "hash": "1575bd33"
+ },
+ "brock/icecream:react.3.2": {
+  "file": "brock/icecream__react.3.2.mp3",
+  "hash": "01eacbeb"
+ },
+ "brock/icecream:react.3.3": {
+  "file": "brock/icecream__react.3.3.mp3",
+  "hash": "42f59a0f"
+ },
+ "brock/icecream:react.gross.1": {
+  "file": "brock/icecream__react.gross.1.mp3",
+  "hash": "5464053c"
+ },
+ "brock/icecream:smalltalk.1": {
+  "file": "brock/icecream__smalltalk.1.mp3",
+  "hash": "9707fa48"
+ },
+ "brock/icecream:smalltalk.2": {
+  "file": "brock/icecream__smalltalk.2.mp3",
+  "hash": "f85be064"
+ },
+ "brock/icecream:smalltalk.3": {
+  "file": "brock/icecream__smalltalk.3.mp3",
+  "hash": "4d37e427"
+ },
+ "brock/icecream:smalltalk.4": {
+  "file": "brock/icecream__smalltalk.4.mp3",
+  "hash": "e5415760"
+ },
+ "brock/icecream:visitor.arrive.1": {
+  "file": "brock/icecream__visitor.arrive.1.mp3",
+  "hash": "407d541c"
+ },
+ "brock/icecream:visitor.arrive.2": {
+  "file": "brock/icecream__visitor.arrive.2.mp3",
+  "hash": "b6f3d2bb"
+ },
+ "brock/icecream:visitor.arrive.3": {
+  "file": "brock/icecream__visitor.arrive.3.mp3",
+  "hash": "84bd676c"
+ },
+ "gus/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "gus/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "gus/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "gus/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "gus/icecream:customer.complain.gross.hair.1": {
+  "file": "gus/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "gus/icecream:customer.complain.gross.hair.2": {
+  "file": "gus/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "gus/icecream:customer.complain.gross.tomato.1": {
+  "file": "gus/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "gus/icecream:customer.complain.gross.tomato.2": {
+  "file": "gus/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "gus/icecream:customer.order.odd.justCherry.1": {
+  "file": "gus/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "gus/icecream:customer.order.odd.justCherry.2": {
+  "file": "gus/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "gus/icecream:customer.order.odd.ketchup.1": {
+  "file": "gus/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "gus/icecream:customer.order.odd.ketchup.2": {
+  "file": "gus/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "gus/icecream:customer.order.odd.malted.1": {
+  "file": "gus/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "gus/icecream:customer.order.odd.malted.2": {
+  "file": "gus/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "gus/icecream:customer.order.odd.tenScoop.1": {
+  "file": "gus/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "gus/icecream:customer.order.odd.tenScoop.2": {
+  "file": "gus/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "gus/icecream:customer.react.gross.1": {
+  "file": "gus/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "gus/icecream:customer.react.gross.2": {
+  "file": "gus/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "gus/icecream:greet.1": {
+  "file": "gus/icecream__greet.1.mp3",
+  "hash": "11892939"
+ },
+ "gus/icecream:order.odd.justCherry.1": {
+  "file": "gus/icecream__order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "gus/icecream:order.odd.ketchup.1": {
+  "file": "gus/icecream__order.odd.ketchup.1.mp3",
+  "hash": "a9d3d9f0"
+ },
+ "gus/icecream:order.odd.tenScoop.1": {
+  "file": "gus/icecream__order.odd.tenScoop.1.mp3",
+  "hash": "64c527db"
+ },
+ "gus/icecream:order.twin.1": {
+  "file": "gus/icecream__order.twin.1.mp3",
+  "hash": "dee1f6bd"
+ },
+ "gus/icecream:order.twin.2": {
+  "file": "gus/icecream__order.twin.2.mp3",
+  "hash": "2a6372dc"
+ },
+ "gus/icecream:react.1.1": {
+  "file": "gus/icecream__react.1.1.mp3",
+  "hash": "54b6611a"
+ },
+ "gus/icecream:react.1.2": {
+  "file": "gus/icecream__react.1.2.mp3",
+  "hash": "f5ccd6e8"
+ },
+ "gus/icecream:react.1.3": {
+  "file": "gus/icecream__react.1.3.mp3",
+  "hash": "7f40e1b7"
+ },
+ "gus/icecream:react.2.1": {
+  "file": "gus/icecream__react.2.1.mp3",
+  "hash": "20e77a6a"
+ },
+ "gus/icecream:react.2.2": {
+  "file": "gus/icecream__react.2.2.mp3",
+  "hash": "76733de4"
+ },
+ "gus/icecream:react.2.3": {
+  "file": "gus/icecream__react.2.3.mp3",
+  "hash": "742bb947"
+ },
+ "gus/icecream:react.3.1": {
+  "file": "gus/icecream__react.3.1.mp3",
+  "hash": "782c556a"
+ },
+ "gus/icecream:react.3.2": {
+  "file": "gus/icecream__react.3.2.mp3",
+  "hash": "133b663b"
+ },
+ "gus/icecream:react.3.3": {
+  "file": "gus/icecream__react.3.3.mp3",
+  "hash": "31ef968f"
+ },
+ "gus/icecream:react.gross.1": {
+  "file": "gus/icecream__react.gross.1.mp3",
+  "hash": "b2e51d53"
+ },
+ "kai/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "kai/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "kai/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "kai/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "kai/icecream:customer.complain.gross.hair.1": {
+  "file": "kai/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "kai/icecream:customer.complain.gross.hair.2": {
+  "file": "kai/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "kai/icecream:customer.complain.gross.tomato.1": {
+  "file": "kai/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "kai/icecream:customer.complain.gross.tomato.2": {
+  "file": "kai/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "kai/icecream:customer.order.odd.justCherry.1": {
+  "file": "kai/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "kai/icecream:customer.order.odd.justCherry.2": {
+  "file": "kai/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "kai/icecream:customer.order.odd.ketchup.1": {
+  "file": "kai/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "kai/icecream:customer.order.odd.ketchup.2": {
+  "file": "kai/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "kai/icecream:customer.order.odd.malted.1": {
+  "file": "kai/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "kai/icecream:customer.order.odd.malted.2": {
+  "file": "kai/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "kai/icecream:customer.order.odd.tenScoop.1": {
+  "file": "kai/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "kai/icecream:customer.order.odd.tenScoop.2": {
+  "file": "kai/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "kai/icecream:customer.react.gross.1": {
+  "file": "kai/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "kai/icecream:customer.react.gross.2": {
+  "file": "kai/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "kai/icecream:react.1.1": {
+  "file": "kai/icecream__react.1.1.mp3",
+  "hash": "41aceda2"
+ },
+ "kai/icecream:react.1.2": {
+  "file": "kai/icecream__react.1.2.mp3",
+  "hash": "285eed9c"
+ },
+ "kai/icecream:react.1.3": {
+  "file": "kai/icecream__react.1.3.mp3",
+  "hash": "864273c7"
+ },
+ "kai/icecream:react.2.1": {
+  "file": "kai/icecream__react.2.1.mp3",
+  "hash": "f6abafc4"
+ },
+ "kai/icecream:react.2.2": {
+  "file": "kai/icecream__react.2.2.mp3",
+  "hash": "8a189f3a"
+ },
+ "kai/icecream:react.2.3": {
+  "file": "kai/icecream__react.2.3.mp3",
+  "hash": "c0f851a6"
+ },
+ "kai/icecream:react.3.1": {
+  "file": "kai/icecream__react.3.1.mp3",
+  "hash": "c8600359"
+ },
+ "kai/icecream:react.3.2": {
+  "file": "kai/icecream__react.3.2.mp3",
+  "hash": "8b248028"
+ },
+ "kai/icecream:react.3.3": {
+  "file": "kai/icecream__react.3.3.mp3",
+  "hash": "d75a8bb5"
+ },
+ "kai/icecream:react.gross.1": {
+  "file": "kai/icecream__react.gross.1.mp3",
+  "hash": "a33c4ee7"
+ },
+ "kai/icecream:visitor.arrive.1": {
+  "file": "kai/icecream__visitor.arrive.1.mp3",
+  "hash": "49088f60"
+ },
+ "kai/icecream:visitor.arrive.2": {
+  "file": "kai/icecream__visitor.arrive.2.mp3",
+  "hash": "249049b7"
+ },
+ "kai/icecream:visitor.arrive.3": {
+  "file": "kai/icecream__visitor.arrive.3.mp3",
+  "hash": "c3af86b1"
+ },
+ "lulu/icecream:complain.gross.freezerBurn.1": {
+  "file": "lulu/icecream__complain.gross.freezerBurn.1.mp3",
+  "hash": "60353e62"
+ },
+ "lulu/icecream:complain.gross.hair.1": {
+  "file": "lulu/icecream__complain.gross.hair.1.mp3",
+  "hash": "5d1e201b"
+ },
+ "lulu/icecream:complain.gross.tomato.1": {
+  "file": "lulu/icecream__complain.gross.tomato.1.mp3",
+  "hash": "6b0668ea"
+ },
+ "lulu/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "lulu/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "lulu/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "lulu/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "lulu/icecream:customer.complain.gross.hair.1": {
+  "file": "lulu/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "lulu/icecream:customer.complain.gross.hair.2": {
+  "file": "lulu/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "lulu/icecream:customer.complain.gross.tomato.1": {
+  "file": "lulu/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "lulu/icecream:customer.complain.gross.tomato.2": {
+  "file": "lulu/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "lulu/icecream:customer.order.odd.justCherry.1": {
+  "file": "lulu/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "lulu/icecream:customer.order.odd.justCherry.2": {
+  "file": "lulu/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "lulu/icecream:customer.order.odd.ketchup.1": {
+  "file": "lulu/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "lulu/icecream:customer.order.odd.ketchup.2": {
+  "file": "lulu/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "lulu/icecream:customer.order.odd.malted.1": {
+  "file": "lulu/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "lulu/icecream:customer.order.odd.malted.2": {
+  "file": "lulu/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "lulu/icecream:customer.order.odd.tenScoop.1": {
+  "file": "lulu/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "lulu/icecream:customer.order.odd.tenScoop.2": {
+  "file": "lulu/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "lulu/icecream:customer.react.gross.1": {
+  "file": "lulu/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "lulu/icecream:customer.react.gross.2": {
+  "file": "lulu/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "lulu/icecream:goodbye.1": {
+  "file": "lulu/icecream__goodbye.1.mp3",
+  "hash": "0c17b5ab"
+ },
+ "lulu/icecream:goodbye.2": {
+  "file": "lulu/icecream__goodbye.2.mp3",
+  "hash": "d46913ef"
+ },
+ "lulu/icecream:goodbye.3": {
+  "file": "lulu/icecream__goodbye.3.mp3",
+  "hash": "71ee9d16"
+ },
+ "lulu/icecream:goodbye.4": {
+  "file": "lulu/icecream__goodbye.4.mp3",
+  "hash": "7170840a"
+ },
+ "lulu/icecream:greet.1": {
+  "file": "lulu/icecream__greet.1.mp3",
+  "hash": "ed0c6c1c"
+ },
+ "lulu/icecream:greet.2": {
+  "file": "lulu/icecream__greet.2.mp3",
+  "hash": "9a20731c"
+ },
+ "lulu/icecream:greet.3": {
+  "file": "lulu/icecream__greet.3.mp3",
+  "hash": "0163bece"
+ },
+ "lulu/icecream:greet.4": {
+  "file": "lulu/icecream__greet.4.mp3",
+  "hash": "602a3052"
+ },
+ "lulu/icecream:greet.5": {
+  "file": "lulu/icecream__greet.5.mp3",
+  "hash": "0f4f924f"
+ },
+ "lulu/icecream:order.gag.1": {
+  "file": "lulu/icecream__order.gag.1.mp3",
+  "hash": "6bdc9356"
+ },
+ "lulu/icecream:order.gag.2": {
+  "file": "lulu/icecream__order.gag.2.mp3",
+  "hash": "39a471b1"
+ },
+ "lulu/icecream:order.gag.3": {
+  "file": "lulu/icecream__order.gag.3.mp3",
+  "hash": "66ce2111"
+ },
+ "lulu/icecream:order.gag.4": {
+  "file": "lulu/icecream__order.gag.4.mp3",
+  "hash": "86fd6d8d"
+ },
+ "lulu/icecream:order.gag.5": {
+  "file": "lulu/icecream__order.gag.5.mp3",
+  "hash": "e8a7a04d"
+ },
+ "lulu/icecream:order.odd.justCherry.1": {
+  "file": "lulu/icecream__order.odd.justCherry.1.mp3",
+  "hash": "2f889121"
+ },
+ "lulu/icecream:react.1.1": {
+  "file": "lulu/icecream__react.1.1.mp3",
+  "hash": "24911d4e"
+ },
+ "lulu/icecream:react.1.2": {
+  "file": "lulu/icecream__react.1.2.mp3",
+  "hash": "5a135647"
+ },
+ "lulu/icecream:react.1.3": {
+  "file": "lulu/icecream__react.1.3.mp3",
+  "hash": "10391b42"
+ },
+ "lulu/icecream:react.2.1": {
+  "file": "lulu/icecream__react.2.1.mp3",
+  "hash": "b229f006"
+ },
+ "lulu/icecream:react.2.2": {
+  "file": "lulu/icecream__react.2.2.mp3",
+  "hash": "fd86d047"
+ },
+ "lulu/icecream:react.2.3": {
+  "file": "lulu/icecream__react.2.3.mp3",
+  "hash": "aad01f62"
+ },
+ "lulu/icecream:react.3.1": {
+  "file": "lulu/icecream__react.3.1.mp3",
+  "hash": "c5f73a2f"
+ },
+ "lulu/icecream:react.3.2": {
+  "file": "lulu/icecream__react.3.2.mp3",
+  "hash": "de6d940f"
+ },
+ "lulu/icecream:react.3.3": {
+  "file": "lulu/icecream__react.3.3.mp3",
+  "hash": "ce84b7ac"
+ },
+ "lulu/icecream:react.gross.1": {
+  "file": "lulu/icecream__react.gross.1.mp3",
+  "hash": "60971a69"
+ },
+ "lulu/icecream:smalltalk.1": {
+  "file": "lulu/icecream__smalltalk.1.mp3",
+  "hash": "25a76c0c"
+ },
+ "lulu/icecream:smalltalk.2": {
+  "file": "lulu/icecream__smalltalk.2.mp3",
+  "hash": "dcb00af4"
+ },
+ "lulu/icecream:smalltalk.3": {
+  "file": "lulu/icecream__smalltalk.3.mp3",
+  "hash": "f2e209d1"
+ },
+ "lulu/icecream:smalltalk.4": {
+  "file": "lulu/icecream__smalltalk.4.mp3",
+  "hash": "b0974115"
+ },
+ "lulu/icecream:smalltalk.5": {
+  "file": "lulu/icecream__smalltalk.5.mp3",
+  "hash": "e6d2afeb"
+ },
+ "marge/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "marge/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "marge/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "marge/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "marge/icecream:customer.complain.gross.hair.1": {
+  "file": "marge/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "marge/icecream:customer.complain.gross.hair.2": {
+  "file": "marge/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "marge/icecream:customer.complain.gross.tomato.1": {
+  "file": "marge/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "marge/icecream:customer.complain.gross.tomato.2": {
+  "file": "marge/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "marge/icecream:customer.order.odd.justCherry.1": {
+  "file": "marge/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "marge/icecream:customer.order.odd.justCherry.2": {
+  "file": "marge/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "marge/icecream:customer.order.odd.ketchup.1": {
+  "file": "marge/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "marge/icecream:customer.order.odd.ketchup.2": {
+  "file": "marge/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "marge/icecream:customer.order.odd.malted.1": {
+  "file": "marge/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "marge/icecream:customer.order.odd.malted.2": {
+  "file": "marge/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "marge/icecream:customer.order.odd.tenScoop.1": {
+  "file": "marge/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "marge/icecream:customer.order.odd.tenScoop.2": {
+  "file": "marge/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "marge/icecream:customer.react.gross.1": {
+  "file": "marge/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "marge/icecream:customer.react.gross.2": {
+  "file": "marge/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "marge/icecream:greet.1": {
+  "file": "marge/icecream__greet.1.mp3",
+  "hash": "5e59a347"
+ },
+ "marge/icecream:order.odd.justCherry.1": {
+  "file": "marge/icecream__order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "marge/icecream:order.odd.ketchup.1": {
+  "file": "marge/icecream__order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "marge/icecream:order.odd.tenScoop.1": {
+  "file": "marge/icecream__order.odd.tenScoop.1.mp3",
+  "hash": "a1117971"
+ },
+ "marge/icecream:order.usual.1": {
+  "file": "marge/icecream__order.usual.1.mp3",
+  "hash": "d2098f9f"
+ },
+ "marge/icecream:order.usual.2": {
+  "file": "marge/icecream__order.usual.2.mp3",
+  "hash": "1d10e001"
+ },
+ "marge/icecream:react.1.1": {
+  "file": "marge/icecream__react.1.1.mp3",
+  "hash": "7bdfc4fd"
+ },
+ "marge/icecream:react.1.2": {
+  "file": "marge/icecream__react.1.2.mp3",
+  "hash": "867005eb"
+ },
+ "marge/icecream:react.1.3": {
+  "file": "marge/icecream__react.1.3.mp3",
+  "hash": "cce0e5e4"
+ },
+ "marge/icecream:react.2.1": {
+  "file": "marge/icecream__react.2.1.mp3",
+  "hash": "90c56989"
+ },
+ "marge/icecream:react.2.2": {
+  "file": "marge/icecream__react.2.2.mp3",
+  "hash": "9d95b09b"
+ },
+ "marge/icecream:react.2.3": {
+  "file": "marge/icecream__react.2.3.mp3",
+  "hash": "cfeb9e94"
+ },
+ "marge/icecream:react.3.1": {
+  "file": "marge/icecream__react.3.1.mp3",
+  "hash": "a883a428"
+ },
+ "marge/icecream:react.3.2": {
+  "file": "marge/icecream__react.3.2.mp3",
+  "hash": "d98d0bb0"
+ },
+ "marge/icecream:react.3.3": {
+  "file": "marge/icecream__react.3.3.mp3",
+  "hash": "0da56876"
+ },
+ "marge/icecream:react.gross.1": {
+  "file": "marge/icecream__react.gross.1.mp3",
+  "hash": "0980cc97"
+ },
+ "mitch/icecream:after.1.1": {
+  "file": "mitch/icecream__after.1.1.mp3",
+  "hash": "91145312"
+ },
+ "mitch/icecream:after.1.2": {
+  "file": "mitch/icecream__after.1.2.mp3",
+  "hash": "eef5a6d8"
+ },
+ "mitch/icecream:after.1.3": {
+  "file": "mitch/icecream__after.1.3.mp3",
+  "hash": "4122ed9a"
+ },
+ "mitch/icecream:after.3.1": {
+  "file": "mitch/icecream__after.3.1.mp3",
+  "hash": "2e706f53"
+ },
+ "mitch/icecream:after.3.2": {
+  "file": "mitch/icecream__after.3.2.mp3",
+  "hash": "1099086c"
+ },
+ "mitch/icecream:after.3.3": {
+  "file": "mitch/icecream__after.3.3.mp3",
+  "hash": "534a551c"
+ },
+ "mitch/icecream:after.gross.1": {
+  "file": "mitch/icecream__after.gross.1.mp3",
+  "hash": "35273357"
+ },
+ "mitch/icecream:after.gross.2": {
+  "file": "mitch/icecream__after.gross.2.mp3",
+  "hash": "64859ebd"
+ },
+ "mitch/icecream:event.again.1.theKitchenSink": {
+  "file": "mitch/icecream__event.again.1.theKitchenSink.mp3",
+  "hash": "f0f4df37"
+ },
+ "mitch/icecream:event.again.2.theKitchenSink": {
+  "file": "mitch/icecream__event.again.2.theKitchenSink.mp3",
+  "hash": "d68f0877"
+ },
+ "mitch/icecream:event.celebrate.1.theKitchenSink": {
+  "file": "mitch/icecream__event.celebrate.1.theKitchenSink.mp3",
+  "hash": "5797d012"
+ },
+ "mitch/icecream:event.celebrate.2.theKitchenSink": {
+  "file": "mitch/icecream__event.celebrate.2.theKitchenSink.mp3",
+  "hash": "83834c9d"
+ },
+ "mitch/icecream:event.intro.1.theKitchenSink": {
+  "file": "mitch/icecream__event.intro.1.theKitchenSink.mp3",
+  "hash": "b75c1c83"
+ },
+ "mitch/icecream:event.intro.2.theKitchenSink": {
+  "file": "mitch/icecream__event.intro.2.theKitchenSink.mp3",
+  "hash": "cff3eed4"
+ },
+ "mitch/icecream:gross.freezerBurn.1.shakeFlavour.chocolate": {
+  "file": "mitch/icecream__gross.freezerBurn.1.shakeFlavour.chocolate.mp3",
+  "hash": "68776084"
+ },
+ "mitch/icecream:gross.freezerBurn.1.shakeFlavour.strawberry": {
+  "file": "mitch/icecream__gross.freezerBurn.1.shakeFlavour.strawberry.mp3",
+  "hash": "c2ba88a5"
+ },
+ "mitch/icecream:gross.freezerBurn.1.shakeFlavour.vanilla": {
+  "file": "mitch/icecream__gross.freezerBurn.1.shakeFlavour.vanilla.mp3",
+  "hash": "6f345637"
+ },
+ "mitch/icecream:gross.freezerBurn.2.shakeFlavour.chocolate": {
+  "file": "mitch/icecream__gross.freezerBurn.2.shakeFlavour.chocolate.mp3",
+  "hash": "e5f7af89"
+ },
+ "mitch/icecream:gross.freezerBurn.2.shakeFlavour.strawberry": {
+  "file": "mitch/icecream__gross.freezerBurn.2.shakeFlavour.strawberry.mp3",
+  "hash": "22dd8be2"
+ },
+ "mitch/icecream:gross.freezerBurn.2.shakeFlavour.vanilla": {
+  "file": "mitch/icecream__gross.freezerBurn.2.shakeFlavour.vanilla.mp3",
+  "hash": "6b6886f4"
+ },
+ "mitch/icecream:gross.freezerBurn.3.shakeFlavour.chocolate": {
+  "file": "mitch/icecream__gross.freezerBurn.3.shakeFlavour.chocolate.mp3",
+  "hash": "88bc04eb"
+ },
+ "mitch/icecream:gross.freezerBurn.3.shakeFlavour.strawberry": {
+  "file": "mitch/icecream__gross.freezerBurn.3.shakeFlavour.strawberry.mp3",
+  "hash": "2ad7bc00"
+ },
+ "mitch/icecream:gross.freezerBurn.3.shakeFlavour.vanilla": {
+  "file": "mitch/icecream__gross.freezerBurn.3.shakeFlavour.vanilla.mp3",
+  "hash": "1c101488"
+ },
+ "mitch/icecream:gross.hair.1.sprinkles": {
+  "file": "mitch/icecream__gross.hair.1.sprinkles.mp3",
+  "hash": "c436b50f"
+ },
+ "mitch/icecream:gross.hair.2.sprinkles": {
+  "file": "mitch/icecream__gross.hair.2.sprinkles.mp3",
+  "hash": "0fe31b56"
+ },
+ "mitch/icecream:gross.hair.3.sprinkles": {
+  "file": "mitch/icecream__gross.hair.3.sprinkles.mp3",
+  "hash": "eaae533a"
+ },
+ "mitch/icecream:gross.tomato.1.cherry": {
+  "file": "mitch/icecream__gross.tomato.1.cherry.mp3",
+  "hash": "a3f84a49"
+ },
+ "mitch/icecream:gross.tomato.2.cherry": {
+  "file": "mitch/icecream__gross.tomato.2.cherry.mp3",
+  "hash": "ba53f4a7"
+ },
+ "mitch/icecream:gross.tomato.3.cherry": {
+  "file": "mitch/icecream__gross.tomato.3.cherry.mp3",
+  "hash": "10a97adc"
+ },
+ "mitch/icecream:mistake.done.1.creamy": {
+  "file": "mitch/icecream__mistake.done.1.creamy.mp3",
+  "hash": "25069250"
+ },
+ "mitch/icecream:mistake.done.1.huge": {
+  "file": "mitch/icecream__mistake.done.1.huge.mp3",
+  "hash": "ab2b8f9a"
+ },
+ "mitch/icecream:mistake.done.1.regular": {
+  "file": "mitch/icecream__mistake.done.1.regular.mp3",
+  "hash": "ecf66285"
+ },
+ "mitch/icecream:mistake.done.1.small": {
+  "file": "mitch/icecream__mistake.done.1.small.mp3",
+  "hash": "e44aa230"
+ },
+ "mitch/icecream:mistake.done.1.thick": {
+  "file": "mitch/icecream__mistake.done.1.thick.mp3",
+  "hash": "0aed3d56"
+ },
+ "mitch/icecream:mistake.done.1.thin": {
+  "file": "mitch/icecream__mistake.done.1.thin.mp3",
+  "hash": "0b5e13e2"
+ },
+ "mitch/icecream:mistake.extra.1.caramel": {
+  "file": "mitch/icecream__mistake.extra.1.caramel.mp3",
+  "hash": "a2cd3881"
+ },
+ "mitch/icecream:mistake.extra.1.cherry": {
+  "file": "mitch/icecream__mistake.extra.1.cherry.mp3",
+  "hash": "3acc00f9"
+ },
+ "mitch/icecream:mistake.extra.1.hotFudge": {
+  "file": "mitch/icecream__mistake.extra.1.hotFudge.mp3",
+  "hash": "bec9eeca"
+ },
+ "mitch/icecream:mistake.extra.1.nuts": {
+  "file": "mitch/icecream__mistake.extra.1.nuts.mp3",
+  "hash": "b302be26"
+ },
+ "mitch/icecream:mistake.extra.1.sprinkles": {
+  "file": "mitch/icecream__mistake.extra.1.sprinkles.mp3",
+  "hash": "3630eb07"
+ },
+ "mitch/icecream:mistake.extra.1.whippedCream": {
+  "file": "mitch/icecream__mistake.extra.1.whippedCream.mp3",
+  "hash": "c8ba9d41"
+ },
+ "mitch/icecream:mistake.missing.1.caramel": {
+  "file": "mitch/icecream__mistake.missing.1.caramel.mp3",
+  "hash": "964fdbd7"
+ },
+ "mitch/icecream:mistake.missing.1.cherry": {
+  "file": "mitch/icecream__mistake.missing.1.cherry.mp3",
+  "hash": "0146dc39"
+ },
+ "mitch/icecream:mistake.missing.1.hotFudge": {
+  "file": "mitch/icecream__mistake.missing.1.hotFudge.mp3",
+  "hash": "a29a5dbe"
+ },
+ "mitch/icecream:mistake.missing.1.nuts": {
+  "file": "mitch/icecream__mistake.missing.1.nuts.mp3",
+  "hash": "a92a8410"
+ },
+ "mitch/icecream:mistake.missing.1.sprinkles": {
+  "file": "mitch/icecream__mistake.missing.1.sprinkles.mp3",
+  "hash": "6579bb8d"
+ },
+ "mitch/icecream:mistake.missing.1.whippedCream": {
+  "file": "mitch/icecream__mistake.missing.1.whippedCream.mp3",
+  "hash": "438eae73"
+ },
+ "mitch/icecream:mistake.more.1": {
+  "file": "mitch/icecream__mistake.more.1.mp3",
+  "hash": "3cf36d06"
+ },
+ "mitch/icecream:mistake.pick.1.holder.cone": {
+  "file": "mitch/icecream__mistake.pick.1.holder.cone.mp3",
+  "hash": "917176ec"
+ },
+ "mitch/icecream:mistake.pick.1.holder.cup": {
+  "file": "mitch/icecream__mistake.pick.1.holder.cup.mp3",
+  "hash": "630714d3"
+ },
+ "mitch/icecream:mistake.pick.1.holder.waffleCone": {
+  "file": "mitch/icecream__mistake.pick.1.holder.waffleCone.mp3",
+  "hash": "a8a5cf29"
+ },
+ "mitch/icecream:mistake.pick.1.scoops.bubblegum": {
+  "file": "mitch/icecream__mistake.pick.1.scoops.bubblegum.mp3",
+  "hash": "af6a1aaf"
+ },
+ "mitch/icecream:mistake.pick.1.scoops.chocolate": {
+  "file": "mitch/icecream__mistake.pick.1.scoops.chocolate.mp3",
+  "hash": "6d229302"
+ },
+ "mitch/icecream:mistake.pick.1.scoops.cookieDough": {
+  "file": "mitch/icecream__mistake.pick.1.scoops.cookieDough.mp3",
+  "hash": "8ba3a0c7"
+ },
+ "mitch/icecream:mistake.pick.1.scoops.mintChip": {
+  "file": "mitch/icecream__mistake.pick.1.scoops.mintChip.mp3",
+  "hash": "a990db9a"
+ },
+ "mitch/icecream:mistake.pick.1.scoops.rockyRoad": {
+  "file": "mitch/icecream__mistake.pick.1.scoops.rockyRoad.mp3",
+  "hash": "530ab752"
+ },
+ "mitch/icecream:mistake.pick.1.scoops.strawberry": {
+  "file": "mitch/icecream__mistake.pick.1.scoops.strawberry.mp3",
+  "hash": "cf3923bf"
+ },
+ "mitch/icecream:mistake.pick.1.scoops.vanilla": {
+  "file": "mitch/icecream__mistake.pick.1.scoops.vanilla.mp3",
+  "hash": "fac61169"
+ },
+ "mitch/icecream:mistake.pick.1.shakeFlavour.chocolate": {
+  "file": "mitch/icecream__mistake.pick.1.shakeFlavour.chocolate.mp3",
+  "hash": "d0dc15eb"
+ },
+ "mitch/icecream:mistake.pick.1.shakeFlavour.strawberry": {
+  "file": "mitch/icecream__mistake.pick.1.shakeFlavour.strawberry.mp3",
+  "hash": "b09c1f88"
+ },
+ "mitch/icecream:mistake.pick.1.shakeFlavour.vanilla": {
+  "file": "mitch/icecream__mistake.pick.1.shakeFlavour.vanilla.mp3",
+  "hash": "0b897e90"
+ },
+ "mitch/icecream:mistake.tooFew.1.scoops.1": {
+  "file": "mitch/icecream__mistake.tooFew.1.scoops.1.mp3",
+  "hash": "de76c4b0"
+ },
+ "mitch/icecream:mistake.tooFew.1.scoops.2": {
+  "file": "mitch/icecream__mistake.tooFew.1.scoops.2.mp3",
+  "hash": "8ed2da8b"
+ },
+ "mitch/icecream:mistake.tooFew.1.scoops.3": {
+  "file": "mitch/icecream__mistake.tooFew.1.scoops.3.mp3",
+  "hash": "6aa74d89"
+ },
+ "mitch/icecream:mistake.tooMany.1.scoops.0": {
+  "file": "mitch/icecream__mistake.tooMany.1.scoops.0.mp3",
+  "hash": "dc16d36f"
+ },
+ "mitch/icecream:mistake.tooMany.1.scoops.1": {
+  "file": "mitch/icecream__mistake.tooMany.1.scoops.1.mp3",
+  "hash": "2ccad3e7"
+ },
+ "mitch/icecream:mistake.tooMany.1.scoops.2": {
+  "file": "mitch/icecream__mistake.tooMany.1.scoops.2.mp3",
+  "hash": "6e05f534"
+ },
+ "mitch/icecream:mistake.unasked.1.caramel": {
+  "file": "mitch/icecream__mistake.unasked.1.caramel.mp3",
+  "hash": "e15f6ec4"
+ },
+ "mitch/icecream:mistake.unasked.1.cherry": {
+  "file": "mitch/icecream__mistake.unasked.1.cherry.mp3",
+  "hash": "33295fba"
+ },
+ "mitch/icecream:mistake.unasked.1.hotFudge": {
+  "file": "mitch/icecream__mistake.unasked.1.hotFudge.mp3",
+  "hash": "a31a551f"
+ },
+ "mitch/icecream:mistake.unasked.1.nuts": {
+  "file": "mitch/icecream__mistake.unasked.1.nuts.mp3",
+  "hash": "4d466a09"
+ },
+ "mitch/icecream:mistake.unasked.1.sprinkles": {
+  "file": "mitch/icecream__mistake.unasked.1.sprinkles.mp3",
+  "hash": "2ab089f6"
+ },
+ "mitch/icecream:mistake.unasked.1.whippedCream": {
+  "file": "mitch/icecream__mistake.unasked.1.whippedCream.mp3",
+  "hash": "2770de6c"
+ },
+ "mitch/icecream:nearly.1.creamy": {
+  "file": "mitch/icecream__nearly.1.creamy.mp3",
+  "hash": "e5142e1e"
+ },
+ "mitch/icecream:nearly.1.huge": {
+  "file": "mitch/icecream__nearly.1.huge.mp3",
+  "hash": "8e848d18"
+ },
+ "mitch/icecream:nearly.1.regular": {
+  "file": "mitch/icecream__nearly.1.regular.mp3",
+  "hash": "c9955b83"
+ },
+ "mitch/icecream:nearly.1.small": {
+  "file": "mitch/icecream__nearly.1.small.mp3",
+  "hash": "278310a6"
+ },
+ "mitch/icecream:nearly.1.thick": {
+  "file": "mitch/icecream__nearly.1.thick.mp3",
+  "hash": "e86ef534"
+ },
+ "mitch/icecream:nearly.1.thin": {
+  "file": "mitch/icecream__nearly.1.thin.mp3",
+  "hash": "3e1405a8"
+ },
+ "mitch/icecream:nearly.2.creamy": {
+  "file": "mitch/icecream__nearly.2.creamy.mp3",
+  "hash": "772d8976"
+ },
+ "mitch/icecream:nearly.2.huge": {
+  "file": "mitch/icecream__nearly.2.huge.mp3",
+  "hash": "95b7e5a4"
+ },
+ "mitch/icecream:nearly.2.regular": {
+  "file": "mitch/icecream__nearly.2.regular.mp3",
+  "hash": "06ae708b"
+ },
+ "mitch/icecream:nearly.2.small": {
+  "file": "mitch/icecream__nearly.2.small.mp3",
+  "hash": "ba5120c0"
+ },
+ "mitch/icecream:nearly.2.thick": {
+  "file": "mitch/icecream__nearly.2.thick.mp3",
+  "hash": "45c2626a"
+ },
+ "mitch/icecream:nearly.2.thin": {
+  "file": "mitch/icecream__nearly.2.thin.mp3",
+  "hash": "83a6edb0"
+ },
+ "mitch/icecream:shift.end.1": {
+  "file": "mitch/icecream__shift.end.1.mp3",
+  "hash": "9e80b409"
+ },
+ "mitch/icecream:shift.end.2": {
+  "file": "mitch/icecream__shift.end.2.mp3",
+  "hash": "3d432661"
+ },
+ "mitch/icecream:shift.end.3": {
+  "file": "mitch/icecream__shift.end.3.mp3",
+  "hash": "9d6ad767"
+ },
+ "mitch/icecream:shift.end.4": {
+  "file": "mitch/icecream__shift.end.4.mp3",
+  "hash": "a6bdf902"
+ },
+ "mitch/icecream:shift.start.1": {
+  "file": "mitch/icecream__shift.start.1.mp3",
+  "hash": "79d810e8"
+ },
+ "mitch/icecream:shift.start.2": {
+  "file": "mitch/icecream__shift.start.2.mp3",
+  "hash": "e6a92708"
+ },
+ "mitch/icecream:shift.start.3": {
+  "file": "mitch/icecream__shift.start.3.mp3",
+  "hash": "8d5c1318"
+ },
+ "mitch/icecream:shift.start.4": {
+  "file": "mitch/icecream__shift.start.4.mp3",
+  "hash": "4010dbe1"
+ },
+ "mitch/icecream:shift.start.5": {
+  "file": "mitch/icecream__shift.start.5.mp3",
+  "hash": "26e275f7"
+ },
+ "mitch/icecream:tutorial.cook.scoop.1": {
+  "file": "mitch/icecream__tutorial.cook.scoop.1.mp3",
+  "hash": "b1248899"
+ },
+ "mitch/icecream:tutorial.cook.scoop.2": {
+  "file": "mitch/icecream__tutorial.cook.scoop.2.mp3",
+  "hash": "30745ae8"
+ },
+ "mitch/icecream:tutorial.cook.shake.1": {
+  "file": "mitch/icecream__tutorial.cook.shake.1.mp3",
+  "hash": "a178ac23"
+ },
+ "mitch/icecream:tutorial.cook.shake.2": {
+  "file": "mitch/icecream__tutorial.cook.shake.2.mp3",
+  "hash": "b4e91d12"
+ },
+ "mitch/icecream:tutorial.gross.1": {
+  "file": "mitch/icecream__tutorial.gross.1.mp3",
+  "hash": "a4b7ca2f"
+ },
+ "mitch/icecream:tutorial.gross.2": {
+  "file": "mitch/icecream__tutorial.gross.2.mp3",
+  "hash": "67c0675d"
+ },
+ "mitch/icecream:tutorial.intro.1": {
+  "file": "mitch/icecream__tutorial.intro.1.mp3",
+  "hash": "34cbd68b"
+ },
+ "mitch/icecream:tutorial.intro.2": {
+  "file": "mitch/icecream__tutorial.intro.2.mp3",
+  "hash": "df5a267f"
+ },
+ "mitch/icecream:tutorial.review.1": {
+  "file": "mitch/icecream__tutorial.review.1.mp3",
+  "hash": "18b68b93"
+ },
+ "mitch/icecream:tutorial.review.2": {
+  "file": "mitch/icecream__tutorial.review.2.mp3",
+  "hash": "0ff11d92"
+ },
+ "mitch/icecream:tutorial.scoop.1": {
+  "file": "mitch/icecream__tutorial.scoop.1.mp3",
+  "hash": "2420cad2"
+ },
+ "mitch/icecream:tutorial.scoop.2": {
+  "file": "mitch/icecream__tutorial.scoop.2.mp3",
+  "hash": "253d6bd0"
+ },
+ "mitch/icecream:tutorial.serve.1": {
+  "file": "mitch/icecream__tutorial.serve.1.mp3",
+  "hash": "de10f191"
+ },
+ "mitch/icecream:tutorial.serve.2": {
+  "file": "mitch/icecream__tutorial.serve.2.mp3",
+  "hash": "b6b60555"
+ },
+ "mitch/icecream:tutorial.shake.1": {
+  "file": "mitch/icecream__tutorial.shake.1.mp3",
+  "hash": "553c45a8"
+ },
+ "mitch/icecream:tutorial.shake.2": {
+  "file": "mitch/icecream__tutorial.shake.2.mp3",
+  "hash": "59288913"
+ },
+ "mitch/icecream:tutorial.ticket.1": {
+  "file": "mitch/icecream__tutorial.ticket.1.mp3",
+  "hash": "685e30f6"
+ },
+ "mitch/icecream:tutorial.ticket.2": {
+  "file": "mitch/icecream__tutorial.ticket.2.mp3",
+  "hash": "f8cb9036"
+ },
+ "mitch/icecream:tutorial.toppings.1": {
+  "file": "mitch/icecream__tutorial.toppings.1.mp3",
+  "hash": "25d3bdf7"
+ },
+ "mitch/icecream:tutorial.toppings.2": {
+  "file": "mitch/icecream__tutorial.toppings.2.mp3",
+  "hash": "0308a3c4"
+ },
+ "mitch/icecream:tutorial.warn.done.1.creamy": {
+  "file": "mitch/icecream__tutorial.warn.done.1.creamy.mp3",
+  "hash": "4279dbef"
+ },
+ "mitch/icecream:tutorial.warn.done.1.huge": {
+  "file": "mitch/icecream__tutorial.warn.done.1.huge.mp3",
+  "hash": "91cf8251"
+ },
+ "mitch/icecream:tutorial.warn.done.1.regular": {
+  "file": "mitch/icecream__tutorial.warn.done.1.regular.mp3",
+  "hash": "904d2e3e"
+ },
+ "mitch/icecream:tutorial.warn.done.1.small": {
+  "file": "mitch/icecream__tutorial.warn.done.1.small.mp3",
+  "hash": "53db8f29"
+ },
+ "mitch/icecream:tutorial.warn.done.1.thick": {
+  "file": "mitch/icecream__tutorial.warn.done.1.thick.mp3",
+  "hash": "17169eb7"
+ },
+ "mitch/icecream:tutorial.warn.done.1.thin": {
+  "file": "mitch/icecream__tutorial.warn.done.1.thin.mp3",
+  "hash": "87752a5d"
+ },
+ "mitch/icecream:tutorial.warn.done.2.creamy": {
+  "file": "mitch/icecream__tutorial.warn.done.2.creamy.mp3",
+  "hash": "7f5a0057"
+ },
+ "mitch/icecream:tutorial.warn.done.2.huge": {
+  "file": "mitch/icecream__tutorial.warn.done.2.huge.mp3",
+  "hash": "429a4d03"
+ },
+ "mitch/icecream:tutorial.warn.done.2.regular": {
+  "file": "mitch/icecream__tutorial.warn.done.2.regular.mp3",
+  "hash": "399a8cb9"
+ },
+ "mitch/icecream:tutorial.warn.done.2.small": {
+  "file": "mitch/icecream__tutorial.warn.done.2.small.mp3",
+  "hash": "8924ddd1"
+ },
+ "mitch/icecream:tutorial.warn.done.2.thick": {
+  "file": "mitch/icecream__tutorial.warn.done.2.thick.mp3",
+  "hash": "b8ddc19d"
+ },
+ "mitch/icecream:tutorial.warn.done.2.thin": {
+  "file": "mitch/icecream__tutorial.warn.done.2.thin.mp3",
+  "hash": "ac68fce7"
+ },
+ "mitch/icecream:tutorial.warn.gross.1.cherry": {
+  "file": "mitch/icecream__tutorial.warn.gross.1.cherry.mp3",
+  "hash": "ade65809"
+ },
+ "mitch/icecream:tutorial.warn.gross.2.cherry": {
+  "file": "mitch/icecream__tutorial.warn.gross.2.cherry.mp3",
+  "hash": "cd31ac21"
+ },
+ "mitch/icecream:tutorial.warn.grossSkip.1.cherry": {
+  "file": "mitch/icecream__tutorial.warn.grossSkip.1.cherry.mp3",
+  "hash": "c7066a76"
+ },
+ "mitch/icecream:tutorial.warn.grossSkip.2.cherry": {
+  "file": "mitch/icecream__tutorial.warn.grossSkip.2.cherry.mp3",
+  "hash": "cfbd618a"
+ },
+ "mitch/icecream:tutorial.warn.missing.1.cherry": {
+  "file": "mitch/icecream__tutorial.warn.missing.1.cherry.mp3",
+  "hash": "49f3827d"
+ },
+ "mitch/icecream:tutorial.warn.missing.1.hotFudge": {
+  "file": "mitch/icecream__tutorial.warn.missing.1.hotFudge.mp3",
+  "hash": "e075b7c4"
+ },
+ "mitch/icecream:tutorial.warn.missing.1.nuts": {
+  "file": "mitch/icecream__tutorial.warn.missing.1.nuts.mp3",
+  "hash": "fa5adfae"
+ },
+ "mitch/icecream:tutorial.warn.missing.1.whippedCream": {
+  "file": "mitch/icecream__tutorial.warn.missing.1.whippedCream.mp3",
+  "hash": "8fd5952b"
+ },
+ "mitch/icecream:tutorial.warn.missing.2.cherry": {
+  "file": "mitch/icecream__tutorial.warn.missing.2.cherry.mp3",
+  "hash": "e7b84105"
+ },
+ "mitch/icecream:tutorial.warn.missing.2.hotFudge": {
+  "file": "mitch/icecream__tutorial.warn.missing.2.hotFudge.mp3",
+  "hash": "a2d3c65e"
+ },
+ "mitch/icecream:tutorial.warn.missing.2.nuts": {
+  "file": "mitch/icecream__tutorial.warn.missing.2.nuts.mp3",
+  "hash": "057ece74"
+ },
+ "mitch/icecream:tutorial.warn.missing.2.whippedCream": {
+  "file": "mitch/icecream__tutorial.warn.missing.2.whippedCream.mp3",
+  "hash": "5a02ef9f"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.holder.cone": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.holder.cone.mp3",
+  "hash": "4d3835e1"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.holder.cup": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.holder.cup.mp3",
+  "hash": "216dc896"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.holder.waffleCone": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.holder.waffleCone.mp3",
+  "hash": "5bfc8ed0"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.scoops.bubblegum": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.scoops.bubblegum.mp3",
+  "hash": "61730784"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.scoops.chocolate": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.scoops.chocolate.mp3",
+  "hash": "6b988adb"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.scoops.cookieDough": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.scoops.cookieDough.mp3",
+  "hash": "7b8c4efa"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.scoops.mintChip": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.scoops.mintChip.mp3",
+  "hash": "a5e7bcb3"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.scoops.rockyRoad": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.scoops.rockyRoad.mp3",
+  "hash": "d4d3c0ad"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.scoops.strawberry": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.scoops.strawberry.mp3",
+  "hash": "c6809eb2"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.scoops.vanilla": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.scoops.vanilla.mp3",
+  "hash": "c15df6f6"
+ },
+ "mitch/icecream:tutorial.warn.pick.1.shakeFlavour.chocolate": {
+  "file": "mitch/icecream__tutorial.warn.pick.1.shakeFlavour.chocolate.mp3",
+  "hash": "f1825d90"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.holder.cone": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.holder.cone.mp3",
+  "hash": "d79b38a0"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.holder.cup": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.holder.cup.mp3",
+  "hash": "978ccd57"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.holder.waffleCone": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.holder.waffleCone.mp3",
+  "hash": "666002b5"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.scoops.bubblegum": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.scoops.bubblegum.mp3",
+  "hash": "556d4bf3"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.scoops.chocolate": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.scoops.chocolate.mp3",
+  "hash": "b9059696"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.scoops.cookieDough": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.scoops.cookieDough.mp3",
+  "hash": "c661503b"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.scoops.mintChip": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.scoops.mintChip.mp3",
+  "hash": "8a1dccce"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.scoops.rockyRoad": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.scoops.rockyRoad.mp3",
+  "hash": "e4a30b6e"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.scoops.strawberry": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.scoops.strawberry.mp3",
+  "hash": "18a8a393"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.scoops.vanilla": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.scoops.vanilla.mp3",
+  "hash": "59226a65"
+ },
+ "mitch/icecream:tutorial.warn.pick.2.shakeFlavour.chocolate": {
+  "file": "mitch/icecream__tutorial.warn.pick.2.shakeFlavour.chocolate.mp3",
+  "hash": "88ee053f"
+ },
+ "mitch/icecream:tutorial.warn.tooFew.1": {
+  "file": "mitch/icecream__tutorial.warn.tooFew.1.mp3",
+  "hash": "e06c8599"
+ },
+ "mitch/icecream:tutorial.warn.tooFew.2": {
+  "file": "mitch/icecream__tutorial.warn.tooFew.2.mp3",
+  "hash": "89ba5d1a"
+ },
+ "mitch/icecream:tutorial.warn.tooMany.1": {
+  "file": "mitch/icecream__tutorial.warn.tooMany.1.mp3",
+  "hash": "b1ec2697"
+ },
+ "mitch/icecream:tutorial.warn.tooMany.2": {
+  "file": "mitch/icecream__tutorial.warn.tooMany.2.mp3",
+  "hash": "2e3a2d5c"
+ },
+ "mitch/icecream:tutorial.warn.unasked.1.caramel": {
+  "file": "mitch/icecream__tutorial.warn.unasked.1.caramel.mp3",
+  "hash": "dc581508"
+ },
+ "mitch/icecream:tutorial.warn.unasked.1.cherry": {
+  "file": "mitch/icecream__tutorial.warn.unasked.1.cherry.mp3",
+  "hash": "69a69402"
+ },
+ "mitch/icecream:tutorial.warn.unasked.1.hotFudge": {
+  "file": "mitch/icecream__tutorial.warn.unasked.1.hotFudge.mp3",
+  "hash": "6f098dfd"
+ },
+ "mitch/icecream:tutorial.warn.unasked.1.nuts": {
+  "file": "mitch/icecream__tutorial.warn.unasked.1.nuts.mp3",
+  "hash": "953b148f"
+ },
+ "mitch/icecream:tutorial.warn.unasked.1.sprinkles": {
+  "file": "mitch/icecream__tutorial.warn.unasked.1.sprinkles.mp3",
+  "hash": "69c647a6"
+ },
+ "mitch/icecream:tutorial.warn.unasked.1.whippedCream": {
+  "file": "mitch/icecream__tutorial.warn.unasked.1.whippedCream.mp3",
+  "hash": "40efee3c"
+ },
+ "mitch/icecream:tutorial.warn.unasked.2.caramel": {
+  "file": "mitch/icecream__tutorial.warn.unasked.2.caramel.mp3",
+  "hash": "20b0109f"
+ },
+ "mitch/icecream:tutorial.warn.unasked.2.cherry": {
+  "file": "mitch/icecream__tutorial.warn.unasked.2.cherry.mp3",
+  "hash": "b9511857"
+ },
+ "mitch/icecream:tutorial.warn.unasked.2.hotFudge": {
+  "file": "mitch/icecream__tutorial.warn.unasked.2.hotFudge.mp3",
+  "hash": "75723a6c"
+ },
+ "mitch/icecream:tutorial.warn.unasked.2.nuts": {
+  "file": "mitch/icecream__tutorial.warn.unasked.2.nuts.mp3",
+  "hash": "aafda4c8"
+ },
+ "mitch/icecream:tutorial.warn.unasked.2.sprinkles": {
+  "file": "mitch/icecream__tutorial.warn.unasked.2.sprinkles.mp3",
+  "hash": "448b0fa9"
+ },
+ "mitch/icecream:tutorial.warn.unasked.2.whippedCream": {
+  "file": "mitch/icecream__tutorial.warn.unasked.2.whippedCream.mp3",
+  "hash": "26c615ff"
+ },
+ "mitch/icecream:uniform.1": {
+  "file": "mitch/icecream__uniform.1.mp3",
+  "hash": "476d57ae"
+ },
+ "mitch/icecream:uniform.2": {
+  "file": "mitch/icecream__uniform.2.mp3",
+  "hash": "4d4d5e7e"
+ },
+ "mitch/icecream:uniform.3": {
+  "file": "mitch/icecream__uniform.3.mp3",
+  "hash": "62ac39e9"
+ },
+ "reginald/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "reginald/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "reginald/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "reginald/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "reginald/icecream:customer.complain.gross.hair.1": {
+  "file": "reginald/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "reginald/icecream:customer.complain.gross.hair.2": {
+  "file": "reginald/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "reginald/icecream:customer.complain.gross.tomato.1": {
+  "file": "reginald/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "reginald/icecream:customer.complain.gross.tomato.2": {
+  "file": "reginald/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "reginald/icecream:customer.order.odd.justCherry.1": {
+  "file": "reginald/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "reginald/icecream:customer.order.odd.justCherry.2": {
+  "file": "reginald/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "reginald/icecream:customer.order.odd.ketchup.1": {
+  "file": "reginald/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "reginald/icecream:customer.order.odd.ketchup.2": {
+  "file": "reginald/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "reginald/icecream:customer.order.odd.malted.1": {
+  "file": "reginald/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "reginald/icecream:customer.order.odd.malted.2": {
+  "file": "reginald/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "reginald/icecream:customer.order.odd.tenScoop.1": {
+  "file": "reginald/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "reginald/icecream:customer.order.odd.tenScoop.2": {
+  "file": "reginald/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "reginald/icecream:customer.react.gross.1": {
+  "file": "reginald/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "reginald/icecream:customer.react.gross.2": {
+  "file": "reginald/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "reginald/icecream:react.1.1": {
+  "file": "reginald/icecream__react.1.1.mp3",
+  "hash": "021ac4f1"
+ },
+ "reginald/icecream:react.1.2": {
+  "file": "reginald/icecream__react.1.2.mp3",
+  "hash": "a53bdbcd"
+ },
+ "reginald/icecream:react.1.3": {
+  "file": "reginald/icecream__react.1.3.mp3",
+  "hash": "d5e95eb4"
+ },
+ "reginald/icecream:react.2.1": {
+  "file": "reginald/icecream__react.2.1.mp3",
+  "hash": "4464c9e5"
+ },
+ "reginald/icecream:react.2.2": {
+  "file": "reginald/icecream__react.2.2.mp3",
+  "hash": "bc41f463"
+ },
+ "reginald/icecream:react.2.3": {
+  "file": "reginald/icecream__react.2.3.mp3",
+  "hash": "fd17158c"
+ },
+ "reginald/icecream:react.3.1": {
+  "file": "reginald/icecream__react.3.1.mp3",
+  "hash": "01f9af2d"
+ },
+ "reginald/icecream:react.3.2": {
+  "file": "reginald/icecream__react.3.2.mp3",
+  "hash": "abaea997"
+ },
+ "reginald/icecream:react.3.3": {
+  "file": "reginald/icecream__react.3.3.mp3",
+  "hash": "7529c41d"
+ },
+ "reginald/icecream:react.gross.1": {
+  "file": "reginald/icecream__react.gross.1.mp3",
+  "hash": "3740733b"
+ },
+ "reginald/icecream:visitor.arrive.1": {
+  "file": "reginald/icecream__visitor.arrive.1.mp3",
+  "hash": "9cd0b1dd"
+ },
+ "reginald/icecream:visitor.arrive.2": {
+  "file": "reginald/icecream__visitor.arrive.2.mp3",
+  "hash": "c5f84aec"
+ },
+ "reginald/icecream:visitor.arrive.3": {
+  "file": "reginald/icecream__visitor.arrive.3.mp3",
+  "hash": "4e41353a"
+ },
+ "sal/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "sal/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "sal/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "sal/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "sal/icecream:customer.complain.gross.hair.1": {
+  "file": "sal/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "sal/icecream:customer.complain.gross.hair.2": {
+  "file": "sal/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "sal/icecream:customer.complain.gross.tomato.1": {
+  "file": "sal/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "sal/icecream:customer.complain.gross.tomato.2": {
+  "file": "sal/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "sal/icecream:customer.order.odd.justCherry.1": {
+  "file": "sal/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "sal/icecream:customer.order.odd.justCherry.2": {
+  "file": "sal/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "sal/icecream:customer.order.odd.ketchup.1": {
+  "file": "sal/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "sal/icecream:customer.order.odd.ketchup.2": {
+  "file": "sal/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "sal/icecream:customer.order.odd.malted.1": {
+  "file": "sal/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "sal/icecream:customer.order.odd.malted.2": {
+  "file": "sal/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "sal/icecream:customer.order.odd.tenScoop.1": {
+  "file": "sal/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "sal/icecream:customer.order.odd.tenScoop.2": {
+  "file": "sal/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "sal/icecream:customer.react.gross.1": {
+  "file": "sal/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "sal/icecream:customer.react.gross.2": {
+  "file": "sal/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "sal/icecream:greet.1": {
+  "file": "sal/icecream__greet.1.mp3",
+  "hash": "bf27dc3b"
+ },
+ "sal/icecream:order.dislike.1": {
+  "file": "sal/icecream__order.dislike.1.mp3",
+  "hash": "bb27e1ea"
+ },
+ "sal/icecream:order.dislike.2": {
+  "file": "sal/icecream__order.dislike.2.mp3",
+  "hash": "b16c990a"
+ },
+ "sal/icecream:order.dislike.3": {
+  "file": "sal/icecream__order.dislike.3.mp3",
+  "hash": "8a17820a"
+ },
+ "sal/icecream:react.1.1": {
+  "file": "sal/icecream__react.1.1.mp3",
+  "hash": "88261f57"
+ },
+ "sal/icecream:react.1.2": {
+  "file": "sal/icecream__react.1.2.mp3",
+  "hash": "c1317d6e"
+ },
+ "sal/icecream:react.1.3": {
+  "file": "sal/icecream__react.1.3.mp3",
+  "hash": "8b1af388"
+ },
+ "sal/icecream:react.2.1": {
+  "file": "sal/icecream__react.2.1.mp3",
+  "hash": "c9524c45"
+ },
+ "sal/icecream:react.2.2": {
+  "file": "sal/icecream__react.2.2.mp3",
+  "hash": "a74d51f2"
+ },
+ "sal/icecream:react.2.3": {
+  "file": "sal/icecream__react.2.3.mp3",
+  "hash": "f2b3841b"
+ },
+ "sal/icecream:react.3.1": {
+  "file": "sal/icecream__react.3.1.mp3",
+  "hash": "bb4590a7"
+ },
+ "sal/icecream:react.3.2": {
+  "file": "sal/icecream__react.3.2.mp3",
+  "hash": "ba083e46"
+ },
+ "sal/icecream:react.3.3": {
+  "file": "sal/icecream__react.3.3.mp3",
+  "hash": "86bcf74a"
+ },
+ "sal/icecream:react.gross.1": {
+  "file": "sal/icecream__react.gross.1.mp3",
+  "hash": "b0485a26"
+ },
+ "tasha/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "tasha/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "tasha/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "tasha/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "tasha/icecream:customer.complain.gross.hair.1": {
+  "file": "tasha/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "tasha/icecream:customer.complain.gross.hair.2": {
+  "file": "tasha/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "tasha/icecream:customer.complain.gross.tomato.1": {
+  "file": "tasha/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "tasha/icecream:customer.complain.gross.tomato.2": {
+  "file": "tasha/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "tasha/icecream:customer.order.odd.justCherry.1": {
+  "file": "tasha/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "tasha/icecream:customer.order.odd.justCherry.2": {
+  "file": "tasha/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "tasha/icecream:customer.order.odd.ketchup.1": {
+  "file": "tasha/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "tasha/icecream:customer.order.odd.ketchup.2": {
+  "file": "tasha/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "tasha/icecream:customer.order.odd.malted.1": {
+  "file": "tasha/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "tasha/icecream:customer.order.odd.malted.2": {
+  "file": "tasha/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "tasha/icecream:customer.order.odd.tenScoop.1": {
+  "file": "tasha/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "tasha/icecream:customer.order.odd.tenScoop.2": {
+  "file": "tasha/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "tasha/icecream:customer.react.gross.1": {
+  "file": "tasha/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "tasha/icecream:customer.react.gross.2": {
+  "file": "tasha/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "tasha/icecream:greet.1": {
+  "file": "tasha/icecream__greet.1.mp3",
+  "hash": "a7f893c1"
+ },
+ "tasha/icecream:order.odd.justCherry.1": {
+  "file": "tasha/icecream__order.odd.justCherry.1.mp3",
+  "hash": "5d1b0164"
+ },
+ "tasha/icecream:order.odd.ketchup.1": {
+  "file": "tasha/icecream__order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "tasha/icecream:order.odd.tenScoop.1": {
+  "file": "tasha/icecream__order.odd.tenScoop.1.mp3",
+  "hash": "d6a9f9be"
+ },
+ "tasha/icecream:react.1.1": {
+  "file": "tasha/icecream__react.1.1.mp3",
+  "hash": "caf15517"
+ },
+ "tasha/icecream:react.1.2": {
+  "file": "tasha/icecream__react.1.2.mp3",
+  "hash": "1c938772"
+ },
+ "tasha/icecream:react.1.3": {
+  "file": "tasha/icecream__react.1.3.mp3",
+  "hash": "a5f3a24c"
+ },
+ "tasha/icecream:react.2.1": {
+  "file": "tasha/icecream__react.2.1.mp3",
+  "hash": "bacc6990"
+ },
+ "tasha/icecream:react.2.2": {
+  "file": "tasha/icecream__react.2.2.mp3",
+  "hash": "877119ca"
+ },
+ "tasha/icecream:react.2.3": {
+  "file": "tasha/icecream__react.2.3.mp3",
+  "hash": "73bf8914"
+ },
+ "tasha/icecream:react.3.1": {
+  "file": "tasha/icecream__react.3.1.mp3",
+  "hash": "01852892"
+ },
+ "tasha/icecream:react.3.2": {
+  "file": "tasha/icecream__react.3.2.mp3",
+  "hash": "b9e57ac8"
+ },
+ "tasha/icecream:react.3.3": {
+  "file": "tasha/icecream__react.3.3.mp3",
+  "hash": "39e79248"
+ },
+ "tasha/icecream:react.gross.1": {
+  "file": "tasha/icecream__react.gross.1.mp3",
+  "hash": "cefb93e7"
+ },
+ "vernon/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "vernon/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "vernon/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "vernon/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "vernon/icecream:customer.complain.gross.hair.1": {
+  "file": "vernon/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "vernon/icecream:customer.complain.gross.hair.2": {
+  "file": "vernon/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "vernon/icecream:customer.complain.gross.tomato.1": {
+  "file": "vernon/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "vernon/icecream:customer.complain.gross.tomato.2": {
+  "file": "vernon/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "vernon/icecream:customer.order.odd.justCherry.1": {
+  "file": "vernon/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "vernon/icecream:customer.order.odd.justCherry.2": {
+  "file": "vernon/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "vernon/icecream:customer.order.odd.ketchup.1": {
+  "file": "vernon/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "vernon/icecream:customer.order.odd.ketchup.2": {
+  "file": "vernon/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "vernon/icecream:customer.order.odd.malted.1": {
+  "file": "vernon/icecream__customer.order.odd.malted.1.mp3",
+  "hash": "57d0b514"
+ },
+ "vernon/icecream:customer.order.odd.malted.2": {
+  "file": "vernon/icecream__customer.order.odd.malted.2.mp3",
+  "hash": "4fb68dc4"
+ },
+ "vernon/icecream:customer.order.odd.tenScoop.1": {
+  "file": "vernon/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "vernon/icecream:customer.order.odd.tenScoop.2": {
+  "file": "vernon/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "vernon/icecream:customer.react.gross.1": {
+  "file": "vernon/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "vernon/icecream:customer.react.gross.2": {
+  "file": "vernon/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "vernon/icecream:greet.1": {
+  "file": "vernon/icecream__greet.1.mp3",
+  "hash": "cc3404e8"
+ },
+ "vernon/icecream:order.odd.justCherry.1": {
+  "file": "vernon/icecream__order.odd.justCherry.1.mp3",
+  "hash": "65927c22"
+ },
+ "vernon/icecream:order.odd.ketchup.1": {
+  "file": "vernon/icecream__order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "vernon/icecream:order.odd.tenScoop.1": {
+  "file": "vernon/icecream__order.odd.tenScoop.1.mp3",
+  "hash": "c665c15d"
+ },
+ "vernon/icecream:react.1.1": {
+  "file": "vernon/icecream__react.1.1.mp3",
+  "hash": "0d97bb93"
+ },
+ "vernon/icecream:react.1.2": {
+  "file": "vernon/icecream__react.1.2.mp3",
+  "hash": "ce342f21"
+ },
+ "vernon/icecream:react.1.3": {
+  "file": "vernon/icecream__react.1.3.mp3",
+  "hash": "5000d6d0"
+ },
+ "vernon/icecream:react.2.1": {
+  "file": "vernon/icecream__react.2.1.mp3",
+  "hash": "597dd232"
+ },
+ "vernon/icecream:react.2.2": {
+  "file": "vernon/icecream__react.2.2.mp3",
+  "hash": "b9b67e3c"
+ },
+ "vernon/icecream:react.2.3": {
+  "file": "vernon/icecream__react.2.3.mp3",
+  "hash": "d39068cf"
+ },
+ "vernon/icecream:react.3.1": {
+  "file": "vernon/icecream__react.3.1.mp3",
+  "hash": "8c3b4715"
+ },
+ "vernon/icecream:react.3.2": {
+  "file": "vernon/icecream__react.3.2.mp3",
+  "hash": "569687e1"
+ },
+ "vernon/icecream:react.3.3": {
+  "file": "vernon/icecream__react.3.3.mp3",
+  "hash": "c80d5d63"
+ },
+ "vernon/icecream:react.gross.1": {
+  "file": "vernon/icecream__react.gross.1.mp3",
+  "hash": "12dcc692"
+ },
+ "vernon/icecream:smalltalk.scoop": {
+  "file": "vernon/icecream__smalltalk.scoop.mp3",
+  "hash": "1fb4dd08"
+ },
+ "walt/icecream:complain.gross.freezerBurn.1": {
+  "file": "walt/icecream__complain.gross.freezerBurn.1.mp3",
+  "hash": "e10fd586"
+ },
+ "walt/icecream:complain.gross.hair.1": {
+  "file": "walt/icecream__complain.gross.hair.1.mp3",
+  "hash": "c820f3b8"
+ },
+ "walt/icecream:complain.gross.tomato.1": {
+  "file": "walt/icecream__complain.gross.tomato.1.mp3",
+  "hash": "63a21ec8"
+ },
+ "walt/icecream:customer.complain.gross.freezerBurn.1": {
+  "file": "walt/icecream__customer.complain.gross.freezerBurn.1.mp3",
+  "hash": "ea955a47"
+ },
+ "walt/icecream:customer.complain.gross.freezerBurn.2": {
+  "file": "walt/icecream__customer.complain.gross.freezerBurn.2.mp3",
+  "hash": "b6e80ea9"
+ },
+ "walt/icecream:customer.complain.gross.hair.1": {
+  "file": "walt/icecream__customer.complain.gross.hair.1.mp3",
+  "hash": "bcf289d4"
+ },
+ "walt/icecream:customer.complain.gross.hair.2": {
+  "file": "walt/icecream__customer.complain.gross.hair.2.mp3",
+  "hash": "e4c31448"
+ },
+ "walt/icecream:customer.complain.gross.tomato.1": {
+  "file": "walt/icecream__customer.complain.gross.tomato.1.mp3",
+  "hash": "6fc5db95"
+ },
+ "walt/icecream:customer.complain.gross.tomato.2": {
+  "file": "walt/icecream__customer.complain.gross.tomato.2.mp3",
+  "hash": "c8529e20"
+ },
+ "walt/icecream:customer.order.odd.justCherry.1": {
+  "file": "walt/icecream__customer.order.odd.justCherry.1.mp3",
+  "hash": "e2fbc859"
+ },
+ "walt/icecream:customer.order.odd.justCherry.2": {
+  "file": "walt/icecream__customer.order.odd.justCherry.2.mp3",
+  "hash": "985c937b"
+ },
+ "walt/icecream:customer.order.odd.ketchup.1": {
+  "file": "walt/icecream__customer.order.odd.ketchup.1.mp3",
+  "hash": "9f714597"
+ },
+ "walt/icecream:customer.order.odd.ketchup.2": {
+  "file": "walt/icecream__customer.order.odd.ketchup.2.mp3",
+  "hash": "e2b55b5a"
+ },
+ "walt/icecream:customer.order.odd.tenScoop.1": {
+  "file": "walt/icecream__customer.order.odd.tenScoop.1.mp3",
+  "hash": "6597f7b6"
+ },
+ "walt/icecream:customer.order.odd.tenScoop.2": {
+  "file": "walt/icecream__customer.order.odd.tenScoop.2.mp3",
+  "hash": "532d3031"
+ },
+ "walt/icecream:customer.react.gross.1": {
+  "file": "walt/icecream__customer.react.gross.1.mp3",
+  "hash": "fa02e9e3"
+ },
+ "walt/icecream:customer.react.gross.2": {
+  "file": "walt/icecream__customer.react.gross.2.mp3",
+  "hash": "593a8b6b"
+ },
+ "walt/icecream:goodbye.1": {
+  "file": "walt/icecream__goodbye.1.mp3",
+  "hash": "1bc2dc3e"
+ },
+ "walt/icecream:goodbye.2": {
+  "file": "walt/icecream__goodbye.2.mp3",
+  "hash": "2d0ac161"
+ },
+ "walt/icecream:goodbye.3": {
+  "file": "walt/icecream__goodbye.3.mp3",
+  "hash": "35a37c7b"
+ },
+ "walt/icecream:goodbye.4": {
+  "file": "walt/icecream__goodbye.4.mp3",
+  "hash": "61ba8403"
+ },
+ "walt/icecream:greet.1": {
+  "file": "walt/icecream__greet.1.mp3",
+  "hash": "f5dc6bbe"
+ },
+ "walt/icecream:greet.2": {
+  "file": "walt/icecream__greet.2.mp3",
+  "hash": "db33a074"
+ },
+ "walt/icecream:greet.3": {
+  "file": "walt/icecream__greet.3.mp3",
+  "hash": "b1394e79"
+ },
+ "walt/icecream:greet.4": {
+  "file": "walt/icecream__greet.4.mp3",
+  "hash": "a5d3b299"
+ },
+ "walt/icecream:greet.5": {
+  "file": "walt/icecream__greet.5.mp3",
+  "hash": "d3f1a663"
+ },
+ "walt/icecream:order.gag.1": {
+  "file": "walt/icecream__order.gag.1.mp3",
+  "hash": "60e775c9"
+ },
+ "walt/icecream:order.gag.2": {
+  "file": "walt/icecream__order.gag.2.mp3",
+  "hash": "5dee1d66"
+ },
+ "walt/icecream:order.gag.3": {
+  "file": "walt/icecream__order.gag.3.mp3",
+  "hash": "ef39f364"
+ },
+ "walt/icecream:order.gag.4": {
+  "file": "walt/icecream__order.gag.4.mp3",
+  "hash": "8f59d1f2"
+ },
+ "walt/icecream:order.odd.justCherry.1": {
+  "file": "walt/icecream__order.odd.justCherry.1.mp3",
+  "hash": "d5eff59c"
+ },
+ "walt/icecream:order.odd.ketchup.1": {
+  "file": "walt/icecream__order.odd.ketchup.1.mp3",
+  "hash": "e08b8769"
+ },
+ "walt/icecream:order.odd.malted.1": {
+  "file": "walt/icecream__order.odd.malted.1.mp3",
+  "hash": "902eeed7"
+ },
+ "walt/icecream:order.odd.malted.2": {
+  "file": "walt/icecream__order.odd.malted.2.mp3",
+  "hash": "e92ebf85"
+ },
+ "walt/icecream:order.odd.tenScoop.1": {
+  "file": "walt/icecream__order.odd.tenScoop.1.mp3",
+  "hash": "e3dc6e7b"
+ },
+ "walt/icecream:react.1.1": {
+  "file": "walt/icecream__react.1.1.mp3",
+  "hash": "a4a907ec"
+ },
+ "walt/icecream:react.1.2": {
+  "file": "walt/icecream__react.1.2.mp3",
+  "hash": "9df2b64c"
+ },
+ "walt/icecream:react.1.3": {
+  "file": "walt/icecream__react.1.3.mp3",
+  "hash": "208e744d"
+ },
+ "walt/icecream:react.2.1": {
+  "file": "walt/icecream__react.2.1.mp3",
+  "hash": "49ac7d60"
+ },
+ "walt/icecream:react.2.2": {
+  "file": "walt/icecream__react.2.2.mp3",
+  "hash": "af33cc5e"
+ },
+ "walt/icecream:react.2.3": {
+  "file": "walt/icecream__react.2.3.mp3",
+  "hash": "b12486e3"
+ },
+ "walt/icecream:react.3.1": {
+  "file": "walt/icecream__react.3.1.mp3",
+  "hash": "7a7514e3"
+ },
+ "walt/icecream:react.3.2": {
+  "file": "walt/icecream__react.3.2.mp3",
+  "hash": "3181122b"
+ },
+ "walt/icecream:react.3.3": {
+  "file": "walt/icecream__react.3.3.mp3",
+  "hash": "f8db3f44"
+ },
+ "walt/icecream:react.favourite.1": {
+  "file": "walt/icecream__react.favourite.1.mp3",
+  "hash": "b8e07a53"
+ },
+ "walt/icecream:react.favourite.2": {
+  "file": "walt/icecream__react.favourite.2.mp3",
+  "hash": "cdcfdbfe"
+ },
+ "walt/icecream:react.gross.1": {
+  "file": "walt/icecream__react.gross.1.mp3",
+  "hash": "3b5ea8a7"
+ },
+ "walt/icecream:smalltalk.1": {
+  "file": "walt/icecream__smalltalk.1.mp3",
+  "hash": "1b3fd400"
+ },
+ "walt/icecream:smalltalk.2": {
+  "file": "walt/icecream__smalltalk.2.mp3",
+  "hash": "9b7d167a"
+ },
+ "walt/icecream:smalltalk.3": {
+  "file": "walt/icecream__smalltalk.3.mp3",
+  "hash": "a6de959e"
+ },
+ "walt/icecream:smalltalk.4": {
+  "file": "walt/icecream__smalltalk.4.mp3",
+  "hash": "16786c0c"
+ },
+ "walt/icecream:smalltalk.5": {
+  "file": "walt/icecream__smalltalk.5.mp3",
+  "hash": "7371f984"
+ }
+}

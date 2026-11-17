@@ -292,9 +292,9 @@
         SC.candidates(script, P.id, 'order.usual', null).length;
       if (isUsual) await talk(P.id, 'order.usual', {}, POSE.order);
       else {
-        // The customer orders the way people do ("no onions"); the ticket then spells it all out.
-        const parts = W.orderParts(pack, o.ticket).map(p => ({ clip: P.id + '/order.' + p.id, text: p.text }));
-        await speakAs(P.id, W.said(pack, o.ticket), null, POSE.order, parts);
+        // The customer leads in, in their own voice ("Here's the play."); the ticket read-out below then says the
+        // order itself, in the game's voice (voice pass, 2026-11-11: no order said in recorded parts).
+        await talk(P.id, 'order.intro', {}, POSE.order);
         if (stale(t)) return;
         // Something this customer never takes was left off: they may say why, in their own words.
         const disliked = (P.dislikes || []).find(d => o.items.some(it => (it.spec.holds || []).includes(d)));

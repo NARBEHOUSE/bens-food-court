@@ -1,0 +1,1714 @@
+{
+ "mitch/grumpy/voxcpm": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 241,
+  "seconds": 3.34,
+  "rate": 3.89,
+  "clarity": 3.07,
+  "drift": true
+ },
+ "mitch/grumpy/qwen": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 175,
+  "seconds": 3.36,
+  "rate": 3.87,
+  "clarity": 3.76,
+  "drift": false
+ },
+ "mitch/delighted/voxcpm": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 210,
+  "seconds": 4.78,
+  "rate": 3.14,
+  "clarity": 3.76,
+  "drift": false
+ },
+ "mitch/delighted/qwen": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 218,
+  "seconds": 3.66,
+  "rate": 4.09,
+  "clarity": 4.2,
+  "drift": false
+ },
+ "mitch/thanks/voxcpm": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 2.88,
+  "rate": 3.47,
+  "clarity": 3.8,
+  "drift": false
+ },
+ "mitch/thanks/qwen": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 2.15,
+  "rate": 4.65,
+  "clarity": 3.93,
+  "drift": false
+ },
+ "mitch/sad/voxcpm": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 223,
+  "seconds": 3.85,
+  "rate": 3.38,
+  "clarity": 3.89,
+  "drift": true
+ },
+ "mitch/sad/qwen": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 171,
+  "seconds": 3.22,
+  "rate": 4.03,
+  "clarity": 4.2,
+  "drift": false
+ },
+ "mitch/whisper/voxcpm": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 151,
+  "seconds": 3.57,
+  "rate": 3.36,
+  "clarity": 3.71,
+  "drift": false
+ },
+ "mitch/whisper/qwen": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 178,
+  "seconds": 3.31,
+  "rate": 3.62,
+  "clarity": 3.74,
+  "drift": false
+ },
+ "mitch/nervous/voxcpm": {
+  "said": "Uh oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 226,
+  "seconds": 2.76,
+  "rate": 3.62,
+  "clarity": 3.68,
+  "drift": true
+ },
+ "mitch/nervous/qwen": {
+  "said": "Uh-oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 171,
+  "seconds": 2.67,
+  "rate": 3.74,
+  "clarity": 3.84,
+  "drift": false
+ },
+ "mitch/laugh/voxcpm": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 174,
+  "seconds": 6.51,
+  "rate": 2.0,
+  "clarity": 3.33,
+  "drift": false
+ },
+ "mitch/laugh/qwen": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 216,
+  "seconds": 2.97,
+  "rate": 4.38,
+  "clarity": 4.1,
+  "drift": false
+ },
+ "mitch/sarcasm/voxcpm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 176,
+  "seconds": 4.29,
+  "rate": 3.03,
+  "clarity": 3.88,
+  "drift": false
+ },
+ "mitch/sarcasm/qwen": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 215,
+  "seconds": 4.39,
+  "rate": 2.96,
+  "clarity": 3.76,
+  "drift": false
+ },
+ "mitch/sigh/voxcpm": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 150,
+  "seconds": 5.08,
+  "rate": 2.56,
+  "clarity": 3.34,
+  "drift": false
+ },
+ "mitch/sigh/qwen": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 167,
+  "seconds": 3.66,
+  "rate": 3.56,
+  "clarity": 3.81,
+  "drift": false
+ },
+ "mitch/unsure/voxcpm": {
+  "said": "So I'll have the um the chicken sandwich. No, wait, the fish.",
+  "diffs": [
+   "insert: '' -> 'um'"
+  ],
+  "pitch": 201,
+  "seconds": 4.67,
+  "rate": 2.35,
+  "clarity": 3.52,
+  "drift": false
+ },
+ "mitch/unsure/qwen": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 196,
+  "seconds": 4.11,
+  "rate": 2.68,
+  "clarity": 3.82,
+  "drift": false
+ },
+ "mitch/fast/voxcpm": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 216,
+  "seconds": 5.04,
+  "rate": 3.96,
+  "clarity": 3.75,
+  "drift": false
+ },
+ "mitch/fast/qwen": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 172,
+  "seconds": 7.04,
+  "rate": 2.84,
+  "clarity": 4.01,
+  "drift": false
+ },
+ "mitch/slow/voxcpm": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 3.85,
+  "rate": 3.64,
+  "clarity": 3.03,
+  "drift": false
+ },
+ "mitch/slow/qwen": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 190,
+  "seconds": 3.16,
+  "rate": 4.43,
+  "clarity": 3.91,
+  "drift": false
+ },
+ "mitch/long/voxcpm": {
+  "said": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 178,
+  "seconds": 9.71,
+  "rate": 3.71,
+  "clarity": 3.78,
+  "drift": false
+ },
+ "mitch/long/qwen": {
+  "said": "When I was young, this whole street was nothing but fields. And on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 169,
+  "seconds": 8.84,
+  "rate": 4.07,
+  "clarity": 3.9,
+  "drift": false
+ },
+ "gus/grumpy/voxcpm": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 234,
+  "seconds": 3.73,
+  "rate": 3.49,
+  "clarity": 3.16,
+  "drift": true
+ },
+ "gus/grumpy/qwen": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 4.21,
+  "rate": 3.09,
+  "clarity": 3.78,
+  "drift": true
+ },
+ "gus/delighted/voxcpm": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 170,
+  "seconds": 4.35,
+  "rate": 3.44,
+  "clarity": 3.11,
+  "drift": true
+ },
+ "gus/delighted/qwen": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 166,
+  "seconds": 3.82,
+  "rate": 3.92,
+  "clarity": 3.72,
+  "drift": true
+ },
+ "gus/thanks/voxcpm": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 127,
+  "seconds": 3.23,
+  "rate": 3.09,
+  "clarity": 3.03,
+  "drift": false
+ },
+ "gus/thanks/qwen": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 146,
+  "seconds": 2.8,
+  "rate": 3.58,
+  "clarity": 3.87,
+  "drift": false
+ },
+ "gus/sad/voxcpm": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 140,
+  "seconds": 4.29,
+  "rate": 3.03,
+  "clarity": 3.65,
+  "drift": false
+ },
+ "gus/sad/qwen": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 177,
+  "seconds": 3.58,
+  "rate": 3.63,
+  "clarity": 3.81,
+  "drift": true
+ },
+ "gus/whisper/voxcpm": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 140,
+  "seconds": 3.86,
+  "rate": 3.11,
+  "clarity": 3.17,
+  "drift": false
+ },
+ "gus/whisper/qwen": {
+  "said": "Pissed. Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "replace: 'psst' -> 'pissed'"
+  ],
+  "pitch": 142,
+  "seconds": 3.82,
+  "rate": 3.14,
+  "clarity": 3.41,
+  "drift": false
+ },
+ "gus/nervous/voxcpm": {
+  "said": "Uh-oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 187,
+  "seconds": 3.95,
+  "rate": 2.53,
+  "clarity": 3.59,
+  "drift": true
+ },
+ "gus/nervous/qwen": {
+  "said": "Uh-oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 175,
+  "seconds": 2.63,
+  "rate": 3.81,
+  "clarity": 3.77,
+  "drift": true
+ },
+ "gus/laugh/voxcpm": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 173,
+  "seconds": 6.92,
+  "rate": 1.88,
+  "clarity": 3.17,
+  "drift": true
+ },
+ "gus/laugh/qwen": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 201,
+  "seconds": 3.54,
+  "rate": 3.67,
+  "clarity": 3.71,
+  "drift": true
+ },
+ "gus/sarcasm/voxcpm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 5.01,
+  "rate": 2.6,
+  "clarity": 3.51,
+  "drift": false
+ },
+ "gus/sarcasm/qwen": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 158,
+  "seconds": 4.92,
+  "rate": 2.64,
+  "clarity": 3.39,
+  "drift": false
+ },
+ "gus/sigh/voxcpm": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 128,
+  "seconds": 6.56,
+  "rate": 1.98,
+  "clarity": 3.0,
+  "drift": false
+ },
+ "gus/sigh/qwen": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 145,
+  "seconds": 4.09,
+  "rate": 3.18,
+  "clarity": 3.76,
+  "drift": false
+ },
+ "gus/unsure/voxcpm": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 122,
+  "seconds": 7.1,
+  "rate": 1.55,
+  "clarity": 3.55,
+  "drift": false
+ },
+ "gus/unsure/qwen": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 135,
+  "seconds": 3.63,
+  "rate": 3.03,
+  "clarity": 3.58,
+  "drift": false
+ },
+ "gus/fast/voxcpm": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, an extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 195,
+  "seconds": 5.97,
+  "rate": 3.35,
+  "clarity": 3.0,
+  "drift": true
+ },
+ "gus/fast/qwen": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, an extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 175,
+  "seconds": 7.6,
+  "rate": 2.63,
+  "clarity": 3.6,
+  "drift": true
+ },
+ "gus/slow/voxcpm": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 130,
+  "seconds": 4.29,
+  "rate": 3.27,
+  "clarity": 3.68,
+  "drift": false
+ },
+ "gus/slow/qwen": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 147,
+  "seconds": 4.06,
+  "rate": 3.45,
+  "clarity": 3.41,
+  "drift": false
+ },
+ "gus/long/voxcpm": {
+  "said": "When I was young, this whole street was nothing but fields, and on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 143,
+  "seconds": 11.18,
+  "rate": 3.22,
+  "clarity": 3.54,
+  "drift": false
+ },
+ "gus/long/qwen": {
+  "said": "When I was young, this whole street was nothing but fields. And on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 156,
+  "seconds": 10.41,
+  "rate": 3.46,
+  "clarity": 3.14,
+  "drift": false
+ },
+ "kai/grumpy/voxcpm": {
+  "said": "Hey! I ask for no onions. This is a whole mountain of onions.",
+  "diffs": [
+   "replace: 'asked' -> 'ask'"
+  ],
+  "pitch": 341,
+  "seconds": 4.89,
+  "rate": 2.66,
+  "clarity": 3.02,
+  "drift": true
+ },
+ "kai/grumpy/qwen": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 216,
+  "seconds": 4.99,
+  "rate": 2.6,
+  "clarity": 4.29,
+  "drift": false
+ },
+ "kai/delighted/voxcpm": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 359,
+  "seconds": 5.53,
+  "rate": 2.71,
+  "clarity": 1.66,
+  "drift": true
+ },
+ "kai/delighted/qwen": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 258,
+  "seconds": 3.79,
+  "rate": 3.96,
+  "clarity": 4.09,
+  "drift": false
+ },
+ "kai/thanks/voxcpm": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 219,
+  "seconds": 3.85,
+  "rate": 2.6,
+  "clarity": 3.87,
+  "drift": false
+ },
+ "kai/thanks/qwen": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 216,
+  "seconds": 3.3,
+  "rate": 3.03,
+  "clarity": 3.97,
+  "drift": false
+ },
+ "kai/sad/voxcpm": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 273,
+  "seconds": 5.1,
+  "rate": 2.55,
+  "clarity": 3.51,
+  "drift": false
+ },
+ "kai/sad/qwen": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 247,
+  "seconds": 4.47,
+  "rate": 2.91,
+  "clarity": 4.13,
+  "drift": false
+ },
+ "kai/whisper/voxcpm": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 145,
+  "seconds": 4.63,
+  "rate": 2.59,
+  "clarity": 1.14,
+  "drift": true
+ },
+ "kai/whisper/qwen": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 223,
+  "seconds": 4.34,
+  "rate": 2.76,
+  "clarity": 3.77,
+  "drift": false
+ },
+ "kai/nervous/voxcpm": {
+  "said": "Uh-oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 267,
+  "seconds": 4.17,
+  "rate": 2.4,
+  "clarity": 2.94,
+  "drift": false
+ },
+ "kai/nervous/qwen": {
+  "said": "Uh-oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 269,
+  "seconds": 3.24,
+  "rate": 3.08,
+  "clarity": 3.94,
+  "drift": false
+ },
+ "kai/laugh/voxcpm": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 368,
+  "seconds": 5.42,
+  "rate": 2.4,
+  "clarity": 2.19,
+  "drift": true
+ },
+ "kai/laugh/qwen": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 236,
+  "seconds": 3.77,
+  "rate": 3.45,
+  "clarity": 4.04,
+  "drift": false
+ },
+ "kai/sarcasm/voxcpm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 289,
+  "seconds": 5.35,
+  "rate": 2.43,
+  "clarity": 3.26,
+  "drift": false
+ },
+ "kai/sarcasm/qwen": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 225,
+  "seconds": 6.77,
+  "rate": 1.92,
+  "clarity": 4.15,
+  "drift": false
+ },
+ "kai/sigh/voxcpm": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 260,
+  "seconds": 5.21,
+  "rate": 2.5,
+  "clarity": 2.72,
+  "drift": false
+ },
+ "kai/sigh/qwen": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 243,
+  "seconds": 4.62,
+  "rate": 2.82,
+  "clarity": 4.36,
+  "drift": false
+ },
+ "kai/unsure/voxcpm": {
+  "said": "So I'll have the um the chicken sandwich. No, wait, the fish.",
+  "diffs": [
+   "insert: '' -> 'um'"
+  ],
+  "pitch": 259,
+  "seconds": 4.73,
+  "rate": 2.33,
+  "clarity": 3.76,
+  "drift": false
+ },
+ "kai/unsure/qwen": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 235,
+  "seconds": 4.28,
+  "rate": 2.57,
+  "clarity": 3.98,
+  "drift": false
+ },
+ "kai/fast/voxcpm": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 263,
+  "seconds": 6.95,
+  "rate": 2.88,
+  "clarity": 3.15,
+  "drift": false
+ },
+ "kai/fast/qwen": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 264,
+  "seconds": 9.2,
+  "rate": 2.17,
+  "clarity": 4.01,
+  "drift": false
+ },
+ "kai/slow/voxcpm": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 238,
+  "seconds": 4.41,
+  "rate": 3.17,
+  "clarity": 3.45,
+  "drift": false
+ },
+ "kai/slow/qwen": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 239,
+  "seconds": 4.69,
+  "rate": 2.98,
+  "clarity": 4.01,
+  "drift": false
+ },
+ "kai/long/voxcpm": {
+  "said": "When I was young, this whole street was nothing but fields. And on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 233,
+  "seconds": 13.01,
+  "rate": 2.77,
+  "clarity": 3.81,
+  "drift": false
+ },
+ "kai/long/qwen": {
+  "said": "When I was young, this whole street was nothing but fields. And on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 224,
+  "seconds": 10.98,
+  "rate": 3.28,
+  "clarity": 4.11,
+  "drift": false
+ },
+ "tony/grumpy/voxcpm": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 203,
+  "seconds": 4.34,
+  "rate": 3.0,
+  "clarity": 2.69,
+  "drift": true
+ },
+ "tony/grumpy/qwen": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 162,
+  "seconds": 4.29,
+  "rate": 3.03,
+  "clarity": 3.65,
+  "drift": false
+ },
+ "tony/delighted/voxcpm": {
+  "said": "Oh wow, that is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 202,
+  "seconds": 6.04,
+  "rate": 2.48,
+  "clarity": 3.36,
+  "drift": true
+ },
+ "tony/delighted/qwen": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 126,
+  "seconds": 4.22,
+  "rate": 3.56,
+  "clarity": 3.08,
+  "drift": false
+ },
+ "tony/thanks/voxcpm": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 107,
+  "seconds": 3.31,
+  "rate": 3.03,
+  "clarity": 2.95,
+  "drift": true
+ },
+ "tony/thanks/qwen": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 139,
+  "seconds": 2.68,
+  "rate": 3.74,
+  "clarity": 2.92,
+  "drift": false
+ },
+ "tony/sad/voxcpm": {
+  "said": "Oh, you're out of milkshakes! That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 213,
+  "seconds": 4.24,
+  "rate": 3.07,
+  "clarity": 3.14,
+  "drift": true
+ },
+ "tony/sad/qwen": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 119,
+  "seconds": 4.14,
+  "rate": 3.14,
+  "clarity": 3.87,
+  "drift": false
+ },
+ "tony/whisper/voxcpm": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 138,
+  "seconds": 4.26,
+  "rate": 2.82,
+  "clarity": 3.0,
+  "drift": false
+ },
+ "tony/whisper/qwen": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 137,
+  "seconds": 3.61,
+  "rate": 3.32,
+  "clarity": 2.57,
+  "drift": false
+ },
+ "tony/nervous/voxcpm": {
+  "said": "Oh, is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 196,
+  "seconds": 4.4,
+  "rate": 2.27,
+  "clarity": 3.46,
+  "drift": true
+ },
+ "tony/nervous/qwen": {
+  "said": "Uh oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 151,
+  "seconds": 3.7,
+  "rate": 2.7,
+  "clarity": 3.4,
+  "drift": false
+ },
+ "tony/laugh/voxcpm": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 156,
+  "seconds": 6.48,
+  "rate": 2.01,
+  "clarity": 2.63,
+  "drift": false
+ },
+ "tony/laugh/qwen": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 118,
+  "seconds": 3.75,
+  "rate": 3.47,
+  "clarity": 3.08,
+  "drift": false
+ },
+ "tony/sarcasm/voxcpm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 194,
+  "seconds": 7.54,
+  "rate": 1.72,
+  "clarity": 2.62,
+  "drift": true
+ },
+ "tony/sarcasm/qwen": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 121,
+  "seconds": 5.08,
+  "rate": 2.56,
+  "clarity": 3.8,
+  "drift": false
+ },
+ "tony/sigh/voxcpm": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 151,
+  "seconds": 6.72,
+  "rate": 1.93,
+  "clarity": 2.16,
+  "drift": false
+ },
+ "tony/sigh/qwen": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 135,
+  "seconds": 4.17,
+  "rate": 3.12,
+  "clarity": 2.99,
+  "drift": false
+ },
+ "tony/unsure/voxcpm": {
+  "said": "So I'll have the um the chicken sandwich. No, wait, the fish.",
+  "diffs": [
+   "insert: '' -> 'um'"
+  ],
+  "pitch": 195,
+  "seconds": 5.27,
+  "rate": 2.09,
+  "clarity": 3.01,
+  "drift": true
+ },
+ "tony/unsure/qwen": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 122,
+  "seconds": 3.57,
+  "rate": 3.09,
+  "clarity": 3.35,
+  "drift": false
+ },
+ "tony/fast/voxcpm": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 175,
+  "seconds": 5.49,
+  "rate": 3.65,
+  "clarity": 2.36,
+  "drift": true
+ },
+ "tony/fast/qwen": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, an extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 154,
+  "seconds": 7.86,
+  "rate": 2.54,
+  "clarity": 2.82,
+  "drift": false
+ },
+ "tony/slow/voxcpm": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 138,
+  "seconds": 4.86,
+  "rate": 2.88,
+  "clarity": 1.95,
+  "drift": false
+ },
+ "tony/slow/qwen": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 137,
+  "seconds": 4.13,
+  "rate": 3.39,
+  "clarity": 2.14,
+  "drift": false
+ },
+ "tony/long/voxcpm": {
+  "said": "When I was young, this whole street was nothing but fields. And on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 146,
+  "seconds": 12.51,
+  "rate": 2.88,
+  "clarity": 2.55,
+  "drift": false
+ },
+ "tony/long/qwen": {
+  "said": "When I was young, this whole street was nothing but fields. And on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 129,
+  "seconds": 10.72,
+  "rate": 3.36,
+  "clarity": 3.25,
+  "drift": false
+ },
+ "bev/grumpy/voxcpm": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 375,
+  "seconds": 3.37,
+  "rate": 3.86,
+  "clarity": 2.58,
+  "drift": true
+ },
+ "bev/grumpy/qwen": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 203,
+  "seconds": 3.16,
+  "rate": 4.11,
+  "clarity": 3.64,
+  "drift": false
+ },
+ "bev/delighted/voxcpm": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 333,
+  "seconds": 4.99,
+  "rate": 3.01,
+  "clarity": 1.74,
+  "drift": true
+ },
+ "bev/delighted/qwen": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 3.59,
+  "rate": 4.17,
+  "clarity": 3.58,
+  "drift": false
+ },
+ "bev/thanks/voxcpm": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 222,
+  "seconds": 3.1,
+  "rate": 3.23,
+  "clarity": 3.01,
+  "drift": false
+ },
+ "bev/thanks/qwen": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 227,
+  "seconds": 2.7,
+  "rate": 3.71,
+  "clarity": 4.03,
+  "drift": false
+ },
+ "bev/sad/voxcpm": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 395,
+  "seconds": 3.91,
+  "rate": 3.32,
+  "clarity": 2.69,
+  "drift": true
+ },
+ "bev/sad/qwen": {
+  "said": "Ow! You're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ow'"
+  ],
+  "pitch": 204,
+  "seconds": 3.51,
+  "rate": 3.7,
+  "clarity": 3.86,
+  "drift": false
+ },
+ "bev/whisper/voxcpm": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 229,
+  "seconds": 3.37,
+  "rate": 3.56,
+  "clarity": 2.94,
+  "drift": false
+ },
+ "bev/whisper/qwen": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 211,
+  "seconds": 3.55,
+  "rate": 3.38,
+  "clarity": 3.46,
+  "drift": false
+ },
+ "bev/nervous/voxcpm": {
+  "said": "Oh! Ah! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 325,
+  "seconds": 3.72,
+  "rate": 2.69,
+  "clarity": 3.3,
+  "drift": true
+ },
+ "bev/nervous/qwen": {
+  "said": "Uh oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 225,
+  "seconds": 2.67,
+  "rate": 3.75,
+  "clarity": 4.05,
+  "drift": false
+ },
+ "bev/laugh/voxcpm": {
+  "said": "Ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha",
+  "diffs": [
+   "replace: 'oh that's too funny you put the pickles on top of the bun' -> 'ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha'"
+  ],
+  "pitch": 156,
+  "seconds": 29.61,
+  "rate": 0.44,
+  "clarity": 1.16,
+  "drift": true
+ },
+ "bev/laugh/qwen": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 206,
+  "seconds": 2.8,
+  "rate": 4.64,
+  "clarity": 3.85,
+  "drift": false
+ },
+ "bev/sarcasm/voxcpm": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 388,
+  "seconds": 6.13,
+  "rate": 2.12,
+  "clarity": 1.76,
+  "drift": true
+ },
+ "bev/sarcasm/qwen": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 195,
+  "seconds": 3.94,
+  "rate": 3.3,
+  "clarity": 3.83,
+  "drift": false
+ },
+ "bev/sigh/voxcpm": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 224,
+  "seconds": 4.91,
+  "rate": 2.65,
+  "clarity": 2.99,
+  "drift": false
+ },
+ "bev/sigh/qwen": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 209,
+  "seconds": 3.6,
+  "rate": 3.62,
+  "clarity": 3.64,
+  "drift": false
+ },
+ "bev/unsure/voxcpm": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 200,
+  "seconds": 3.42,
+  "rate": 3.22,
+  "clarity": 3.54,
+  "drift": false
+ },
+ "bev/unsure/qwen": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 243,
+  "seconds": 2.75,
+  "rate": 4.0,
+  "clarity": 3.94,
+  "drift": false
+ },
+ "bev/fast/voxcpm": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 249,
+  "seconds": 4.49,
+  "rate": 4.45,
+  "clarity": 3.29,
+  "drift": false
+ },
+ "bev/fast/qwen": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 200,
+  "seconds": 5.67,
+  "rate": 3.53,
+  "clarity": 3.91,
+  "drift": false
+ },
+ "bev/slow/voxcpm": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 198,
+  "seconds": 3.86,
+  "rate": 3.63,
+  "clarity": 3.26,
+  "drift": false
+ },
+ "bev/slow/qwen": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 228,
+  "seconds": 4.35,
+  "rate": 3.21,
+  "clarity": 4.23,
+  "drift": false
+ },
+ "bev/long/voxcpm": {
+  "said": "When I was young, this whole street was nothing but fields, and on Saturdays my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 232,
+  "seconds": 10.2,
+  "rate": 3.53,
+  "clarity": 3.59,
+  "drift": false
+ },
+ "bev/long/qwen": {
+  "said": "When I was young, this whole street was nothing but fields, and on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 203,
+  "seconds": 8.56,
+  "rate": 4.21,
+  "clarity": 4.01,
+  "drift": false
+ },
+ "marge/grumpy/voxcpm": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 250,
+  "seconds": 4.42,
+  "rate": 2.94,
+  "clarity": 2.63,
+  "drift": true
+ },
+ "marge/grumpy/qwen": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 215,
+  "seconds": 3.39,
+  "rate": 3.83,
+  "clarity": 4.12,
+  "drift": false
+ },
+ "marge/delighted/voxcpm": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 394,
+  "seconds": 5.01,
+  "rate": 2.99,
+  "clarity": 2.91,
+  "drift": true
+ },
+ "marge/delighted/qwen": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 160,
+  "seconds": 3.98,
+  "rate": 3.77,
+  "clarity": 4.26,
+  "drift": false
+ },
+ "marge/thanks/voxcpm": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 196,
+  "seconds": 2.76,
+  "rate": 3.62,
+  "clarity": 3.83,
+  "drift": false
+ },
+ "marge/thanks/qwen": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 2.76,
+  "rate": 3.63,
+  "clarity": 4.28,
+  "drift": false
+ },
+ "marge/sad/voxcpm": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 196,
+  "seconds": 3.75,
+  "rate": 3.47,
+  "clarity": 3.86,
+  "drift": false
+ },
+ "marge/sad/qwen": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 191,
+  "seconds": 3.37,
+  "rate": 3.85,
+  "clarity": 4.09,
+  "drift": false
+ },
+ "marge/whisper/voxcpm": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 186,
+  "seconds": 4.43,
+  "rate": 2.71,
+  "clarity": 3.63,
+  "drift": false
+ },
+ "marge/whisper/qwen": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 206,
+  "seconds": 3.44,
+  "rate": 3.48,
+  "clarity": 3.46,
+  "drift": false
+ },
+ "marge/nervous/voxcpm": {
+  "said": "Uh-oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 247,
+  "seconds": 3.58,
+  "rate": 2.79,
+  "clarity": 3.24,
+  "drift": true
+ },
+ "marge/nervous/qwen": {
+  "said": "Ah! Oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 308,
+  "seconds": 3.43,
+  "rate": 2.92,
+  "clarity": 3.99,
+  "drift": true
+ },
+ "marge/laugh/voxcpm": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 283,
+  "seconds": 7.49,
+  "rate": 1.74,
+  "clarity": 3.12,
+  "drift": true
+ },
+ "marge/laugh/qwen": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 198,
+  "seconds": 3.23,
+  "rate": 4.03,
+  "clarity": 3.88,
+  "drift": false
+ },
+ "marge/sarcasm/voxcpm": {
+  "said": "Oh, wonderful! Another 20 minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [
+   "replace: 'twenty' -> '20'"
+  ],
+  "pitch": 239,
+  "seconds": 5.18,
+  "rate": 2.51,
+  "clarity": 3.92,
+  "drift": true
+ },
+ "marge/sarcasm/qwen": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 177,
+  "seconds": 4.82,
+  "rate": 2.69,
+  "clarity": 4.05,
+  "drift": false
+ },
+ "marge/sigh/voxcpm": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 5.12,
+  "rate": 2.54,
+  "clarity": 3.63,
+  "drift": false
+ },
+ "marge/sigh/qwen": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 219,
+  "seconds": 3.75,
+  "rate": 3.47,
+  "clarity": 4.28,
+  "drift": false
+ },
+ "marge/unsure/voxcpm": {
+  "said": "So I'll have the um the chicken sandwich. No, wait, the fish.",
+  "diffs": [
+   "insert: '' -> 'um'"
+  ],
+  "pitch": 177,
+  "seconds": 4.65,
+  "rate": 2.37,
+  "clarity": 3.84,
+  "drift": false
+ },
+ "marge/unsure/qwen": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 203,
+  "seconds": 3.9,
+  "rate": 2.82,
+  "clarity": 4.19,
+  "drift": false
+ },
+ "marge/fast/voxcpm": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 288,
+  "seconds": 4.78,
+  "rate": 4.19,
+  "clarity": 2.82,
+  "drift": true
+ },
+ "marge/fast/qwen": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, an extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 213,
+  "seconds": 6.54,
+  "rate": 3.06,
+  "clarity": 4.09,
+  "drift": false
+ },
+ "marge/slow/voxcpm": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 160,
+  "seconds": 4.68,
+  "rate": 2.99,
+  "clarity": 4.0,
+  "drift": false
+ },
+ "marge/slow/qwen": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 187,
+  "seconds": 3.99,
+  "rate": 3.51,
+  "clarity": 4.2,
+  "drift": false
+ },
+ "marge/long/voxcpm": {
+  "said": "When I was young, this whole street was nothing but fields, and on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 247,
+  "seconds": 10.88,
+  "rate": 3.31,
+  "clarity": 3.65,
+  "drift": true
+ },
+ "marge/long/qwen": {
+  "said": "When I was young, this whole street was nothing but fields. And on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 201,
+  "seconds": 10.08,
+  "rate": 3.57,
+  "clarity": 4.23,
+  "drift": false
+ },
+ "vernon/grumpy/voxcpm": {
+  "said": "Hey! Ask for no onions. This is a whole mountain of onions.",
+  "diffs": [
+   "replace: 'i asked' -> 'ask'"
+  ],
+  "pitch": 214,
+  "seconds": 3.23,
+  "rate": 4.02,
+  "clarity": 3.7,
+  "drift": true
+ },
+ "vernon/grumpy/qwen": {
+  "said": "Hey! I asked for no onions. This is a whole mountain of onions.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 4.66,
+  "rate": 2.79,
+  "clarity": 3.98,
+  "drift": true
+ },
+ "vernon/delighted/voxcpm": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 210,
+  "seconds": 3.84,
+  "rate": 3.9,
+  "clarity": 4.17,
+  "drift": true
+ },
+ "vernon/delighted/qwen": {
+  "said": "Oh wow! That is the best burger I have ever had in my whole life.",
+  "diffs": [],
+  "pitch": 190,
+  "seconds": 4.68,
+  "rate": 3.2,
+  "clarity": 4.12,
+  "drift": false
+ },
+ "vernon/thanks/voxcpm": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 169,
+  "seconds": 3.02,
+  "rate": 3.31,
+  "clarity": 3.97,
+  "drift": false
+ },
+ "vernon/thanks/qwen": {
+  "said": "Thank you so much. That's exactly how I like it.",
+  "diffs": [],
+  "pitch": 188,
+  "seconds": 3.49,
+  "rate": 2.86,
+  "clarity": 4.23,
+  "drift": false
+ },
+ "vernon/sad/voxcpm": {
+  "said": "Ah, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'ah'"
+  ],
+  "pitch": 184,
+  "seconds": 4.46,
+  "rate": 2.91,
+  "clarity": 3.91,
+  "drift": false
+ },
+ "vernon/sad/qwen": {
+  "said": "Oh, you're out of milkshakes. That was the best part of my day.",
+  "diffs": [
+   "replace: 'aw' -> 'oh'"
+  ],
+  "pitch": 147,
+  "seconds": 4.88,
+  "rate": 2.67,
+  "clarity": 4.22,
+  "drift": false
+ },
+ "vernon/whisper/voxcpm": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 97,
+  "seconds": 3.97,
+  "rate": 3.02,
+  "clarity": 2.97,
+  "drift": true
+ },
+ "vernon/whisper/qwen": {
+  "said": "Don't tell anyone, but I'm going to order a second dessert.",
+  "diffs": [
+   "delete: 'psst' -> ''"
+  ],
+  "pitch": 161,
+  "seconds": 4.21,
+  "rate": 2.85,
+  "clarity": 4.2,
+  "drift": false
+ },
+ "vernon/nervous/voxcpm": {
+  "said": "Ah, oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 164,
+  "seconds": 3.6,
+  "rate": 2.78,
+  "clarity": 3.93,
+  "drift": false
+ },
+ "vernon/nervous/qwen": {
+  "said": "Oh! Is that smoke? Is the grill on fire?",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 3.24,
+  "rate": 3.09,
+  "clarity": 3.65,
+  "drift": false
+ },
+ "vernon/laugh/voxcpm": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 267,
+  "seconds": 3.85,
+  "rate": 3.38,
+  "clarity": 3.33,
+  "drift": true
+ },
+ "vernon/laugh/qwen": {
+  "said": "Oh, that's too funny! You put the pickles on top of the bun.",
+  "diffs": [],
+  "pitch": 177,
+  "seconds": 3.61,
+  "rate": 3.6,
+  "clarity": 4.32,
+  "drift": false
+ },
+ "vernon/sarcasm/voxcpm": {
+  "said": "Ah, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 122,
+  "seconds": 5.34,
+  "rate": 2.44,
+  "clarity": 3.85,
+  "drift": true
+ },
+ "vernon/sarcasm/qwen": {
+  "said": "Oh, wonderful! Another twenty minutes for one grilled cheese. I simply can't wait.",
+  "diffs": [],
+  "pitch": 239,
+  "seconds": 5.35,
+  "rate": 2.43,
+  "clarity": 4.18,
+  "drift": true
+ },
+ "vernon/sigh/voxcpm": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 166,
+  "seconds": 4.86,
+  "rate": 2.67,
+  "clarity": 3.9,
+  "drift": false
+ },
+ "vernon/sigh/qwen": {
+  "said": "Well, I suppose it's fine. It's not what I pictured, but it's fine.",
+  "diffs": [],
+  "pitch": 180,
+  "seconds": 5.19,
+  "rate": 2.51,
+  "clarity": 4.23,
+  "drift": false
+ },
+ "vernon/unsure/voxcpm": {
+  "said": "So I have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [
+   "replace: 'i'll' -> 'i'"
+  ],
+  "pitch": 278,
+  "seconds": 4.32,
+  "rate": 2.55,
+  "clarity": 3.7,
+  "drift": true
+ },
+ "vernon/unsure/qwen": {
+  "said": "So I'll have the the chicken sandwich. No, wait, the fish.",
+  "diffs": [],
+  "pitch": 124,
+  "seconds": 4.85,
+  "rate": 2.27,
+  "clarity": 4.19,
+  "drift": true
+ },
+ "vernon/fast/voxcpm": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 365,
+  "seconds": 5.24,
+  "rate": 3.81,
+  "clarity": 3.55,
+  "drift": true
+ },
+ "vernon/fast/qwen": {
+  "said": "Okay, okay. I need a cheeseburger, fries, a chocolate shake, and extra ketchup, and I need it right now, please.",
+  "diffs": [],
+  "pitch": 151,
+  "seconds": 8.19,
+  "rate": 2.44,
+  "clarity": 4.21,
+  "drift": false
+ },
+ "vernon/slow/voxcpm": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 147,
+  "seconds": 4.52,
+  "rate": 3.1,
+  "clarity": 3.74,
+  "drift": false
+ },
+ "vernon/slow/qwen": {
+  "said": "Take your time. There's no rush at all. Good food is worth the wait.",
+  "diffs": [],
+  "pitch": 167,
+  "seconds": 5.0,
+  "rate": 2.8,
+  "clarity": 4.2,
+  "drift": false
+ },
+ "vernon/long/voxcpm": {
+  "said": "When I was young, this whole street was nothing but fields, and on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 185,
+  "seconds": 11.85,
+  "rate": 3.04,
+  "clarity": 3.86,
+  "drift": false
+ },
+ "vernon/long/qwen": {
+  "said": "When I was young, this whole street was nothing but fields. And on Saturdays, my father drove us into town for one cheeseburger, which we split three ways, and it was the best thing all week.",
+  "diffs": [],
+  "pitch": 178,
+  "seconds": 11.74,
+  "rate": 3.07,
+  "clarity": 4.13,
+  "drift": false
+ }
+}

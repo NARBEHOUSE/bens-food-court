@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "reginald/arrive.1",
+  "speaker": "reginald",
+  "text": "[clears throat] A critic has entered the Burger Bar. Carry on as if I weren't here. You can't, but do try.",
+  "moment": "visitor.arrive",
+  "delivery": "theatrical, sweeping in",
+  "pack": "diner",
+  "order": 4,
+  "hash": "000f98a5",
+  "recorded": false
+ },
+ {
+  "clip": "reginald/smalltalk.1",
+  "speaker": "reginald",
+  "text": "I'm told the Tower is new. I review only the newest. Yesterday's food is history, and I don't do history. I do lunch.",
+  "moment": "smalltalk",
+  "delivery": "theatrical, grand",
+  "pack": "diner",
+  "order": 4,
+  "hash": "9b648c86",
+  "recorded": false
+ },
+ {
+  "clip": "reginald/react3.1",
+  "speaker": "reginald",
+  "text": "A Tower! A monument! I shall review it floor by floor. Ground floor: sublime.",
+  "moment": "react.3",
+  "delivery": "theatrical, rapturous",
+  "pack": "diner",
+  "order": 2,
+  "hash": "4b5d8a9e",
+  "recorded": false
+ },
+ {
+  "clip": "reginald/cast:complain.c1",
+  "speaker": "reginald",
+  "text": "This will be reviewed separately. Harshly.",
+  "moment": "complain",
+  "delivery": "theatrical, sweeping",
+  "pack": "cast",
+  "order": 4,
+  "hash": "f44bcbf4",
+  "recorded": false
+ }
+]

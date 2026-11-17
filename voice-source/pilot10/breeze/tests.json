@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "breeze/smoothie:greet.1",
+  "speaker": "breeze",
+  "text": "Hey, friend. The board and I were just passing. We are always just passing.",
+  "moment": "greet",
+  "delivery": "dreamy, unhurried",
+  "pack": "smoothie",
+  "order": 2,
+  "hash": "4d253bde",
+  "recorded": false
+ },
+ {
+  "clip": "breeze/smoothie:smalltalk.1",
+  "speaker": "breeze",
+  "text": "My board's never been in the ocean. We're taking it slow. The ocean is a big commitment.",
+  "moment": "smalltalk",
+  "delivery": "tender, about the board",
+  "pack": "smoothie",
+  "order": 4,
+  "hash": "417e0b82",
+  "recorded": false
+ },
+ {
+  "clip": "breeze/smoothie:react.3.1",
+  "speaker": "breeze",
+  "text": "Oh, that's the wave. That's the wave right there.",
+  "moment": "react.3",
+  "delivery": "blissed out",
+  "pack": "smoothie",
+  "order": 2,
+  "hash": "cc1fe6e8",
+  "recorded": false
+ },
+ {
+  "clip": "breeze/cast:complain.c1",
+  "speaker": "breeze",
+  "text": "This isn't the vibe, friend.",
+  "moment": "complain",
+  "delivery": "slow, mellow, disappointed",
+  "pack": "cast",
+  "order": 4,
+  "hash": "d7fa81c5",
+  "recorded": false
+ }
+]

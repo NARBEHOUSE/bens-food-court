@@ -277,10 +277,25 @@
           files = f ? [f] : null;
         }
         const tts = () => { if (current === slot) speakTTS(line.who, words, slot, done, gameVoice); };
-        if (files) playFiles(files, slot, done, tts);
-        else tts();
+        // A recording is not speech, so (unlike a TTS line, which cancels it) the scanner's last words would play
+        // under it: wait for the engine to go quiet first (100 ms looks, 8 s at most). Read only, as in speakTTS.
+        if (files) {
+          const began = T.now();
+          const go = () => {
+            if (current !== slot) return;
+            if (engineTalking() && T.now() - began < 8000) { slot.timer = T.setTimeout(go, 100); return; }
+            playFiles(files, slot, done, tts);
+          };
+          go();
+        } else tts();
       });
     }
+
+    /** Read only: is the speech engine still talking? (speech itself goes through NarbePlatform) */
+    const engineTalking = () => {
+      const engine = env.speechSynthesis;
+      return !!(engine && engine.speaking);
+    };
 
     function speakTTS(who, words, slot, done, gameVoice) {
       const v = vm(), S = speech();
@@ -310,8 +325,7 @@
         // cuts its tail off.
         const capped = () => {
           if (current !== slot) return;
-          const engine = env.speechSynthesis;     // read only: is it still talking? (speech itself goes through NarbePlatform)
-          if (engine && engine.speaking && T.now() - began < 120000) { slot.cap = T.setTimeout(capped, 250); return; }
+          if (engineTalking() && T.now() - began < 120000) { slot.cap = T.setTimeout(capped, 250); return; }
           tail = ticket; done({ tts: true, capped: true });
         };
         slot.cap = T.setTimeout(capped, limit);

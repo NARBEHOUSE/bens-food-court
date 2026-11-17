@@ -1,0 +1,998 @@
+[
+ {
+  "a": "sal/ny-s4",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.83,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "sal/italian-s3",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.824,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "vernon/snob-s2",
+  "b": "sal/italian-s3",
+  "alike": 0.818,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.813,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "gus/country-s3 (picked)",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.813,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.812,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "sal/nyc-s4",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.804,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "bev/midwest-s1",
+  "alike": 0.794,
+  "pitch_gap": 0.34
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "bev/alto-s1",
+  "alike": 0.788,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "vernon/fop-s2",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.787,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "sal/brooklyn-s3",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.763,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "vernon/aesthete-s4",
+  "alike": 0.761,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "bev/alto-s1",
+  "alike": 0.756,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "bev/midwest-s1",
+  "alike": 0.754,
+  "pitch_gap": 0.21
+ },
+ {
+  "a": "sal/nyc-s4",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.754,
+  "pitch_gap": 0.16
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "vernon/aesthete-s4",
+  "alike": 0.744,
+  "pitch_gap": 0.06
+ },
+ {
+  "a": "vernon/fop-s2",
+  "b": "sal/nyc-s4",
+  "alike": 0.744,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "vernon/fop-s2",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.742,
+  "pitch_gap": 0.49
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "bev/chesty-s1",
+  "alike": 0.741,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "vernon/fop-s2",
+  "b": "sal/italian-s3",
+  "alike": 0.736,
+  "pitch_gap": 0.61
+ },
+ {
+  "a": "vernon/snob-s2",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.733,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "vernon/snob-s2",
+  "b": "sal/nyc-s4",
+  "alike": 0.732,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "sal/italian-s3",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.732,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "bev/midwest-s1",
+  "alike": 0.73,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "bev/chesty-s1",
+  "alike": 0.728,
+  "pitch_gap": 0.27
+ },
+ {
+  "a": "sal/italian-s3",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.728,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "bev/alto-s1",
+  "alike": 0.725,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.724,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "vernon/fop-s2",
+  "alike": 0.716,
+  "pitch_gap": 0.15
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "vernon/aesthete-s4",
+  "alike": 0.715,
+  "pitch_gap": 0.03
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "vernon/aesthete-s4",
+  "alike": 0.715,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.709,
+  "pitch_gap": 0.07
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.708,
+  "pitch_gap": 0.29
+ },
+ {
+  "a": "vernon/snob-s2",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.705,
+  "pitch_gap": 0.13
+ },
+ {
+  "a": "sal/nyc-s4",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.704,
+  "pitch_gap": 0.11
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "vernon/aesthete-s4",
+  "alike": 0.702,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.699,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.696,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "vernon/aesthete-s4",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.688,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "bev/midwest-s1",
+  "alike": 0.686,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.686,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "sal/ny-s4",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.684,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.681,
+  "pitch_gap": 0.49
+ },
+ {
+  "a": "vernon/fop-s2",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.681,
+  "pitch_gap": 0.42
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "vernon/aesthete-s4",
+  "alike": 0.679,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.679,
+  "pitch_gap": 0.29
+ },
+ {
+  "a": "vernon/snob-s2",
+  "b": "sal/ny-s4",
+  "alike": 0.678,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "bev/chesty-s1",
+  "alike": 0.677,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "sal/italian-s3",
+  "alike": 0.676,
+  "pitch_gap": 0.78
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.676,
+  "pitch_gap": 0.64
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.675,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "vernon/fop-s2",
+  "b": "sal/ny-s4",
+  "alike": 0.674,
+  "pitch_gap": 0.54
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "vernon/fop-s2",
+  "alike": 0.673,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.672,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.672,
+  "pitch_gap": 0.71
+ },
+ {
+  "a": "mitch/eager-s4 (picked)",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.671,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "vernon/aesthete-s4",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.669,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "sal/italian-s3",
+  "alike": 0.664,
+  "pitch_gap": 0.54
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "vernon/fop-s2",
+  "alike": 0.66,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.657,
+  "pitch_gap": 0.11
+ },
+ {
+  "a": "vernon/aesthete-s4",
+  "b": "sal/ny-s4",
+  "alike": 0.657,
+  "pitch_gap": 0.42
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "vernon/aesthete-s4",
+  "alike": 0.656,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "vernon/fop-s2",
+  "alike": 0.655,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "sal/ny-s4",
+  "alike": 0.654,
+  "pitch_gap": 0.47
+ },
+ {
+  "a": "vernon/snob-s2",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.653,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.652,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "vernon/fop-s2",
+  "alike": 0.651,
+  "pitch_gap": 0.05
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "bev/chesty-s1",
+  "alike": 0.651,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "sal/italian-s3",
+  "alike": 0.651,
+  "pitch_gap": 0.28
+ },
+ {
+  "a": "sal/brooklyn-s3",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.651,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "mitch/eager-s4 (picked)",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.651,
+  "pitch_gap": 0.38
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.65,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "sal/nyc-s4",
+  "alike": 0.65,
+  "pitch_gap": 0.39
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.65,
+  "pitch_gap": 0.61
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "vernon/fop-s2",
+  "alike": 0.648,
+  "pitch_gap": 0.27
+ },
+ {
+  "a": "vernon/fop-s2",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.648,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "sal/brooklyn-s3",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.647,
+  "pitch_gap": 0.38
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "bev/alto-s1",
+  "alike": 0.645,
+  "pitch_gap": 0.67
+ },
+ {
+  "a": "sal/brooklyn-s3",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.645,
+  "pitch_gap": 0.9
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.643,
+  "pitch_gap": 0.41
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.643,
+  "pitch_gap": 0.68
+ },
+ {
+  "a": "vernon/aesthete-s4",
+  "b": "sal/nyc-s4",
+  "alike": 0.643,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "mitch/eager-s4 (picked)",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.642,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "sal/ny-s4",
+  "alike": 0.641,
+  "pitch_gap": 0.7
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "sal/ny-s4",
+  "alike": 0.64,
+  "pitch_gap": 0.67
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "sal/nyc-s4",
+  "alike": 0.64,
+  "pitch_gap": 0.41
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.635,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "sal/ny-s4",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.634,
+  "pitch_gap": 0.08
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "bev/brisk-s6",
+  "alike": 0.633,
+  "pitch_gap": 0.16
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "vernon/snob-s2",
+  "alike": 0.631,
+  "pitch_gap": 0.42
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "vernon/snob-s2",
+  "alike": 0.63,
+  "pitch_gap": 0.25
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "sal/ny-s4",
+  "alike": 0.628,
+  "pitch_gap": 0.32
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.628,
+  "pitch_gap": 0.48
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.626,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "vernon/snob-s2",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.625,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "vernon/fop-s2",
+  "alike": 0.624,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "vernon/fop-s2",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.624,
+  "pitch_gap": 0.55
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "vernon/snob-s2",
+  "alike": 0.623,
+  "pitch_gap": 0.04
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.621,
+  "pitch_gap": 0.35
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "sal/italian-s3",
+  "alike": 0.621,
+  "pitch_gap": 0.75
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "vernon/snob-s2",
+  "alike": 0.619,
+  "pitch_gap": 0.29
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "vernon/posh-s2",
+  "alike": 0.619,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "sal/italian-s3",
+  "alike": 0.613,
+  "pitch_gap": 0.38
+ },
+ {
+  "a": "sal/nyc-s4",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.613,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "vernon/posh-s2",
+  "alike": 0.611,
+  "pitch_gap": 0.02
+ },
+ {
+  "a": "marge/granny-s4",
+  "b": "sal/nyc-s4",
+  "alike": 0.611,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "vernon/snob-s2",
+  "alike": 0.611,
+  "pitch_gap": 0.51
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "vernon/posh-s2",
+  "alike": 0.608,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "bev/chesty-s1",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.608,
+  "pitch_gap": 0.54
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "sal/nyc-s4",
+  "alike": 0.607,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "sal/italian-s3",
+  "alike": 0.607,
+  "pitch_gap": 0.58
+ },
+ {
+  "a": "gus/country-s3 (picked)",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.607,
+  "pitch_gap": 0.82
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.605,
+  "pitch_gap": 0.46
+ },
+ {
+  "a": "vernon/aesthete-s4",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.604,
+  "pitch_gap": 0.37
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "vernon/posh-s2",
+  "alike": 0.602,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.602,
+  "pitch_gap": 0.27
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "sal/ny-s4",
+  "alike": 0.601,
+  "pitch_gap": 1.04
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "sal/nyc-s4",
+  "alike": 0.598,
+  "pitch_gap": 0.01
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.597,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "sal/ny-s4",
+  "alike": 0.596,
+  "pitch_gap": 0.51
+ },
+ {
+  "a": "vernon/aesthete-s4",
+  "b": "sal/italian-s3",
+  "alike": 0.596,
+  "pitch_gap": 0.49
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "vernon/snob-s2",
+  "alike": 0.594,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.594,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "sal/italian-s3",
+  "alike": 0.594,
+  "pitch_gap": 0.85
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.592,
+  "pitch_gap": 0.17
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "vernon/snob-s2",
+  "alike": 0.592,
+  "pitch_gap": 0.45
+ },
+ {
+  "a": "sal/ny-s4",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.592,
+  "pitch_gap": 0.89
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "sal/ny-s4",
+  "alike": 0.59,
+  "pitch_gap": 0.77
+ },
+ {
+  "a": "sal/italian-s3",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.589,
+  "pitch_gap": 0.98
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.587,
+  "pitch_gap": 0.78
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.587,
+  "pitch_gap": 0.7
+ },
+ {
+  "a": "vernon/posh-s2",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.587,
+  "pitch_gap": 0.38
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.586,
+  "pitch_gap": 0.4
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "sal/nyc-s4",
+  "alike": 0.586,
+  "pitch_gap": 0.47
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "sal/nyc-s4",
+  "alike": 0.584,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "bev/brisk-s6",
+  "alike": 0.584,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "bev/brisk-s6",
+  "alike": 0.582,
+  "pitch_gap": 0.29
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.582,
+  "pitch_gap": 0.33
+ },
+ {
+  "a": "vernon/posh-s2",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.582,
+  "pitch_gap": 0.26
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "vernon/posh-s2",
+  "alike": 0.579,
+  "pitch_gap": 0.36
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.579,
+  "pitch_gap": 0.63
+ },
+ {
+  "a": "bev/midwest-s1",
+  "b": "vernon/posh-s2",
+  "alike": 0.577,
+  "pitch_gap": 0.18
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "vernon/fop-s2",
+  "alike": 0.575,
+  "pitch_gap": 0.1
+ },
+ {
+  "a": "vernon/snob-s2",
+  "b": "kai/keen-s1 (picked)",
+  "alike": 0.572,
+  "pitch_gap": 0.61
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "bev/brisk-s6",
+  "alike": 0.571,
+  "pitch_gap": 0.12
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.57,
+  "pitch_gap": 0.96
+ },
+ {
+  "a": "marge/smoky-s4",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.569,
+  "pitch_gap": 0.52
+ },
+ {
+  "a": "vernon/posh-s2",
+  "b": "mitch/eager-s4 (picked)",
+  "alike": 0.569,
+  "pitch_gap": 0.09
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "sal/ny-s4",
+  "alike": 0.561,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "sal/italian-s3",
+  "alike": 0.56,
+  "pitch_gap": 1.13
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "vernon/aesthete-s4",
+  "alike": 0.559,
+  "pitch_gap": 0.2
+ },
+ {
+  "a": "vernon/posh-s2",
+  "b": "gus/country-s3 (picked)",
+  "alike": 0.558,
+  "pitch_gap": 0.44
+ },
+ {
+  "a": "vernon/aesthete-s4",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.557,
+  "pitch_gap": 0.31
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "vernon/snob-s2",
+  "alike": 0.555,
+  "pitch_gap": 0.74
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "sal/nyc-s4",
+  "alike": 0.554,
+  "pitch_gap": 0.69
+ },
+ {
+  "a": "vernon/posh-s2",
+  "b": "sal/nyc-s4",
+  "alike": 0.554,
+  "pitch_gap": 0.24
+ },
+ {
+  "a": "vernon/posh-s2",
+  "b": "sal/italian-s3",
+  "alike": 0.554,
+  "pitch_gap": 0.57
+ },
+ {
+  "a": "kai/keen-s1 (picked)",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.552,
+  "pitch_gap": 0.74
+ },
+ {
+  "a": "marge/old-s4",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.551,
+  "pitch_gap": 0.22
+ },
+ {
+  "a": "bev/alto-s1",
+  "b": "vernon/posh-s2",
+  "alike": 0.543,
+  "pitch_gap": 0.23
+ },
+ {
+  "a": "vernon/aesthete-s4",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.533,
+  "pitch_gap": 0.43
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.515,
+  "pitch_gap": 1.05
+ },
+ {
+  "a": "marge/irish-s2",
+  "b": "tony/grand-s3 (picked)",
+  "alike": 0.511,
+  "pitch_gap": 0.88
+ },
+ {
+  "a": "vernon/posh-s2",
+  "b": "sal/ny-s4",
+  "alike": 0.49,
+  "pitch_gap": 0.5
+ },
+ {
+  "a": "bev/brisk-s6",
+  "b": "vernon/posh-s2",
+  "alike": 0.437,
+  "pitch_gap": 0.14
+ },
+ {
+  "a": "vernon/posh-s2",
+  "b": "sal/brooklyn-s3",
+  "alike": 0.405,
+  "pitch_gap": 0.51
+ }
+]

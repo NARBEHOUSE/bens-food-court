@@ -1,0 +1,191 @@
+{
+ "retake-s1": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 274,
+  "seconds": 7.17,
+  "rate": 2.79,
+  "clarity": 3.9,
+  "source": "retake"
+ },
+ "retake-s2": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 365,
+  "seconds": 6.52,
+  "rate": 3.07,
+  "clarity": 3.28,
+  "source": "retake"
+ },
+ "retake-s3": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 251,
+  "seconds": 8.66,
+  "rate": 2.31,
+  "clarity": 3.46,
+  "source": "retake"
+ },
+ "retake-s4": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 257,
+  "seconds": 8.63,
+  "rate": 2.32,
+  "clarity": 3.8,
+  "source": "retake"
+ },
+ "retake-s5": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 283,
+  "seconds": 8.23,
+  "rate": 2.43,
+  "clarity": 3.45,
+  "source": "retake"
+ },
+ "retake-s6": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 271,
+  "seconds": 8.93,
+  "rate": 2.24,
+  "clarity": 3.91,
+  "source": "retake"
+ },
+ "keen-s7": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 373,
+  "seconds": 9.91,
+  "rate": 2.02,
+  "clarity": 3.58,
+  "source": "design:keen"
+ },
+ "keen-s8": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 367,
+  "seconds": 7.46,
+  "rate": 2.68,
+  "clarity": 2.41,
+  "source": "design:keen"
+ },
+ "keen-s9": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 300,
+  "seconds": 9.46,
+  "rate": 2.11,
+  "clarity": 2.91,
+  "source": "design:keen"
+ },
+ "keen-s10": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 346,
+  "seconds": 8.58,
+  "rate": 2.33,
+  "clarity": 3.66,
+  "source": "design:keen"
+ },
+ "keen-s11": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 247,
+  "seconds": 7.89,
+  "rate": 2.54,
+  "clarity": 2.21,
+  "source": "design:keen"
+ },
+ "keen-s12": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 261,
+  "seconds": 9.51,
+  "rate": 2.1,
+  "clarity": 3.67,
+  "source": "design:keen"
+ },
+ "calm-s1": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 265,
+  "seconds": 8.47,
+  "rate": 2.36,
+  "clarity": 3.75,
+  "source": "design:calm"
+ },
+ "calm-s2": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 337,
+  "seconds": 8.67,
+  "rate": 2.31,
+  "clarity": 3.31,
+  "source": "design:calm"
+ },
+ "calm-s3": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 314,
+  "seconds": 8.6,
+  "rate": 2.33,
+  "clarity": 3.33,
+  "source": "design:calm"
+ },
+ "calm-s4": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 353,
+  "seconds": 8.23,
+  "rate": 2.43,
+  "clarity": 3.13,
+  "source": "design:calm"
+ },
+ "calm-s5": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 286,
+  "seconds": 8.81,
+  "rate": 2.27,
+  "clarity": 3.37,
+  "source": "design:calm"
+ },
+ "calm-s6": {
+  "said": "Hello, I'm Kai. I review food and I keep it short. Today I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 283,
+  "seconds": 10.22,
+  "rate": 1.96,
+  "clarity": 3.29,
+  "source": "design:calm"
+ },
+ "current": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 251,
+  "seconds": 8.55,
+  "rate": 2.34,
+  "clarity": 3.82,
+  "source": "current"
+ },
+ "old-boy-s4": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 217,
+  "seconds": 6.94,
+  "rate": 2.88,
+  "clarity": 4.03,
+  "source": "old"
+ },
+ "old-girl-s1": {
+  "said": "Hello, I'm Kai. I review food, and I keep it short. Today, I brought my notebook and two sharp pencils.",
+  "diffs": [],
+  "pitch": 266,
+  "seconds": 7.47,
+  "rate": 2.68,
+  "clarity": 4.02,
+  "source": "old"
+ }
+}

@@ -1,0 +1,305 @@
+{
+ "retake-delhi-s4-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 204,
+  "seconds": 5.02,
+  "rate": 4.38,
+  "clarity": 2.93,
+  "source": "retake:delhi-s4-"
+ },
+ "retake-delhi-s4-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 188,
+  "seconds": 5.53,
+  "rate": 3.98,
+  "clarity": 2.71,
+  "source": "retake:delhi-s4-"
+ },
+ "retake-delhi-s4-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 173,
+  "seconds": 5.43,
+  "rate": 4.05,
+  "clarity": 2.6,
+  "source": "retake:delhi-s4-"
+ },
+ "retake-delhi-s4-s4": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 158,
+  "seconds": 6.14,
+  "rate": 3.59,
+  "clarity": 2.42,
+  "source": "retake:delhi-s4-"
+ },
+ "retake-delhi-s4-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 153,
+  "seconds": 6.97,
+  "rate": 3.16,
+  "clarity": 2.95,
+  "source": "retake:delhi-s4-"
+ },
+ "retake-delhi-s4-s6": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 167,
+  "seconds": 7.79,
+  "rate": 2.82,
+  "clarity": 2.69,
+  "source": "retake:delhi-s4-"
+ },
+ "retake-chennai-s5-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 203,
+  "seconds": 5.79,
+  "rate": 3.8,
+  "clarity": 3.55,
+  "source": "retake:chennai-s5-"
+ },
+ "retake-chennai-s5-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 209,
+  "seconds": 6.59,
+  "rate": 3.34,
+  "clarity": 3.35,
+  "source": "retake:chennai-s5-"
+ },
+ "retake-chennai-s5-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 220,
+  "seconds": 6.93,
+  "rate": 3.18,
+  "clarity": 3.93,
+  "source": "retake:chennai-s5-"
+ },
+ "retake-chennai-s5-s4": {
+  "said": "Uofi, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "replace: 'coffee' -> 'uofi'"
+  ],
+  "pitch": 162,
+  "seconds": 7.75,
+  "rate": 2.84,
+  "clarity": 3.82,
+  "source": "retake:chennai-s5-"
+ },
+ "retake-chennai-s5-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 214,
+  "seconds": 6.16,
+  "rate": 3.57,
+  "clarity": 3.38,
+  "source": "retake:chennai-s5-"
+ },
+ "retake-chennai-s5-s6": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 8.45,
+  "rate": 2.6,
+  "clarity": 3.85,
+  "source": "retake:chennai-s5-"
+ },
+ "retake-delhi-s6-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 192,
+  "seconds": 6.66,
+  "rate": 3.31,
+  "clarity": 2.54,
+  "source": "retake:delhi-s6-"
+ },
+ "retake-delhi-s6-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 154,
+  "seconds": 6.67,
+  "rate": 3.3,
+  "clarity": 2.44,
+  "source": "retake:delhi-s6-"
+ },
+ "retake-delhi-s6-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 161,
+  "seconds": 6.85,
+  "rate": 3.21,
+  "clarity": 2.61,
+  "source": "retake:delhi-s6-"
+ },
+ "retake-delhi-s6-s4": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 160,
+  "seconds": 6.52,
+  "rate": 3.37,
+  "clarity": 2.63,
+  "source": "retake:delhi-s6-"
+ },
+ "retake-delhi-s6-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 163,
+  "seconds": 6.44,
+  "rate": 3.42,
+  "clarity": 2.7,
+  "source": "retake:delhi-s6-"
+ },
+ "retake-delhi-s6-s6": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 8.23,
+  "rate": 2.67,
+  "clarity": 2.82,
+  "source": "retake:delhi-s6-"
+ },
+ "delhi-s7": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 203,
+  "seconds": 5.45,
+  "rate": 4.04,
+  "clarity": 3.09,
+  "source": "design:delhi"
+ },
+ "delhi-s8": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 153,
+  "seconds": 9.64,
+  "rate": 2.28,
+  "clarity": 3.3,
+  "source": "design:delhi"
+ },
+ "delhi-s9": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 205,
+  "seconds": 8.27,
+  "rate": 2.66,
+  "clarity": 3.67,
+  "source": "design:delhi"
+ },
+ "delhi-s10": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 221,
+  "seconds": 6.13,
+  "rate": 3.59,
+  "clarity": 2.71,
+  "source": "design:delhi"
+ },
+ "delhi-s11": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 171,
+  "seconds": 6.92,
+  "rate": 3.18,
+  "clarity": 2.59,
+  "source": "design:delhi"
+ },
+ "delhi-s12": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 176,
+  "seconds": 6.54,
+  "rate": 3.36,
+  "clarity": 2.42,
+  "source": "design:delhi"
+ },
+ "chennai-s7": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 252,
+  "seconds": 5.93,
+  "rate": 3.71,
+  "clarity": 3.94,
+  "source": "design:chennai"
+ },
+ "chennai-s8": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 191,
+  "seconds": 5.98,
+  "rate": 3.68,
+  "clarity": 3.82,
+  "source": "design:chennai"
+ },
+ "chennai-s9": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 242,
+  "seconds": 4.69,
+  "rate": 4.69,
+  "clarity": 3.6,
+  "source": "design:chennai"
+ },
+ "chennai-s10": {
+  "said": "Coffee lodge. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "replace: 'large' -> 'lodge'"
+  ],
+  "pitch": 227,
+  "seconds": 5.74,
+  "rate": 3.83,
+  "clarity": 3.77,
+  "source": "design:chennai"
+ },
+ "chennai-s11": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 238,
+  "seconds": 5.89,
+  "rate": 3.73,
+  "clarity": 3.54,
+  "source": "design:chennai"
+ },
+ "chennai-s12": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 201,
+  "seconds": 6.19,
+  "rate": 3.56,
+  "clarity": 4.15,
+  "source": "design:chennai"
+ },
+ "old-delhi-s4": {
+  "said": "Yeah, coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "insert: '' -> 'yeah'"
+  ],
+  "pitch": 166,
+  "seconds": 5.95,
+  "rate": 3.69,
+  "clarity": 2.97,
+  "source": "old"
+ },
+ "old-chennai-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 239,
+  "seconds": 6.31,
+  "rate": 3.48,
+  "clarity": 3.88,
+  "source": "old"
+ },
+ "old-delhi-s6": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 174,
+  "seconds": 8.25,
+  "rate": 2.67,
+  "clarity": 2.87,
+  "source": "old"
+ }
+}

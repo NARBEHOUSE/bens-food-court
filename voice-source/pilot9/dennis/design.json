@@ -1,0 +1,122 @@
+{
+ "nervous-s1": {
+  "said": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 224,
+  "seconds": 7.47,
+  "rate": 2.81,
+  "clarity": 4.11,
+  "style": "nervous",
+  "seed": 1
+ },
+ "nervous-s2": {
+  "said": "Hello, sorry. Hi, I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 176,
+  "seconds": 8.73,
+  "rate": 2.41,
+  "clarity": 4.02,
+  "style": "nervous",
+  "seed": 2
+ },
+ "nervous-s3": {
+  "said": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 153,
+  "seconds": 7.45,
+  "rate": 2.82,
+  "clarity": 3.72,
+  "style": "nervous",
+  "seed": 3
+ },
+ "nervous-s4": {
+  "said": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 175,
+  "seconds": 9.42,
+  "rate": 2.23,
+  "clarity": 4.1,
+  "style": "nervous",
+  "seed": 4
+ },
+ "timid-s1": {
+  "said": "Hello, sorry. Hi, I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 275,
+  "seconds": 11.92,
+  "rate": 1.76,
+  "clarity": 3.72,
+  "style": "timid",
+  "seed": 1
+ },
+ "timid-s2": {
+  "said": "Hello, sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 185,
+  "seconds": 10.3,
+  "rate": 2.04,
+  "clarity": 3.77,
+  "style": "timid",
+  "seed": 2
+ },
+ "timid-s3": {
+  "said": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 238,
+  "seconds": 9.61,
+  "rate": 2.18,
+  "clarity": 1.35,
+  "style": "timid",
+  "seed": 3
+ },
+ "timid-s4": {
+  "said": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 150,
+  "seconds": 10.46,
+  "rate": 2.01,
+  "clarity": 2.77,
+  "style": "timid",
+  "seed": 4
+ },
+ "flustered-s1": {
+  "said": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 177,
+  "seconds": 6.71,
+  "rate": 3.13,
+  "clarity": 3.67,
+  "style": "flustered",
+  "seed": 1
+ },
+ "flustered-s2": {
+  "said": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 146,
+  "seconds": 8.02,
+  "rate": 2.62,
+  "clarity": 3.86,
+  "style": "flustered",
+  "seed": 2
+ },
+ "flustered-s3": {
+  "said": "Hello. Sorry. Hi. I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 141,
+  "seconds": 6.82,
+  "rate": 3.08,
+  "clarity": 3.65,
+  "style": "flustered",
+  "seed": 3
+ },
+ "flustered-s4": {
+  "said": "Hello, sorry. Hi, I've never done this before. Is the fish supposed to look at me? It's fine. I'm fine. Sorry.",
+  "diffs": [],
+  "pitch": 171,
+  "seconds": 7.98,
+  "rate": 2.63,
+  "clarity": 3.59,
+  "style": "flustered",
+  "seed": 4
+ }
+}

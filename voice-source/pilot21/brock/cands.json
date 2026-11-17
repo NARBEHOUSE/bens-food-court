@@ -1,0 +1,65 @@
+{
+ "retake-s1": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 179,
+  "seconds": 6.74,
+  "rate": 3.26,
+  "clarity": 4.07,
+  "source": "retake:"
+ },
+ "retake-s2": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 130,
+  "seconds": 6.52,
+  "rate": 3.38,
+  "clarity": 3.75,
+  "source": "retake:"
+ },
+ "retake-s3": {
+  "said": "Hey, big guy, leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 117,
+  "seconds": 7.97,
+  "rate": 2.76,
+  "clarity": 3.88,
+  "source": "retake:"
+ },
+ "retake-s4": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 140,
+  "seconds": 6.43,
+  "rate": 3.42,
+  "clarity": 4.11,
+  "source": "retake:"
+ },
+ "retake-s5": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 5.97,
+  "rate": 3.69,
+  "clarity": 3.84,
+  "source": "retake:"
+ },
+ "retake-s6": {
+  "said": "Hey, big guy. Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 165,
+  "seconds": 6.5,
+  "rate": 3.39,
+  "clarity": 4.15,
+  "source": "retake:"
+ },
+ "current": {
+  "said": "Hey, big guy! Leg day was this morning. Arm day is this afternoon. Protein day is every day. What have you got?",
+  "diffs": [],
+  "pitch": 177,
+  "seconds": 6.82,
+  "rate": 3.23,
+  "clarity": 4.14,
+  "source": "current"
+ }
+}

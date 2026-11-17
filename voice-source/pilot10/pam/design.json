@@ -1,0 +1,126 @@
+{
+ "frazzled-s1": {
+  "said": "Hi. Okay, twelve kids, one cake, two allergies, a clown who cancels, and I have not sat down since Tuesday.",
+  "diffs": [
+   "replace: 'cancelled' -> 'cancels'"
+  ],
+  "pitch": 353,
+  "seconds": 7.75,
+  "rate": 2.58,
+  "clarity": 3.87,
+  "style": "frazzled",
+  "seed": 1
+ },
+ "frazzled-s2": {
+  "said": "Hi. Okay, twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 340,
+  "seconds": 8.16,
+  "rate": 2.45,
+  "clarity": 4.21,
+  "style": "frazzled",
+  "seed": 2
+ },
+ "frazzled-s3": {
+  "said": "Hi. Okay. Twelve kids, one cake, two allergies, a clown who canceled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 355,
+  "seconds": 7.11,
+  "rate": 2.81,
+  "clarity": 4.07,
+  "style": "frazzled",
+  "seed": 3
+ },
+ "frazzled-s4": {
+  "said": "Hi. Okay, twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 390,
+  "seconds": 6.94,
+  "rate": 2.88,
+  "clarity": 4.0,
+  "style": "frazzled",
+  "seed": 4
+ },
+ "sunny-s1": {
+  "said": "Hi. Okay, twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 296,
+  "seconds": 7.53,
+  "rate": 2.66,
+  "clarity": 4.14,
+  "style": "sunny",
+  "seed": 1
+ },
+ "sunny-s2": {
+  "said": "Hi. Okay. Twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 298,
+  "seconds": 8.19,
+  "rate": 2.44,
+  "clarity": 3.99,
+  "style": "sunny",
+  "seed": 2
+ },
+ "sunny-s3": {
+  "said": "Hi. Okay. Twelve kids, one cake, two allergies, a clown who cancelled, and I've not sat down since Tuesday.",
+  "diffs": [
+   "replace: 'i have' -> 'i've'"
+  ],
+  "pitch": 267,
+  "seconds": 8.01,
+  "rate": 2.5,
+  "clarity": 4.0,
+  "style": "sunny",
+  "seed": 3
+ },
+ "sunny-s4": {
+  "said": "Hi. Okay, twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 307,
+  "seconds": 10.11,
+  "rate": 1.98,
+  "clarity": 3.88,
+  "style": "sunny",
+  "seed": 4
+ },
+ "organised-s1": {
+  "said": "Hi. Okay. Twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 341,
+  "seconds": 7.76,
+  "rate": 2.58,
+  "clarity": 3.73,
+  "style": "organised",
+  "seed": 1
+ },
+ "organised-s2": {
+  "said": "Hi. Okay. Twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 298,
+  "seconds": 7.15,
+  "rate": 2.8,
+  "clarity": 4.05,
+  "style": "organised",
+  "seed": 2
+ },
+ "organised-s3": {
+  "said": "Hi. Okay. Twelve kids, one cake, two allergies, a clown who canceled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 322,
+  "seconds": 7.09,
+  "rate": 2.82,
+  "clarity": 3.98,
+  "style": "organised",
+  "seed": 3
+ },
+ "organised-s4": {
+  "said": "Hi. Okay. Twelve kids, one cake, two allergies, a clown who cancelled, and I have not sat down since Tuesday.",
+  "diffs": [],
+  "pitch": 388,
+  "seconds": 7.71,
+  "rate": 2.59,
+  "clarity": 3.52,
+  "style": "organised",
+  "seed": 4
+ }
+}

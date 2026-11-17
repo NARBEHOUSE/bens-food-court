@@ -33,7 +33,7 @@ const st = (g, id) => g.restaurants[id];
 const openIds = g => R.openShops(C, g).map(r => r.pack);
 
 test('BBCourt is spec 2.1, 4.1 and 6.2, in scan order round the U', () => {
-  assert.strictEqual(C.recordedVoices, false);
+  assert.strictEqual(C.recordedVoices, true);   // the voice pass is recorded (packs/*/voice)
   assert.strictEqual(typeof C.version, 'number');
   assert.deepStrictEqual(C.restaurants.map(r => [r.pack, r.name, r.short, r.arm, r.slot, r.start, r.unlock]), [
     ['burrito', "Ben's Burritos", 'Burritos', 'left', 2, false, 2],
@@ -318,37 +318,37 @@ test('nextGoal: the words and blanks for each stage', () => {
   const g = R.create(C);
   let goal = R.nextGoal(C, g);
   assert.deepStrictEqual([goal.stage, goal.goal, goal.words, goal.name, goal.need, goal.left, goal.count], ['unlock',
-    'get all three to three stars and the Smoothie Shack opens', 'Get all three to three stars and the Smoothie Shack opens.',
+    'get all three to three stars to open the Smoothie Shack', 'Get all three to three stars to open the Smoothie Shack.',
     "Ben's Smoothie Shack", 3, ['pizza', 'diner', 'cafe'], 3]);
-  assert.deepStrictEqual(goal.board, ['Get all three to three stars and the Smoothie Shack opens.', 'Five stars: 0 of 7', 'Fully busy: 0 of 7']);
+  assert.deepStrictEqual(goal.board, ['Get all three to three stars to open the Smoothie Shack.', 'Five stars: 0 of 7', 'Fully busy: 0 of 7']);
   assert.deepStrictEqual(goal.blanks, { goal: goal.goal, name: "Ben's Smoothie Shack", count: 3 });
   const keys = new Set([goal.key]);
   const now = () => { const n = R.nextGoal(C, g); keys.add(n.key); return n; };
   const words = () => now().words;
   good(g, 'pizza', 3);
-  assert.strictEqual(words(), 'Get the Burger Bar and the Cafe to three stars and the Smoothie Shack opens.');
+  assert.strictEqual(words(), 'Get the Burger Bar and the Cafe to three stars to open the Smoothie Shack.');
   good(g, 'diner', 3);
-  assert.strictEqual(words(), 'Get the Cafe to three stars and the Smoothie Shack opens.');
+  assert.strictEqual(words(), 'Get the Cafe to three stars to open the Smoothie Shack.');
   const k = R.nextGoal(C, g).key;
   good(g, 'pizza');
   assert.strictEqual(R.nextGoal(C, g).key, k, 'a shift that changes nothing the goal says keeps the key');
   good(g, 'cafe', 3);
-  assert.strictEqual(words(), "Get all four to four stars and Ben's Burritos opens.");
+  assert.strictEqual(words(), "Get all four to four stars to open Ben's Burritos.");
   good(g, 'pizza');
-  assert.strictEqual(words(), "Get three more to four stars and Ben's Burritos opens.");
+  assert.strictEqual(words(), "Get three more to four stars to open Ben's Burritos.");
   good(g, 'smoothie', 5);
   good(g, 'cafe', 2);
-  assert.strictEqual(words(), "Get the Burger Bar to four stars and Ben's Burritos opens.");
+  assert.strictEqual(words(), "Get the Burger Bar to four stars to open Ben's Burritos.");
   good(g, 'diner', 2);
-  assert.strictEqual(words(), "Get all five to five stars and Ben's Sushi opens.");
+  assert.strictEqual(words(), "Get all five to five stars to open Ben's Sushi.");
   for (const id of ['pizza', 'diner', 'cafe', 'smoothie']) toGold(g, id);
-  assert.strictEqual(words(), "Get Ben's Burritos to five stars and Ben's Sushi opens.");
+  assert.strictEqual(words(), "Get Ben's Burritos to five stars to open Ben's Sushi.");
   toGold(g, 'burrito');
-  assert.strictEqual(words(), "Get Ben's Sushi to five stars and the Ice Cream Emporium opens.");
+  assert.strictEqual(words(), "Get Ben's Sushi to five stars to open the Ice Cream Emporium.");
   toGold(g, 'sushi');
   goal = now();
   assert.deepStrictEqual([goal.stage, goal.words, goal.name, goal.count], ['fiveStars',
-    'Get the Ice Cream Emporium to five stars and the whole court celebrates.', '', 1]);
+    'Get the Ice Cream Emporium to five stars for the big court celebration.', '', 1]);
   assert.deepStrictEqual(goal.board.slice(1), ['Five stars: 6 of 7', 'Fully busy: 0 of 7']);
   toGold(g, 'icecream');
   goal = now();
@@ -566,7 +566,7 @@ test('words for the results card and for Help', () => {
   assert.deepStrictEqual(R.shiftWords(C, 'pizza', { celebrate: true, opened: [] }), ['All seven restaurants have five stars.']);
   assert.strictEqual(R.help(C, g, { saved: { diner: true } }),
     'Smoothie Shack, one star. Pizza Parlor, five stars. Burger Bar, three stars, shift in progress. Cafe, three stars. ' +
-    "Get three more to four stars and Ben's Burritos opens.");
+    "Get three more to four stars to open Ben's Burritos.");
   good(g, 'pizza', 2);
   assert.match(R.help(C, g), /^Smoothie Shack, one star\. Pizza Parlor, five stars, fully busy\. /);
 });

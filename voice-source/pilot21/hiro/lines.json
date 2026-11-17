@@ -1,0 +1,172 @@
+{
+ "current/sushi_customer.complain.gross.hair.2": {
+  "said": "A hair in the rice. People will hear about this.",
+  "diffs": [],
+  "pitch": 96,
+  "seconds": 2.77,
+  "rate": 3.61,
+  "clarity": 3.82,
+  "drift": false,
+  "takes": 1
+ },
+ "current/sushi_customer.order.odd.noFishNoRice.1": {
+  "said": "A California roll, no crab and no rice, just the idea of California.",
+  "diffs": [],
+  "pitch": 90,
+  "seconds": 5.93,
+  "rate": 2.19,
+  "clarity": 3.75,
+  "drift": false,
+  "takes": 1
+ },
+ "current/sushi_greet.3": {
+  "said": "Chef Hero, please do not bow. My back is older than this mall.",
+  "diffs": [
+   "replace: 'hiro' -> 'hero'"
+  ],
+  "pitch": 88,
+  "seconds": 4.23,
+  "rate": 3.08,
+  "clarity": 4.04,
+  "drift": false,
+  "takes": 2
+ },
+ "current/sushi_smalltalk.4": {
+  "said": "Rice must rest, fish must rest, chefs must not rest. That is the order of things.",
+  "diffs": [],
+  "pitch": 93,
+  "seconds": 5.91,
+  "rate": 2.71,
+  "clarity": 3.7,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/sushi_customer.complain.gross.hair.2": {
+  "said": "A hair in the rice. People will hear about this.",
+  "diffs": [],
+  "pitch": 99,
+  "seconds": 3.94,
+  "rate": 2.54,
+  "clarity": 3.27,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/sushi_customer.order.odd.noFishNoRice.1": {
+  "said": "A California roll, no crab and no rice. Just the idea of California.",
+  "diffs": [],
+  "pitch": 95,
+  "seconds": 5.73,
+  "rate": 2.27,
+  "clarity": 3.09,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/sushi_greet.3": {
+  "said": "Chef Hero, please do not bow. My back is older than this mall.",
+  "diffs": [
+   "replace: 'hiro' -> 'hero'"
+  ],
+  "pitch": 113,
+  "seconds": 4.43,
+  "rate": 2.94,
+  "clarity": 3.38,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/sushi_smalltalk.4": {
+  "said": "Rice must rest. Fish must rest. Chefs must not rest. That is the order of things.",
+  "diffs": [],
+  "pitch": 86,
+  "seconds": 8.44,
+  "rate": 1.89,
+  "clarity": 3.31,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s3/sushi_customer.complain.gross.hair.2": {
+  "said": "A hair in the rice. People will hear about this.",
+  "diffs": [],
+  "pitch": 106,
+  "seconds": 2.77,
+  "rate": 3.61,
+  "clarity": 3.8,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/sushi_customer.order.odd.noFishNoRice.1": {
+  "said": "A California roll, no crab and no rice, just the idea of California.",
+  "diffs": [],
+  "pitch": 126,
+  "seconds": 6.41,
+  "rate": 2.03,
+  "clarity": 3.75,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/sushi_greet.3": {
+  "said": "Chef Hero, please do not bow. My back is older than this mall.",
+  "diffs": [
+   "replace: 'hiro' -> 'hero'"
+  ],
+  "pitch": 116,
+  "seconds": 4.46,
+  "rate": 2.92,
+  "clarity": 3.06,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/sushi_smalltalk.4": {
+  "said": "Race must rest. Fish must rest. Chefs must not rest. That is the order of things.",
+  "diffs": [
+   "replace: 'rice' -> 'race'"
+  ],
+  "pitch": 109,
+  "seconds": 6.5,
+  "rate": 2.46,
+  "clarity": 3.13,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/sushi_customer.complain.gross.hair.2": {
+  "said": "A hair in the rice. People will hear about this.",
+  "diffs": [],
+  "pitch": 91,
+  "seconds": 2.83,
+  "rate": 3.53,
+  "clarity": 4.02,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/sushi_customer.order.odd.noFishNoRice.1": {
+  "said": "A California roll, no crab and no rice. Just the idea of California.",
+  "diffs": [],
+  "pitch": 111,
+  "seconds": 6.2,
+  "rate": 2.1,
+  "clarity": 3.86,
+  "drift": true,
+  "takes": 2
+ },
+ "retake-s6/sushi_greet.3": {
+  "said": "Chef Hero, please do not bow. My back is older than this mall.",
+  "diffs": [
+   "replace: 'hiro' -> 'hero'"
+  ],
+  "pitch": 101,
+  "seconds": 4.1,
+  "rate": 3.17,
+  "clarity": 4.06,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/sushi_smalltalk.4": {
+  "said": "Rice must rest. Fish must rest. Chefs must not rest. That is the order of things.",
+  "diffs": [],
+  "pitch": 84,
+  "seconds": 7.22,
+  "rate": 2.22,
+  "clarity": 3.42,
+  "drift": false,
+  "takes": 1
+ }
+}

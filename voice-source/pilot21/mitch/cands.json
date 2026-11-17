@@ -1,0 +1,173 @@
+{
+ "retake-s1": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 205,
+  "seconds": 5.98,
+  "rate": 3.35,
+  "clarity": 3.51,
+  "source": "retake:"
+ },
+ "retake-s2": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 197,
+  "seconds": 5.17,
+  "rate": 3.87,
+  "clarity": 3.19,
+  "source": "retake:"
+ },
+ "retake-s3": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 171,
+  "seconds": 5.51,
+  "rate": 3.63,
+  "clarity": 3.46,
+  "source": "retake:"
+ },
+ "retake-s4": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 188,
+  "seconds": 5.55,
+  "rate": 3.6,
+  "clarity": 3.15,
+  "source": "retake:"
+ },
+ "retake-s5": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 163,
+  "seconds": 5.12,
+  "rate": 3.91,
+  "clarity": 3.59,
+  "source": "retake:"
+ },
+ "retake-s6": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 183,
+  "seconds": 5.31,
+  "rate": 3.76,
+  "clarity": 2.96,
+  "source": "retake:"
+ },
+ "friendly-s1": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 364,
+  "seconds": 6.24,
+  "rate": 3.21,
+  "clarity": 3.34,
+  "source": "design:friendly"
+ },
+ "friendly-s2": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 181,
+  "seconds": 5.65,
+  "rate": 3.54,
+  "clarity": 2.45,
+  "source": "design:friendly"
+ },
+ "friendly-s3": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 161,
+  "seconds": 5.18,
+  "rate": 3.86,
+  "clarity": 3.94,
+  "source": "design:friendly"
+ },
+ "friendly-s4": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 301,
+  "seconds": 5.3,
+  "rate": 3.77,
+  "clarity": 2.97,
+  "source": "design:friendly"
+ },
+ "friendly-s5": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 284,
+  "seconds": 5.28,
+  "rate": 3.79,
+  "clarity": 3.65,
+  "source": "design:friendly"
+ },
+ "friendly-s6": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 294,
+  "seconds": 5.17,
+  "rate": 3.87,
+  "clarity": 3.77,
+  "source": "design:friendly"
+ },
+ "earnest-s1": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 277,
+  "seconds": 6.24,
+  "rate": 3.21,
+  "clarity": 3.57,
+  "source": "design:earnest"
+ },
+ "earnest-s2": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 145,
+  "seconds": 6.99,
+  "rate": 2.86,
+  "clarity": 3.91,
+  "source": "design:earnest"
+ },
+ "earnest-s3": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 121,
+  "seconds": 5.99,
+  "rate": 3.34,
+  "clarity": 3.96,
+  "source": "design:earnest"
+ },
+ "earnest-s4": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 155,
+  "seconds": 5.96,
+  "rate": 3.36,
+  "clarity": 3.87,
+  "source": "design:earnest"
+ },
+ "earnest-s5": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 208,
+  "seconds": 5.33,
+  "rate": 3.75,
+  "clarity": 2.17,
+  "source": "design:earnest"
+ },
+ "earnest-s6": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 126,
+  "seconds": 6.28,
+  "rate": 3.19,
+  "clarity": 3.6,
+  "source": "design:earnest"
+ },
+ "current": {
+  "said": "Doors are open. Try not to set anything on fire. I'll be supervising, which is the hardest job of all.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 5.45,
+  "rate": 3.67,
+  "clarity": 3.53,
+  "source": "current"
+ }
+}

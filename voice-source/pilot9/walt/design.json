@@ -1,0 +1,135 @@
+{
+ "jolly-s1": {
+  "said": "Well, hello there. In nineteen fifty-five, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [],
+  "pitch": 178,
+  "seconds": 6.82,
+  "rate": 3.37,
+  "clarity": 3.38,
+  "style": "jolly",
+  "seed": 1
+ },
+ "jolly-s2": {
+  "said": "Oh, hello there! In 1955, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [
+   "replace: 'well' -> 'oh'",
+   "replace: 'nineteen fifty five' -> '1955'"
+  ],
+  "pitch": 129,
+  "seconds": 8.79,
+  "rate": 2.62,
+  "clarity": 3.15,
+  "style": "jolly",
+  "seed": 2
+ },
+ "jolly-s3": {
+  "said": "Well, hello there. In 1955, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [
+   "replace: 'nineteen fifty five' -> '1955'"
+  ],
+  "pitch": 188,
+  "seconds": 8.11,
+  "rate": 2.83,
+  "clarity": 3.6,
+  "style": "jolly",
+  "seed": 3
+ },
+ "jolly-s4": {
+  "said": "Well, hello there. In nineteen fifty-five, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [],
+  "pitch": 171,
+  "seconds": 6.89,
+  "rate": 3.34,
+  "clarity": 3.77,
+  "style": "jolly",
+  "seed": 4
+ },
+ "oldtime-s1": {
+  "said": "Well, hello there. In nineteen fifty-five, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [],
+  "pitch": 201,
+  "seconds": 7.04,
+  "rate": 3.27,
+  "clarity": 3.53,
+  "style": "oldtime",
+  "seed": 1
+ },
+ "oldtime-s2": {
+  "said": "Well, hello there. In 1955, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [
+   "replace: 'nineteen fifty five' -> '1955'"
+  ],
+  "pitch": 167,
+  "seconds": 7.29,
+  "rate": 3.16,
+  "clarity": 3.94,
+  "style": "oldtime",
+  "seed": 2
+ },
+ "oldtime-s3": {
+  "said": "Well, hello there. In nineteen fifty-five, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [],
+  "pitch": 152,
+  "seconds": 7.59,
+  "rate": 3.03,
+  "clarity": 3.8,
+  "style": "oldtime",
+  "seed": 3
+ },
+ "oldtime-s4": {
+  "said": "Well, hello there. In nineteen fifty-five, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [],
+  "pitch": 191,
+  "seconds": 6.95,
+  "rate": 3.31,
+  "clarity": 3.67,
+  "style": "oldtime",
+  "seed": 4
+ },
+ "gentle-s1": {
+  "said": "Well, hello there. In nineteen fifty-five, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [],
+  "pitch": 186,
+  "seconds": 6.94,
+  "rate": 3.31,
+  "clarity": 3.1,
+  "style": "gentle",
+  "seed": 1
+ },
+ "gentle-s2": {
+  "said": "Well, hello there. In 1955, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [
+   "replace: 'nineteen fifty five' -> '1955'"
+  ],
+  "pitch": 201,
+  "seconds": 7.73,
+  "rate": 2.97,
+  "clarity": 3.58,
+  "style": "gentle",
+  "seed": 2
+ },
+ "gentle-s3": {
+  "said": "Well, hello there. In 1955, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [
+   "replace: 'nineteen fifty five' -> '1955'"
+  ],
+  "pitch": 137,
+  "seconds": 7.66,
+  "rate": 3.0,
+  "clarity": 3.77,
+  "style": "gentle",
+  "seed": 3
+ },
+ "gentle-s4": {
+  "said": "Well, hello there. In 1955, a Sunday cost a nickel, and you got a handshake with it. Those were the days.",
+  "diffs": [
+   "replace: 'nineteen fifty five' -> '1955'"
+  ],
+  "pitch": 147,
+  "seconds": 6.89,
+  "rate": 3.34,
+  "clarity": 3.54,
+  "style": "gentle",
+  "seed": 4
+ }
+}

@@ -31,7 +31,7 @@
   /* ── Mitch: back on the court, the next goal ({goal} sits mid-sentence) ─────────────────────────────────── */
   { id: 'return.1', who: 'mitch', moment: 'court.return', text: 'Back on the floor! Next up: {goal}.', delivery: 'upbeat, a little too confident' },
   { id: 'return.2', who: 'mitch', moment: 'court.return', text: 'Team meeting. The team is you. The agenda: {goal}.', delivery: 'upbeat, mock-official' },
-  { id: 'return.3', who: 'mitch', moment: 'court.return', text: 'Corporate called. Corporate is my mom. She says {goal}.', delivery: 'eager, then a quick aside' },
+  { id: 'return.3', who: 'mitch', moment: 'court.return', text: 'The district manager called. The district manager is my mom. She says {goal}.', delivery: 'eager, then a quick aside' },
   { id: 'return.4', who: 'mitch', moment: 'court.return', text: 'I updated the progress board. It updates itself, but I watched. Anyway: {goal}.', delivery: 'proud, then sheepish' },
   { id: 'return.5', who: 'mitch', moment: 'court.return', text: 'Big-picture time. I love big-picture time. Here it is: {goal}.', delivery: 'eager, building it up' },
   { id: 'return.6', who: 'mitch', moment: 'court.return', text: "My headset says {goal}. It isn't plugged in. I just know things.", delivery: 'confident, conspiratorial' },
@@ -39,11 +39,11 @@
   { id: 'return.8', who: 'mitch', moment: 'court.return', text: "Five-year plan, condensed: {goal}. I'm having it printed on a mug.", delivery: 'eager' },
 
   /* ── Mitch: a restaurant opens; a gold sign goes up ({name} is the full name) ───────────────────────────── */
-  { id: 'unlock.1', who: 'mitch', moment: 'court.unlock', text: "{name} is open! New restaurant, new uniform. I've been practicing in the mirror.", delivery: 'thrilled' },
+  { id: 'unlock.1', who: 'mitch', moment: 'court.unlock', text: "{name} is open! New restaurant, new uniform. I've been posing in it in the mirror.", delivery: 'thrilled' },
   { id: 'unlock.2', who: 'mitch', moment: 'court.unlock', text: 'Look at that shutter go! {name}! Same badge, same tape, whole new outfit.', delivery: 'thrilled, admiring' },
   { id: 'unlock.3', who: 'mitch', moment: 'court.unlock', text: "{name} is officially open. I cut the ribbon. There wasn't a ribbon. I cut the air.", delivery: 'proud, then deadpan' },
   { id: 'unlock.4', who: 'mitch', moment: 'court.unlock', text: "Grand opening at {name}! I've already memorized the menu. Mostly the pictures.", delivery: 'eager' },
-  { id: 'goldSign.1', who: 'mitch', moment: 'court.goldSign', text: "A gold sign on {name}! I'd like to thank my mom, who is also corporate.", delivery: 'thrilled, then an aside' },
+  { id: 'goldSign.1', who: 'mitch', moment: 'court.goldSign', text: "A gold sign on {name}! I'd like to thank my mom, who is also the district manager.", delivery: 'thrilled, then an aside' },
   { id: 'goldSign.2', who: 'mitch', moment: 'court.goldSign', text: "Look at that gold sign on {name}. I'm not crying. It's just very shiny.", delivery: 'choked up, insisting he is fine' },
   { id: 'goldSign.3', who: 'mitch', moment: 'court.goldSign', text: "Five stars for {name}! I'm putting a gold star on my badge. Right next to the tape.", delivery: 'proud' },
   { id: 'goldSign.4', who: 'mitch', moment: 'court.goldSign', text: "{name} has its gold sign! I'm standing next to it in every photo from now on.", delivery: 'giddy' },
@@ -52,7 +52,7 @@
   { id: 'celebrate.1', who: 'mitch', moment: 'court.celebrate', text: "All seven restaurants! Five stars each! Fireworks! I didn't approve the fireworks, but I'm allowing them.", delivery: 'overjoyed, then mock-stern' },
   { id: 'celebrate.2', who: 'mitch', moment: 'court.celebrate', text: "Seven gold signs. The greatest day in food court history. I checked. I'm the historian.", delivery: 'overjoyed, proud' },
   { id: 'celebrate.3', who: 'mitch', moment: 'court.celebrate', text: "Every restaurant at five stars. I had a speech. I'm too emotional. Here's the speech: wow.", delivery: 'choked up, then beaming' },
-  { id: 'promoted.1', who: 'mitch', moment: 'court.promoted', text: 'Corporate says I can take the tape off? [peels tape] Manager. It was right under there the whole time.', delivery: 'disbelief, then awe' },
+  { id: 'promoted.1', who: 'mitch', moment: 'court.promoted', text: 'The district manager says I can take the tape off? [peels tape] Manager. It was right under there the whole time.', delivery: 'disbelief, then awe' },
   { id: 'promoted.2', who: 'mitch', moment: 'court.promoted', text: "The tape is coming off. [peels tape] Hello. Manager Mitch. I'm keeping the tape, for the scrapbook.", delivery: 'ceremonial, then emotional' },
   { id: 'promoted.3', who: 'mitch', moment: 'court.promoted', text: "[peels tape] Manager. I'd like to thank my mom, the board of directors, and also my mom.", delivery: 'emotional, grateful' },
 
@@ -113,5 +113,5 @@
   { id: 'cheer.1', who: 'inferno', moment: 'court.cheer', text: "My ears are smoking, and it isn't even the hot sauce!", delivery: 'intense, proud' },
   { id: 'cheer.1', who: 'rita', moment: 'court.cheer', text: 'This calls for one of everything!', delivery: 'hearty, hungry' },
   { id: 'cheer.1', who: 'lulu', moment: 'court.cheer', text: "[sigh] I can't pick the best part of today. [sigh] All of it. Final answer.", delivery: 'big dramatic sighs, then very sure' },
-  { id: 'cheer.1', who: 'walt', moment: 'court.cheer', text: "Just like 1955! Well, better. We didn't have gold in 1955.", delivery: 'cheerful, nostalgic' },
+  { id: 'cheer.1', who: 'walt', moment: 'court.cheer', text: "Just like the old days! Well, better. We didn't have gold signs in my day.", delivery: 'cheerful, nostalgic' },
 ] });

@@ -1,0 +1,218 @@
+{
+ "marge/mention.c1": {
+  "st": "opt1"
+ },
+ "marge/mention.c2": {
+  "st": "opt0"
+ },
+ "marge/mention.c3": {
+  "st": "opt0"
+ },
+ "marge/mention.c5": {
+  "st": "opt1"
+ },
+ "marge/mention.c6": {
+  "st": "opt1"
+ },
+ "gus/mention.c1": {
+  "st": "opt1"
+ },
+ "gus/mention.c2": {
+  "st": "opt0"
+ },
+ "gus/mention.c3": {
+  "st": "opt1"
+ },
+ "gus/mention.c5": {
+  "st": "opt1"
+ },
+ "gus/mention.c6": {
+  "st": "opt0"
+ },
+ "gus/mention.c7": {
+  "st": "opt1"
+ },
+ "bev/mention.c1": {
+  "st": "opt0"
+ },
+ "bev/mention.c3": {
+  "st": "opt1"
+ },
+ "bev/mention.c5": {
+  "st": "opt0"
+ },
+ "bev/mention.c6": {
+  "st": "opt0"
+ },
+ "bev/mention.c7": {
+  "st": "opt1"
+ },
+ "vernon/mention.c2": {
+  "st": "opt1"
+ },
+ "vernon/mention.c3": {
+  "st": "opt1"
+ },
+ "vernon/mention.c5": {
+  "st": "opt1"
+ },
+ "vernon/mention.c6": {
+  "st": "opt0"
+ },
+ "sal/mention.c2": {
+  "st": "opt1"
+ },
+ "sal/mention.c3": {
+  "st": "opt1"
+ },
+ "sal/mention.c4": {
+  "st": "opt0"
+ },
+ "sal/mention.c5": {
+  "st": "opt0"
+ },
+ "sal/mention.c6": {
+  "st": "opt1"
+ },
+ "dale/mention.c4": {
+  "st": "opt1"
+ },
+ "oakes/mention.c3": {
+  "st": "opt1"
+ },
+ "marge/mention.c4": {
+  "st": "opt0"
+ },
+ "marge/mention.c7": {
+  "st": "opt0"
+ },
+ "gus/mention.c4": {
+  "st": "opt0"
+ },
+ "bev/mention.c2": {
+  "st": "keep"
+ },
+ "bev/mention.c4": {
+  "st": "opt0"
+ },
+ "vernon/mention.c1": {
+  "st": "keep"
+ },
+ "vernon/mention.c4": {
+  "st": "keep"
+ },
+ "vernon/mention.c7": {
+  "st": "keep"
+ },
+ "sal/mention.c1": {
+  "st": "keep"
+ },
+ "sal/mention.c7": {
+  "st": "opt0"
+ },
+ "dale/mention.c1": {
+  "st": "keep"
+ },
+ "dale/mention.c2": {
+  "st": "opt0"
+ },
+ "dale/mention.c3": {
+  "st": "opt0"
+ },
+ "dale/mention.c5": {
+  "st": "opt0"
+ },
+ "dale/mention.c6": {
+  "st": "keep"
+ },
+ "dale/mention.c7": {
+  "st": "opt0"
+ },
+ "priya/mention.c1": {
+  "st": "keep"
+ },
+ "priya/mention.c2": {
+  "st": "keep"
+ },
+ "priya/mention.c3": {
+  "st": "keep"
+ },
+ "priya/mention.c4": {
+  "st": "keep"
+ },
+ "priya/mention.c5": {
+  "st": "keep"
+ },
+ "priya/mention.c6": {
+  "st": "keep"
+ },
+ "priya/mention.c7": {
+  "st": "keep"
+ },
+ "oakes/mention.c1": {
+  "st": "keep"
+ },
+ "oakes/mention.c2": {
+  "st": "opt0"
+ },
+ "oakes/mention.c4": {
+  "st": "keep"
+ },
+ "oakes/mention.c5": {
+  "st": "keep"
+ },
+ "tasha/mention.c1": {
+  "st": "opt0"
+ },
+ "tasha/mention.c2": {
+  "st": "opt0"
+ },
+ "tasha/mention.c3": {
+  "st": "keep"
+ },
+ "tasha/mention.c4": {
+  "st": "keep"
+ },
+ "reginald/mention.c1": {
+  "st": "opt0"
+ },
+ "reginald/mention.c2": {
+  "st": "keep"
+ },
+ "reginald/mention.c3": {
+  "st": "opt0"
+ },
+ "reginald/mention.c4": {
+  "st": "keep"
+ },
+ "reginald/mention.c5": {
+  "st": "opt0"
+ },
+ "reginald/mention.c6": {
+  "st": "keep"
+ },
+ "reginald/mention.c7": {
+  "st": "keep"
+ },
+ "kai/mention.c1": {
+  "st": "keep"
+ },
+ "kai/mention.c2": {
+  "st": "keep"
+ },
+ "kai/mention.c3": {
+  "st": "opt0"
+ },
+ "kai/mention.c4": {
+  "st": "keep"
+ },
+ "kai/mention.c5": {
+  "st": "opt0"
+ },
+ "kai/mention.c6": {
+  "st": "keep"
+ },
+ "kai/mention.c7": {
+  "st": "keep"
+ }
+}

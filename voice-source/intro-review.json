@@ -1,0 +1,374 @@
+{
+ "marge/intro.c1": {
+  "note": "General note: The system TTS may read certain words differently than intended. We haven't seen that issue as much with the generated voices but something to keep an eye out for. Example: Live, Read",
+  "st": "keep"
+ },
+ "marge/intro.c2": {
+  "st": "edit",
+  "text": "Here's what I'm having, sweetie. Write it down because I won't remember.",
+  "delivery": "warm, laughing at herself"
+ },
+ "marge/intro.c3": {
+  "st": "keep"
+ },
+ "marge/intro.c4": {
+  "note": "Need to check \"hon\" vs \"hun\" for pronunciation before recording all lines",
+  "st": "keep",
+  "text": "Okay, hon. Here's what I want. Don't tell the girls.",
+  "delivery": "warm, conspiratorial"
+ },
+ "marge/intro.c5": {
+  "st": "edit",
+  "text": "Something new, hon. At my age, ordering lunch is as exciting as it gets.",
+  "delivery": "warm, dry"
+ },
+ "gus/intro.c1": {
+  "st": "keep",
+  "text": "Here's what I'm haulin' today, buddy.",
+  "delivery": "easy drawl"
+ },
+ "gus/intro.c2": {
+  "st": "keep"
+ },
+ "gus/intro.c3": {
+  "st": "keep"
+ },
+ "gus/intro.c4": {
+  "st": "edit",
+  "text": "Truck ain't the only one that needs fuel 'round here.",
+  "delivery": "amused drawl"
+ },
+ "gus/intro.c5": {
+  "st": "keep"
+ },
+ "bev/intro.c1": {
+  "st": "keep"
+ },
+ "bev/intro.c2": {
+  "st": "keep"
+ },
+ "bev/intro.c3": {
+  "st": "keep"
+ },
+ "bev/intro.c4": {
+  "st": "keep"
+ },
+ "bev/intro.c5": {
+  "st": "keep"
+ },
+ "vernon/intro.c1": {
+  "st": "keep"
+ },
+ "vernon/intro.c2": {
+  "st": "keep"
+ },
+ "vernon/intro.c3": {
+  "st": "keep"
+ },
+ "vernon/intro.c4": {
+  "st": "keep"
+ },
+ "vernon/intro.c5": {
+  "st": "keep"
+ },
+ "sal/intro.c1": {
+  "st": "keep"
+ },
+ "sal/intro.c2": {
+  "st": "keep"
+ },
+ "sal/intro.c3": {
+  "st": "keep"
+ },
+ "sal/intro.c4": {
+  "st": "keep"
+ },
+ "sal/intro.c5": {
+  "st": "keep"
+ },
+ "dale/intro.c1": {
+  "st": "keep"
+ },
+ "dale/intro.c2": {
+  "st": "edit",
+  "text": "Thought about this one the whole drive over.",
+  "delivery": "slow, dry"
+ },
+ "dale/intro.c3": {
+  "st": "keep"
+ },
+ "dale/intro.c4": {
+  "st": "keep"
+ },
+ "dale/intro.c5": {
+  "st": "edit",
+  "text": "Runnin' on empty. Time to fill up.",
+  "delivery": "slow, dry"
+ },
+ "priya/intro.c1": {
+  "st": "edit",
+  "text": "Here's what I want. I've had all shift to decide.",
+  "delivery": "dry, quick"
+ },
+ "priya/intro.c2": {
+  "st": "edit",
+  "text": "Okay. Before I fall asleep standing up.",
+  "delivery": "dry, quick, fading"
+ },
+ "priya/intro.c3": {
+  "st": "keep"
+ },
+ "priya/intro.c4": {
+  "st": "edit",
+  "text": "This is dinner. Or breakfast. Don't remember which.",
+  "delivery": "dry, flat"
+ },
+ "priya/intro.c5": {
+  "st": "edit",
+  "text": "Here's a prescription you can fill.",
+  "delivery": "dry, quick"
+ },
+ "oakes/intro.c1": {
+  "st": "edit",
+  "text": "I have prepared a short syllabus.",
+  "delivery": "precise, pleased"
+ },
+ "oakes/intro.c2": {
+  "st": "keep"
+ },
+ "oakes/intro.c3": {
+  "st": "keep"
+ },
+ "oakes/intro.c4": {
+  "st": "keep"
+ },
+ "oakes/intro.c5": {
+  "st": "keep"
+ },
+ "tasha/intro.c1": {
+  "st": "keep"
+ },
+ "tasha/intro.c2": {
+  "st": "keep"
+ },
+ "tasha/intro.c3": {
+  "st": "keep"
+ },
+ "tasha/intro.c4": {
+  "st": "edit",
+  "text": "Okay. Just don't mess it up.",
+  "delivery": "deadpan"
+ },
+ "tasha/intro.c5": {
+  "st": "keep"
+ },
+ "reginald/intro.c1": {
+  "st": "keep"
+ },
+ "reginald/intro.c2": {
+  "st": "keep"
+ },
+ "reginald/intro.c3": {
+  "st": "keep"
+ },
+ "reginald/intro.c4": {
+  "st": "keep"
+ },
+ "reginald/intro.c5": {
+  "st": "keep"
+ },
+ "kai/intro.c1": {
+  "st": "keep"
+ },
+ "kai/intro.c2": {
+  "st": "keep"
+ },
+ "kai/intro.c3": {
+  "st": "edit",
+  "text": "Reginald taught me a lot. Here's mine.",
+  "delivery": "bright, a little proud"
+ },
+ "kai/intro.c4": {
+  "st": "keep"
+ },
+ "kai/intro.c5": {
+  "st": "keep"
+ },
+ "tony/intro.c1": {
+  "st": "keep"
+ },
+ "tony/intro.c2": {
+  "st": "keep"
+ },
+ "tony/intro.c3": {
+  "st": "keep"
+ },
+ "tony/intro.c4": {
+  "st": "keep"
+ },
+ "tony/intro.c5": {
+  "st": "keep"
+ },
+ "pam/intro.c1": {
+  "st": "keep"
+ },
+ "pam/intro.c2": {
+  "st": "edit",
+  "text": "Here's the list. No, wait. That's for the caterer.",
+  "delivery": "cheerful, frazzled"
+ },
+ "pam/intro.c3": {
+  "st": "keep"
+ },
+ "pam/intro.c4": {
+  "st": "keep"
+ },
+ "pam/intro.c5": {
+  "st": "keep"
+ },
+ "breeze/intro.c1": {
+  "st": "keep"
+ },
+ "breeze/intro.c2": {
+  "st": "keep"
+ },
+ "breeze/intro.c3": {
+  "st": "keep"
+ },
+ "breeze/intro.c4": {
+  "st": "keep"
+ },
+ "breeze/intro.c5": {
+  "st": "keep"
+ },
+ "brock/intro.c1": {
+  "st": "keep"
+ },
+ "brock/intro.c2": {
+  "st": "edit",
+  "text": "Order time! I'll make it fit my macros.",
+  "delivery": "eager, embarrassed"
+ },
+ "brock/intro.c3": {
+  "st": "keep"
+ },
+ "brock/intro.c4": {
+  "st": "keep"
+ },
+ "brock/intro.c5": {
+  "st": "keep"
+ },
+ "jitters/intro.c1": {
+  "st": "keep"
+ },
+ "jitters/intro.c2": {
+  "st": "edit",
+  "text": "I've got six coffees and a plan. Here's the plan.",
+  "delivery": "very fast"
+ },
+ "jitters/intro.c3": {
+  "st": "keep"
+ },
+ "jitters/intro.c4": {
+  "st": "keep"
+ },
+ "jitters/intro.c5": {
+  "st": "keep"
+ },
+ "hiro/intro.c1": {
+  "st": "keep"
+ },
+ "hiro/intro.c2": {
+  "st": "keep"
+ },
+ "hiro/intro.c3": {
+  "st": "keep"
+ },
+ "hiro/intro.c4": {
+  "st": "keep"
+ },
+ "hiro/intro.c5": {
+  "st": "keep"
+ },
+ "dennis/intro.c1": {
+  "st": "keep"
+ },
+ "dennis/intro.c2": {
+  "st": "keep"
+ },
+ "dennis/intro.c3": {
+  "st": "keep"
+ },
+ "dennis/intro.c4": {
+  "st": "keep"
+ },
+ "dennis/intro.c5": {
+  "st": "keep"
+ },
+ "inferno/intro.c1": {
+  "st": "keep"
+ },
+ "inferno/intro.c2": {
+  "st": "keep"
+ },
+ "inferno/intro.c3": {
+  "st": "keep"
+ },
+ "inferno/intro.c4": {
+  "st": "keep"
+ },
+ "inferno/intro.c5": {
+  "st": "edit",
+  "text": "This is what I'm having. Don't worry, you're not liable.",
+  "delivery": "intense, proud"
+ },
+ "rita/intro.c1": {
+  "st": "keep"
+ },
+ "rita/intro.c2": {
+  "st": "keep"
+ },
+ "rita/intro.c3": {
+  "st": "keep"
+ },
+ "rita/intro.c4": {
+  "st": "keep"
+ },
+ "rita/intro.c5": {
+  "st": "keep"
+ },
+ "lulu/intro.c1": {
+  "st": "keep"
+ },
+ "lulu/intro.c2": {
+  "st": "keep"
+ },
+ "lulu/intro.c3": {
+  "st": "keep"
+ },
+ "lulu/intro.c4": {
+  "st": "keep"
+ },
+ "lulu/intro.c5": {
+  "st": "keep"
+ },
+ "walt/intro.c1": {
+  "st": "keep"
+ },
+ "walt/intro.c2": {
+  "st": "keep"
+ },
+ "walt/intro.c3": {
+  "st": "edit",
+  "text": "Back in my day, there were only two items. I didn't like either of them.",
+  "delivery": "cheerful, nostalgic"
+ },
+ "walt/intro.c4": {
+  "st": "keep"
+ },
+ "walt/intro.c5": {
+  "st": "edit",
+  "text": "Something new today. My wife says I'm stuck in the past. Let's prove her wrong.",
+  "delivery": "cheerful, a little proud"
+ }
+}

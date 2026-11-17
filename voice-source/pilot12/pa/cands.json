@@ -1,0 +1,175 @@
+{
+ "bright-s7": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 248,
+  "seconds": 6.51,
+  "rate": 2.92,
+  "clarity": 2.49,
+  "source": "design:bright"
+ },
+ "bright-s8": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 207,
+  "seconds": 6.54,
+  "rate": 2.91,
+  "clarity": 2.91,
+  "source": "design:bright"
+ },
+ "bright-s9": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 203,
+  "seconds": 6.34,
+  "rate": 2.99,
+  "clarity": 2.71,
+  "source": "design:bright"
+ },
+ "bright-s10": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 270,
+  "seconds": 7.29,
+  "rate": 2.61,
+  "clarity": 3.45,
+  "source": "design:bright"
+ },
+ "bright-s11": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 161,
+  "seconds": 6.91,
+  "rate": 2.75,
+  "clarity": 2.93,
+  "source": "design:bright"
+ },
+ "bright-s12": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 262,
+  "seconds": 7.0,
+  "rate": 2.71,
+  "clarity": 2.89,
+  "source": "design:bright"
+ },
+ "bright-warm-s1": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 310,
+  "seconds": 6.97,
+  "rate": 2.73,
+  "clarity": 3.71,
+  "source": "design:bright-warm"
+ },
+ "bright-warm-s2": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 242,
+  "seconds": 8.06,
+  "rate": 2.36,
+  "clarity": 3.45,
+  "source": "design:bright-warm"
+ },
+ "bright-warm-s3": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 252,
+  "seconds": 7.66,
+  "rate": 2.48,
+  "clarity": 3.12,
+  "source": "design:bright-warm"
+ },
+ "bright-warm-s4": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 188,
+  "seconds": 7.27,
+  "rate": 2.62,
+  "clarity": 3.68,
+  "source": "design:bright-warm"
+ },
+ "bright-warm-s5": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 244,
+  "seconds": 7.88,
+  "rate": 2.41,
+  "clarity": 3.23,
+  "source": "design:bright-warm"
+ },
+ "bright-warm-s6": {
+  "said": "Attention, food court guests. A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 196,
+  "seconds": 7.03,
+  "rate": 2.7,
+  "clarity": 3.52,
+  "source": "design:bright-warm"
+ },
+ "bright-crisp-s1": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 317,
+  "seconds": 8.05,
+  "rate": 2.36,
+  "clarity": 3.17,
+  "source": "design:bright-crisp"
+ },
+ "bright-crisp-s2": {
+  "said": "Attention, food court guests. A new restaurant is now opening. Please walk. Do not run to the grand opening.",
+  "diffs": [
+   "replace: 'open' -> 'opening'"
+  ],
+  "pitch": 244,
+  "seconds": 6.99,
+  "rate": 2.72,
+  "clarity": 2.92,
+  "source": "design:bright-crisp"
+ },
+ "bright-crisp-s3": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 261,
+  "seconds": 7.11,
+  "rate": 2.67,
+  "clarity": 3.16,
+  "source": "design:bright-crisp"
+ },
+ "bright-crisp-s4": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 198,
+  "seconds": 6.84,
+  "rate": 2.78,
+  "clarity": 3.43,
+  "source": "design:bright-crisp"
+ },
+ "bright-crisp-s5": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 276,
+  "seconds": 6.91,
+  "rate": 2.75,
+  "clarity": 3.11,
+  "source": "design:bright-crisp"
+ },
+ "bright-crisp-s6": {
+  "said": "Attention, food court guests. A new restaurant is now open. Please walk. Do not run to the grand opening.",
+  "diffs": [],
+  "pitch": 231,
+  "seconds": 6.92,
+  "rate": 2.75,
+  "clarity": 3.59,
+  "source": "design:bright-crisp"
+ },
+ "old-bright-s4": {
+  "said": "Attention, food court guests! A new restaurant is now open. Please walk, do not run, to the grand opening.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 8.43,
+  "rate": 2.25,
+  "clarity": 3.7,
+  "source": "old"
+ }
+}

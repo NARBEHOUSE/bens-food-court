@@ -1,0 +1,50 @@
+{
+ "current.wav": [
+  1794629672.7058365,
+  1.0
+ ],
+ "retake-s3.wav": [
+  1794629620.7873707,
+  0.926
+ ],
+ "lines/current/delighted.wav": [
+  1794629686.8067486,
+  0.889
+ ],
+ "lines/retake-s3/delighted.wav": [
+  1794629767.8608334,
+  0.878
+ ],
+ "lines/current/grumpy.wav": [
+  1794629716.5035856,
+  0.921
+ ],
+ "lines/retake-s3/grumpy.wav": [
+  1794629778.7233536,
+  0.86
+ ],
+ "lines/current/sad.wav": [
+  1794629729.005981,
+  0.726
+ ],
+ "lines/retake-s3/sad.wav": [
+  1794629790.5329175,
+  0.787
+ ],
+ "lines/current/sarcasm.wav": [
+  1794629741.410754,
+  0.875
+ ],
+ "lines/retake-s3/sarcasm.wav": [
+  1794629816.718223,
+  0.871
+ ],
+ "lines/current/thanks.wav": [
+  1794629750.775547,
+  0.908
+ ],
+ "lines/retake-s3/thanks.wav": [
+  1794629833.0153859,
+  0.853
+ ]
+}

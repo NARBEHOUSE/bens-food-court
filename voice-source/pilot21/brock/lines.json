@@ -1,0 +1,170 @@
+{
+ "current/cast_complain.c8": {
+  "said": "I'm saving this for my cooldown.",
+  "diffs": [],
+  "pitch": 190,
+  "seconds": 2.0,
+  "rate": 3.5,
+  "clarity": 4.11,
+  "drift": false,
+  "takes": 1
+ },
+ "current/smoothie_customer.order.odd.notGreen.2": {
+  "said": "Green smoothie, please, without the green part. I'm easing into it.",
+  "diffs": [],
+  "pitch": 194,
+  "seconds": 4.18,
+  "rate": 2.63,
+  "clarity": 4.13,
+  "drift": false,
+  "takes": 1
+ },
+ "current/icecream_greet.4": {
+  "said": "What's up? I'm carb loading for a big lift. The big lift is this spoon.",
+  "diffs": [],
+  "pitch": 200,
+  "seconds": 4.18,
+  "rate": 3.59,
+  "clarity": 3.74,
+  "drift": false,
+  "takes": 1
+ },
+ "current/icecream_smalltalk.2": {
+  "said": "My mom saw me walk in here. She texted Brock. It's not cheat day. It is now.",
+  "diffs": [
+   "delete: ''' -> ''"
+  ],
+  "pitch": 179,
+  "seconds": 4.97,
+  "rate": 3.62,
+  "clarity": 3.57,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/cast_complain.c8": {
+  "said": "I'm saving this for my cooldown.",
+  "diffs": [],
+  "pitch": 172,
+  "seconds": 1.8,
+  "rate": 3.89,
+  "clarity": 3.25,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s6/smoothie_customer.order.odd.notGreen.2": {
+  "said": "Green smoothie, please, without the green part. I'm easing into it.",
+  "diffs": [],
+  "pitch": 162,
+  "seconds": 3.25,
+  "rate": 3.38,
+  "clarity": 3.68,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/icecream_greet.4": {
+  "said": "What's up? I'm carb loading for a big lift. The big lift is this spoon.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 4.25,
+  "rate": 3.53,
+  "clarity": 3.54,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s6/icecream_smalltalk.2": {
+  "said": "My mom saw me walk in here. She texted, \"Brock, it's not cheat day. It is now.\"",
+  "diffs": [
+   "delete: ''' -> ''"
+  ],
+  "pitch": 158,
+  "seconds": 5.17,
+  "rate": 3.48,
+  "clarity": 4.03,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s4/cast_complain.c8": {
+  "said": "I'm saving this for my cooldown.",
+  "diffs": [],
+  "pitch": 157,
+  "seconds": 1.86,
+  "rate": 3.76,
+  "clarity": 3.9,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s4/smoothie_customer.order.odd.notGreen.2": {
+  "said": "Green smoothie, please, without the green part. I'm easing into it.",
+  "diffs": [],
+  "pitch": 152,
+  "seconds": 3.29,
+  "rate": 3.34,
+  "clarity": 3.58,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s4/icecream_greet.4": {
+  "said": "What's up? I'm carb loading for a big lift. The big lift is this spoon.",
+  "diffs": [],
+  "pitch": 142,
+  "seconds": 5.1,
+  "rate": 2.94,
+  "clarity": 3.63,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s4/icecream_smalltalk.2": {
+  "said": "My mom saw me walk in here. She texted, \"Brock, it's not cheat day. It is now.\"",
+  "diffs": [
+   "delete: ''' -> ''"
+  ],
+  "pitch": 141,
+  "seconds": 5.5,
+  "rate": 3.27,
+  "clarity": 3.58,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/cast_complain.c8": {
+  "said": "I'm saving this for my cooldown.",
+  "diffs": [],
+  "pitch": 213,
+  "seconds": 2.06,
+  "rate": 3.39,
+  "clarity": 3.78,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/smoothie_customer.order.odd.notGreen.2": {
+  "said": "Green smoothie, please, without the green part. I'm easing into it.",
+  "diffs": [],
+  "pitch": 170,
+  "seconds": 3.25,
+  "rate": 3.38,
+  "clarity": 3.47,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s1/icecream_greet.4": {
+  "said": "What's up? I'm carb loading for a big lift. The big lift is this spoon.",
+  "diffs": [],
+  "pitch": 155,
+  "seconds": 4.76,
+  "rate": 3.15,
+  "clarity": 3.68,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s1/icecream_smalltalk.2": {
+  "said": "My mom saw me walk in here. She texted Brock. It's not cheat day. It is now.",
+  "diffs": [
+   "delete: ''' -> ''"
+  ],
+  "pitch": 165,
+  "seconds": 5.18,
+  "rate": 3.47,
+  "clarity": 3.39,
+  "drift": false,
+  "takes": 1
+ }
+}

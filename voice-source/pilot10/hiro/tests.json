@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "hiro/sushi:greet.1",
+  "speaker": "hiro",
+  "text": "Good afternoon. I am not working today. I am only watching. Watching is also work.",
+  "moment": "greet",
+  "delivery": "calm, low, a small bow",
+  "pack": "sushi",
+  "order": 2,
+  "hash": "5de4fb99",
+  "recorded": false
+ },
+ {
+  "clip": "hiro/sushi:smalltalk.1",
+  "speaker": "hiro",
+  "text": "Forty years I have made sushi. Twice, I was satisfied. Both times, I was asleep.",
+  "moment": "smalltalk",
+  "delivery": "calm, perfectly serious",
+  "pack": "sushi",
+  "order": 4,
+  "hash": "9b57b32e",
+  "recorded": false
+ },
+ {
+  "clip": "hiro/sushi:react.3.1",
+  "speaker": "hiro",
+  "text": "[long pause] Hm. Yes.",
+  "moment": "react.3",
+  "delivery": "a very long pause, then the smallest nod: the approval",
+  "pack": "sushi",
+  "order": 2,
+  "hash": "8653b301",
+  "recorded": false
+ },
+ {
+  "clip": "hiro/cast:complain.c1",
+  "speaker": "hiro",
+  "text": "To a trained tongue, a mistake is loud.",
+  "moment": "complain",
+  "delivery": "quiet, exact",
+  "pack": "cast",
+  "order": 4,
+  "hash": "b230289f",
+  "recorded": false
+ }
+]

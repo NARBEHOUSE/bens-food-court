@@ -1,0 +1,80 @@
+{
+ "current": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 127,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.11,
+  "source": "current"
+ },
+ "old-tune-p-1_t-0.5": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 121,
+  "seconds": 7.12,
+  "rate": 3.23,
+  "clarity": 3.12,
+  "source": "old"
+ },
+ "old-tune-p-2_t-1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 112,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.21,
+  "source": "old"
+ },
+ "old-tune-p-3_t-1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 105,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.11,
+  "source": "old"
+ },
+ "old-tune-p0_t-1": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 128,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.48,
+  "source": "old"
+ },
+ "old-tune-p-2_t0": {
+  "said": "Yo, I've been at that cart since six. You want coffee? You go next door. You want to talk about the pigeons? Don't.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'cawfee' -> 'coffee'",
+   "replace: 'tawk' -> 'talk'"
+  ],
+  "pitch": 113,
+  "seconds": 7.11,
+  "rate": 3.23,
+  "clarity": 3.47,
+  "source": "old"
+ }
+}

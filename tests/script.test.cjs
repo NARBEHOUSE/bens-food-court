@@ -89,7 +89,7 @@ test('the full clip list: every speaker, every value of a changing blank', () =>
 test('the moment registry: every moment of spec 5.5, once, each with its speakers, files and blanks', () => {
   const ids = SC.MOMENTS.map(m => m.id);
   assert.strictEqual(new Set(ids).size, ids.length, 'no moment twice');
-  const spec = ['greet', 'visitor.arrive', 'order.usual', 'order.twin', 'order.dislike', 'order.gag', 'order.odd.{odd}', 'smalltalk', 'react.3', 'react.2',
+  const spec = ['greet', 'visitor.arrive', 'order.intro', 'order.usual', 'order.twin', 'order.dislike', 'order.gag', 'order.odd.{odd}', 'smalltalk', 'react.3', 'react.2',
     'react.1', 'react.favourite', 'react.gross', 'complain', 'complain.gross.{gross}', 'goodbye', 'mention', 'shift.start', 'shift.end', 'uniform',
     'tutorial.intro', 'tutorial.ticket', 'tutorial.review', 'tutorial.serve', 'tutorial.gross', 'tutorial.{station}', 'tutorial.cook.{cookStation}',
     'tutorial.warn.extra', 'tutorial.warn.unasked', 'tutorial.warn.missing', 'tutorial.warn.tooMany', 'tutorial.warn.tooFew', 'tutorial.warn.done',
@@ -104,7 +104,7 @@ test('the moment registry: every moment of spec 5.5, once, each with its speaker
     assert.ok(m.min >= 1 && typeof m.when === 'string', m.id);
   }
   assert.deepStrictEqual(SC.BLANKS, ['ing', 'ings', 'want', 'wanted', 'got', 'name', 'slot', 'value', 'count', 'goal', 'about']);
-  assert.deepStrictEqual(SC.MOMENTS.filter(m => m.files.includes('cast')).map(m => m.id), ['greet', 'smalltalk', 'complain', 'goodbye', 'mention']);
+  assert.deepStrictEqual(SC.MOMENTS.filter(m => m.files.includes('cast')).map(m => m.id), ['greet', 'order.intro', 'smalltalk', 'complain', 'goodbye', 'mention']);
   // voicecut: a customer's complaint names no food (8 each); only Mitch's readouts change with the value.
   assert.strictEqual(SC.entryFor('complain').min, 8);
   assert.deepStrictEqual(SC.entryFor('complain').blanks, []);

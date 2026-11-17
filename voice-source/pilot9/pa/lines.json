@@ -1,0 +1,58 @@
+{
+ "bright-s4/0": {
+  "said": "Attention, shoppers! The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly and hungrily.",
+  "diffs": [],
+  "pitch": 218,
+  "seconds": 7.53,
+  "rate": 2.52,
+  "clarity": 3.25,
+  "seed": 1,
+  "drift": false,
+  "clip": "pa/court:open.1.bensBurritos",
+  "said_as": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "note": "smooth, bright, over-formal",
+  "takes": 1
+ },
+ "smooth-s2/0": {
+  "said": "Attention, shoppers! The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly and hungrily.",
+  "diffs": [],
+  "pitch": 142,
+  "seconds": 6.88,
+  "rate": 2.76,
+  "clarity": 3.82,
+  "seed": 1,
+  "drift": false,
+  "clip": "pa/court:open.1.bensBurritos",
+  "said_as": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "note": "smooth, bright, over-formal",
+  "takes": 1
+ },
+ "cheery-s1/0": {
+  "said": "Attention, shoppers! The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly and hungrily.",
+  "diffs": [],
+  "pitch": 214,
+  "seconds": 8.65,
+  "rate": 2.2,
+  "clarity": 3.06,
+  "seed": 2,
+  "drift": false,
+  "clip": "pa/court:open.1.bensBurritos",
+  "said_as": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "note": "smooth, bright, over-formal",
+  "takes": 2
+ },
+ "london-s1/0": {
+  "said": "Attention, shoppers! The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly and hungrily.",
+  "diffs": [],
+  "pitch": 262,
+  "seconds": 8.02,
+  "rate": 2.37,
+  "clarity": 3.04,
+  "seed": 1,
+  "drift": false,
+  "clip": "pa/court:open.1.bensBurritos",
+  "said_as": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "note": "smooth, bright, over-formal",
+  "takes": 1
+ }
+}

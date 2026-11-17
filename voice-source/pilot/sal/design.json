@@ -1,0 +1,207 @@
+{
+ "bronx-s1": {
+  "said": "Yo, I've been standin' at that hot dog cart since six in the morning, and my feet are killin' me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 220,
+  "seconds": 6.76,
+  "rate": 3.4,
+  "clarity": 3.5,
+  "style": "bronx",
+  "seed": 1
+ },
+ "bronx-s2": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 186,
+  "seconds": 6.54,
+  "rate": 3.52,
+  "clarity": 3.99,
+  "style": "bronx",
+  "seed": 2
+ },
+ "bronx-s3": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 126,
+  "seconds": 5.83,
+  "rate": 3.94,
+  "clarity": 4.01,
+  "style": "bronx",
+  "seed": 3
+ },
+ "bronx-s4": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Gimme a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'"
+  ],
+  "pitch": 136,
+  "seconds": 7.76,
+  "rate": 2.97,
+  "clarity": 3.86,
+  "style": "bronx",
+  "seed": 4
+ },
+ "brooklyn-s1": {
+  "said": "Yo, I been standin' at that hot dog cart since six in the morning, and my feet are killin' me. Give me a burger.",
+  "diffs": [
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 203,
+  "seconds": 7.48,
+  "rate": 3.08,
+  "clarity": 3.9,
+  "style": "brooklyn",
+  "seed": 1
+ },
+ "brooklyn-s2": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 184,
+  "seconds": 6.21,
+  "rate": 3.7,
+  "clarity": 3.63,
+  "style": "brooklyn",
+  "seed": 2
+ },
+ "brooklyn-s3": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 129,
+  "seconds": 5.95,
+  "rate": 3.87,
+  "clarity": 3.92,
+  "style": "brooklyn",
+  "seed": 3
+ },
+ "brooklyn-s4": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 168,
+  "seconds": 7.68,
+  "rate": 3.0,
+  "clarity": 3.76,
+  "style": "brooklyn",
+  "seed": 4
+ },
+ "queens-s1": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 216,
+  "seconds": 7.43,
+  "rate": 3.1,
+  "clarity": 3.72,
+  "style": "queens",
+  "seed": 1
+ },
+ "queens-s2": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Gimme a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'"
+  ],
+  "pitch": 186,
+  "seconds": 6.22,
+  "rate": 3.7,
+  "clarity": 3.89,
+  "style": "queens",
+  "seed": 2
+ },
+ "queens-s3": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 138,
+  "seconds": 5.87,
+  "rate": 3.92,
+  "clarity": 3.88,
+  "style": "queens",
+  "seed": 3
+ },
+ "queens-s4": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 142,
+  "seconds": 6.67,
+  "rate": 3.45,
+  "clarity": 3.61,
+  "style": "queens",
+  "seed": 4
+ },
+ "jersey-s1": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 200,
+  "seconds": 6.68,
+  "rate": 3.44,
+  "clarity": 3.76,
+  "style": "jersey",
+  "seed": 1
+ },
+ "jersey-s2": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 172,
+  "seconds": 7.42,
+  "rate": 3.1,
+  "clarity": 4.17,
+  "style": "jersey",
+  "seed": 2
+ },
+ "jersey-s3": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 130,
+  "seconds": 5.89,
+  "rate": 3.91,
+  "clarity": 3.58,
+  "style": "jersey",
+  "seed": 3
+ },
+ "jersey-s4": {
+  "said": "Yo, I've been standing at that hot dog cart since six in the morning, and my feet are killing me. Give me a burger.",
+  "diffs": [
+   "replace: 'i' -> 'i've'",
+   "replace: 'gimme' -> 'give me'"
+  ],
+  "pitch": 139,
+  "seconds": 7.73,
+  "rate": 2.98,
+  "clarity": 3.87,
+  "style": "jersey",
+  "seed": 4
+ }
+}

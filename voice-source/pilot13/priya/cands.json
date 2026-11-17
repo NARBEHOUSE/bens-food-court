@@ -1,0 +1,291 @@
+{
+ "a3-s1": {
+  "said": "Coffee lodge. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "replace: 'large' -> 'lodge'"
+  ],
+  "pitch": 156,
+  "seconds": 6.6,
+  "rate": 3.33,
+  "clarity": 3.36,
+  "source": "design:a3"
+ },
+ "a3-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 227,
+  "seconds": 6.67,
+  "rate": 3.3,
+  "clarity": 4.14,
+  "source": "design:a3"
+ },
+ "a3-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 205,
+  "seconds": 8.66,
+  "rate": 2.54,
+  "clarity": 2.97,
+  "source": "design:a3"
+ },
+ "a3-s4": {
+  "said": "Coffee, lodge. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "replace: 'large' -> 'lodge'"
+  ],
+  "pitch": 208,
+  "seconds": 6.72,
+  "rate": 3.27,
+  "clarity": 3.79,
+  "source": "design:a3"
+ },
+ "a3-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 151,
+  "seconds": 6.93,
+  "rate": 3.18,
+  "clarity": 3.21,
+  "source": "design:a3"
+ },
+ "a3-s6": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 154,
+  "seconds": 9.77,
+  "rate": 2.25,
+  "clarity": 3.12,
+  "source": "design:a3"
+ },
+ "a3-plain-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 167,
+  "seconds": 9.0,
+  "rate": 2.44,
+  "clarity": 2.76,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s2": {
+  "said": "Cafe, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "replace: 'coffee' -> 'cafe'"
+  ],
+  "pitch": 195,
+  "seconds": 9.11,
+  "rate": 2.42,
+  "clarity": 2.66,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 140,
+  "seconds": 8.39,
+  "rate": 2.62,
+  "clarity": 2.84,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s4": {
+  "said": "Jaffe, large. I have been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "replace: 'coffee' -> 'jaffe'",
+   "replace: 'i've' -> 'i have'"
+  ],
+  "pitch": 140,
+  "seconds": 8.12,
+  "rate": 2.71,
+  "clarity": 2.75,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 148,
+  "seconds": 9.06,
+  "rate": 2.43,
+  "clarity": 2.85,
+  "source": "design:a3-plain"
+ },
+ "a3-plain-s6": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 147,
+  "seconds": 9.4,
+  "rate": 2.34,
+  "clarity": 2.52,
+  "source": "design:a3-plain"
+ },
+ "heavy-end-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 119,
+  "seconds": 12.9,
+  "rate": 1.71,
+  "clarity": 3.33,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 180,
+  "seconds": 8.07,
+  "rate": 2.73,
+  "clarity": 2.97,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 117,
+  "seconds": 11.55,
+  "rate": 1.91,
+  "clarity": 2.93,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s4": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 150,
+  "seconds": 5.35,
+  "rate": 4.11,
+  "clarity": 2.87,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 151,
+  "seconds": 5.98,
+  "rate": 3.68,
+  "clarity": 3.16,
+  "source": "design:heavy-end"
+ },
+ "heavy-end-s6": {
+  "said": "Large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "delete: 'coffee' -> ''"
+  ],
+  "pitch": 123,
+  "seconds": 11.58,
+  "rate": 1.9,
+  "clarity": 2.74,
+  "source": "design:heavy-end"
+ },
+ "delhi-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 183,
+  "seconds": 6.83,
+  "rate": 3.22,
+  "clarity": 2.59,
+  "source": "design:delhi"
+ },
+ "delhi-s2": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 253,
+  "seconds": 6.63,
+  "rate": 3.32,
+  "clarity": 3.59,
+  "source": "design:delhi"
+ },
+ "delhi-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 146,
+  "seconds": 9.04,
+  "rate": 2.43,
+  "clarity": 2.29,
+  "source": "design:delhi"
+ },
+ "delhi-s4": {
+  "said": "Yeah, coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "insert: '' -> 'yeah'"
+  ],
+  "pitch": 166,
+  "seconds": 5.95,
+  "rate": 3.69,
+  "clarity": 2.97,
+  "source": "design:delhi"
+ },
+ "delhi-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 160,
+  "seconds": 5.9,
+  "rate": 3.73,
+  "clarity": 2.95,
+  "source": "design:delhi"
+ },
+ "delhi-s6": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 174,
+  "seconds": 8.25,
+  "rate": 2.67,
+  "clarity": 2.87,
+  "source": "design:delhi"
+ },
+ "chennai-s1": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 197,
+  "seconds": 5.7,
+  "rate": 3.86,
+  "clarity": 3.65,
+  "source": "design:chennai"
+ },
+ "chennai-s2": {
+  "said": "Here, lodge. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [
+   "replace: 'coffee large' -> 'here lodge'"
+  ],
+  "pitch": 197,
+  "seconds": 5.5,
+  "rate": 4.0,
+  "clarity": 3.64,
+  "source": "design:chennai"
+ },
+ "chennai-s3": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a rest.",
+  "diffs": [
+   "replace: 'risk' -> 'rest'"
+  ],
+  "pitch": 249,
+  "seconds": 5.87,
+  "rate": 3.75,
+  "clarity": 2.66,
+  "source": "design:chennai"
+ },
+ "chennai-s4": {
+  "said": "Let's all run and go. Run. Just go, guys. Now, Kashi sir, sir, now, what about the silver car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car rims? What about the car",
+  "diffs": [
+   "replace: 'coffee large i've been awake since yesterday so if i close my eyes that is not a nap that is a risk' -> 'let's all run and go run just go guys now kashi sir sir now what about the silver car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car rims what about the car'"
+  ],
+  "pitch": 217,
+  "seconds": 28.68,
+  "rate": 0.77,
+  "clarity": 2.87,
+  "source": "design:chennai"
+ },
+ "chennai-s5": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 239,
+  "seconds": 6.31,
+  "rate": 3.48,
+  "clarity": 3.88,
+  "source": "design:chennai"
+ },
+ "chennai-s6": {
+  "said": "Coffee, large. I've been awake since yesterday, so if I close my eyes, that is not a nap. That is a risk.",
+  "diffs": [],
+  "pitch": 231,
+  "seconds": 5.31,
+  "rate": 4.14,
+  "clarity": 2.59,
+  "source": "design:chennai"
+ }
+}

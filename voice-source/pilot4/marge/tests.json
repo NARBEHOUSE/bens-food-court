@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "marge/cast:greet.c1",
+  "speaker": "marge",
+  "text": "Hi, hon. I've just come from bingo, and I'm feeling lucky.",
+  "moment": "greet",
+  "delivery": "warm, a little pleased with herself",
+  "pack": "cast",
+  "order": 2,
+  "hash": "76f721b5",
+  "recorded": false
+ },
+ {
+  "clip": "marge/smalltalk.1",
+  "speaker": "marge",
+  "text": "I had my retirement party in that corner booth, hon. Twelve bus drivers and one cake. The cake didn't make it.",
+  "moment": "smalltalk",
+  "delivery": "warm, nostalgic",
+  "pack": "diner",
+  "order": 4,
+  "hash": "19f689f5",
+  "recorded": false
+ },
+ {
+  "clip": "marge/react3.3",
+  "speaker": "marge",
+  "text": "Oh, hon. That's just like the one from my first date. Different fella. Same burger.",
+  "moment": "react.3",
+  "delivery": "warm, misty",
+  "pack": "diner",
+  "order": 2,
+  "hash": "6f1243a2",
+  "recorded": false
+ },
+ {
+  "clip": "marge/cast:complain.c1",
+  "speaker": "marge",
+  "text": "Hon, this isn't what I said. I'm old, not blind.",
+  "moment": "complain",
+  "delivery": "warm, a little let down",
+  "pack": "cast",
+  "order": 4,
+  "hash": "3a2f4913",
+  "recorded": false
+ }
+]

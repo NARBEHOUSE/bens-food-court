@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "kai/cast:greet.c1",
+  "speaker": "kai",
+  "text": "Hello. I'm Kai. I review food. I keep it short.",
+  "moment": "greet",
+  "delivery": "bright, very serious",
+  "pack": "cast",
+  "order": 2,
+  "hash": "a6e293c1",
+  "recorded": false
+ },
+ {
+  "clip": "kai/smalltalk.1",
+  "speaker": "kai",
+  "text": "Reginald says the Tower here is a monument. I say it's a burger. A tall one. That's my whole review.",
+  "moment": "smalltalk",
+  "delivery": "bright, very serious",
+  "pack": "diner",
+  "order": 4,
+  "hash": "cda165ec",
+  "recorded": false
+ },
+ {
+  "clip": "kai/react3.1",
+  "speaker": "kai",
+  "text": "Three stars. Writing it down. 'Good burger.' Underlined.",
+  "moment": "react.3",
+  "delivery": "bright, pleased",
+  "pack": "diner",
+  "order": 2,
+  "hash": "aa8f4ba1",
+  "recorded": false
+ },
+ {
+  "clip": "kai/cast:complain.c1",
+  "speaker": "kai",
+  "text": "That's not it. It's in my notebook. I underlined it.",
+  "moment": "complain",
+  "delivery": "bright, very serious",
+  "pack": "cast",
+  "order": 4,
+  "hash": "92a2b3d5",
+  "recorded": false
+ }
+]

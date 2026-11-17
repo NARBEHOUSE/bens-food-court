@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "tony/pizza:greet.1",
+  "speaker": "tony",
+  "text": "Tony. Retired tenor. Forty years at the opera house, and now I sing only for pizza.",
+  "moment": "greet",
+  "delivery": "grand, announcing himself to the room",
+  "pack": "pizza",
+  "order": 2,
+  "hash": "edc8eb5d",
+  "recorded": false
+ },
+ {
+  "clip": "tony/pizza:smalltalk.1",
+  "speaker": "tony",
+  "text": "My farewell performance drew a standing ovation. Fourteen minutes. I timed it. I was also still singing.",
+  "moment": "smalltalk",
+  "delivery": "proud, savouring every number",
+  "pack": "pizza",
+  "order": 4,
+  "hash": "80023164",
+  "recorded": false
+ },
+ {
+  "clip": "tony/pizza:react.3.1",
+  "speaker": "tony",
+  "text": "Bravo! The crust sings, the cheese weeps, and so do I!",
+  "moment": "react.3",
+  "delivery": "ecstatic, an operatic crescendo",
+  "pack": "pizza",
+  "order": 2,
+  "hash": "18799c2c",
+  "recorded": false
+ },
+ {
+  "clip": "tony/pizza:react.1.1",
+  "speaker": "tony",
+  "text": "No. No! This is not a pizza, this is a tragedy in one slice!",
+  "moment": "react.1",
+  "delivery": "anguished, full tragic voice",
+  "pack": "pizza",
+  "order": 2,
+  "hash": "56ed4397",
+  "recorded": false
+ }
+]

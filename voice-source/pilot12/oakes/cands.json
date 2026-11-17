@@ -1,0 +1,74 @@
+{
+ "retake-s1": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 136,
+  "seconds": 6.76,
+  "rate": 3.11,
+  "clarity": 4.08,
+  "source": "retake"
+ },
+ "retake-s2": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 162,
+  "seconds": 7.09,
+  "rate": 2.96,
+  "clarity": 4.19,
+  "source": "retake"
+ },
+ "retake-s3": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 223,
+  "seconds": 7.07,
+  "rate": 2.97,
+  "clarity": 4.09,
+  "source": "retake"
+ },
+ "retake-s4": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 155,
+  "seconds": 7.2,
+  "rate": 2.92,
+  "clarity": 4.2,
+  "source": "retake"
+ },
+ "retake-s5": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 161,
+  "seconds": 6.95,
+  "rate": 3.02,
+  "clarity": 4.26,
+  "source": "retake"
+ },
+ "retake-s6": {
+  "said": "Hello, I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 164,
+  "seconds": 7.18,
+  "rate": 2.93,
+  "clarity": 4.05,
+  "source": "retake"
+ },
+ "current": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 167,
+  "seconds": 6.65,
+  "rate": 3.16,
+  "clarity": 4.14,
+  "source": "current"
+ },
+ "old-lecturer-s3": {
+  "said": "Ah, hello. I have prepared a short paper on why the onion is, chemically speaking, a mistake. It is forty pages.",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 7.64,
+  "rate": 2.75,
+  "clarity": 4.39,
+  "source": "old"
+ }
+}

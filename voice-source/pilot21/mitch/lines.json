@@ -1,0 +1,302 @@
+{
+ "current/court_goldSign.1.bensBurritos": {
+  "said": "A gold sign on Ben's burritos. I'd like to thank my mom, who is also the district manager.",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 5.36,
+  "rate": 3.36,
+  "clarity": 3.61,
+  "drift": false,
+  "takes": 2
+ },
+ "current/sushi_tutorial.warn.pick.2.roll.insideOut": {
+  "said": "Not that one. The ticket says \"Inside Out.\" Roll.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 2.53,
+  "rate": 3.56,
+  "clarity": 3.61,
+  "drift": false,
+  "takes": 1
+ },
+ "current/cafe_mistake.tooFew.1.sugar.1": {
+  "said": "The ticket said one sugar. We came up short.",
+  "diffs": [],
+  "pitch": 216,
+  "seconds": 2.0,
+  "rate": 4.51,
+  "clarity": 3.39,
+  "drift": false,
+  "takes": 1
+ },
+ "current/cafe_gross.spoiled.3.milk.whole": {
+  "said": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "diffs": [],
+  "pitch": 212,
+  "seconds": 3.6,
+  "rate": 3.33,
+  "clarity": 3.86,
+  "drift": false,
+  "takes": 1
+ },
+ "current/cafe_nearly.2.smooth": {
+  "said": "Heads up! Smooth is next.",
+  "diffs": [],
+  "pitch": 200,
+  "seconds": 1.48,
+  "rate": 3.37,
+  "clarity": 3.45,
+  "drift": false,
+  "takes": 1
+ },
+ "current/icecream_shift.start.2": {
+  "said": "Ice Cream Emporium open for business. Emporium means big store. We are a medium store with a big word.",
+  "diffs": [],
+  "pitch": 197,
+  "seconds": 5.94,
+  "rate": 3.2,
+  "clarity": 3.66,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s5/court_goldSign.1.bensBurritos": {
+  "said": "A gold sign on Ben's burritos. I'd like to thank my mom, who is also the district manager.",
+  "diffs": [],
+  "pitch": 194,
+  "seconds": 5.37,
+  "rate": 3.35,
+  "clarity": 3.71,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s5/sushi_tutorial.warn.pick.2.roll.insideOut": {
+  "said": "Not that one. The ticket says \"Inside Out.\" Roll.",
+  "diffs": [],
+  "pitch": 188,
+  "seconds": 2.49,
+  "rate": 3.62,
+  "clarity": 3.35,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s5/cafe_mistake.tooFew.1.sugar.1": {
+  "said": "The ticket said one sugar. We came up short.",
+  "diffs": [],
+  "pitch": 180,
+  "seconds": 2.49,
+  "rate": 3.61,
+  "clarity": 3.32,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s5/cafe_gross.spoiled.3.milk.whole": {
+  "said": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "diffs": [],
+  "pitch": 173,
+  "seconds": 4.2,
+  "rate": 2.86,
+  "clarity": 3.23,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s5/cafe_nearly.2.smooth": {
+  "said": "Heads up! Smooth is next.",
+  "diffs": [],
+  "pitch": 179,
+  "seconds": 1.54,
+  "rate": 3.25,
+  "clarity": 3.31,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s5/icecream_shift.start.2": {
+  "said": "Ice Cream Emporium open for business. Emporium means big store. We are a medium store with a big word.",
+  "diffs": [],
+  "pitch": 173,
+  "seconds": 6.14,
+  "rate": 3.1,
+  "clarity": 3.27,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/court_goldSign.1.bensBurritos": {
+  "said": "A gold sign on Ben's burritos. I'd like to thank my mom, who is also the district manager.",
+  "diffs": [],
+  "pitch": 202,
+  "seconds": 5.28,
+  "rate": 3.41,
+  "clarity": 3.8,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/sushi_tutorial.warn.pick.2.roll.insideOut": {
+  "said": "Not that one. The ticket says \"Inside Out Roll.\"",
+  "diffs": [],
+  "pitch": 187,
+  "seconds": 2.97,
+  "rate": 3.03,
+  "clarity": 3.23,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/cafe_mistake.tooFew.1.sugar.1": {
+  "said": "The ticket said one sugar. We came up short.",
+  "diffs": [],
+  "pitch": 185,
+  "seconds": 2.99,
+  "rate": 3.01,
+  "clarity": 3.47,
+  "drift": false,
+  "takes": 2
+ },
+ "retake-s3/cafe_gross.spoiled.3.milk.whole": {
+  "said": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "diffs": [],
+  "pitch": 172,
+  "seconds": 3.81,
+  "rate": 3.15,
+  "clarity": 3.95,
+  "drift": false,
+  "takes": 1
+ },
+ "retake-s3/cafe_nearly.2.smooth": {
+  "said": "Heads up, smooth is next.",
+  "diffs": [],
+  "pitch": 219,
+  "seconds": 2.02,
+  "rate": 2.47,
+  "clarity": 3.13,
+  "drift": true,
+  "takes": 2
+ },
+ "retake-s3/icecream_shift.start.2": {
+  "said": "Ice cream emporium open for business. Emporium means big store. We are a medium store with a big word.",
+  "diffs": [],
+  "pitch": 177,
+  "seconds": 6.66,
+  "rate": 2.85,
+  "clarity": 3.72,
+  "drift": false,
+  "takes": 1
+ },
+ "friendly-s3/court_goldSign.1.bensBurritos": {
+  "said": "A gold sign on Ben's burritos. I'd like to thank my mom, who is also the district manager.",
+  "diffs": [],
+  "pitch": 160,
+  "seconds": 5.15,
+  "rate": 3.49,
+  "clarity": 3.91,
+  "drift": false,
+  "takes": 1
+ },
+ "friendly-s3/sushi_tutorial.warn.pick.2.roll.insideOut": {
+  "said": "Not that one. The ticket says \"Inside Out Roll.\"",
+  "diffs": [],
+  "pitch": 193,
+  "seconds": 2.38,
+  "rate": 3.78,
+  "clarity": 3.69,
+  "drift": false,
+  "takes": 1
+ },
+ "friendly-s3/cafe_mistake.tooFew.1.sugar.1": {
+  "said": "The ticket said one sugar. We came up short.",
+  "diffs": [],
+  "pitch": 223,
+  "seconds": 1.94,
+  "rate": 4.63,
+  "clarity": 3.86,
+  "drift": true,
+  "takes": 2
+ },
+ "friendly-s3/cafe_gross.spoiled.3.milk.whole": {
+  "said": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "diffs": [],
+  "pitch": 189,
+  "seconds": 3.66,
+  "rate": 3.28,
+  "clarity": 3.64,
+  "drift": false,
+  "takes": 2
+ },
+ "friendly-s3/cafe_nearly.2.smooth": {
+  "said": "Heads up, Smooth is next.",
+  "diffs": [],
+  "pitch": 162,
+  "seconds": 1.69,
+  "rate": 2.96,
+  "clarity": 3.43,
+  "drift": false,
+  "takes": 2
+ },
+ "friendly-s3/icecream_shift.start.2": {
+  "said": "Ice cream emporium open for business. Emporium means big store. We are a medium store with a big word.",
+  "diffs": [],
+  "pitch": 183,
+  "seconds": 5.97,
+  "rate": 3.18,
+  "clarity": 3.18,
+  "drift": false,
+  "takes": 1
+ },
+ "earnest-s3/court_goldSign.1.bensBurritos": {
+  "said": "A gold sign on Ben's burritos. I'd like to thank my mom, who is also the district manager.",
+  "diffs": [],
+  "pitch": 127,
+  "seconds": 5.28,
+  "rate": 3.41,
+  "clarity": 3.82,
+  "drift": false,
+  "takes": 2
+ },
+ "earnest-s3/sushi_tutorial.warn.pick.2.roll.insideOut": {
+  "said": "Not that one. The ticket says \"Inside Out\" roll.",
+  "diffs": [],
+  "pitch": 126,
+  "seconds": 2.48,
+  "rate": 3.62,
+  "clarity": 3.66,
+  "drift": false,
+  "takes": 1
+ },
+ "earnest-s3/cafe_mistake.tooFew.1.sugar.1": {
+  "said": "The ticket said one sugar. We came up short.",
+  "diffs": [],
+  "pitch": 144,
+  "seconds": 2.48,
+  "rate": 3.62,
+  "clarity": 3.8,
+  "drift": false,
+  "takes": 1
+ },
+ "earnest-s3/cafe_gross.spoiled.3.milk.whole": {
+  "said": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "diffs": [],
+  "pitch": 131,
+  "seconds": 4.36,
+  "rate": 2.75,
+  "clarity": 4.17,
+  "drift": false,
+  "takes": 1
+ },
+ "earnest-s3/cafe_nearly.2.smooth": {
+  "said": "Heads up, smooth is next.",
+  "diffs": [],
+  "pitch": 130,
+  "seconds": 1.72,
+  "rate": 2.9,
+  "clarity": 4.1,
+  "drift": false,
+  "takes": 2
+ },
+ "earnest-s3/icecream_shift.start.2": {
+  "said": "Ice Cream Emporium, open for business. Emporium means big store. We are a medium store with a big word.",
+  "diffs": [],
+  "pitch": 157,
+  "seconds": 7.25,
+  "rate": 2.62,
+  "clarity": 3.93,
+  "drift": true,
+  "takes": 2
+ }
+}

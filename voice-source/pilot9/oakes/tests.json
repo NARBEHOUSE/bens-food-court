@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "oakes/cast:greet.c1",
+  "speaker": "oakes",
+  "text": "Good afternoon. I've just come from a faculty meeting, so anything is an improvement.",
+  "moment": "greet",
+  "delivery": "nasal, nerdy, a little too fast",
+  "pack": "cast",
+  "order": 2,
+  "hash": "5428944a",
+  "recorded": false
+ },
+ {
+  "clip": "oakes/smalltalk.1",
+  "speaker": "oakes",
+  "text": "Fun fact: this diner's lemonade is the most-cited beverage in my department. Cited by me. Repeatedly.",
+  "moment": "smalltalk",
+  "delivery": "nasal, proud",
+  "pack": "diner",
+  "order": 4,
+  "hash": "da6288de",
+  "recorded": false
+ },
+ {
+  "clip": "oakes/react3.1",
+  "speaker": "oakes",
+  "text": "Remarkable! The Maillard reaction, exactly as the textbook promised. I wrote the textbook. Chapter four.",
+  "moment": "react.3",
+  "delivery": "nasal, delighted, too fast",
+  "pack": "diner",
+  "order": 2,
+  "hash": "c47f18dc",
+  "recorded": false
+ },
+ {
+  "clip": "oakes/cast:complain.c1",
+  "speaker": "oakes",
+  "text": "Unrequested. Uncited. Unacceptable.",
+  "moment": "complain",
+  "delivery": "nasal, lecturing, wounded",
+  "pack": "cast",
+  "order": 4,
+  "hash": "260916d1",
+  "recorded": false
+ }
+]

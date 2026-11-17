@@ -1,0 +1,361 @@
+[
+ {
+  "clip": "mitch/court:goldSign.1.bensBurritos",
+  "who": "mitch",
+  "text": "A gold sign on Ben's Burritos! I'd like to thank my mom, who is also the district manager.",
+  "note": "thrilled, then an aside",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "thrilled, then an aside"
+   },
+   {
+    "label": "first tone only",
+    "note": "thrilled"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/sushi:tutorial.warn.pick.2.roll.insideOut",
+  "who": "mitch",
+  "text": "Not that one. The ticket says inside-out roll.",
+  "note": "gentle correction, reading it off",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "gentle correction, reading it off"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/cafe:mistake.tooFew.1.sugar.1",
+  "who": "mitch",
+  "text": "The ticket said one sugar. We came up short.",
+  "note": "flat, reading it off the ticket",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "flat, reading it off the ticket"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/cafe:gross.spoiled.3.milk.whole",
+  "who": "mitch",
+  "text": "That whole milk has lumps. Milk doesn't come with lumps. Swap it.",
+  "note": "squeamish, backing away",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "squeamish, backing away"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/cafe:nearly.2.smooth",
+  "who": "mitch",
+  "text": "Heads up: smooth is next.",
+  "note": "quick, a little nervous",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "quick, a little nervous"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/icecream:shift.start.2",
+  "who": "mitch",
+  "text": "Ice Cream Emporium, open for business. Emporium means big store. We are a medium store with a big word.",
+  "note": "cheerful, then confiding",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "cheerful, then confiding"
+   },
+   {
+    "label": "first tone only",
+    "note": "cheerful"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/intro.2",
+  "who": "mitch",
+  "text": "Hi. Mitch. Assistant manager. The ASST. is tape, and the tape is temporary. Four years temporary. One order together, and I'll point at things.",
+  "note": "eager, a touch wounded in the middle, then eager again",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "eager, a touch wounded in the middle, then eager again"
+   },
+   {
+    "label": "first tone only",
+    "note": "eager, a touch wounded"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/cook.2",
+  "who": "mitch",
+  "text": "Pick how done. The ticket says medium. The grill does the flipping. I tried once. We don't talk about it.",
+  "note": "upbeat, then dark",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "upbeat, then dark"
+   },
+   {
+    "label": "first tone only",
+    "note": "upbeat"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/gross.2",
+  "who": "mitch",
+  "text": "Sometimes an ingredient shows up looking like it's been through something. Pick Swap It and a fresh one comes down. The bad one goes in the bin. The bin and I have an understanding.",
+  "note": "wary, then matter-of-fact",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "wary, then matter-of-fact"
+   },
+   {
+    "label": "first tone only",
+    "note": "wary"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "mitch/serve.2",
+  "who": "mitch",
+  "text": "That's one order, start to finish. The customer tells you what they think. Some of them tell everyone. Vernon has a blog. Ready for a real shift?",
+  "note": "proud, then a warning",
+  "why": "Mitch: two-tone notes / aggressive delivery",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "proud, then a warning"
+   },
+   {
+    "label": "first tone only",
+    "note": "proud"
+   },
+   {
+    "label": "no note",
+    "note": ""
+   }
+  ]
+ },
+ {
+  "clip": "bev/icecream:customer.complain.gross.hair.1",
+  "who": "bev",
+  "text": "There is a hair in the sprinkles. A long one.",
+  "note": "disgusted",
+  "why": "disgust came through flat",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "disgusted"
+   },
+   {
+    "label": "stronger disgust",
+    "note": "grossed out and disgusted, recoiling, nose wrinkled"
+   },
+   {
+    "label": "no gagging asked",
+    "note": "disgusted"
+   }
+  ]
+ },
+ {
+  "clip": "bev/pizza:customer.react.gross.2",
+  "who": "bev",
+  "text": "No. No, no. That is not a topping.",
+  "note": "gagging, firm",
+  "why": "disgust came through flat",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "gagging, firm"
+   },
+   {
+    "label": "stronger disgust",
+    "note": "grossed out and disgusted, recoiling, nose wrinkled"
+   },
+   {
+    "label": "no gagging asked",
+    "note": "firm"
+   }
+  ]
+ },
+ {
+  "clip": "dennis/sushi:customer.complain.gross.smelly.1",
+  "who": "dennis",
+  "text": "This salmon smells off. I smelled it before it reached the counter.",
+  "note": "revolted, leaning back",
+  "why": "disgust came through flat",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "revolted, leaning back"
+   },
+   {
+    "label": "stronger disgust",
+    "note": "grossed out and disgusted, recoiling, nose wrinkled"
+   },
+   {
+    "label": "no gagging asked",
+    "note": "revolted, leaning back"
+   }
+  ]
+ },
+ {
+  "clip": "oakes/burrito:customer.complain.gross.brown.2",
+  "who": "oakes",
+  "text": "Brown guacamole? I'm not eating anything older than my shoes.",
+  "note": "dry, revolted",
+  "why": "disgust came through flat",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "dry, revolted"
+   },
+   {
+    "label": "stronger disgust",
+    "note": "grossed out and disgusted, recoiling, nose wrinkled"
+   },
+   {
+    "label": "no gagging asked",
+    "note": "dry, revolted"
+   }
+  ]
+ },
+ {
+  "clip": "oakes/customer.reactGross.1",
+  "who": "oakes",
+  "text": "Oh. Oh, no. Oh, that is disgusting.",
+  "note": "gagging, disgusted",
+  "why": "disgust came through flat",
+  "variants": [
+   {
+    "label": "note as written",
+    "note": "gagging, disgusted"
+   },
+   {
+    "label": "stronger disgust",
+    "note": "grossed out and disgusted, recoiling, nose wrinkled"
+   },
+   {
+    "label": "no gagging asked",
+    "note": "disgusted"
+   }
+  ]
+ },
+ {
+  "clip": "vernon/icecream:customer.react.gross.2",
+  "who": "vernon",
+  "text": "Eugh! No. No, thank you. No.",
+  "note": "disgusted, recoiling",
+  "why": "\"Eugh\" was heard as \"you\" (now sent as \"Ew\")",
+  "variants": [
+   {
+    "label": "Eugh sent as \"Ew\""
+   },
+   {
+    "label": "\"Ugh\" instead",
+    "text": "Ugh! No. No, thank you. No."
+   }
+  ]
+ },
+ {
+  "clip": "marge/smoothie:customer.react.gross.1",
+  "who": "marge",
+  "text": "Oh. Oh, no. Something in this cup is looking back at me.",
+  "note": "disgusted, a slow horror",
+  "why": "the opening \"Oh\" came out as a long breath",
+  "variants": [
+   {
+    "label": "as written"
+   },
+   {
+    "label": "\"Ohh.\" opening",
+    "text": "Ohh. Oh, no. Something in this cup is looking back at me."
+   },
+   {
+    "label": "\"Oh, oh no.\" opening",
+    "text": "Oh, oh no. Something in this cup is looking back at me."
+   }
+  ]
+ },
+ {
+  "clip": "marge/burrito:greet.1",
+  "who": "marge",
+  "text": "Hi, hon. Smells like lunch and lime in here. My two favorite smells.",
+  "note": "warm, breathing it in",
+  "why": "check \"hon\" (the model is given \"hun\")",
+  "variants": [
+   {
+    "label": "hon (sent as \"hun\")"
+   }
+  ]
+ },
+ {
+  "clip": "marge/burrito:order.usual.1",
+  "who": "marge",
+  "text": "The usual, hon.",
+  "note": "warm, expecting it to be known",
+  "why": "check \"hon\" (the model is given \"hun\")",
+  "variants": [
+   {
+    "label": "hon (sent as \"hun\")"
+   }
+  ]
+ }
+]

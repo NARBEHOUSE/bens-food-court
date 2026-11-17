@@ -1,0 +1,124 @@
+{
+ "intense-s1": {
+  "said": "They call me Inferno. Last week I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 183,
+  "seconds": 6.56,
+  "rate": 3.66,
+  "clarity": 3.39,
+  "style": "intense",
+  "seed": 1
+ },
+ "intense-s2": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 216,
+  "seconds": 9.02,
+  "rate": 2.66,
+  "clarity": 2.69,
+  "style": "intense",
+  "seed": 2
+ },
+ "intense-s3": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 199,
+  "seconds": 7.21,
+  "rate": 3.33,
+  "clarity": 3.72,
+  "style": "intense",
+  "seed": 3
+ },
+ "intense-s4": {
+  "said": "They call me Inferno. Last week I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 128,
+  "seconds": 9.09,
+  "rate": 2.64,
+  "clarity": 3.67,
+  "style": "intense",
+  "seed": 4
+ },
+ "action-s1": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 199,
+  "seconds": 8.11,
+  "rate": 2.96,
+  "clarity": 3.67,
+  "style": "action",
+  "seed": 1
+ },
+ "action-s2": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 152,
+  "seconds": 6.33,
+  "rate": 3.79,
+  "clarity": 2.21,
+  "style": "action",
+  "seed": 2
+ },
+ "action-s3": {
+  "said": "They call me Inferno. Last week I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 182,
+  "seconds": 7.89,
+  "rate": 3.04,
+  "clarity": 3.36,
+  "style": "action",
+  "seed": 3
+ },
+ "action-s4": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 136,
+  "seconds": 6.87,
+  "rate": 3.49,
+  "clarity": 3.86,
+  "style": "action",
+  "seed": 4
+ },
+ "boastful-s1": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 212,
+  "seconds": 6.94,
+  "rate": 3.46,
+  "clarity": 3.77,
+  "style": "boastful",
+  "seed": 1
+ },
+ "boastful-s2": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 309,
+  "seconds": 8.32,
+  "rate": 2.88,
+  "clarity": 3.12,
+  "style": "boastful",
+  "seed": 2
+ },
+ "boastful-s3": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot and filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [
+   "replace: 'it' -> 'and'"
+  ],
+  "pitch": 292,
+  "seconds": 6.01,
+  "rate": 3.99,
+  "clarity": 3.82,
+  "style": "boastful",
+  "seed": 3
+ },
+ "boastful-s4": {
+  "said": "They call me Inferno. Last week, I ate a pepper so hot it filed a complaint. Give me your hottest, then make it hotter.",
+  "diffs": [],
+  "pitch": 162,
+  "seconds": 6.89,
+  "rate": 3.48,
+  "clarity": 3.87,
+  "style": "boastful",
+  "seed": 4
+ }
+}

@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "pam/pizza:greet.1",
+  "speaker": "pam",
+  "text": "Hi! Pam. Birthday party. Twelve kids, one bouncy castle, zero adults who are helping.",
+  "moment": "greet",
+  "delivery": "cheerful, exhausted, a list",
+  "pack": "pizza",
+  "order": 2,
+  "hash": "0ccde41a",
+  "recorded": false
+ },
+ {
+  "clip": "pam/pizza:smalltalk.1",
+  "speaker": "pam",
+  "text": "Things the kids have broken so far: a pi\u00f1ata, a chair, and my faith in party planning.",
+  "moment": "smalltalk",
+  "delivery": "a list, each item heavier",
+  "pack": "pizza",
+  "order": 4,
+  "hash": "4144f030",
+  "recorded": false
+ },
+ {
+  "clip": "pam/pizza:react.3.1",
+  "speaker": "pam",
+  "text": "Perfect! That's exactly it! Twelve kids might actually stop yelling for four whole minutes!",
+  "moment": "react.3",
+  "delivery": "thrilled, counting the minutes",
+  "pack": "pizza",
+  "order": 2,
+  "hash": "5d4310f6",
+  "recorded": false
+ },
+ {
+  "clip": "pam/cast:complain.c1",
+  "speaker": "pam",
+  "text": "I said it in my list voice. Everyone fears the list voice.",
+  "moment": "complain",
+  "delivery": "frazzled, keeping it together",
+  "pack": "cast",
+  "order": 4,
+  "hash": "521822ae",
+  "recorded": false
+ }
+]

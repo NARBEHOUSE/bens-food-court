@@ -1,0 +1,58 @@
+{
+ "bright-s3/0": {
+  "said": "Attention, shoppers! The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly and hungrily.",
+  "diffs": [],
+  "pitch": 217,
+  "seconds": 7.87,
+  "rate": 2.42,
+  "clarity": 4.24,
+  "seed": 1,
+  "drift": false,
+  "clip": "pa/court:open.1.bensBurritos",
+  "said_as": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "note": "",
+  "takes": 1
+ },
+ "smooth-s2/0": {
+  "said": "Attention, shoppers! The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly and hungrily.",
+  "diffs": [],
+  "pitch": 123,
+  "seconds": 7.62,
+  "rate": 2.49,
+  "clarity": 4.31,
+  "seed": 1,
+  "drift": false,
+  "clip": "pa/court:open.1.bensBurritos",
+  "said_as": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "note": "",
+  "takes": 1
+ },
+ "cheery-s3/0": {
+  "said": "Attention, shoppers! The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly and hungrily.",
+  "diffs": [],
+  "pitch": 288,
+  "seconds": 9.33,
+  "rate": 2.04,
+  "clarity": 3.88,
+  "seed": 1,
+  "drift": false,
+  "clip": "pa/court:open.1.bensBurritos",
+  "said_as": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "note": "",
+  "takes": 1
+ },
+ "london-s4/0": {
+  "said": "Attention, shoppers! The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly and hungrily.",
+  "diffs": [],
+  "pitch": 215,
+  "seconds": 8.07,
+  "rate": 2.35,
+  "clarity": 4.34,
+  "seed": 1,
+  "drift": false,
+  "clip": "pa/court:open.1.bensBurritos",
+  "said_as": "Attention, shoppers. The management is delighted to announce the grand opening of Ben's Burritos. Please proceed calmly, and hungrily.",
+  "note": "",
+  "takes": 1
+ }
+}

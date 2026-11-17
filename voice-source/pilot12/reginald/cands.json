@@ -1,0 +1,65 @@
+{
+ "retake-s1": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 137,
+  "seconds": 7.64,
+  "rate": 2.49,
+  "clarity": 3.46,
+  "source": "retake"
+ },
+ "retake-s2": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 131,
+  "seconds": 7.73,
+  "rate": 2.46,
+  "clarity": 3.52,
+  "source": "retake"
+ },
+ "retake-s3": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 107,
+  "seconds": 8.37,
+  "rate": 2.27,
+  "clarity": 2.92,
+  "source": "retake"
+ },
+ "retake-s4": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 108,
+  "seconds": 7.25,
+  "rate": 2.62,
+  "clarity": 3.69,
+  "source": "retake"
+ },
+ "retake-s5": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 108,
+  "seconds": 6.97,
+  "rate": 2.73,
+  "clarity": 3.66,
+  "source": "retake"
+ },
+ "retake-s6": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 118,
+  "seconds": 6.68,
+  "rate": 2.85,
+  "clarity": 3.55,
+  "source": "retake"
+ },
+ "current": {
+  "said": "Ah, the aroma arrives before the plate, as all great aromas do. I shall review this in five movements.",
+  "diffs": [],
+  "pitch": 112,
+  "seconds": 7.19,
+  "rate": 2.64,
+  "clarity": 3.83,
+  "source": "current"
+ }
+}

@@ -1,0 +1,46 @@
+[
+ {
+  "clip": "dennis/sushi:greet.1",
+  "speaker": "dennis",
+  "text": "Hi. Hello. Sorry. First time. Is this where the... Yes. Okay. Hi.",
+  "moment": "greet",
+  "delivery": "anxious, tripping over it",
+  "pack": "sushi",
+  "order": 2,
+  "hash": "46b0c240",
+  "recorded": false
+ },
+ {
+  "clip": "dennis/sushi:smalltalk.1",
+  "speaker": "dennis",
+  "text": "My doctor said try new things. I tried a new brand of socks. He said bigger.",
+  "moment": "smalltalk",
+  "delivery": "anxious, earnest",
+  "pack": "sushi",
+  "order": 4,
+  "hash": "d99074de",
+  "recorded": false
+ },
+ {
+  "clip": "dennis/sushi:react.3.1",
+  "speaker": "dennis",
+  "text": "It's good! It's really good! I was so scared, and it's GOOD!",
+  "moment": "react.3",
+  "delivery": "astonished, rising joy",
+  "pack": "sushi",
+  "order": 2,
+  "hash": "56727938",
+  "recorded": false
+ },
+ {
+  "clip": "dennis/cast:complain.c1",
+  "speaker": "dennis",
+  "text": "Sorry. I'm the customer. I'm still sorry. But that's not it.",
+  "moment": "complain",
+  "delivery": "polite, anxious",
+  "pack": "cast",
+  "order": 4,
+  "hash": "db0f88fa",
+  "recorded": false
+ }
+]
