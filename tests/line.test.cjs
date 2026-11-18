@@ -412,25 +412,31 @@ test('the review pages its row of items past four, and never offers a station th
   assert.deepStrictEqual(L.question(p2, o3, SIMPLE).options.map(z => z.id), ['serve', 'redo:0:prep', 'redo:0:oven', 'redo:0:cutter']);
 });
 
-test('a gross-out on a pick: the label names it, Swap It replaces it and asks again', () => {
+test('a gross-out on a pick: the values first; the one picked comes down bad: Add or Swap It (the user, 2026-11-18)', () => {
   const o = makeOrder(P, ['pepperoni'], { set: { crust: 'thin', sauce: 'white' }, gross: { item: 0, slot: 'sauce', event: 'skin' } });
   pa(o, 'pick:thin');
   let x = pq(o);
-  assert.deepStrictEqual(x.gross, { event: 'skin', value: 'white' }, 'the bad one is the value the ticket wants');
-  assert.deepStrictEqual(x.options.map(z => z.id), ['pick:red', 'pick:white', 'pick:bare', 'swap']);
-  assert.strictEqual(W.option(P, x, x.options[1], o).label, 'White sauce with a skin on it');
-  const r = pa(o, 'swap');
-  assert.deepStrictEqual(r.events, [{ type: 'swapped', item: 0, slot: 'sauce', value: 'white', event: 'skin' }]);
-  x = pq(o);
-  assert.deepStrictEqual([x.slot, x.gross, x.fresh, x.options.map(z => z.id)], ['sauce', null, false, ['pick:red', 'pick:white', 'pick:bare']]);
+  assert.deepStrictEqual([x.gross, x.options.map(z => z.id)], [null, ['pick:red', 'pick:white', 'pick:bare']], 'nothing looks wrong yet');
   assert.ok(pa(o, 'swap').refused);
-  assert.strictEqual(o.items[0].swaps, 1);
+  assert.deepStrictEqual(pa(o, 'pick:white').events, [{ type: 'held', item: 0, slot: 'sauce', value: 'white', event: 'skin' }]);
+  x = pq(o);
+  assert.deepStrictEqual([x.slot, x.held, x.gross, x.fresh, x.options.map(z => z.id)], ['sauce', 'white', { event: 'skin', value: 'white' }, false, ['add', 'swap']]);
+  assert.strictEqual(W.prompt(P, x, o), 'White sauce with a skin on it.');
+  assert.deepStrictEqual(x.options.map(z => W.option(P, x, z, o)), [{ label: 'Add', say: 'Add white sauce with a skin on it' },
+    { label: 'Swap It', say: 'Swap white sauce with a skin on it for a fresh one' }]);
+  assert.ok(pa(o, 'pick:red').refused, 'the pick is made');
+  const r = pa(o, 'swap');
+  assert.deepStrictEqual(r.events.slice(0, 2), [{ type: 'swapped', item: 0, slot: 'sauce', value: 'white', event: 'skin' },
+    { type: 'picked', item: 0, of: 'slot', slot: 'sauce', value: 'white' }], 'the fresh one goes in');
+  assert.deepStrictEqual([o.items[0].answers['prep.1'], o.items[0].gross, o.items[0].swaps, o.pending, o.held], ['white', [], 1, null, null]);
+  assert.notStrictEqual(pq(o).slot, 'sauce', 'on to the next step');
 });
 
-test('choosing the bad value serves it; another value is a pick mistake, and the bad one goes back', () => {
+test('adding the bad value serves it; another value is a pick mistake, and the bad one stays put', () => {
   const served = makeOrder(P, ['pepperoni'], { set: { sauce: 'white' }, gross: { item: 0, slot: 'sauce', event: 'skin' } });
   pa(served, 'pick:regular');
-  const r = pa(served, 'pick:white');
+  pa(served, 'pick:white');
+  const r = pa(served, 'add');
   assert.deepStrictEqual(r.events.slice(0, 2), [{ type: 'picked', item: 0, of: 'slot', slot: 'sauce', value: 'white' },
     { type: 'grossServed', item: 0, slot: 'sauce', value: 'white', event: 'skin' }]);
   assert.deepStrictEqual(served.items[0].gross, [{ slot: 'sauce', value: 'white', event: 'skin', key: 'prep.1' }]);
@@ -462,12 +468,12 @@ test('the tutorial warns before a bad value lands, and before another value', ()
   const o = makeOrder(P, ['pepperoni'], { set: { crust: 'thin', sauce: 'red' }, gross: { item: 0, slot: 'sauce', event: 'skin' }, tutorial: true });
   assert.deepStrictEqual(pa(o, 'pick:regular').warn, { kind: 'pick', of: 'slot', slot: 'crust', want: 'thin', got: 'regular' });
   pa(o, 'pick:thin');
-  assert.deepStrictEqual(pa(o, 'pick:red').warn, { kind: 'gross', slot: 'sauce', value: 'red', event: 'skin' });
-  assert.deepStrictEqual(pa(o, 'pick:white').warn, { kind: 'grossSkip', slot: 'sauce', want: 'red', got: 'white', event: 'skin' });
+  assert.deepStrictEqual(pa(o, 'pick:white').warn, { kind: 'pick', of: 'slot', slot: 'sauce', want: 'red', got: 'white' });
+  assert.ok(!pa(o, 'pick:red').warn, 'the right value: it comes down bad');
+  assert.deepStrictEqual(pa(o, 'add').warn, { kind: 'gross', slot: 'sauce', value: 'red', event: 'skin' });
   assert.deepStrictEqual([o.items[0].answers['prep.1'], o.items[0].gross, o.pending], [undefined, [], { item: 0, slot: 'sauce', event: 'skin' }], 'nothing applied');
-  pa(o, 'swap');
-  assert.strictEqual(pa(o, 'pick:white').warn.kind, 'pick');
-  assert.ok(!pa(o, 'pick:red').warn);
+  assert.ok(!pa(o, 'swap').warn);
+  assert.deepStrictEqual([o.items[0].answers['prep.1'], o.items[0].swaps], ['red', 1]);
   const k = makeOrder(P, ['knots'], { set: { dip: ['pesto', 'ranch'] }, tutorial: true });
   until(k, z => z.slot === 'dips');
   assert.deepStrictEqual(pa(k, 'pick:honey').warn, { kind: 'pick', of: 'slot', slot: 'dips', want: 'pesto', got: 'honey' });

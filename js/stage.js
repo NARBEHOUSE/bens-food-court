@@ -521,6 +521,7 @@
   const shown = { customer: null, mitch: null };
   // A new customer's picture still loading: { folder, t }. Until it is ready nobody stands at the counter.
   let stepping = null, stepTurn = 0;
+  let mitchWait = null;                     // { folder, src } while Mitch's picture in a new uniform loads (mitch())
   function pop(el) {
     if (reduced()) return;
     el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
@@ -581,12 +582,34 @@
   /** Mitch in a pose, sliding in; null slides him out. At the counter he stands where placeMitch() says. */
   function mitch(pose) {
     const el = $('mitch');
-    if (!pose) { el.classList.remove('on'); shown.mitch = null; return; }
+    if (!pose) { mitchWait = null; el.classList.remove('on'); shown.mitch = null; return; }
     const folder = managerFolder();
     const src = castSrc(folder, pose);
     if (!src) return;
     const key = folder + '/' + pose;
-    if (shown.mitch !== key) { el.src = src; shown.mitch = key; }   // a new expression is a plain swap; he slides in once
+    // Each restaurant dresses him in its own uniform (plain Mitch on the court). A browser keeps showing an <img>'s
+    // old picture while its new one loads, so he used to slide in still wearing the last restaurant's uniform and then
+    // switch (the user, 2026-11-18). Off screen in another uniform, he comes in once the new picture is ready; a
+    // change of pose meanwhile just changes which picture he comes in with.
+    if (mitchWait || (!el.classList.contains('on') && el.dataset.folder !== folder)) {
+      shown.mitch = key;
+      if (mitchWait && mitchWait.folder === folder) { mitchWait.src = src; return; }
+      const w = mitchWait = { folder, src };
+      const ready = () => {
+        if (mitchWait !== w) return;
+        mitchWait = null;
+        el.dataset.folder = folder;
+        el.src = w.src;
+        placeMitch();
+        void el.offsetWidth;                              // he slides in from his own side's edge
+        el.classList.add('on');
+      };
+      const img = new Image();
+      img.src = src;
+      if (img.decode) img.decode().then(ready, ready); else ready();   // (no decode in jsdom: at once, as before)
+      return;
+    }
+    if (shown.mitch !== key) { el.src = src; shown.mitch = key; el.dataset.folder = folder; }   // a new expression is a plain swap; he slides in once
     const first = !el.classList.contains('on');
     placeMitch();
     if (first) void el.offsetWidth;                       // he slides in from his own side's edge

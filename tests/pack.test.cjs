@@ -243,7 +243,12 @@ for (const R0 of SUBJECTS) {
             if (I.stages) find(W.number(spec.parts.filter(p => p.ing === step.ing).length) + ' ');
             else find((step.max || 1) > 1 ? W.number(want) + ' ' + W.lower(want === 1 ? W.name(pack, step.ing) : W.plural(pack, step.ing)) : W.lower(W.name(pack, step.ing)));
           } else if (step.kind === 'cook' && !step.ing && want) find(W.lower(W.stage(pack, want)));
-          else if (step.kind === 'pick' && step.slot !== undefined && want !== null) find(step.repeat ? W.repeatSay(pack, step.slot, want) : W.valueSay(pack, step.slot, want));
+          else if (step.kind === 'pick' && step.slot !== undefined && want !== null) {
+            const words = step.repeat ? W.repeatSay(pack, step.slot, want) : W.valueSay(pack, step.slot, want);
+            // A pick the item's name already ends with is said once, in the name (the user, 2026-11-18).
+            if (sp.head.toLowerCase().endsWith(words.toLowerCase())) assert.ok(!sp.bits.some(b => b === words), JSON.stringify(words) + ' said twice: ' + where);
+            else find(words);
+          }
         }
         assert.ok(!/\bno [a-z]/i.test(W.ticket(pack, { items: [spec] })), 'a ticket never says "no X": ' + where);
       }

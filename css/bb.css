@@ -11,6 +11,7 @@
   --enamel-add: #2fa84f;
   --enamel-skip: #1f6fd1;               /* blue: grey vanished into the diner's steel panel (Bryan 2026-11-15) */
   --enamel-swap: #ff8a1c;
+  --enamel-redo: #7b4fc9;               /* Redo Order: none of the answers' colours */
   --chalk: #f7f3e8;
   --label: clamp(18px, 2.2vw, 34px);
   --small: clamp(14px, 1.4vw, 22px);
@@ -143,6 +144,17 @@ body[data-place="kitchen"] #wheel { display: block; }
    front are plain down here. The scan goes answers (right), Ticket (the wheel, top left), Pause (here). */
 #back5 { display: block; bottom: max(5vh, calc(var(--small) * 1.9)); left: 1.5vw; width: min(12vw, 18vh); }   /* its label kept on screen at every Text Size */
 #back5 .lb { bottom: -1.5em; font-size: var(--small); }
+/* Redo Order (the user, 2026-11-18): a drawn enamel button just right of the Back in 5 sign, in the kitchen only, its
+   label level with Pause's. The scan goes answers, Ticket, Redo Order, Pause. */
+#redoOrder { --rb: max(64px, min(8.5vw, 13vh)); bottom: max(5vh, calc(var(--small) * 1.9)); left: calc(1.5vw + min(12vw, 18vh) + max(3vw, var(--small) * 2.2));
+  width: var(--rb); height: var(--rb); border-radius: 50%; cursor: pointer; }
+body[data-place="kitchen"] #redoOrder { display: block; }
+#redoOrder .knob { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--ink);
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.6) 0 11%, transparent 12%), var(--enamel-redo);
+  box-shadow: inset 0 -.9vh 0 rgba(0,0,0,.28), 0 .7vh 0 var(--ink); color: #fff; font: 900 calc(var(--rb) * .55)/1 "Arial Black", "Segoe UI Symbol", sans-serif;
+  text-shadow: 0 3px 0 rgba(0,0,0,.45); }
+#redoOrder .lb { bottom: -1.5em; font-size: var(--small); }
+#redoOrder.lit { border-radius: 50%; }
 /* On the court the sign is the scan's Pause stop, there while the storefront scan is (not behind the main menu, nor
    during a moment). */
 body[data-place="court"] #back5 { display: none; }

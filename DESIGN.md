@@ -60,7 +60,8 @@ at Text Size; the painted picture carries none.
   enters a storefront from any level.
 - **Labels** say the name and stars, plus "shift in progress" or "five-star event next" when true.
 - **The court's Pause** (the Back in 5 sign, or Enter held 5 s): Continue · Help · Settings · Main Menu · Exit Game.
-  Help says every open restaurant's stars and the next goal.
+  Help says "I need help" on the speaker chosen in Hub Settings (or in the game's voice), as in every hub game (the
+  user, 2026-11-18).
 - **The crowd is calm.** People stand still in line or sit eating; nobody strolls or bounces. They are only the game's
   own customers, each on the floor at most once: locals at their own restaurant, regulars dealt out across the
   storefronts, Reginald and Kai only where a restaurant has reached level 4. The line grows from one to four and the
@@ -142,8 +143,12 @@ Each recipe names its stations; each station is a short list of steps, and every
 | **Auto** | a flourish the line does by itself (the top bun, the wrap, the roll-up) | none; never judged |
 
 - **The order of the line is the order of the food,** so stacking order is never something to get wrong.
-- **After a choice the highlight stays on the same answer** as the next ingredient arrives (the label changes and is
-  spoken), so three Adds in a row are three presses. A new station opens on the blank.
+- **After every choice the highlight goes back to the blank** as the next ingredient arrives (it is said), so the
+  player presses Space to reach Add or Skip each time and a double press never answers the next ingredient too (the
+  user, 2026-11-18; until then the highlight stayed on the same answer).
+- **Redo Order** (a purple button beside the Back in 5 sign, in the kitchen; scanned after Ticket, before Pause)
+  starts the whole order over: the food goes, the ticket is read out again in full, and the line opens at its first
+  station with nothing made. Same customer, same ticket; the shift's earlier customers and coins stay.
 - **Review:** the finished order sits on the counter beside its ticket and is described in plain words ("Cheeseburger:
   patty medium, cheese, lettuce, ketchup"); comparing is the player's job. Choices: Ring It Up · Redo <station> (one per
   station the order used) · Ticket · Pause. A redo runs that station again from its first step.
@@ -153,7 +158,8 @@ Each recipe names its stations; each station is a short list of steps, and every
 
 **The ticket spells out the whole order:** for each item its name, then everything that goes on, with counts, in the
 line's order ("Cheeseburger: one patty, medium, with cheese, lettuce, tomato, pickles and ketchup"; "nothing else on
-it" when there is nothing). It never says "no X". The rule needs no menu knowledge: **add what's on the ticket, skip
+it" when there is nothing). It never says "no X", and never repeats what the name
+already says ("Latte: medium cup, smooth, whole milk", not "Latte: medium cup, latte": the user, 2026-11-18). The rule needs no menu knowledge: **add what's on the ticket, skip
 what isn't.** Customers still order the natural way ("the usual, hon", "no onions"); the ticket is the one to follow.
 In the kitchen it hangs on the ticket wheel and is read out once; Ticket turns the wheel and reads it again. At the
 counter it is the order's slip.
@@ -194,7 +200,9 @@ bad one is the value the ticket wants. Never on a cook or auto step (burnt is Ti
 It is flagged three ways, because no cue may need sight and Mitch can be switched off: **it looks wrong** (stink lines,
 green, a circling fly), **Mitch says so**, and **the spoken label names it** ("Add the green cheese", "Oat milk,
 spoiled"). The step gains **Swap It**, which brings a fresh one and asks again. Serving it is one mistake and gets a
-disgusted reaction.
+disgusted reaction. **On a Pick step** the values come up as usual (Whole, Oat, Skim); only once the wanted one is
+picked does it come down the line bad, and the step asks again like the cheese's Add step: **Add** (serves it) or **Swap
+It** (a fresh one goes in, as picked). Picking another value is a pick mistake (the user, 2026-11-18).
 
 ## Tutorial
 
@@ -247,7 +255,8 @@ order is made, further back in a line), happy (3 stars), delighted (a favourite)
 disgusted (a gross-out served), shocked, laughing, and eating (seated on the court). Mitch has ten in each uniform:
 neutral, talking, pointing (tutorial), thumbs up, shocked, disgusted, facepalm, laughing, worried (Timed heads-up),
 shrug; plain Mitch has an eleventh, promoted. A new pose pops in with a small bounce on Full motion and cuts on
-Reduced.
+Reduced. Mitch in another uniform (a new restaurant, or plain on the court) slides in only once that picture has
+loaded, never wearing the last place's uniform first (the user, 2026-11-18).
 
 ### Writing tone
 
@@ -278,20 +287,20 @@ the painted queue's box, the horizon, the sign board).
   the restaurant's name on the painted sign board when it shows whole and nothing covers it.
 - **In the kitchen** the food sits low and left of centre on the station's work surface, the control column is on the
   right, and Mitch steps in from the left low enough that the ticket wheel never covers his face. The scan runs the
-  answers, Ticket, then Pause.
+  answers, Ticket, Redo Order, then Pause.
 
 ### No floating UI
 
 The controls are real objects in the restaurant: Ticket is the ticket on its wheel (kitchen) or slip (counter); Add,
 Skip and Swap It are enamel push-buttons on the line's control box; Timed's stop is the station's tool (spatula,
 peel, fryer basket, blender or mixer switch, espresso lever, grill press, scoop; a drawn button at the sushi mat);
-Serve is the cash register ("Ring It Up"); Next Customer is the counter bell; Pause is the "Back in 5" sign. Labels
+Serve is the cash register ("Ring It Up"); Next Customer is the counter bell; Pause is the "Back in 5" sign, with Redo Order's purple button beside it in the kitchen. Labels
 stay large; the highlight is colour and thickness, never colour alone, at least 64 px.
 
 ### Pause
 
 Continue · Ticket · Help · Restart Shift · Settings · Food Court · Main Menu · Exit Game. Ticket speaks the order
-without closing the card. Leaving by Food Court, Main Menu or Exit Game saves the shift ("This shift is saved. You can
+without closing the card. Help says "I need help", as on the court's Pause. Leaving by Food Court, Main Menu or Exit Game saves the shift ("This shift is saved. You can
 finish it later."); Restart Shift is the only route that discards it. Every route out confirms, Cancel first, with the
 consequence spoken when the card opens. While Pause is open Mitch is silent and the cooking clock stops.
 
@@ -304,7 +313,7 @@ consequence spoken when the card opens. While Pause is open Mitch is silent and 
   press did; a press that began while the game was talking is ignored on release.
 - **Every card, the court and each court part open with nothing highlighted.** The first Space goes to item 1. Only
   rows return to the item they came from.
-- **Choice limits:** a line screen offers at most four answers, plus Ticket, plus Pause, plus the blank stop; more
+- **Choice limits:** a line screen offers at most four answers, plus Ticket, plus Redo Order (kitchen), plus Pause, plus the blank stop; more
   values page with "More…". The court and each part have at most five stops. Pause and Settings are flat cards.
 - **Speech is never cut off** by a scene change or an automatic step: tickets, reactions and long help hold Auto Scan
   until the words end, and a spoken state holds still for about 4 s.

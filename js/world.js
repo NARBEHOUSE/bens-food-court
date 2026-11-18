@@ -326,7 +326,12 @@
         if (!(lines[sname] && lines[sname].part)) { again(); done(); return P(); }
         return lineOutcome('add', { onApply }).then(again);
       case 'skipped': return lineOutcome('skip');
-      case 'swapped': return lineOutcome('swap');
+      case 'swapped': {
+        const r = lineOutcome('swap');
+        // A pick's bad value is tossed (the user, 2026-11-18): the fresh one then goes in by the station's own pick.
+        if (e.slot !== undefined) Object.keys(lines).forEach(n => { if (lines[n] && lines[n].part && lines[n].part.pick) lines[n].part = null; });
+        return r;
+      }
       case 'picked': {
         if (onHeat && hasStages(e.value)) return cookAdd(sname, { ing: e.value, n: 1 }).then(done);
         // The bad value that was waiting on the line was chosen: it goes on, like an Add.

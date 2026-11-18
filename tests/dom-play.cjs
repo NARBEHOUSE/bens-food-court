@@ -123,6 +123,9 @@ function stub(w, errors, renders, slow, spoken) {
   w.addEventListener('error', e => errors.push('window error: ' + (e.error && e.error.stack || e.message)));
   w.addEventListener('unhandledrejection', e => errors.push('unhandled rejection: ' + (e.reason && e.reason.stack || e.reason)));
   browserTimers(w);
+  // An insecure page as far as the hub's communication speaker goes (jsdom has no isSecureContext): Help falls back to
+  // the game's own voice, as on a machine with no speaker set up.
+  w.isSecureContext = false;
   let current = null;
   w.SpeechSynthesisUtterance = function (text) { this.text = text; };
   w.speechSynthesis = {
@@ -383,6 +386,17 @@ async function run(label, opts) {
   };
   const sfx = w.BB.audio.sfx;
   w.BB.audio.sfx = (n, v) => { sounds.push({ name: n, t: Date.now() }); return sfx(n, v); };
+  // The game's own voice (the ticket read-outs).
+  const gameVoice = [];
+  if (w.NarbeVoiceManager) { const vs = w.NarbeVoiceManager.speak.bind(w.NarbeVoiceManager); w.NarbeVoiceManager.speak = (t, o) => { gameVoice.push(String(t)); return vs(t, o); }; }
+  // Every step of the line opens on the blank (the user, 2026-11-18): a double press never answers the next step too.
+  const showLine = w.BB.ui.line;
+  w.BB.ui.line = (root, fresh, prompt, o) => {
+    const r = showLine(root, fresh, prompt, o);
+    const d = w.BB.ui.__dbg();
+    if (!auto && root && /^line:/.test(root.key) && d.active && d.index !== -1) errors.push('a line step opened with ' + d.id + ' highlighted, not the blank');
+    return r;
+  };
   let rnd = opts.seed || 1;
   const rand = () => { rnd = (rnd * 16807) % 2147483647; return rnd / 2147483647; };
   // These customers come in first, in this order (a wrap of BB.shift.next), when they visit this restaurant.
@@ -550,7 +564,7 @@ async function run(label, opts) {
       return sp(u);
     };
   }
-  /** How to Play's words (or the court Pause's Help) are heard in full under one switch: the card's automatic scan waits
+  /** How to Play's words (or the court Pause's Help, "I need help") are heard in full under one switch: the card's automatic scan waits
    *  until they end (Wait for Speech off, and on past the voice manager's 10 s cap), then a full interval; with Text to
    *  Speech off it moves after one interval; a press during the words acts at once (and may cut them). */
   async function heardChecks() {
@@ -561,7 +575,7 @@ async function run(label, opts) {
       await must('pause', 'courtPause');
       n0 = utter.length; t0 = Date.now();
       await must('help', null);
-      words = w.BB.court.help();
+      words = 'I need help';               // as in every hub game (the user, 2026-11-18)
     } else if (H.what === 'offer') {
       // The first-visit card at the run's restaurant (opts.offer: its tutorial not done).
       if (w.BB.court.mode !== 'scan') { await must('play', null); await courtLive('Play'); }
@@ -657,7 +671,7 @@ async function run(label, opts) {
     if (dbg().items.join(',') !== 'continue,help,settings,menu,exit') errors.push('the court Pause offers ' + dbg().items.join(','));
     const n0 = spoken.length;
     await must('help', 'courtPause');
-    const words = RULES.help(COURT, w.BB.save.court(), { saved: w.BB.save.shift.savedIds() });
+    const words = 'I need help';                 // as in every hub game (the user, 2026-11-18)
     for (let k = 0; k < 40 && !spoken.slice(n0).some(t => t.includes(words)); k++) await sleep(25);
     if (!spoken.slice(n0).some(t => t.includes(words))) errors.push('the court\'s Help did not say "' + words + '"');
     await must('settings', 'settings');
@@ -1119,10 +1133,28 @@ async function run(label, opts) {
         stats.resumed += 1;
         continue;
       }
+      if (opts.redoOrder && !stats.redoOrder && s.order && Object.keys(s.order.items[0].answers).length >= 2) {
+        // Redo Order half way through an order (the user, 2026-11-18): the same ticket comes back with nothing made, the
+        // ticket is read out again, and the line opens at its first step, on the blank.
+        const before = JSON.stringify(s.order.ticket), mark = gameVoice.length, o1 = s.order;
+        const blank = JSON.stringify(w.BB.line.create(pack, o1.ticket, { gross: o1.gross0, tutorial: s.tutorial, settings: s.settings }).items.map(it => it.answers));
+        if (!dbg().items.includes('redoOrder') || dbg().items.indexOf('redoOrder') !== dbg().items.indexOf('pause') - 1) errors.push('Redo Order is not just before Pause: ' + dbg().items.join(','));
+        await must('redoOrder', null);
+        for (let k = 0; k < 600 && !(w.BB.game.screen === 'line' && !w.BB.game.busy && dbg().active); k++) await sleep(50);
+        const o2 = w.BB.game.shift().order;
+        const read = gameVoice.slice(mark).some(t => /^Ticket\. /.test(t));
+        if (!o2 || JSON.stringify(o2.ticket) !== before) errors.push('Redo Order: a different order came back');
+        else if (o2.at.item !== 0 || o2.at.st !== 0 || o2.at.step !== 0 || JSON.stringify(o2.items.map(it => it.answers)) !== blank) errors.push('Redo Order: the order did not start over: ' + JSON.stringify(o2.at));
+        if (gameVoice.length && !read) errors.push('Redo Order: the ticket was not read out again');
+        if (!auto && dbg().index !== -1) errors.push('Redo Order: the line opened with ' + dbg().id + ' highlighted');
+        stats.redoOrder = { ticketRead: read };
+        continue;
+      }
       if (opts.watchWheel && !watch.ticketKitchen) { await must('ticket', null); watch.ticketKitchen += 1; await sleep(1800); continue; }
       const o = s.order, want = L.expected(pack, o.items[q.item], q.station, q.step);
       let id;
       if (q.gross && (opts.mistakes === 0 || rand() < 0.75)) id = 'swap';
+      else if (q.held !== undefined) id = 'add';           // a picked value came down bad: added as it is (a gross-out served)
       else if (q.kind === 'add') id = q.have < want ? 'add' : 'skip';
       else if (q.kind === 'cook' && q.timed) {
         const set = pack.stageSets[q.set], dur = L.stageSeconds(pack, set, s.settings) * (q.stage === want ? L.wantedScaleOf(pack, set) : 1);
@@ -1264,6 +1296,7 @@ const RUNS = [
   ['a 3-customer shift, two switches, settings tour, pause, Food Court mid-shift and resume', { seed: 5, tour: true, pauses: true, redo: true }],
   ['leaving: Pause, Main Menu keeps the shift, Restart Shift starts it again, counted once', { seed: 27, leave: true }],
   ['leaving half way through an order: back in, the customer orders again and the order starts over', { seed: 28, midOrder: true }],
+  ['Redo Order half way through an order: the same ticket, read out again, from a blank line', { seed: 42, redoOrder: true }],
   ['a 3-customer shift, Timed cooking, two switches, a 5 s Enter hold during the arrival', { seed: 9, settings: { cooking: 'timed', speed: 'normal' }, holdPause: true, slowSpeech: true, mistakes: 0 }],
   ['a 3-customer shift, Timed, holding Take It Off across a stage boundary', { seed: 10, settings: { cooking: 'timed', speed: 'normal' }, holdTakeOff: true, mistakes: 0 }],
   ['a 3-customer shift, one switch (Auto Scan 1 s)', { seed: 11, scan: { autoScan: true, scanSpeedIndex: 0 } }],

@@ -4,7 +4,7 @@
  *    card   CHOICE. A menu board: the main menu, How to Play, Settings, the court's Pause and a restaurant's, the
  *           first-visit offer, the event card, results, confirmations. Every card opens at -1, returns from Back
  *           and Cancel included (spec 0.8); only rows restore by id.
- *    line   CHOICE. One step of the line: its answers on real objects, then Ticket, then Pause. Timed cooking is
+ *    line   CHOICE. One step of the line: its answers on real objects, then Ticket, Redo Order, Pause. Timed cooking is
  *           a choice scan over a slowly changing world.
  *    court  CHOICE. The storefronts on the court picture (js/court.js: a root of kind 'court' with onChoice, onPause
  *           and direct), the Back in 5 sign last.
@@ -13,8 +13,8 @@
  *  the Space brake and Wait for Speech come from the player's Hub Settings. Every row (a More… row, a Redo… row,
  *  a part of the court) is entered with enterGroup({wrap:true, backStop:true}).
  *
- *  One phase keeps one scan context, so as each new ingredient comes down the line the highlight stays on the
- *  same answer and only its label changes and is spoken. A new phase opens fresh on the blank. Choices act on
+ *  Every step of the line opens fresh on the blank (the user, 2026-11-18): the next ingredient is said and Space goes
+ *  to the first answer, so a double press never adds or skips the next ingredient too. Choices act on
  *  RELEASE; this file owns the keys, hold-Space-to-scan-backwards and the 5-second Enter hold that also opens
  *  Pause (inside a restaurant, playouts included; on the court once its scan is live). The Timed clock reads
  *  heldKeys() and stands still while either switch is down (spec 0.7).
@@ -42,6 +42,9 @@
   const isAuto = () => !!(sm() && sm().getSettings().autoScan);
   const interval = () => (sm() ? sm().getScanInterval() : 2000);
   const speak = text => (vm() ? vm().speak(text) : null);
+  /** Help, as in every hub game (the user, 2026-11-18): "I need help" on the speaker chosen in Hub Settings
+   *  (NarbeCommunicationSpeech), or in the game's own voice where none is set up. */
+  const callHelp = () => (window.NarbeCommunicationSpeech ? window.NarbeCommunicationSpeech.help(() => narrate('I need help')) : narrate('I need help'));
   const sfx = (n, v) => BB.audio && BB.audio.sfx(n, v);
 
   /* ══ the hub's choice scanner ═══════════════════════════════════════════ */
@@ -499,7 +502,7 @@
       title: 'Back in 5', speech: 'Paused',
       items: [
         { id: 'continue', label: 'Continue', icon: '▶️', action: () => BB.court.resume() },
-        { id: 'help', label: 'Help', icon: '❓', say: 'Help. Says how the court is doing.', action: () => narrate(BB.court.help()) },
+        { id: 'help', label: 'Help', icon: '🆘', say: 'Help', action: () => callHelp() },
         { id: 'settings', label: 'Settings', icon: '⚙️', action: () => openSettings() },
         { id: 'menu', label: 'Main Menu', icon: '🏠', action: () => BB.court.menu() },
         { id: 'exit', label: 'Exit Game', icon: '🚪', action: () => confirm('exit', EXIT.title, EXIT.warn, EXIT.yes, exitGame) },
@@ -576,7 +579,7 @@
         items: [
           { id: 'continue', label: 'Continue', icon: '▶️', action: () => G().resume() },
           { id: 'ticket', label: 'Ticket', icon: '🧾', off: !words, say: 'Ticket. Hear the order again.', action: () => narrate(G().ticketWords()) },
-          { id: 'help', label: 'Help', icon: '❓', say: 'Help. Says how this restaurant works.', action: () => narrate(G().help()) },
+          { id: 'help', label: 'Help', icon: '🆘', say: 'Help', action: () => callHelp() },
           { id: 'restart', label: 'Restart Shift', icon: '🔁', action: () => confirm('restart', tut ? 'Restart the tutorial?' : 'Restart the shift?',
             tut ? 'The tutorial starts again from the first step.' : done ? 'This shift is finished and counted, and a new one starts.'
               : 'This shift starts again. Orders served so far are lost.', tut ? 'Restart Tutorial' : 'Restart Shift', () => G().restart()) },

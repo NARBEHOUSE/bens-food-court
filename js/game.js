@@ -218,6 +218,18 @@
     busy = false;
     step(true);
   }
+  /** Redo Order (the user, 2026-11-18): a mess-up on the line starts the whole order over. The food goes in the bin,
+   *  the same ticket (and the same gross-out, as dealt) comes back blank, the ticket is read out in full, and the
+   *  line opens at its first station with nothing made. The shift's earlier customers and coins stay. */
+  function redoOrder() {
+    if (!s || !s.order || s.order.phase !== 'line') return;
+    run++;                                    // anything still playing out for the old attempt stops
+    stopClock();
+    BB.audio.sfx('toss', 0.4);
+    S.restartOrder(pack, s);
+    save();
+    resumeOrder();
+  }
 
   /* ── leaving (spec 4.2) ─────────────────────────────────────────────────── */
   /** Every route out: the shift is saved as it is, and the stage, food and sounds are let go. */
@@ -334,7 +346,6 @@
     screen = 'line';
     busy = true;
     BB.ui.suspend();
-    const fresh = q.fresh || forceFresh;
     BB.stage.receipt(null); BB.stage.show('register', false); BB.stage.show('bell', false);
     await BB.stage.setScene(q.station, () => { if (!stale(t)) showStation(o, q); });
     if (stale(t)) return;
@@ -344,7 +355,7 @@
     BB.stage.mitch(null);
     if (q.kind === 'cook' && q.timed) startClock(); else stopClock();
     busy = false;
-    present(q, fresh);
+    present(q);
   }
 
   /** What the station shows for a step: the 3D food (docs/api/world.md), the Timed gauge, the fly's buzz. */
@@ -369,13 +380,15 @@
     BB.stage.gauge(list, list.indexOf(q.stage), want);
   }
 
-  /** The scan's items for a step: its answers on the station's real objects, the ticket, Pause. */
-  function present(q, fresh) {
+  /** The scan's items for a step: its answers on the station's real objects, the ticket, Redo Order, Pause.
+   *  Every step opens on the blank (the user, 2026-11-18): the next ingredient is said, and Space goes to the first
+   *  answer, so a double press or a bounce on Enter never adds or skips the next ingredient as well. */
+  function present(q) {
     const o = s.order;
     const entries = q.options.map(opt => entryOf(q, opt));
     const draw = () => BB.stage.controls(entries.map(e => control(q, e)), q.kind === 'cook' && q.timed);
-    const root = rootContext('line:' + o.ticket.customer.id + ':' + s.n + ':' + q.item + ':' + q.station, entries, draw);
-    BB.ui.line(root, fresh, W.prompt(pack, q, o));
+    const root = rootContext('line:' + o.ticket.customer.id + ':' + s.n + ':' + q.item + ':' + q.station, entries, draw, null, false, true);
+    BB.ui.line(root, true, W.prompt(pack, q, o));
   }
   /** One answer as a scan entry; a More… row gets its rowItems (the values inside, drawn in place of the answers). */
   function entryOf(q, opt) {
@@ -406,14 +419,16 @@
       const k = stageIdx(q, e.opt.value);
       return { id, kind: 'plate', label: e.label, marks: BB.world.marksOf(q.ing, k), swatch: BB.world.colourOf(q.ing, k) };
     }
+    if (id === 'add') return { id, kind: 'btn', cls: 'add', label: e.label, icon: '＋' };     // a picked value that came down bad
     if (id === 'swap') return { id, kind: 'btn', cls: 'swap', label: e.label, icon: '♻' };
     if (id === 'done') return { id, kind: 'btn', cls: 'skip', label: e.label, icon: '✓' };
     const bad = q.gross && q.gross.value !== undefined && e.opt.value === q.gross.value;
     return { id, kind: 'tile', cls: e.opt.row ? 'more' : bad ? 'bad' : '', label: e.label };
   }
   /** A line context: the step's entries, then Ticket and Pause on their real objects (Ticket: the order on
-   *  the kitchen's wheel, or at the counter the order's slip, which the step's draw puts on the panel). */
-  function rootContext(key, entries, draw, extra, noTicket) {
+   *  the kitchen's wheel, or at the counter the order's slip, which the step's draw puts on the panel). redo: a
+   *  kitchen step, where Redo Order (the button beside the Back in 5 sign) comes just before Pause. */
+  function rootContext(key, entries, draw, extra, noTicket, redo) {
     const wheel = document.getElementById('wheel'), back5 = document.getElementById('back5');
     wheel.dataset.id = noTicket ? '' : 'ticket'; back5.dataset.id = 'pause';
     const items = [];
@@ -422,6 +437,7 @@
       items.length = 0;
       entries.forEach(e => items.push({ id: e.id, label: () => e.say, element: (extra && extra[e.id]) || els[e.id], ref: e.ref }));
       if (!noTicket) items.push({ id: 'ticket', label: () => 'Ticket', element: els.ticket || BB.stage.ticketEl(), ref: { kind: 'ticket' } });
+      if (redo) items.push({ id: 'redoOrder', label: () => 'Redo order', element: document.getElementById('redoOrder'), ref: { kind: 'redoOrder' } });
       items.push({ id: 'pause', label: () => 'Pause', element: back5, ref: { kind: 'pause' } });
     };
     fill(draw());
@@ -473,6 +489,7 @@
   async function onChoice(ref) {
     if (busy || !s) return;
     if (ref.kind === 'pause') return pause();
+    if (ref.kind === 'redoOrder') return redoOrder();
     if (ref.kind === 'ticket') {
       const o = s.order || (s.last && s.last.order);
       BB.stage.ticket(o, s.order && s.order.phase === 'line' ? s.order.at.item : -1, true);
@@ -799,7 +816,7 @@
   }
 
   BB.game = {
-    enter, offer, startShift, startTutorial, restart, again, quit, leaveToCourt, exitGame, afterReset, resume, pause, help, ticketWords, onChoice,
+    enter, offer, startShift, startTutorial, restart, again, quit, leaveToCourt, exitGame, afterReset, resume, pause, redoOrder, help, ticketWords, onChoice,
     inShift: () => !!s,
     inTutorial: () => !!(s && s.tutorial),
     /** Every order of this shift has been served (Pause at its last receipt). */

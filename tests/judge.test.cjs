@@ -135,9 +135,10 @@ test('a cook step with want is judged on its slot, and Simple\'s automatic cooki
 test('a bad value served on a pick is a gross mistake; swapped, there is none', () => {
   const g = { gross: { item: 0, slot: 'sauce', event: 'skin' }, set: { sauce: 'red' } };
   assert.deepStrictEqual(score(['pepperoni'], g).mistakes, [], 'right answers swap it');
-  const served = score(['pepperoni'], g, q => (q.gross && q.slot ? 'pick:red' : null));
+  // The red sauce is picked, comes down with a skin on it, and is added as it is.
+  const served = score(['pepperoni'], g, q => (q.gross && q.slot ? 'add' : null));
   assert.deepStrictEqual(served.mistakes, [{ item: 0, kind: 'gross', slot: 'sauce', value: 'red', event: 'skin', n: 1 }]);
-  const dodged = score(['pepperoni'], g, q => (q.gross && q.slot ? 'pick:white' : null));
+  const dodged = score(['pepperoni'], g, q => (q.slot === 'sauce' && !q.gross ? 'pick:white' : null));
   assert.deepStrictEqual(dodged.mistakes, [{ item: 0, kind: 'pick', of: 'slot', slot: 'sauce', want: 'red', got: 'white', n: 1 }]);
 });
 

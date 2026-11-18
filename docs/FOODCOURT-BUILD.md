@@ -47,7 +47,7 @@ website, and nothing goes into `games.json`.
    - **In Timed cooking the clock freezes while either switch is down**, so Take It Off takes the stage shown when the
      press began, however long the hold.
 8. **Choice limits.**
-   - A line screen offers at most 4 answers, plus Ticket, plus Pause, plus the blank stop. More values page with
+   - A line screen offers at most 4 answers, plus Ticket, plus Redo Order (kitchen), plus Pause, plus the blank stop. More values page with
      "More…".
    - The court and each court part never have more than 5 stops.
    - Pause and Settings are flat cards, exempt from that limit as in the Burger Bar.
@@ -310,9 +310,10 @@ Other ladder rules:
   - a **pick** step whose values plus Swap It are at most 4 answers (never a paged pick). The bad one is the value the
     ticket wants.
 - **How it plays:**
-  - The spoken label names it ("Oat milk, spoiled").
-  - Choosing it serves it.
-  - Swap It replaces it and asks again.
+  - On an Add step the spoken label names it ("Add the green cheese"); Add serves it; Swap It replaces it and asks
+    again.
+  - On a pick step (the user, 2026-11-18) the values come up as usual. Picking the wanted value brings it down bad
+    ("Oat milk, spoiled.") and asks again: Add serves it; Swap It brings a fresh one, which goes in as picked.
   - Choosing another value is a pick mistake.
 - **Never on a cook step and never on an auto step.**
   - Burnt or overcooked stays Timed's last stage.

@@ -9,7 +9,8 @@
  *           Timed: takeOff, while tick() moves the food on
  *    pick   pick:<value>: `slot` (the pack's slots; repeat: { max } picks again, with Done
  *           after the first), or the diner's `from` / `of`. More than four answers page
- *           with More… rows. A pick of three or fewer values can carry a bad value (swap).
+ *           with More… rows. A pick of three or fewer values can carry a bad value: once picked, it comes
+ *           down bad and the step asks add (served) or swap (a fresh one goes in).
  *    auto   a flourish with no answer (wrapping, a spin): it runs by itself
  *  `when` ({ recipes } or { slot, in }) is read from the ticket: a step the ticket does not
  *  use passes with a null answer, and the judge skips it.
@@ -141,6 +142,7 @@
       gross0: opts.gross ? Object.assign({}, opts.gross) : null,   // as dealt, so the order can start over (shift.js restartOrder)
       tutorial: !!opts.tutorial,
       redo: null,                  // { item, station } while a redo runs
+      held: null,                  // { item, key, value }: a picked value that came down bad, waiting for Add or Swap It
       timer: null,                 // Timed cooking: { key, s, t }
       fresh: true,                 // the current question opens a new phase
     };
@@ -165,6 +167,8 @@
     }
     return null;
   }
+  /** The value picked on this step that came down bad and waits for Add or Swap It ({ item, key, value }), or null. */
+  const heldHere = (o, c) => (o.held && o.held.item === c.i && o.held.key === c.key ? o.held : null);
   /** How many of an ingredient this item has had added at a station. */
   function addedAt(pack, item, sid, ing) {
     let n = 0;
@@ -297,10 +301,17 @@
         q.gross = null;
         q.options = pickOptions(values, extras, 1);
       } else {
-        const g = grossHere(pack, o, c);
-        q.gross = g ? { event: g.event, value: expected(pack, c.item, c.sid, c.n) } : null;
-        if (g) extras.push({ id: 'swap' });
-        q.options = pickOptions(values, extras, 0);
+        // A gross-out on a pick (the user, 2026-11-18): the values come up as usual; once the wanted one is picked it
+        // comes down the line bad, and the step asks again, as an Add step does: Add it, or Swap It for a fresh one.
+        const g = grossHere(pack, o, c), held = g && heldHere(o, c);
+        if (held) {
+          q.held = held.value;
+          q.gross = { event: g.event, value: held.value };
+          q.options = [{ id: 'add' }, { id: 'swap' }];
+        } else {
+          q.gross = null;
+          q.options = pickOptions(values, extras, 0);
+        }
       }
     } else if (c.step.kind === 'pick') {
       q.of = c.step.of || 'ing';
@@ -352,7 +363,8 @@
         return left.includes(got) ? null : { kind: 'pick', of: 'slot', slot, want: left[0], got };
       }
       const g = grossHere(pack, o, c);
-      if (g && got) return got === want ? { kind: 'gross', slot, value: got, event: g.event } : { kind: 'grossSkip', slot, want, got, event: g.event };
+      // The wanted value came down bad: Add serves it (Swap It is right); before that, a pick is judged as any pick.
+      if (g && heldHere(o, c)) return id === 'add' ? { kind: 'gross', slot, value: want, event: g.event } : null;
       if (got && got !== want) return { kind: 'pick', of: 'slot', slot, want, got };
     } else if (c.step.kind === 'pick') {
       const got = id.startsWith('pick:') ? id.slice(5) : null;
@@ -380,25 +392,36 @@
       if (next.length < (step.repeat.max || 1)) { o.fresh = false; return { events: ev }; }     // offer another
       return null;
     }
-    const g = grossHere(pack, o, c), want = g ? expected(pack, c.item, c.sid, c.n) : null;
-    if (id === 'swap') {
-      if (!g) return { refused: true };
+    const g = grossHere(pack, o, c), want = g ? expected(pack, c.item, c.sid, c.n) : null, held = g ? heldHere(o, c) : null;
+    if (held) {
+      // The picked value came down bad (the user, 2026-11-18): Add serves it as it is; Swap It brings a fresh one,
+      // which goes in (the choice was already made).
+      if (id === 'add') {
+        c.item.answers[c.key] = held.value;
+        ev.push({ type: 'picked', item: c.i, of: 'slot', slot, value: held.value });
+        c.item.gross.push({ slot, value: held.value, event: g.event, key: c.key });
+        ev.push({ type: 'grossServed', item: c.i, slot, value: held.value, event: g.event });
+      } else if (id === 'swap') {
+        c.item.swaps += 1;
+        ev.push({ type: 'swapped', item: c.i, slot, value: held.value, event: g.event });
+        c.item.answers[c.key] = held.value;
+        ev.push({ type: 'picked', item: c.i, of: 'slot', slot, value: held.value });
+      } else return { refused: true };
       o.pending = null;
-      c.item.swaps += 1;
-      o.fresh = false;
-      ev.push({ type: 'swapped', item: c.i, slot, value: want, event: g.event });
-      return { events: ev };
+      o.held = null;
+      return null;
     }
     if (!value || !values.includes(value)) return { refused: true };
+    if (g && value === want) {
+      // The one on the ticket: it comes down the line, and it is bad. The step asks again: Add or Swap It.
+      o.held = { item: c.i, key: c.key, value };
+      o.fresh = false;
+      ev.push({ type: 'held', item: c.i, slot, value, event: g.event });
+      return { events: ev };
+    }
     c.item.answers[c.key] = value;
     ev.push({ type: 'picked', item: c.i, of: 'slot', slot, value });
-    if (g) {
-      if (value === want) {
-        c.item.gross.push({ slot, value, event: g.event, key: c.key });
-        ev.push({ type: 'grossServed', item: c.i, slot, value, event: g.event });
-      }
-      o.pending = null;                                                    // served, or the bad one goes back
-    }
+    if (g) o.pending = null;                                               // another value: the bad one stays put
     return null;
   }
 

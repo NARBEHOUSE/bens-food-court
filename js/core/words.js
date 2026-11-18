@@ -176,6 +176,8 @@
   }
   /** An item spelt out: { head: its name, bits: [every phrase after the name, in line order],
    *  cooked: [the phrases that are not Adds], on: [the words for everything Added] }. */
+  /** Does an item's name already end with these words (a drink named after the drink picked for it)? */
+  const namesIt = (h, words) => { const a = String(h).toLowerCase(), b = String(words).toLowerCase(); return a === b || a.endsWith(' ' + b); };
   function spelled(pack, spec) {
     const item = { spec, answers: {} };
     const segs = [], told = new Set();
@@ -201,6 +203,9 @@
         continue;
       }
       const text = stepWords(pack, item, sid, n, step);
+      // A pick the item's name already says is said once, in the name, never again after it (the cafe's drinks: the
+      // user, 2026-11-18, heard the drink's name twice). The name is what to pick at that step.
+      if (text && step.kind === 'pick' && namesIt(head(pack, spec), text)) continue;
       if (text) { segs.push({ text }); run = null; }
     }
     const j = joinSegments(segs);
@@ -389,6 +394,8 @@
         : 'Cook ' + what + '. How done?';
     }
     if (q.kind === 'pick') {
+      // The picked value came down bad: said as an Add step's ingredient is ("Oat milk, spoiled.").
+      if (q.of === 'slot' && q.held !== undefined && q.gross) return cap(grossPick(pack, q.slot, q.gross.value, q.gross.event)) + '.';
       if (q.of === 'slot') {
         // "Crust: Thin, Regular or Deep Dish?"; a repeat's next pick, "A second dip: Ranch, Garlic, more or Done?"
         const names = q.options.filter(x => x.value !== undefined).map(x => option(pack, q, x, o).label);
@@ -432,6 +439,7 @@
       if (q.of === 'slot') {
         if (id === 'done') return { label: 'Done', say: 'Done, ' + repeatSay(pack, q.slot, q.picked || []) };
         const bad = q.gross ? grossPick(pack, q.slot, q.gross.value, q.gross.event) : null;
+        if (id === 'add') return { label: 'Add', say: 'Add ' + bad };
         if (id === 'swap') return { label: 'Swap It', say: 'Swap ' + bad + ' for a fresh one' };
         if (bad && opt.value === q.gross.value) return { label: cap(bad), say: cap(bad) };
         const label = valueName(pack, q.slot, opt.value);

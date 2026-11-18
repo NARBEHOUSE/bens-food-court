@@ -245,13 +245,17 @@ test('stage-set words: a cook step asks its own question and names its own Timed
   assert.deepStrictEqual(W.option(P, warm, { id: 'takeOff' }), { label: 'Stop the Warmer', say: 'Stop the warmer. Hot' });
 });
 
-test('labels on a slot pick: the values, the bad one by name, Swap It, Done, More…', () => {
+test('labels on a slot pick: the values (a bad one only once picked: Add, Swap It), Done, More…', () => {
   const o = makeOrder(P, ['pepperoni'], { set: { sauce: 'red' }, gross: { item: 0, slot: 'sauce', event: 'skin' } });
   L.answer(P, o, 'pick:regular', { cooking: 'simple' });
   let q = L.question(P, o, { cooking: 'simple' });
-  assert.deepStrictEqual(q.options.map(x => W.option(P, q, x, o).label), ['Red sauce with a skin on it', 'White', 'None', 'Swap It']);
+  assert.deepStrictEqual(q.options.map(x => W.option(P, q, x, o).label), ['Red', 'White', 'None']);
+  assert.strictEqual(W.prompt(P, q, o), 'Sauce: Red, White or None?');
+  L.answer(P, o, 'pick:red', { cooking: 'simple' });
+  q = L.question(P, o, { cooking: 'simple' });
+  assert.deepStrictEqual(q.options.map(x => W.option(P, q, x, o).label), ['Add', 'Swap It']);
   assert.strictEqual(W.option(P, q, { id: 'swap' }, o).say, 'Swap red sauce with a skin on it for a fresh one');
-  assert.strictEqual(W.prompt(P, q, o), 'Sauce: Red sauce with a skin on it, White or None?');
+  assert.strictEqual(W.prompt(P, q, o), 'Red sauce with a skin on it.');
   const fresh = makeOrder(P, ['pepperoni']);
   q = L.question(P, fresh, { cooking: 'simple' });
   assert.strictEqual(W.prompt(P, q, fresh), 'Prep Table. Crust: Thin, Regular or Deep Dish?');
@@ -317,6 +321,7 @@ test('the review says what was made, in the line\'s order, a bad value by its gr
   const choices = { crust: 'pick:deepDish', sauce: 'pick:red', cut: 'pick:whole' };
   let dips = 0;
   const res = run(P, o, { cooking: 'simple' }, (q, ord) => {
+    if (q.held !== undefined) return 'add';                     // the red sauce came down with a skin: added as it is
     if (q.kind === 'pick' && choices[q.slot]) return choices[q.slot];
     if (q.slot === 'dips') return dips++ < 2 ? 'pick:honey' : 'done';
     return right(P, ord, q);
