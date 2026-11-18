@@ -604,12 +604,16 @@
       const words = o.words || [];
       const head = o.tutorial ? 'Tutorial done' : o.event === 'won' ? 'Event won' : o.event === 'failed' ? 'Not this time' : 'Shift done';
       const sub = o.tutorial ? 'Ready for a real shift?' : o.orders + ' orders · ' + o.coins + ' coins in tips';
+      // The average rating, not every order's stars in a row (the user, 2026-11-18: 8 orders filled the card with 24).
+      const rated = o.stars && o.stars.length;
+      const avg = rated ? Math.round(o.avgStars * 10) / 10 : 0, full = Math.round(avg);
+      const avgText = String(avg) + (avg === 1 ? ' star' : ' stars');
       return {
         title: head, sub,
-        html: (o.stars && o.stars.length ? '<p class="stars">' + o.stars.map(n => '★'.repeat(n) + '☆'.repeat(3 - n)).join('  ') + '</p>' : '') +
+        html: (rated ? '<p class="stars">' + '★'.repeat(full) + '☆'.repeat(3 - full) + '</p><p class="avg">Average rating: ' + avgText + '</p>' : '') +
           (words.length ? '<p class="news">' + esc(words.join(' ')) + '</p>' : ''),
         speech: o.tutorial ? 'Tutorial done. Ready for a real shift?'
-          : head + '. ' + o.orders + ' orders, ' + o.threeStars + ' with three stars. ' + o.coins + ' coins in tips. ' + words.join(' '),
+          : head + '. ' + o.orders + ' orders. ' + (rated ? 'Average rating, ' + avgText + '. ' : '') + o.coins + ' coins in tips. ' + words.join(' '),
         narrate: true,
         items: [
           { id: 'again', label: o.tutorial ? 'Start a Shift' : 'Another Shift', icon: '🍽️', action: () => G().again() },

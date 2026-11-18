@@ -25,6 +25,24 @@ test('only drawn customers come in, never the same one twice in a row, everyone 
   assert.ok(few.queue.every(id => ['gus', 'bev'].includes(id)));
 });
 
+test('the next shift starts with customers not seen lately, then the ones seen longest ago (the user, 2026-11-18)', () => {
+  const len = 3;                                     // 3 of the 5 drawn: two missed by the first shift
+  for (let seed = 1; seed <= 200; seed++) {
+    const first = make({ seed, settings: { shiftLength: len } });
+    const second = make({ seed: seed + 1000, settings: { shiftLength: len }, recent: first.queue });
+    const fresh = DRAWN.filter(id => !first.queue.includes(id));
+    assert.strictEqual(fresh.length, 2);
+    // Everyone the first shift missed comes in first, then the first shift's earliest customer.
+    assert.deepStrictEqual(second.queue.slice(0, 2).sort(), fresh.slice().sort(), 'seed ' + seed);
+    assert.strictEqual(second.queue[2], first.queue[0], 'seed ' + seed);
+    // A third shift: everyone has been seen, so the ones seen longest ago, oldest first.
+    const third = make({ seed: seed + 2000, settings: { shiftLength: len }, recent: first.queue.concat(second.queue) });
+    assert.deepStrictEqual(third.queue, [first.queue[1], first.queue[2], second.queue[0]], 'seed ' + seed);
+    // Without a recent list nothing changes.
+    assert.deepStrictEqual(make({ seed, settings: { shiftLength: len }, recent: [] }).queue, first.queue);
+  }
+});
+
 test('gross-outs: at most two a shift, never the first order, never two on one order, only on wanted ingredients', () => {
   let total = 0, shifts = 0, withOne = 0;
   for (let seed = 1; seed <= 600; seed++) {

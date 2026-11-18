@@ -98,11 +98,17 @@
     return s;
   }
   /** Rounds of the pool, shuffled: everyone once before anyone twice, and never the same
-   *  customer twice in a row. */
-  function rounds(s, pool, length) {
+   *  customer twice in a row. recent (ids seen in earlier shifts, oldest first): the first round
+   *  starts with whoever hasn't been seen, then whoever was seen longest ago (the user,
+   *  2026-11-18: the second shift brought back the first shift's customers). */
+  function rounds(s, pool, length, recent) {
     const queue = [];
+    const seen = id => (recent || []).lastIndexOf(id);
     while (queue.length < length) {
-      const round = R.shuffle(s, pool.slice());
+      let round = R.shuffle(s, pool.slice());
+      if (!queue.length && recent && recent.length) {
+        round = round.map((id, i) => ({ id, i })).sort((a, b) => seen(a.id) - seen(b.id) || a.i - b.i).map(x => x.id);
+      }
       if (queue.length && round.length > 1 && round[0] === queue[queue.length - 1]) round.push(round.shift());
       queue.push(...round);
     }
@@ -121,7 +127,7 @@
   }
 
   /** opts = { seed, settings: { cooking, speed, orders: 'stars' | 'one', shiftLength }, level: 1-5,
-   *  event: <pack.events id>, drawn: [ids], tutorial, recipes?: [ids] }.
+   *  event: <pack.events id>, drawn: [ids], tutorial, recipes?: [ids], recent?: [ids seen lately, oldest first] }.
    *  level: the restaurant's stars (BB.courtRules.level); leave it out for a shift off the ladder. */
   function create(pack, opts) {
     opts = opts || {};
@@ -153,16 +159,16 @@
       const fin = isIn(finale.customer) ? finale.customer : firstRegular();
       const pool = (E.customers ? drawn.filter(c => E.customers.includes(c.id)) : drawn).map(c => c.id);
       if (!fin) return empty(s);
-      s.queue = rounds(s, pool.length ? pool : [fin], s.length - 1).concat([fin]);
+      s.queue = rounds(s, pool.length ? pool : [fin], s.length - 1, opts.recent).concat([fin]);
       s.plan = s.queue.map((x, i) => (i === s.length - 1 ? { finale: true } : {}));
       const g = grossFor(pack, s);
       s.grossPlan = plan(s, g.rate, g.max);
       return s;
     }
-    // Everyone once before anyone twice, and never the same customer twice in a row.
+    // Everyone once before anyone twice, and never the same customer twice in a row; the ones not seen lately first.
     const pool = regulars.map(c => c.id);
     if (!pool.length) return empty(s);
-    s.queue = rounds(s, pool, s.length);
+    s.queue = rounds(s, pool, s.length, opts.recent);
     s.plan = s.queue.map(() => ({}));
     const g = grossFor(pack, s);
     s.grossPlan = plan(s, g.rate, g.max);
@@ -191,7 +197,7 @@
   function restart(pack, s, opts) {
     opts = opts || {};
     return create(pack, { seed: opts.seed || ((s.seed * 31 + 7) >>> 0) || 1, settings: Object.assign({}, s.settings, opts.settings),
-      level: s.level, event: s.event, drawn: s.drawn, tutorial: s.tutorial });
+      level: s.level, event: s.event, drawn: s.drawn, tutorial: s.tutorial, recent: opts.recent });
   }
 
   /** Where a planned gross-out lands: one thing the ticket wants that some gross-out can happen

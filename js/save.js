@@ -5,6 +5,7 @@
  *    bb-progress:<pack>   a restaurant's coins (js/core/progress.js)
  *    bb-shift:<pack>      the shift in progress there, saved as it is after every answer; a finished shift stays
  *                         saved until it has been counted (S.claim), so leaving from the receipt never loses it
+ *    bb-seen              customer ids seen lately, oldest first, so the next shift starts with new faces
  *  Auto Scan, Scan Speed, the voice and Text to Speech belong to the Hub's shared managers and follow the player
  *  into every game, so they are not kept here. Storage can be missing or full; every call copes. A record from a
  *  newer game is read as defaults and never written over.
@@ -96,7 +97,22 @@
     },
   };
 
+  /* ── customers seen lately, across the whole court (the regulars at every restaurant are the same people) ── */
+  const SEEN_KEY = 'bb-seen', SEEN_MAX = 40;
+  let seenList = (() => {
+    try { const v = JSON.parse(read(SEEN_KEY)); return Array.isArray(v) ? v.filter(x => typeof x === 'string').slice(-SEEN_MAX) : []; }
+    catch (e) { return []; }
+  })();
+
   BB.save = {
+    /** Customer ids seen lately, oldest first (S.create's `recent`). */
+    seen: () => seenList.slice(),
+    /** A customer walked up: they go to the end of the list. */
+    saw(id) {
+      if (!id) return;
+      seenList = seenList.filter(x => x !== id).concat([id]).slice(-SEEN_MAX);
+      write(SEEN_KEY, JSON.stringify(seenList));
+    },
     get: k => (settings[k] === undefined ? F.DEFAULT_SETTINGS[k] : settings[k]),
     set(k, v) {
       settings[k] = v; storeSettings();

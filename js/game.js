@@ -143,7 +143,8 @@
     const st = courtState();
     const event = opts.event && R.eventDue(C(), st, pack.id) ? 'five' : undefined;
     BB.save.shift.clear(pack);
-    begin(S.create(pack, { seed: (Date.now() % 1000000007) + 1, level: R.level(C(), st, pack.id), event, drawn: BB.packs.drawn(), settings: settings() }), false);
+    begin(S.create(pack, { seed: (Date.now() % 1000000007) + 1, level: R.level(C(), st, pack.id), event, drawn: BB.packs.drawn(), settings: settings(),
+      recent: BB.save.seen() }), false);
   }
   function startTutorial() {
     begin(S.create(pack, { seed: 1, tutorial: true, drawn: BB.packs.drawn(), settings: Object.assign(settings(), { cooking: 'simple' }) }), false);
@@ -154,7 +155,7 @@
     bank();                                                // a finished shift is counted before it starts again
     // A real shift starts again with the Settings as they are now (Cooking, Cooking Speed, Order Size, Shift Length);
     // the tutorial keeps its own (always Simple).
-    const next = S.restart(pack, s, s.tutorial ? undefined : { settings: settings() });
+    const next = S.restart(pack, s, s.tutorial ? undefined : { settings: settings(), recent: BB.save.seen() });
     if (!s.tutorial) BB.save.shift.clear(pack);            // a tutorial never touches bb-shift (spec 4.2)
     begin(next, false);
   }
@@ -284,6 +285,7 @@
     save();
     hud();
     const o = s.order, P = person(o.ticket.customer.id);
+    if (!s.tutorial) BB.save.saw(o.ticket.customer.id);
     BB.stage.receipt(null); BB.stage.clearControls(); BB.stage.ticket(null);
     BB.stage.show('register', false); BB.stage.show('bell', false);
     await BB.stage.setScene('counter', () => { if (!stale(t)) BB.world.showCounter([]); });
