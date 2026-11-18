@@ -11,10 +11,10 @@ root) outrank it. The build contract, with every rule in full, is `docs/FOODCOUR
 `docs/api/`; `docs/api/pilot.md` has the commands that check the game. Earlier versions of this file are in
 `docs/backup/DESIGN.md.before`.
 
-Since 2026-11-17 the game is in Ben's PC Hub's `games.json` (id `bensfoodcourt`, picture
-`images/games/bensfoodcourt.png`) so Ben can play-test it. It stays out of the website's `games.json` and every other
-catalog until that testing is done and it is approved; the website copy (https://narbehouse.github.io/bens-food-court/)
-is published but unlisted. It opens from `bennyshub/apps/games/BENSFOODCOURT/index.html`, served (pilot.md 9).
+The game is listed everywhere (id `bensfoodcourt`, picture `images/games/bensfoodcourt.png`): Ben's PC Hub since
+2026-11-17, and since 2026-11-18 the web Hub's `games.json` (`/bens-food-court/`, online only), the NARBE House home
+page and SwitchedGames. The website copy is https://narbehouse.github.io/bens-food-court/; on the PC it opens from
+`bennyshub/apps/games/BENSFOODCOURT/index.html`, served (pilot.md 9).
 
 ## The flow
 
