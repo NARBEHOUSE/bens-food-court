@@ -1,0 +1,12 @@
+{
+ "_": "Clips recorded again by hand after the full run, the full-redo way (voice-batch.py: VoxCPM2 with the line's model text and delivery note, the judge's bar, the export filter), when the full run's staging and the picked references were not on this PC.",
+ "bev/pizza:react.3.1": {
+  "date": "2026-11-18",
+  "why": "The user heard it as bad. Voice Studio's check of the installed take: heard 'It is a pizza...' (that -> it), pitch 105 Hz against Bev's 226, clarity 1.26.",
+  "reference": "voice-source/bev-ref-rebuilt.wav (local, not in git): Bev's picked reference (pilot11/bev/current, from pilot2 brisk-s6) was not on this PC, so three of her installed takes, all cloned from it, were joined: bev/smalltalk.1 (221 Hz, clarity 3.71), bev/sushi:customer.order.odd.justGinger.1 (228 Hz, 3.52), bev/sushi:react.3.3 (206 Hz, 3.70). 14 s.",
+  "home_pitch": 226,
+  "seeds_tried": {"5": "rough (2.97)", "6": "passed, 236 Hz, 3.07", "7": "passed, 265 Hz, 3.24", "8": "passed, 267 Hz, 3.14", "9": "passed, 243 Hz, 3.24", "10": "passed, 250 Hz, 3.57", "11": "off pitch (296 Hz)", "12": "rough (2.5)"},
+  "kept": {"model": "voxcpm", "seed": 10, "heard": "That is a pizza. Full roster. Everybody made the team.", "pitch": 250, "clarity": 3.57, "rate": 2.81,
+           "exported_mp3_check": {"heard": "That is a pizza. Full roster. Everybody made the team.", "pitch": 248, "clarity": 3.32}}
+ }
+}
