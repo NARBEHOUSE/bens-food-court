@@ -495,7 +495,10 @@
     if (ref.kind === 'ticket') {
       const o = s.order || (s.last && s.last.order);
       BB.stage.ticket(o, s.order && s.order.phase === 'line' ? s.order.at.item : -1, true);
-      if (o) BB.ui.narrate('Ticket. ' + W.ticket(pack, o.ticket));   // heard in full: Auto Scan waits for it
+      // The highlight goes back to the blank, as after Add or Skip (the user, 2026-11-19): the next Space is the
+      // step's first answer again, not the one after Ticket.
+      BB.ui.fromBlank();
+      if (o) BB.ui.narrate('Ticket. ' + W.ticket(pack, o.ticket) + ticketCheck(o));   // heard in full: Auto Scan waits for it
       return;
     }
     if (ref.kind === 'next') { BB.audio.sfx('ding', 0.4); return nextCustomer(); }
@@ -814,7 +817,14 @@
   function ticketWords() {
     if (!s || !pack) return null;
     const o = s.order || (s.last && s.last.order);
-    return o ? 'Ticket. ' + W.ticket(pack, o.ticket) : null;
+    return o ? 'Ticket. ' + W.ticket(pack, o.ticket) + ticketCheck(o) : null;
+  }
+  /** After the ticket, how the order is going (the user, 2026-11-19): what is wrong so far and how to fix it, or what
+   *  it still needs. Only for the order being made (not one already served). -> ' ...' or '' */
+  function ticketCheck(o) {
+    if (!s || o !== s.order || o.phase === 'served') return '';
+    const words = W.check(pack, o, BB.judge.soFar(pack, o), L.ahead(pack, o, settings()));
+    return words ? ' ' + words : '';
   }
 
   BB.game = {

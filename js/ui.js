@@ -206,6 +206,12 @@
     const lvl = { key: lineRoot.key + '>' + ref.id, kind: lineRoot.kind, items, statusHost: $('choiceStatus'), rowDrawn: true };
     if (!choice.enterGroup(lvl, { wrap: true, backStop: true })) { if (lineRoot.redraw) lineRoot.redraw(); }
   }
+  /** Back to the blank on the line as it is (after Ticket): nothing lit, the next Space goes to the first answer. */
+  function fromBlank() {
+    if (!choice || !lineRoot || ctx !== 'line') return;
+    choice.sync(lineRoot, { fresh: true });
+    light(null);
+  }
   /** A playout: the scan pauses (nothing is highlighted) while something happens on its own. */
   function suspend() {
     endNarration();
@@ -660,7 +666,7 @@
       held: heldKeys(), scan: st ? { braked: !!st.braked, inputHeld: !!st.inputHeld, waiting: !!st.waitingForSpeech, suspended: !!st.suspended, keyHeld: !!st.held } : null };
   }
 
-  BB.ui = { init, line, suspend, openCard, closeCard, refreshCard, announce, narrate, confirm, openSettings, exitGame, heldKeys, __dbg,
+  BB.ui = { init, line, fromBlank, suspend, openCard, closeCard, refreshCard, announce, narrate, confirm, openSettings, exitGame, heldKeys, __dbg,
     /** The id of the highlighted choice, or null (the blank, a playout). */
     litId: () => (choice && choice.active ? choice.getState().id : null),
     /** A click or tap on a choice by its id (the court's storefronts, hit-tested on their outlines by js/court.js). */

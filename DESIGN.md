@@ -164,6 +164,16 @@ what isn't.** Customers still order the natural way ("the usual, hon", "no onion
 In the kitchen it hangs on the ticket wheel and is read out once; Ticket turns the wheel and reads it again. At the
 counter it is the order's slip.
 
+**After Ticket reads the order, it says how the order is going** (the user, 2026-11-19: for players who have a hard
+time remembering what they did). Same checks as the rating, on the steps already finished (judge.soFar; the step
+being asked is never judged half-way): a mistake is named ("Uh oh. You picked regular crust, but the ticket says thin
+crust.", two at most, then "And two more things are wrong.") with the fix: in the kitchen "You will have to redo this
+order for a happy customer. Choose Redo Order to start it again.", at the counter "Choose Redo to fix it before you
+ring it up." Going right, it says what is still to do in the ticket's words ("So far, so good! Still to go: one patty,
+medium, cheese, lettuce and two more."; line.ahead + words.check), or at the counter "Everything matches the ticket.
+Ring it up!" Pause's Ticket says the same. After Ticket the highlight goes back to the blank, as after Add or Skip,
+so the next Space is the step's first answer.
+
 ### Cooking
 
 - **Simple** (default): pick the stage; it always comes out as chosen. Stations marked "by itself" (the Cafe's pour,

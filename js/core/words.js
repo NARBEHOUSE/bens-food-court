@@ -530,6 +530,86 @@
     return number(n) + ' ' + lower(what);
   }
 
+  /* ── the Ticket's hint (the user, 2026-11-19) ────────────────────────────── */
+  // After the ticket is read, a player who can't hold the order in their head hears how it is going: what is wrong
+  // so far and how to fix it, or, when it is right, what it still needs ("if we do a pizza and it calls for thin
+  // crust but we put regular, it should say you have the wrong crust, you will have to redo this order").
+  /** One mistake made so far, as a sentence. */
+  function slipSay(pack, o, m) {
+    const spec = o.items[m.item].spec;
+    if (m.slot !== undefined) {
+      if (m.kind === 'pick') {
+        // "in a waffle cone" reads "a waffle cone" here: "You picked a waffle cone, but the ticket says a cone."
+        const bare = v => wantedSay(pack, m.slot, v).replace(/^(in|on|with) /, '');
+        const got = m.got === null || m.got === undefined ? 'no ' + lower(slotName(pack, m.slot)) : bare(m.got);
+        return 'You picked ' + got + ', but the ticket says ' + bare(m.want) + '.';
+      }
+      if (m.kind === 'count') return 'The ticket says ' + countSay(pack, m, m.want) + ', but you picked ' + (m.got ? number(m.got) : 'none') + '.';
+      if (m.kind === 'gross') return cap(grossPick(pack, m.slot, m.value, m.event)) + ' went on.';
+      return 'The ' + lower(slotName(pack, m.slot)) + ' is not right.';
+    }
+    const ing = lower(name(pack, m.ing || ''));
+    switch (m.kind) {
+      case 'extra': return m.held ? 'The ticket says no ' + ing + ', but you added ' + ing + '.' : 'You added ' + ing + ', but that is not on the ticket.';
+      case 'missing': return 'You skipped the ' + ing + ', but the ticket has ' + ing + '.';
+      case 'count': return 'The ticket says ' + countSay(pack, m, m.want) + ', but you added ' + (m.got ? number(m.got) : 'none') + '.';
+      case 'done': return 'The ' + ing + ' came out ' + lower(stage(pack, m.got)) + ', but the ticket says ' + lower(stage(pack, m.want)) + '.';
+      case 'pick': {
+        const say = v => (v ? lower(m.of === 'size' ? sizeName(pack, spec.ing, v) : name(pack, v)) : 'nothing');
+        return 'You picked ' + say(m.got) + ', but the ticket says ' + say(m.want) + '.';
+      }
+      case 'gross': return cap(grossSay(pack, m.ing, m.event)) + ' went on.';
+      default: return 'The ' + ing + ' is not right.';
+    }
+  }
+  /** One thing the ticket still wants (a step from line.ahead), in the ticket's own words. */
+  function stillSay(pack, o, a) {
+    const item = o.items[a.i], step = a.step;
+    if (step.kind === 'add') {
+      const left = a.want - (a.have || 0);
+      if (left <= 0) return null;
+      const I = pack.ingredients[step.ing] || {};
+      return (step.max || 1) > 1 || I.stages ? countSay(pack, { ing: step.ing }, left) : lower(name(pack, step.ing));
+    }
+    // "golden at the oven", "medium at the grill": the station says where, so the food's name is never said twice.
+    if (step.kind === 'cook') return lower(stage(pack, a.want)) + ' at the ' + lower(name(pack, a.sid));
+    if (step.kind === 'pick' && step.slot !== undefined) {
+      if (!step.repeat) return valueSay(pack, step.slot, a.want);
+      const left = L.remaining(asList(a.want), asList(a.have));
+      return left.length ? repeatSay(pack, step.slot, left) : null;
+    }
+    if (step.kind === 'pick') return lower(step.of === 'size' ? sizeName(pack, item.spec.ing, a.want) + ' size' : name(pack, a.want));
+    return null;
+  }
+  /** The hint said after the ticket. wrong: judge.soFar; next: line.ahead. -> '' when there is nothing to say. */
+  function check(pack, o, wrong, next) {
+    if (!o || o.phase === 'served') return '';
+    const many = o.items.length > 1;
+    if (wrong.length) {
+      const said = wrong.slice(0, 2).map(m => (many ? 'Item ' + (m.item + 1) + ': ' : '') + slipSay(pack, o, m));
+      const rest = wrong.length - 2;
+      const more = rest > 0 ? ' And ' + number(rest) + ' more ' + (rest === 1 ? 'thing is' : 'things are') + ' wrong.' : '';
+      const fix = o.phase === 'review' ? ' Choose Redo to fix it before you ring it up.'
+        : ' You will have to redo this order for a happy customer. Choose Redo Order to start it again.';
+      return 'Uh oh. ' + said.join(' ') + more + fix;
+    }
+    if (o.phase === 'review') return 'Everything matches the ticket. Ring it up!';
+    // Patties still to add are said as the ticket says them, with how done: "one patty, medium".
+    const merged = new Set();
+    const words = next.steps.map(a => {
+      if (merged.has(a)) return null;
+      const w = stillSay(pack, o, a);
+      const I = a.step.kind === 'add' ? pack.ingredients[a.step.ing] : null;
+      const cook = I && I.stages && w ? next.steps.find(b => b.step.kind === 'cook' && b.step.ing === a.step.ing && b.sid === a.sid) : null;
+      if (cook) { merged.add(cook); return w + ', ' + lower(stage(pack, cook.want)); }
+      return w;
+    }).filter(Boolean);
+    const shown = words.length > 4 ? words.slice(0, 4).concat(number(words.length - 4) + ' more') : words;
+    const then = next.items.length ? ' Then ' + list(next.items.map(k => (many ? 'item ' + (k + 1) + ', ' : '') + 'the ' + head(pack, o.items[k].spec))) + '.' : '';
+    if (!shown.length) return 'So far, so good!' + (then || ' It is nearly done.');
+    return 'So far, so good! Still to go: ' + list(shown) + '.' + then;
+  }
+
   return { lower, cap, name, plural, stage, list, sizeName, item, ticket, said, spelled, onWords, groups, orderParts, allOrderParts, made, grossSay, prompt, option, mistake, NUMBER,
-    ORDINAL, number, ordinal, slotName, slotPlural, valueName, valueSay, repeatSay, grossPick, blanks, countSay, wantedSay, lineSteps };
+    ORDINAL, number, ordinal, slotName, slotPlural, valueName, valueSay, repeatSay, grossPick, blanks, countSay, wantedSay, lineSteps, check };
 });

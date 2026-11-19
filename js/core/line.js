@@ -606,6 +606,35 @@
     return out;
   }
 
+  /** What the ticket still wants, for the Ticket's hint (the user, 2026-11-19: "if they have it going right it'll say
+   *  what else it needs"). The current item's steps from the one being asked on (a redo: its station only), each
+   *  { i, sid, n, step, want, have } (have: what the step being asked already holds, an Add's count so far or a
+   *  repeat's picks); steps the ticket wants nothing from, flourishes and Simple's cook-by-itself steps are left out.
+   *  items: the items still to come after this one. -> { steps, items } */
+  function ahead(pack, o, settings) {
+    const out = { steps: [], items: [] };
+    if (o.phase !== 'line') return out;
+    const i = o.at.item, item = o.items[i], sts = stationsOf(pack, item);
+    const last = o.redo ? o.at.st : sts.length - 1;
+    for (let st = o.at.st; st <= last; st++) {
+      const sid = sts[st];
+      stepsOf(pack, sid).forEach((step, n) => {
+        if (st === o.at.st && n < o.at.step) return;
+        if (step.kind === 'auto' || !applies(step, item.spec)) return;
+        if (step.kind === 'cook' && !isTimed(o, settings)) {
+          const set = stageSet(pack, item, sid, step);
+          if (set && set.simple === 'auto') return;
+        }
+        const want = expected(pack, item, sid, n);
+        if (want === null || want === undefined || want === 0 || (Array.isArray(want) && !want.length)) return;
+        const now = st === o.at.st && n === o.at.step;
+        out.steps.push({ i, sid, n, step, want, have: now ? item.answers[keyOf(sid, n)] : undefined });
+      });
+    }
+    if (!o.redo) for (let k = i + 1; k < o.items.length; k++) out.items.push(k);
+    return out;
+  }
+
   return { MAX_ANSWERS, ROW, keyOf, stationsOf, applies, asks, cookIng, setIdOf, stageSet, stageSeconds, wantedScaleOf, pickValues, expected, remaining,
-    create, question, answer, tick, timerProgress, made, current };
+    create, question, answer, tick, timerProgress, made, current, ahead };
 });

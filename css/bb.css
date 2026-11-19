@@ -458,7 +458,16 @@ body[data-motion="reduced"] #courtCam .fx > .still { animation: fadeAway 1.4s ea
 .logo { margin: 0 auto 1vh; line-height: .9; }
 .logo .top { display: block; font: 900 clamp(22px, 3vw, 46px)/1 "Arial Black", sans-serif; color: var(--logo-top); letter-spacing: .2em; }
 .logo .main { display: block; font: 900 clamp(48px, 8vw, 120px)/1 "Arial Black", sans-serif; color: var(--logo-main);
-  -webkit-text-stroke: 3px var(--ink); text-shadow: 0 .6vh 0 var(--ink); }
+  /* The outline is a ring of text-shadows, not -webkit-text-stroke: a stroke is drawn ON TOP of the letters, so
+     where Arial Black's letters touch ("Fo", "Co") one letter's outline cut across the next, and its sharp
+     corners left little spikes. Shadows paint under every letter and have round corners. --o = outline width. */
+  --o: 3px; --od: calc(var(--o) * .7071); --oa: calc(var(--o) * .9239); --ob: calc(var(--o) * .3827);
+  text-shadow:
+    var(--o) 0 0 var(--ink), calc(var(--o) * -1) 0 0 var(--ink), 0 var(--o) 0 var(--ink), 0 calc(var(--o) * -1) 0 var(--ink),
+    var(--od) var(--od) 0 var(--ink), calc(var(--od) * -1) var(--od) 0 var(--ink), var(--od) calc(var(--od) * -1) 0 var(--ink), calc(var(--od) * -1) calc(var(--od) * -1) 0 var(--ink),
+    var(--oa) var(--ob) 0 var(--ink), calc(var(--oa) * -1) var(--ob) 0 var(--ink), var(--oa) calc(var(--ob) * -1) 0 var(--ink), calc(var(--oa) * -1) calc(var(--ob) * -1) 0 var(--ink),
+    var(--ob) var(--oa) 0 var(--ink), calc(var(--ob) * -1) var(--oa) 0 var(--ink), var(--ob) calc(var(--oa) * -1) 0 var(--ink), calc(var(--ob) * -1) calc(var(--oa) * -1) 0 var(--ink),
+    0 calc(.6vh + var(--o)) 0 var(--ink); }
 .card .stars { font-size: clamp(30px, 4vw, 56px); color: var(--star); margin-bottom: 0; }
 .card .avg { margin: 0 0 .6em; font: 900 var(--label)/1.2 "Trebuchet MS", sans-serif; color: var(--card-value); }
 .card .news { margin: 0 0 .6em; font: 700 var(--label)/1.25 "Trebuchet MS", sans-serif; color: var(--card-value); }
@@ -536,7 +545,7 @@ body[data-motion="reduced"] *, body[data-motion="reduced"] *::before, body[data-
   .card .stars { font-size: clamp(24px, 9vh, 44px); }
   .logo { margin-bottom: 0; }
   .logo .top { font-size: clamp(16px, 5vh, 30px); }
-  .logo .main { font-size: clamp(34px, 13vh, 72px); -webkit-text-stroke-width: 2px; }
+  .logo .main { font-size: clamp(34px, 13vh, 72px); --o: 2px; }
 
   body[data-place="kitchen"] #controls { gap: 1.2vh; padding: 1.4vh 1.2vw; }
   body[data-place="kitchen"] #controls:has(> .ctl:nth-child(4)) { display: grid; grid-template-columns: repeat(2, auto); column-gap: 1.2vw; align-items: stretch; }

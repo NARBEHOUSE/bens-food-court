@@ -317,6 +317,17 @@ async function run(label, opts) {
     for (let until = Date.now() + 5000; card && dbg().card !== card && Date.now() < until;) await sleep(25);
     if (card && dbg().card !== card) fail(id + ' led to ' + dbg().card + ', not ' + card);
   };
+  /** Ticket (the user, 2026-11-19): the ticket is read, then the hint (how it is going), and the highlight goes back
+   *  to the blank, as after Add or Skip, so the next Space is the step's first answer. */
+  async function pickTicket(where) {
+    const mark = gameVoice.length;
+    await must('ticket', null);
+    if (!auto && dbg().index !== -1) errors.push('Ticket ' + where + ': the highlight stayed on ' + dbg().id + ', not the blank');
+    const read = gameVoice.slice(mark).find(t => /^Ticket\. /.test(t));
+    if (!read) errors.push('Ticket ' + where + ': the ticket was not read out');
+    else if (!/ (So far, so good!|Uh oh\. |Everything matches the ticket\.)/.test(read)) errors.push('Ticket ' + where + ': no hint after the ticket: ' + read);
+    else stats.ticketHints = (stats.ticketHints || []).concat(where + ': ' + read.replace(/^.*?(So far|Uh oh|Everything)/, '$1'));
+  }
   /** The Settings card has the 17 rows in order, the hub rows among them (spec 6.4). */
   function checkSettings() {
     const have = dbg().items, want = SETTINGS_ROWS.filter(id => id !== 'speed' || timed);
@@ -1097,7 +1108,7 @@ async function run(label, opts) {
     }
     if (screen === 'review') {
       if (opts.counter && !(heardFrom.checked = heardFrom.checked || new Set()).has(s.n)) { heardFrom.checked.add(s.n); checkCounter(s); }
-      if (opts.watchWheel && !watch.ticketCounter) { await must('ticket', null); watch.ticketCounter += 1; continue; }
+      if (opts.watchWheel && !watch.ticketCounter) { await pickTicket('at the counter'); watch.ticketCounter += 1; continue; }
       const q = w.BB.shift.question(pack, s);
       if (opts.redo && rand() < 0.2 && stats.redos < 3) {
         const redo = q.options.find(x => x.id.startsWith('redo:'));
@@ -1150,7 +1161,7 @@ async function run(label, opts) {
         stats.redoOrder = { ticketRead: read };
         continue;
       }
-      if (opts.watchWheel && !watch.ticketKitchen) { await must('ticket', null); watch.ticketKitchen += 1; await sleep(1800); continue; }
+      if (opts.watchWheel && !watch.ticketKitchen) { await pickTicket('in the kitchen'); watch.ticketKitchen += 1; await sleep(1800); continue; }
       const o = s.order, want = L.expected(pack, o.items[q.item], q.station, q.step);
       let id;
       if (q.gross && (opts.mistakes === 0 || rand() < 0.75)) id = 'swap';

@@ -34,12 +34,14 @@
     if (n) out.push({ item: i, kind: 'pick', of: 'slot', slot: step.slot, want: left[0], got: wrong[0], n });
   }
 
-  function mistakes(pack, o) {
+  /** only(i, key): judge this step? (soFar: the steps already finished.) Omitted: every step. */
+  function mistakes(pack, o, only) {
     const out = [];
     o.items.forEach((item, i) => {
       for (const sid of L.stationsOf(pack, item)) {
         pack.stations[sid].steps.forEach((step, n) => {
           if (step.kind === 'auto' || !L.applies(step, item.spec)) return;
+          if (only && !only(i, L.keyOf(sid, n))) return;
           const key = L.keyOf(sid, n), want = L.expected(pack, item, sid, n), got = item.answers[key];
           if (step.kind === 'add') {
             const g = got || 0, w = want || 0;
@@ -82,5 +84,15 @@
     return { stars, count, mistakes: list, tip, favourite: !!fav };
   }
 
-  return { mistakes, score, starsFor };
+  /** The mistakes already made, mid-order (the Ticket's hint): the same checks as the serve, on the steps that are
+   *  finished. The step being asked is not finished (an Add still offering another patty, a repeat still picking),
+   *  and neither is any step not reached yet; a bad ingredient that went on counts at once. */
+  function soFar(pack, o) {
+    if (o.phase === 'served') return mistakes(pack, o);
+    const c = L.current(pack, o);
+    const has = Object.prototype.hasOwnProperty;
+    return mistakes(pack, o, (i, key) => has.call(o.items[i].answers, key) && !(c && c.i === i && c.key === key));
+  }
+
+  return { mistakes, score, starsFor, soFar };
 });
