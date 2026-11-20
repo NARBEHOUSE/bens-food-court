@@ -149,12 +149,18 @@
   // hub's shared code changes). A press still acts at once, as on every card, and may cut them; a press that does
   // nothing (Enter on the blank) leaves them be. Past the voice manager's cap, the engine's own `speaking` says when
   // they end (two minutes at most). Then a full scan interval, and the scan moves.
+  //
+  // The order Ticket (the line's Ticket and Pause's) goes further (the user, 2026-11-20: Ben's stray Space moved the
+  // scan on and cut the ticket off): it is LOCKED. While it is read, Space and Enter do nothing at all (their release
+  // is swallowed), a click or tap does nothing, and the Timed clock stands still (heldKeys()), under every scan
+  // setting. Only the deliberate 5 s Enter hold still opens Pause. The lock ends when the words do.
   let narration = null;
-  /** Hold the card's automatic scan until this speech (a voice-manager ticket) has been heard. */
-  function holdFor(ticket) {
+  /** Hold the card's automatic scan until this speech (a voice-manager ticket) has been heard. lock: no press may
+   *  cut it (the order Ticket), with or without Auto Scan. */
+  function holdFor(ticket, lock) {
     endNarration();
-    if (!ticket || !choice || !choice.active || !isAuto()) return;
-    const n = narration = { since: performance.now() };
+    if (!ticket || !choice || !choice.active || (!isAuto() && !lock)) return;
+    const n = narration = { since: performance.now(), lock: !!lock };
     choice.setInputHeld(true);
     const done = () => { if (narration !== n) return; narration = null; if (choice) choice.setInputHeld(down.Space || down.Enter); };
     Promise.resolve(ticket.finished).then(r => {
@@ -174,6 +180,10 @@
   }
   /** Say a card's (or the line's) long words (Help, Ticket) and hold the scan for them. Without the scanner, just say them. */
   const narrate = text => { if (!text) return; if (!choice || !choice.active) { speak(text); return; } holdFor(choice.announce(text)); };
+  /** The order Ticket: said like narrate(), and locked until it has been heard in full. */
+  const readTicket = text => { if (!text) return; if (!choice || !choice.active) { speak(text); return; } holdFor(choice.announce(text), true); };
+  /** The ticket is being read: presses are swallowed. */
+  const locked = () => !!(narration && narration.lock);
 
   /* ══ the line (and the court's root) ═══════════════════════════════════ */
   /** Show a step's choices. root = { key, kind?, items: [{ id, label(), element, ref }], redraw, onChoice?, onPause? }.
@@ -218,8 +228,8 @@
     if (choice) choice.sync(null);
     light(null);
   }
-  /** Either switch is down (the Timed clock stands still). */
-  const heldKeys = () => !!(down.Space || down.Enter);
+  /** Either switch is down, or the ticket is being read (the Timed clock stands still). */
+  const heldKeys = () => !!(down.Space || down.Enter || locked());
 
   /* ══ menu boards ════════════════════════════════════════════════════════ */
   /** Open a card at -1. opts are the screen's own (a pack, a result...). */
@@ -315,7 +325,7 @@
 
   /* ══ mouse and touch ════════════════════════════════════════════════════ */
   function pointAndPick(id) {
-    if (!choice || !choice.active || performance.now() - openedAt < GHOST_MS) return;
+    if (!choice || !choice.active || performance.now() - openedAt < GHOST_MS || locked()) return;
     endNarration();                                   // a click or tap acts at once, as a press does
     const cur = choice.context;
     if (!cur || !cur.items.some(it => it.id === id)) { if (lineRoot && lineRoot.direct) lineRoot.direct(id); return; }
@@ -370,6 +380,9 @@
     // release is ignored, whatever is lit by then (ACCESSIBILITY.md §4: presses are never queued). It still counts as
     // down, so the Timed clock stays frozen and a 5 s Enter hold still opens Pause.
     if (choice && !choice.active) ignore[k] = true;
+    // The ticket is being read: this press does nothing, now or on its release (no step, no pick, no brake, no
+    // back-scan). A 5 s Enter hold still opens Pause.
+    else if (locked()) ignore[k] = true;
     else if (ctx !== 'none' && choice && choice.active) {
       if (k === 'Space') braking = choice.brakePress();
       if (k !== 'Space' || !braking) choice.setInputHeld(true);
@@ -584,7 +597,7 @@
         title: 'Back in 5', speech: 'Paused',
         items: [
           { id: 'continue', label: 'Continue', icon: '▶️', action: () => G().resume() },
-          { id: 'ticket', label: 'Ticket', icon: '🧾', off: !words, say: 'Ticket. Hear the order again.', action: () => narrate(G().ticketWords()) },
+          { id: 'ticket', label: 'Ticket', icon: '🧾', off: !words, say: 'Ticket. Hear the order again.', action: () => readTicket(G().ticketWords()) },
           { id: 'help', label: 'Help', icon: '🆘', say: 'Help', action: () => callHelp() },
           { id: 'restart', label: 'Restart Shift', icon: '🔁', action: () => confirm('restart', tut ? 'Restart the tutorial?' : 'Restart the shift?',
             tut ? 'The tutorial starts again from the first step.' : done ? 'This shift is finished and counted, and a new one starts.'
@@ -666,7 +679,7 @@
       held: heldKeys(), scan: st ? { braked: !!st.braked, inputHeld: !!st.inputHeld, waiting: !!st.waitingForSpeech, suspended: !!st.suspended, keyHeld: !!st.held } : null };
   }
 
-  BB.ui = { init, line, fromBlank, suspend, openCard, closeCard, refreshCard, announce, narrate, confirm, openSettings, exitGame, heldKeys, __dbg,
+  BB.ui = { init, line, fromBlank, suspend, openCard, closeCard, refreshCard, announce, narrate, readTicket, locked, confirm, openSettings, exitGame, heldKeys, __dbg,
     /** The id of the highlighted choice, or null (the blank, a playout). */
     litId: () => (choice && choice.active ? choice.getState().id : null),
     /** A click or tap on a choice by its id (the court's storefronts, hit-tested on their outlines by js/court.js). */

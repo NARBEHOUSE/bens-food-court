@@ -327,6 +327,27 @@ async function run(label, opts) {
     if (!read) errors.push('Ticket ' + where + ': the ticket was not read out');
     else if (!/ (So far, so good!|Uh oh\. |Everything matches the ticket\.)/.test(read)) errors.push('Ticket ' + where + ': no hint after the ticket: ' + read);
     else stats.ticketHints = (stats.ticketHints || []).concat(where + ': ' + read.replace(/^.*?(So far|Uh oh|Everything)/, '$1'));
+    if (opts.ticketLock && read) await ticketLockChecks(where, read);
+  }
+  /** The ticket is LOCKED while it is read (the user, 2026-11-20: a stray Space moved the scan and cut it off): Space
+   *  and Enter during the words do nothing and cut nothing; once it ends, Space moves again. */
+  async function ticketLockChecks(where, read) {
+    const rec = utter.slice().reverse().find(u => u.text === read);
+    if (!rec) { errors.push('Ticket ' + where + ': its utterance was not recorded'); return; }
+    if (rec.end || rec.cut) { errors.push('Ticket ' + where + ': the words were over before the stray presses (slow the speech)'); return; }
+    if (!w.BB.ui.locked()) errors.push('Ticket ' + where + ': not locked while it is read');
+    const s = w.BB.game.shift(), before = JSON.stringify(s.order), at = dbg().index;
+    await press('Space'); await press('Enter'); await press('Space');
+    const d = dbg();
+    if (rec.cut) errors.push('Ticket ' + where + ': a stray press cut the ticket off ' + (rec.cut - rec.at) + ' ms in');
+    if (d.index !== at) errors.push('Ticket ' + where + ': a stray press moved the highlight to ' + d.id);
+    if (JSON.stringify(w.BB.game.shift().order) !== before) errors.push('Ticket ' + where + ': a stray press changed the order');
+    if (rec.end) errors.push('Ticket ' + where + ': the words ended during the presses (slow the speech)');
+    for (const until = Date.now() + 60000; Date.now() < until && !rec.end && !rec.cut;) await sleep(20);
+    if (!rec.end) errors.push('Ticket ' + where + ': the words never ended');
+    await sleep(50);
+    if (w.BB.ui.locked()) errors.push('Ticket ' + where + ': still locked after the words ended');
+    stats.ticketLocks = (stats.ticketLocks || 0) + 1;
   }
   /** The Settings card has the 17 rows in order, the hub rows among them (spec 6.4). */
   function checkSettings() {
@@ -564,7 +585,7 @@ async function run(label, opts) {
   /* ── long words on a card under Auto Scan (2b-seams, 2026-11-09) ────────────────────────────────────────────── */
   // Every utterance the platform hands the speech engine: its words, when it started, ended, or was cut off.
   const utter = [];
-  if (opts.heard) {
+  if (opts.heard || opts.ticketLock) {
     const ss = w.speechSynthesis, sp = ss.speak.bind(ss);
     ss.speak = u => {
       const rec = { text: String(u.text), at: Date.now(), end: 0, cut: 0 };
@@ -1318,6 +1339,10 @@ const RUNS = [
   ['the five-star event with seeded progress (popularity 7, four stars): the gold sign', { seed: 19, event: true, expectGold: true, mistakes: 0, court: { here: { popularity: 7, stars: 4 } } }],
   // Full motion: the ticket wheel turns, the bottles squirt, everything slides (the others run Reduced, for speed).
   ['a 3-customer shift with Motion Full (the wheel turns, the sauces are squirted)', { seed: 7, settings: { motion: 'full' }, watchWheel: true }],
+  // The ticket is locked while it is read (the user, 2026-11-20): stray Space/Enter presses during it do nothing.
+  ['Ticket locked while read, two switches: stray presses neither move the scan nor cut it off', { seed: 8, watchWheel: true, ticketLock: true, speechMsPerChar: 25, settings: { shiftLength: 3, motion: 'full' } }],
+  ['Ticket locked while read, one switch, Timed cooking', { seed: 9, watchWheel: true, ticketLock: true, speechMsPerChar: 25, settings: { shiftLength: 3, cooking: 'timed', motion: 'full' },
+    scan: { autoScan: true, scanSpeedIndex: 0 }, timeout: 600000 }],
   // The counter (spec 5.2): its line, the served customer, a child (Kai) and the order on the counter, at every
   // window shape the spec names.
   ['the counter at 16:9: the line, the customer, Kai, the order on screen', { seed: 23, size: [1280, 720], queue: ['gus', 'kai'], counter: true, mistakes: 0 }],

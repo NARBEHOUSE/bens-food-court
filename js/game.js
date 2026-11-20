@@ -498,7 +498,8 @@
       // The highlight goes back to the blank, as after Add or Skip (the user, 2026-11-19): the next Space is the
       // step's first answer again, not the one after Ticket.
       BB.ui.fromBlank();
-      if (o) BB.ui.narrate('Ticket. ' + W.ticket(pack, o.ticket) + ticketCheck(o));   // heard in full: Auto Scan waits for it
+      // Heard in full and locked (the user, 2026-11-20): no press can move the scan or cut it off until it ends.
+      if (o) BB.ui.readTicket('Ticket. ' + W.ticket(pack, o.ticket) + ticketCheck(o));
       return;
     }
     if (ref.kind === 'next') { BB.audio.sfx('ding', 0.4); return nextCustomer(); }
