@@ -123,6 +123,7 @@
       else if (S.backdrop === 'counter') bad(w, 'the counter is where customers stand, not a station');
       if (typeof S.redo !== 'string' || !S.redo) bad(w, 'needs its redo words ("Redo the Toppings")');
       if (S.tool !== undefined && typeof S.tool !== 'string') bad(w, 'tool is a name');
+      if (S.rerun !== undefined && S.rerun !== true) bad(w, 'rerun is true or left out');
       if (!Array.isArray(S.steps) || !S.steps.length) { bad(w, 'no steps'); continue; }
       if (S.builds) {
         ['on', 'base', 'cap'].forEach(k => { if (S.builds[k] && ingOk(w + '.builds.' + k, S.builds[k]) && k !== 'on') out.add(S.builds[k]); });

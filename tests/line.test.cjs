@@ -7,7 +7,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
-const { G, golden: pack, diner, testPizza: P, pizza: oldPizza, O, L, S, W, R, right, random, play, makeOrder, run, flat } = require('./bot.cjs');
+const { G, golden: pack, diner, testPizza: P, pizza: oldPizza, O, L, S, W, R, right, random, play, makeOrder, run, flat, restaurants, schema } = require('./bot.cjs');
 
 const SIMPLE = { cooking: 'simple' };
 function order(recipe, opts) {
@@ -562,4 +562,82 @@ test('no js/core file names an ingredient, station, recipe, slot, slot value or 
     const src = fs.readFileSync(path.join(dir, f), 'utf8');
     for (const id of ids) for (const qt of ["'", '"', '`']) assert.ok(!src.includes(qt + id + qt), f + ' names ' + id);
   }
+});
+
+/* ── a redo runs the later stations that rework the item (the user, 2026-11-24) ── */
+const live = id => restaurants().find(r => r.id === id).pack;
+/** Answer right until a question passes testQ; every event on the way. -> { x, events } */
+function answerUntil(pk, o, testQ) {
+  const events = [];
+  for (let g = 0; g < 500; g++) {
+    const x = L.question(pk, o, SIMPLE);
+    if (testQ(x)) return { x, events };
+    const r = L.answer(pk, o, right(pk, o, x), SIMPLE);
+    assert.ok(!r.refused, 'refused at ' + JSON.stringify(x));
+    events.push(...r.events);
+  }
+  throw new Error('never reached');
+}
+
+test('Redo the Smoothie: the Prep Table, then the Blender again, then the counter', () => {
+  const sm = live('smoothie');
+  const o = makeOrder(sm, ['strawberryBanana']);
+  answerUntil(sm, o, z => z.kind === 'review');
+  assert.ok(L.made(sm, o, 0).done, 'blended before the redo');
+  assert.deepStrictEqual(L.answer(sm, o, 'redo:0:prep', SIMPLE).events[0], { type: 'redo', item: 0, station: 'prep' });
+  assert.strictEqual(L.made(sm, o, 0).done, undefined, 'the fresh jug is not blended yet');
+  assert.deepStrictEqual([L.question(sm, o, SIMPLE).station, L.question(sm, o, SIMPLE).fresh], ['prep', true]);
+  assert.ok(L.ahead(sm, o, SIMPLE).steps.some(z => z.sid === 'blender'), 'the Ticket hint still lists the blend');
+  const { x, events } = answerUntil(sm, o, z => z.station !== 'prep');
+  assert.deepStrictEqual([x.kind, x.station, x.fresh], ['cook', 'blender', true], 'the blender, not the counter');
+  assert.ok(events.some(e => e.type === 'phase' && e.station === 'blender'));
+  assert.ok(!events.some(e => e.type === 'review'));
+  const done = L.answer(sm, o, right(sm, o, x), SIMPLE);
+  assert.ok(done.events.some(e => e.type === 'review'));
+  assert.deepStrictEqual([o.phase, o.redo], ['review', null]);
+  assert.ok(L.made(sm, o, 0).done, 'blended again');
+});
+
+test('Blend Again on an açaí bowl comes straight back: the bowl bar\'s toppings stay', () => {
+  const sm = live('smoothie');
+  const o = makeOrder(sm, ['strawberryBanana', 'acaiBowl']);
+  answerUntil(sm, o, z => z.kind === 'review');
+  const before = L.made(sm, o, 1).parts.map(p => p.ing);
+  L.answer(sm, o, 'redo:1:blender', SIMPLE);
+  const x = L.question(sm, o, SIMPLE);
+  assert.deepStrictEqual([x.kind, x.station], ['cook', 'blender']);
+  assert.ok(L.answer(sm, o, right(sm, o, x), SIMPLE).events.some(e => e.type === 'review'));
+  assert.deepStrictEqual(L.made(sm, o, 1).parts.map(p => p.ing), before);
+});
+
+test('Redo the Pizza bakes and cuts it again; Bake Again cuts it again; Cut Again is just the cut', () => {
+  const pz = live('pizza');
+  const o = makeOrder(pz, ['cheesePizza']);
+  answerUntil(pz, o, z => z.kind === 'review');
+  const stationsTo = (redo) => {
+    L.answer(pz, o, redo, SIMPLE);
+    const seen = [];
+    while (o.phase === 'line') {
+      const x = L.question(pz, o, SIMPLE);
+      if (seen[seen.length - 1] !== x.station) seen.push(x.station);
+      L.answer(pz, o, right(pz, o, x), SIMPLE);
+    }
+    return seen;
+  };
+  assert.deepStrictEqual(stationsTo('redo:0:prep'), ['prep', 'oven', 'cut']);
+  assert.deepStrictEqual(stationsTo('redo:0:oven'), ['oven', 'cut']);
+  assert.deepStrictEqual(stationsTo('redo:0:cut'), ['cut']);
+  assert.strictEqual(o.phase, 'review');
+});
+
+test('rerun sits on the stations that rework the whole item, never on a topping station', () => {
+  const got = {};
+  restaurants().forEach(r => {
+    const ids = Object.keys(r.pack.stations).filter(k => r.pack.stations[k].rerun);
+    if (ids.length) got[r.id] = ids;
+  });
+  assert.deepStrictEqual(got, { burrito: ['griddle'], cafe: ['fryer'], pizza: ['oven', 'cut'], smoothie: ['blender'], sushi: ['mat', 'board'] });
+  const b = JSON.parse(JSON.stringify(require('./fixtures/ladder-pizza.js')));
+  b.stations.oven.rerun = 'yes';
+  assert.match(schema.validate(b).join('\n'), /rerun is true or left out/);
 });

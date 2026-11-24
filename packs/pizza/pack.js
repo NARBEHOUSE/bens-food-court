@@ -139,11 +139,11 @@
       ],
     },
     oven: {
-      name: 'Oven', backdrop: 'oven', redo: 'Bake Again', tool: 'peel', sounds: { cook: 'oven', done: 'peel' },
+      name: 'Oven', backdrop: 'oven', redo: 'Bake Again', tool: 'peel', rerun: true, sounds: { cook: 'oven', done: 'peel' },
       steps: [{ kind: 'cook', stages: 'bake' }],
     },
     cut: {
-      name: 'Cutting Board', backdrop: 'prep', redo: 'Cut Again', sounds: { done: 'cut' },
+      name: 'Cutting Board', backdrop: 'prep', redo: 'Cut Again', rerun: true, sounds: { done: 'cut' },
       steps: [{ kind: 'pick', slot: 'slices' }],
     },
     knotBasket: {

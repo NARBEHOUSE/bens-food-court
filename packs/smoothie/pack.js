@@ -140,7 +140,7 @@
       ],
     },
     blender: {
-      name: 'Blender', backdrop: 'blender', redo: 'Blend Again', tool: 'blenderSwitch',
+      name: 'Blender', backdrop: 'blender', redo: 'Blend Again', tool: 'blenderSwitch', rerun: true,   // after Redo the Smoothie
       sounds: { cook: 'blender', done: 'blenderStop', auto: 'pour' },
       steps: [
         { kind: 'cook', stages: 'blend' },

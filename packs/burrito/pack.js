@@ -168,7 +168,7 @@
       ],
     },
     griddle: {
-      name: 'Griddle', backdrop: 'griddle', redo: 'Toast Again', tool: 'grillPress', sounds: { cook: 'press' },
+      name: 'Griddle', backdrop: 'griddle', redo: 'Toast Again', tool: 'grillPress', rerun: true, sounds: { cook: 'press' },
       steps: [{ kind: 'cook', stages: 'toast', want: 'toast' }],   // want: the ticket's toast is said in line order, after the sauce
     },
     chips: {

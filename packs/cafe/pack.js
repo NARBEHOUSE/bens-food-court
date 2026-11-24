@@ -174,7 +174,7 @@
       steps: [{ kind: 'pick', slot: 'dough' }],
     },
     fryer: {
-      name: 'Fryer', backdrop: 'donuts', redo: 'Fry Again', tool: 'fryerBasket', sounds: { cook: 'fryer' },
+      name: 'Fryer', backdrop: 'donuts', redo: 'Fry Again', tool: 'fryerBasket', rerun: true, sounds: { cook: 'fryer' },
       steps: [{ kind: 'cook', stages: 'fry', want: 'fry' }],
     },
     glaze: {

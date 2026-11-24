@@ -134,6 +134,9 @@ All: `{ kind, item, station, step, key, fresh, options }`.
 - The review: up to 3 redo choices beside Serve; more go in `{ id:'redo', row }` of the items (an item with more than
   one station is `{ id:'redo:<i>', row }`). A row of more than 4 pages: 4 and `{ id:'more', row }` (`more:2`…).
   A station that asks the item nothing (all passed by `when`, or only flourishes) is never offered.
+- A redo (`redo:<i>:<station>`) clears that station's answers and those of the item's later `rerun` stations
+  (docs/api/pack-format.md 6), runs that station from its first step, then each of those later stations in order
+  (a `phase` event each), then the review. Redo the Smoothie: the Prep Table, then the Blender.
 - The page must give every `row` its own `rowItems` (game.js does it for the review, not yet for picks).
 
 ### Events (new ones in bold)

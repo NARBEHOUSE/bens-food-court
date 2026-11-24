@@ -148,11 +148,11 @@
       ],
     },
     mat: {
-      name: 'Rolling Mat', backdrop: 'roll', redo: 'Roll It Again', sounds: { cook: 'mat' },
+      name: 'Rolling Mat', backdrop: 'roll', redo: 'Roll It Again', rerun: true, sounds: { cook: 'mat' },
       steps: [{ kind: 'cook', stages: 'roll' }],
     },
     board: {
-      name: 'Cutting Board', backdrop: 'roll', redo: 'Slice Again', sounds: { auto: 'knife' },
+      name: 'Cutting Board', backdrop: 'roll', redo: 'Slice Again', rerun: true, sounds: { auto: 'knife' },
       // A hand roll is a cone: never sliced, so these two pass it by (read from the ticket, never from the pick).
       steps: [
         { kind: 'pick', slot: 'pieces', when: { slot: 'roll', in: ['regular', 'insideOut'] } },

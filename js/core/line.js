@@ -14,7 +14,8 @@
  *    auto   a flourish with no answer (wrapping, a spin): it runs by itself
  *  `when` ({ recipes } or { slot, in }) is read from the ticket: a step the ticket does not
  *  use passes with a null answer, and the judge skips it.
- *  Then a review (serve | redo:<item>:<station>) and the serve.
+ *  Then a review (serve | redo:<item>:<station>: that station again, then the item's later `rerun` stations) and the
+ *  serve.
  *
  *  Every step has the answer the ticket wants (expected()). The judge compares answers
  *  with it after the serve; the tutorial compares before a choice lands and warns
@@ -183,6 +184,12 @@
   }
   /** Does a station ask this item anything (a step that applies and is not a flourish)? */
   const asks = (pack, item, sid) => stepsOf(pack, sid).some(s => s.kind !== 'auto' && applies(s, item.spec));
+  /** The next of an item's stations after index st that a redo runs again (`rerun`: the blender after Redo the
+   *  Smoothie, the user 2026-11-24), or -1. */
+  function rerunAfter(pack, sts, st) {
+    for (let k = st + 1; k < sts.length; k++) if (pack.stations[sts[k]].rerun) return k;
+    return -1;
+  }
 
   /** Move past finished steps: passes steps the ticket does not use, flourishes, empty cook steps
    *  and Simple's automatic cooking, starts the Timed clock, ends a phase, an item, a redo, or
@@ -232,12 +239,16 @@
       ev.push({ type: 'phaseDone', item: o.at.item, station: sid });
       o.fresh = true;
       if (o.redo) {
-        o.redo = null;
-        o.phase = 'review';
-        ev.push({ type: 'review' });
-        return;
-      }
-      if (o.at.st + 1 < sts.length) o.at = { item: o.at.item, st: o.at.st + 1, step: 0 };
+        // A redo goes on to the item's later stations that work it over again (rerun), then the review.
+        const next = rerunAfter(pack, sts, o.at.st);
+        if (next < 0) {
+          o.redo = null;
+          o.phase = 'review';
+          ev.push({ type: 'review' });
+          return;
+        }
+        o.at = { item: o.at.item, st: next, step: 0 };
+      } else if (o.at.st + 1 < sts.length) o.at = { item: o.at.item, st: o.at.st + 1, step: 0 };
       else if (o.at.item + 1 < o.items.length) o.at = { item: o.at.item + 1, st: 0, step: 0 };
       else { o.phase = 'review'; ev.push({ type: 'review' }); return; }
       ev.push({ type: 'phase', item: o.at.item, station: stationsOf(pack, o.items[o.at.item])[o.at.st] });
@@ -493,11 +504,14 @@
     const m = /^redo:(\d+):(\w+)$/.exec(id || '');
     if (!m) return { refused: true };
     const i = +m[1], sid = m[2], item = o.items[i];
-    const st = item ? stationsOf(pack, item).indexOf(sid) : -1;
+    const sts = item ? stationsOf(pack, item) : [], st = sts.indexOf(sid);
     if (st < 0) return { refused: true };
-    // That station starts again: its answers, and any bad ingredient served there, go.
-    stepsOf(pack, sid).forEach((s, n) => { delete item.answers[keyOf(sid, n)]; });
-    item.gross = item.gross.filter(g => !g.key.startsWith(sid + '.'));
+    // That station starts again, and so does every later one that reworks the item (rerun: a fresh smoothie is
+    // blended again): their answers, and any bad ingredient served there, go.
+    const again = [sid];
+    for (let k = rerunAfter(pack, sts, st); k >= 0; k = rerunAfter(pack, sts, k)) again.push(sts[k]);
+    again.forEach(a => stepsOf(pack, a).forEach((s, n) => { delete item.answers[keyOf(a, n)]; }));
+    item.gross = item.gross.filter(g => !again.some(a => g.key.startsWith(a + '.')));
     o.phase = 'line';
     o.at = { item: i, st, step: 0 };
     o.redo = { item: i, station: sid };
@@ -607,7 +621,8 @@
   }
 
   /** What the ticket still wants, for the Ticket's hint (the user, 2026-11-19: "if they have it going right it'll say
-   *  what else it needs"). The current item's steps from the one being asked on (a redo: its station only), each
+   *  what else it needs"). The current item's steps from the one being asked on (a redo: its station and the later
+   *  ones it runs again), each
    *  { i, sid, n, step, want, have } (have: what the step being asked already holds, an Add's count so far or a
    *  repeat's picks); steps the ticket wants nothing from, flourishes and Simple's cook-by-itself steps are left out.
    *  items: the items still to come after this one. -> { steps, items } */
@@ -615,9 +630,9 @@
     const out = { steps: [], items: [] };
     if (o.phase !== 'line') return out;
     const i = o.at.item, item = o.items[i], sts = stationsOf(pack, item);
-    const last = o.redo ? o.at.st : sts.length - 1;
-    for (let st = o.at.st; st <= last; st++) {
+    for (let st = o.at.st; st < sts.length; st++) {
       const sid = sts[st];
+      if (o.redo && st > o.at.st && !pack.stations[sid].rerun) continue;
       stepsOf(pack, sid).forEach((step, n) => {
         if (st === o.at.st && n < o.at.step) return;
         if (step.kind === 'auto' || !applies(step, item.spec)) return;

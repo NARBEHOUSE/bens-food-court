@@ -155,6 +155,7 @@ stations: {
 | `backdrop` | yes | one of the pack's backdrops (spec 5.2 table): `prep`, `oven`... Several stations may share one. Never `counter` |
 | `redo` | yes | the review's words for doing it again: `'Bake Again'` (words, not `true`) |
 | `builds` | | `{ on, base?, cap? }`: the item is built on `on` (a plate, a cup); `base` goes first, `cap` last |
+| `rerun` | | `true`: a redo of an earlier station of the item runs this one again too, because it works the whole item over (the blender after Redo the Smoothie; the oven and the cutting board after Redo the Pizza). Leave it off topping stations: their answers stay through a redo (Redo the Grill keeps the burger's toppings) |
 | `tool` | | the name of the Timed control prop the page draws (`peel`, `blenderSwitch`, `basket`, `scoop`: the page agent settles the names); a drawn button if missing or unknown |
 | `sounds` | | `{ add?, cook?, stage?, done?, auto? }` (docs/api/audio.md 5.2); not checked here |
 | `steps` | yes | the line, in order (section 7) |

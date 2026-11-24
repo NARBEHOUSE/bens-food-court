@@ -151,7 +151,10 @@ Each recipe names its stations; each station is a short list of steps, and every
   station with nothing made. Same customer, same ticket; the shift's earlier customers and coins stay.
 - **Review:** the finished order sits on the counter beside its ticket and is described in plain words ("Cheeseburger:
   patty medium, cheese, lettuce, ketchup"); comparing is the player's job. Choices: Ring It Up · Redo <station> (one per
-  station the order used) · Ticket · Pause. A redo runs that station again from its first step.
+  station the order used) · Ticket · Pause. A redo runs that station again from its first step, then any later
+  station that works the whole item over (the pack's `rerun`): Redo the Smoothie goes on to the Blender, Redo the
+  Pizza to the Oven and the Cutting Board (the user, 2026-11-24: a redone smoothie went straight to the counter
+  unblended). Topping stations keep their answers: Redo the Grill comes straight back.
 - **Orders with more items** run the line once per item, in ticket order, then one review and one serve.
 
 ### The ticket
